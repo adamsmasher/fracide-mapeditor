@@ -5,6 +5,9 @@
 
 #include <graphics/gfx.h>
 
+#include <libraries/gadtools.h>
+#include <proto/gadtools.h>
+
 #define SCR_WIDTH  640
 #define SCR_HEIGHT 512
 
@@ -38,6 +41,15 @@ static struct NewWindow projectNewWindow = {
 	CUSTOMSCREEN
 };	
 
+static APTR vi = NULL;
+
+static struct NewMenu newMenu[] = {
+	{ NM_TITLE, "Project", 0, 0, 0, 0 },
+		{ NM_ITEM, "Quit", "Q", 0, 0, 0 },
+	{ NM_END,   NULL,      0, 0, 0, 0 }
+};
+static struct Menu *menu;
+
 int main(void) {
 	int retCode;
 	
@@ -58,11 +70,35 @@ int main(void) {
 	if(!projectWindow) {
 		retCode = -3;
 		goto closeScreen;
-	}	
+	}
+
+	vi = GetVisualInfo(screen, TAG_END);
+	if(!vi) {
+		retCode = -4;
+		goto closeWindow;
+	}
+
+	menu = CreateMenus(newMenu, GTMN_FullMenu, TRUE, TAG_END);
+	if(!menu) {
+		retCode = -5;
+		goto freeVisualInfo;
+	}
+
+	if(!LayoutMenus(menu, vi, TAG_END)) {
+		retCode = -6;
+		goto freeMenu;
+
+	}
+
+	SetMenuStrip(projectWindow, menu);
 
 	Wait(1 << projectWindow->UserPort->mp_SigBit);
 
 	retCode = 0;
+freeMenu:
+	FreeMenus(menu);
+freeVisualInfo:
+	FreeVisualInfo(vi);
 closeWindow:
 	CloseWindow(projectWindow);
 closeScreen:
