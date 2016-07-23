@@ -22,8 +22,8 @@ static struct NewScreen newScreen = {
 	NULL
 };	
 
-static struct Window *myWindow = NULL;
-static struct NewWindow myNewWindow = {
+static struct Window *projectWindow = NULL;
+static struct NewWindow projectNewWindow = {
 	0,0,SCR_WIDTH,SCR_HEIGHT,
 	0xFF,0xFF,
 	MENUPICK,
@@ -53,18 +53,18 @@ int main(void) {
 		goto closeIntuition;
 	}
 
-	myNewWindow.Screen = screen;
-	myWindow = OpenWindow(&myNewWindow);
-	if(!myWindow) {
+	projectNewWindow.Screen = screen;
+	projectWindow = OpenWindow(&projectNewWindow);
+	if(!projectWindow) {
 		retCode = -3;
 		goto closeScreen;
 	}	
 
-	Wait(1 << myWindow->UserPort->mp_SigBit);
+	Wait(1 << projectWindow->UserPort->mp_SigBit);
 
 	retCode = 0;
 closeWindow:
-	CloseWindow(myWindow);
+	CloseWindow(projectWindow);
 closeScreen:
 	CloseScreen(screen);
 closeIntuition:
