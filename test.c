@@ -3,7 +3,7 @@
 #include <intuition/intuition.h>
 #include <proto/intuition.h>
 
-#include <graphics/view.h>
+#include <graphics/gfx.h>
 
 static struct Library *intuition = NULL;
 
