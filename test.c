@@ -24,17 +24,16 @@ static struct NewScreen newScreen = {
 
 static struct Window *myWindow = NULL;
 static struct NewWindow myNewWindow = {
-	0,12,
-	200,100,
+	0,0,SCR_WIDTH,SCR_HEIGHT,
 	0xFF,0xFF,
-	CLOSEWINDOW,
-	WINDOWCLOSE | WINDOWDEPTH | WINDOWDRAG | WINDOWSIZING | ACTIVATE,
+	MENUPICK,
+	BORDERLESS|BACKDROP,
 	NULL,
 	NULL,
-	"Close Me",
+	"Project",
 	NULL,
 	NULL,
-	80,24,
+	SCR_WIDTH,SCR_WIDTH,
 	0xFFFF,0xFFFF,
 	CUSTOMSCREEN
 };	
