@@ -5,11 +5,14 @@
 
 #include <graphics/gfx.h>
 
+#define SCR_WIDTH  640
+#define SCR_HEIGHT 512
+
 static struct Library *intuition = NULL;
 
 static struct Screen *screen = NULL;
 static struct NewScreen newScreen = {
-	0,0,640,512,2,
+	0,0,SCR_WIDTH,SCR_HEIGHT,2,
 	0,1,
 	HIRES|LACE,
 	CUSTOMSCREEN,
