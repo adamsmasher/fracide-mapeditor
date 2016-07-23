@@ -33,7 +33,7 @@ static struct NewWindow myNewWindow = {
 	NULL,
 	80,24,
 	0xFFFF,0xFFFF,
-	WBENCHSCREEN
+	CUSTOMSCREEN
 };	
 
 int main(void) {
@@ -46,18 +46,25 @@ int main(void) {
 	}
 
 	screen = OpenScreen(&newScreen);
-
-/*	myWindow = OpenWindow(&myNewWindow);
-	if(!myWindow) {
+	if(!screen) {
 		retCode = -2;
 		goto closeIntuition;
+	}
+
+	myNewWindow.Screen = screen;
+	myWindow = OpenWindow(&myNewWindow);
+	if(!myWindow) {
+		retCode = -3;
+		goto closeScreen;
 	}	
 
 	Wait(1 << myWindow->UserPort->mp_SigBit);
 
 	retCode = 0;
 closeWindow:
-	CloseWindow(myWindow);*/
+	CloseWindow(myWindow);
+closeScreen:
+	CloseScreen(screen);
 closeIntuition:
 	CloseLibrary(intuition);
 done:
