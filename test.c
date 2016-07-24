@@ -5,6 +5,9 @@
 
 #include <graphics/gfx.h>
 
+#include <libraries/asl.h>
+#include <proto/asl.h>
+
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
@@ -54,8 +57,22 @@ static struct Menu *menu = NULL;
 
 static int running = 0;
 
+static void selectTilesetPackage(void) {
+	APTR request = AllocAslRequestTags(ASL_FileRequest,
+		ASL_Hail, "Select Tileset Package",
+		ASL_Window, projectWindow,
+		TAG_END);
+	if(request) {
+		if(AslRequest(request, NULL)) {
+			/* TODO: load tileset from request->rf_{Dir/?File} */
+		}
+		FreeAslRequest(request);
+	}
+}
+
 static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 	switch(itemNum) {
+		case 0: selectTilesetPackage(); break;
 		case 2: running = 0;
 	}
 }
