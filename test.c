@@ -58,6 +58,15 @@ static struct NewMenu newMenu[] = {
 static struct Menu *menu = NULL;
 
 static int running = 0;
+static long sigMask = 0;
+
+static void addToSigMask(Window *window) {
+	sigMask |= 1L << window->UserPort->mp_SigBit;
+}
+
+static void removeFromSigMask(Window *window) {
+	sigMask &= ~(1L << window->UserPort->mp_SigBit);
+}
 
 static void selectTilesetPackage(void) {
 	APTR request = AllocAslRequestTags(ASL_FileRequest,
