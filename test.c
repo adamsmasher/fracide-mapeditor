@@ -97,6 +97,8 @@ int main(void) {
 	Wait(1 << projectWindow->UserPort->mp_SigBit);
 
 	retCode = 0;
+clearMenu:
+	ClearMenuStrip(projectWindow);
 freeMenu:
 	FreeMenus(menu);
 freeVisualInfo:
