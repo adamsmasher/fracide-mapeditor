@@ -54,10 +54,34 @@ static struct Menu *menu = NULL;
 
 static int running = 0;
 
+static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
+	switch(itemNum) {
+		case 2: running = 0;
+	}
+}
+
+static void handleMenuPick(UWORD menuNumber) {
+	UWORD menuNum = MENUNUM(menuNumber);
+	UWORD itemNum = ITEMNUM(menuNumber);
+	UWORD subNum  = SUBNUM(menuNumber);
+	switch(menuNum) {
+		case 0: handleProjectMenuPick(itemNum, subNum);
+	}
+}
+
+static void handleMenuPicks(UWORD menuNumber) {
+	struct MenuItem *item = NULL;
+	while(running && menuNumber != MENUNULL) {
+		handleMenuPick(menuNumber);
+		item = ItemAddress(menu, menuNumber);
+		menuNumber = item->NextSelect;
+	}
+}
+
 static void handleMessage(struct IntuiMessage* msg) {
 	switch(msg->Class) {
 		case IDCMP_MENUPICK:
-			running = 0;
+			handleMenuPick(msg->Code);
 	}
 }
 
