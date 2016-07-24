@@ -50,7 +50,7 @@ static struct NewMenu newMenu[] = {
 		{ NM_ITEM, "Quit",              "Q", 0, 0, 0 },
 	{ NM_END,   NULL,      0, 0, 0, 0 }
 };
-static struct Menu *menu;
+static struct Menu *menu = NULL;
 
 int main(void) {
 	int retCode;
