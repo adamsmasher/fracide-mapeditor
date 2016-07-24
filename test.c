@@ -59,6 +59,7 @@ static struct Menu *menu = NULL;
 
 static int running = 0;
 static long sigMask = 0;
+static ScreenEditor *firstScreenEditor = NULL;
 
 static void addToSigMask(Window *window) {
 	sigMask |= 1L << window->UserPort->mp_SigBit;
@@ -66,6 +67,22 @@ static void addToSigMask(Window *window) {
 
 static void removeFromSigMask(Window *window) {
 	sigMask &= ~(1L << window->UserPort->mp_SigBit);
+}
+
+static void addToScreenEditorList(ScreenEditor *screenEditor) {
+	screenEditor->next = firstScreenEditor;
+	firstScreenEditor = screenEditor;
+}
+
+static void removeFromScreenEditorList(ScreenEditor *screenEditor) {
+	if(screenEditor->next) {
+		screenEditor->next->prev = screenEditor->prev;
+	}
+	if(screenEditor->prev) {
+		screenEditor->prev->next = screenEditor->next;
+	} else {
+		firstScreenEditor = screenEditor->next;
+	}
 }
 
 static void selectTilesetPackage(void) {
@@ -88,12 +105,25 @@ static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 	}
 }
 
+static void newScreen(void) {
+	ScreenEditor *screenEditor = newScreenEditor();
+	addToScreenEditorList(screenEditor);
+	addToSigMask(screenEditor->window);
+}
+
+static void handleScreensMenuPick(UWORD itemNum, UWORD subNum) {
+	switch(itemNum) {
+		case 0: newScreen();
+	}
+}
+
 static void handleMenuPick(UWORD menuNumber) {
 	UWORD menuNum = MENUNUM(menuNumber);
 	UWORD itemNum = ITEMNUM(menuNumber);
 	UWORD subNum  = SUBNUM(menuNumber);
 	switch(menuNum) {
 		case 0: handleProjectMenuPick(itemNum, subNum);
+		case 1: handleScreensMenuPick(itemNum, subNum);
 	}
 }
 
