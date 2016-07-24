@@ -48,9 +48,9 @@ static APTR vi = NULL;
 
 static struct NewMenu newMenu[] = {
 	{ NM_TITLE, "Project", 0, 0, 0, 0 },
-		{ NM_ITEM, "Select Tileset...", 0,   0, 0, 0 },
-		{ NM_ITEM, NM_BARLABEL,         0,   0, 0, 0 },
-		{ NM_ITEM, "Quit",              "Q", 0, 0, 0 },
+		{ NM_ITEM, "Select Tileset Package...",  0,  0, 0, 0 },
+		{ NM_ITEM, NM_BARLABEL,                  0,  0, 0, 0 },
+		{ NM_ITEM, "Quit",                      "Q", 0, 0, 0 },
 	{ NM_END,   NULL,      0, 0, 0, 0 }
 };
 static struct Menu *menu = NULL;
