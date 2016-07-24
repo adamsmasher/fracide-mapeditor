@@ -116,6 +116,7 @@ int main(void) {
 
 	SetMenuStrip(projectWindow, menu);
 
+	ActivateWindow(projectWindow);
 
 	mainLoop();
 	
