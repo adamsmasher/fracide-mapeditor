@@ -51,6 +51,8 @@ static struct NewMenu newMenu[] = {
 		{ NM_ITEM, "Select Tileset Package...",  0,  0, 0, 0 },
 		{ NM_ITEM, NM_BARLABEL,                  0,  0, 0, 0 },
 		{ NM_ITEM, "Quit",                      "Q", 0, 0, 0 },
+	{ NM_TITLE, "Screens", 0, 0, 0, 0 },
+		{ NM_ITEM, "New Screen", 0, 0, 0, 0 },
 	{ NM_END,   NULL,      0, 0, 0, 0 }
 };
 static struct Menu *menu = NULL;
