@@ -52,6 +52,28 @@ static struct NewMenu newMenu[] = {
 };
 static struct Menu *menu = NULL;
 
+static int running = 0;
+
+static void handleMessage(struct IntuiMessage* msg) {
+	switch(msg->Class) {
+		case IDCMP_MENUPICK:
+			running = 0;
+	}
+}
+
+static void mainLoop(void) {
+	struct IntuiMessage *msg = NULL;
+	running = 1;
+	while(running) {
+		Wait(1L << projectWindow->UserPort->mp_SigBit);
+		msg = (struct IntuiMessage*)GetMsg(projectWindow->UserPort);
+		if(msg) {
+			handleMessage(msg);
+			ReplyMsg((struct Message*)msg);
+		}
+	}
+}
+
 int main(void) {
 	int retCode;
 	
@@ -94,8 +116,9 @@ int main(void) {
 
 	SetMenuStrip(projectWindow, menu);
 
-	Wait(1 << projectWindow->UserPort->mp_SigBit);
 
+	mainLoop();
+	
 	retCode = 0;
 clearMenu:
 	ClearMenuStrip(projectWindow);
