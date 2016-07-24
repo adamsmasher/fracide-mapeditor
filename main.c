@@ -51,15 +51,15 @@ static struct NewMenu newMenu[] = {
 		{ NM_ITEM, "Select Tileset Package...",  0,  0, 0, 0 },
 		{ NM_ITEM, NM_BARLABEL,                  0,  0, 0, 0 },
 		{ NM_ITEM, "Quit",                      "Q", 0, 0, 0 },
-	{ NM_TITLE, "Screens", 0, 0, 0, 0 },
-		{ NM_ITEM, "New Screen", 0, 0, 0, 0 },
+	{ NM_TITLE, "Maps",   0, 0, 0, 0 },
+		{ NM_ITEM, "New Map", 0, 0, 0, 0 },
 	{ NM_END,   NULL,      0, 0, 0, 0 }
 };
 static struct Menu *menu = NULL;
 
 static int running = 0;
 static long sigMask = 0;
-static ScreenEditor *firstScreenEditor = NULL;
+static MapEditor *firstMapEditor = NULL;
 
 static void addToSigMask(Window *window) {
 	sigMask |= 1L << window->UserPort->mp_SigBit;
@@ -69,19 +69,19 @@ static void removeFromSigMask(Window *window) {
 	sigMask &= ~(1L << window->UserPort->mp_SigBit);
 }
 
-static void addToScreenEditorList(ScreenEditor *screenEditor) {
-	screenEditor->next = firstScreenEditor;
-	firstScreenEditor = screenEditor;
+static void addToMapEditorList(MapEditor *mapEditor) {
+	mapEditor->next = firstMapEditor;
+	firstMapEditor = mapEditor;
 }
 
-static void removeFromScreenEditorList(ScreenEditor *screenEditor) {
-	if(screenEditor->next) {
-		screenEditor->next->prev = screenEditor->prev;
+static void removeFromMapEditorList(MapEditor *mapEditor) {
+	if(mapEditor->next) {
+		mapEditor->next->prev = mapEditor->prev;
 	}
-	if(screenEditor->prev) {
-		screenEditor->prev->next = screenEditor->next;
+	if(mapEditor->prev) {
+		mapEditor->prev->next = mapEditor->next;
 	} else {
-		firstScreenEditor = screenEditor->next;
+		mapEditor = mapEditor->next;
 	}
 }
 
@@ -105,15 +105,15 @@ static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 	}
 }
 
-static void newScreen(void) {
-	ScreenEditor *screenEditor = newScreenEditor();
-	addToScreenEditorList(screenEditor);
-	addToSigMask(screenEditor->window);
+static void newMap(void) {
+	MapEditor *mapEditor = newMapEditor();
+	addToMapEditorList(mapEditor);
+	addToSigMask(mapEditor->window);
 }
 
-static void handleScreensMenuPick(UWORD itemNum, UWORD subNum) {
+static void handleMapsMenuPick(UWORD itemNum, UWORD subNum) {
 	switch(itemNum) {
-		case 0: newScreen();
+		case 0: newMap();
 	}
 }
 
@@ -123,7 +123,7 @@ static void handleMenuPick(UWORD menuNumber) {
 	UWORD subNum  = SUBNUM(menuNumber);
 	switch(menuNum) {
 		case 0: handleProjectMenuPick(itemNum, subNum);
-		case 1: handleScreensMenuPick(itemNum, subNum);
+		case 1: handleMapsMenuPick(itemNum, subNum);
 	}
 }
 
