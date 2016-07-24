@@ -61,11 +61,11 @@ static int running = 0;
 static long sigMask = 0;
 static MapEditor *firstMapEditor = NULL;
 
-static void addToSigMask(Window *window) {
+static void addToSigMask(struct Window *window) {
 	sigMask |= 1L << window->UserPort->mp_SigBit;
 }
 
-static void removeFromSigMask(Window *window) {
+static void removeFromSigMask(struct Window *window) {
 	sigMask &= ~(1L << window->UserPort->mp_SigBit);
 }
 
