@@ -11,6 +11,8 @@
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
+#include "MapEditor.h"
+
 #define SCR_WIDTH  640
 #define SCR_HEIGHT 512
 
