@@ -103,7 +103,7 @@ static void selectTilesetPackage(void) {
 static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 	switch(itemNum) {
 		case 0: selectTilesetPackage(); break;
-		case 2: running = 0;
+		case 2: running = 0; break;
 	}
 }
 
@@ -115,7 +115,7 @@ static void newMap(void) {
 
 static void handleMapsMenuPick(UWORD itemNum, UWORD subNum) {
 	switch(itemNum) {
-		case 0: newMap();
+		case 0: newMap(); break;
 	}
 }
 
@@ -124,8 +124,8 @@ static void handleMenuPick(UWORD menuNumber) {
 	UWORD itemNum = ITEMNUM(menuNumber);
 	UWORD subNum  = SUBNUM(menuNumber);
 	switch(menuNum) {
-		case 0: handleProjectMenuPick(itemNum, subNum);
-		case 1: handleMapsMenuPick(itemNum, subNum);
+		case 0: handleProjectMenuPick(itemNum, subNum); break;
+		case 1: handleMapsMenuPick(itemNum, subNum); break;
 	}
 }
 
