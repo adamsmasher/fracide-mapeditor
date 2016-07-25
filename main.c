@@ -138,23 +138,73 @@ static void handleMenuPicks(UWORD menuNumber) {
 	}
 }
 
-static void handleMessage(struct IntuiMessage* msg) {
+static void handleProjectMessage(struct IntuiMessage* msg) {
 	switch(msg->Class) {
 		case IDCMP_MENUPICK:
 			handleMenuPick(msg->Code);
 	}
 }
 
-static void mainLoop(void) {
+static void handleProjectMessages(void) {
+	struct IntuiMessage *msg;
+	while(msg = (struct IntuiMessage*)GetMsg(projectWindow->UserPort)) {
+		handleProjectMessage(msg);
+		ReplyMsg((struct Message*)msg);
+	}
+}
+
+static void handleMapEditorMessage(MapEditor *mapEditor, struct IntuiMessage *msg) {
+	mapEditor->closed = 1;
+}
+
+static void handleMapEditorMessages(MapEditor *mapEditor) {
 	struct IntuiMessage *msg = NULL;
+	while(msg = (struct IntuiMessage*)GetMsg(mapEditor->window->UserPort)) {
+		handleMapEditorMessage(mapEditor, msg);
+		ReplyMsg((struct Message*)msg);
+	}
+}
+
+static void handleAllMapEditorMessages(long signalSet) {
+	MapEditor *i = firstMapEditor;
+	while(i) {
+		if(1L << i->window->UserPort->mp_SigBit & signalSet) {
+			handleMapEditorMessages(i);
+		}
+		i = i->next;
+	}
+}
+
+static void closeDeadMapEditors(void) {
+	MapEditor *i = firstMapEditor;
+	while(i) {
+		MapEditor *next = i->next;
+		if(i->closed) {
+			if(i->next) {
+				i->next->prev = i->prev;
+			}
+			if(i->prev) {
+				i->prev->next = i->next;
+			} else {
+				firstMapEditor = next;
+			}
+			removeWindowFromSigMask(i->window);
+			closeMapEditor(i);
+		}
+		i = next;
+	}
+}
+
+static void mainLoop(void) {
+	long signalSet = 0;
 	running = 1;
 	while(running) {
-		Wait(1L << projectWindow->UserPort->mp_SigBit);
-		msg = (struct IntuiMessage*)GetMsg(projectWindow->UserPort);
-		if(msg) {
-			handleMessage(msg);
-			ReplyMsg((struct Message*)msg);
+		signalSet = Wait(sigMask);
+		if(1L << projectWindow->UserPort->mp_SigBit & signalSet) {
+			handleProjectMessages();
 		}
+		handleAllMapEditorMessages(signalSet);
+		closeDeadMapEditors();
 	}
 }
 
@@ -172,6 +222,8 @@ int main(void) {
 		retCode = -2;
 		goto closeIntuition;
 	}
+
+	initMapEditorScreen();
 
 	projectNewWindow.Screen = screen;
 	projectWindow = OpenWindow(&projectNewWindow);
