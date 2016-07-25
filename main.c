@@ -11,6 +11,7 @@
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
+#include "globals.h"
 #include "MapEditor.h"
 
 #define SCR_WIDTH  640
@@ -18,7 +19,6 @@
 
 static struct Library *intuition = NULL;
 
-static struct Screen *screen = NULL;
 static struct NewScreen newScreen = {
 	0,0,SCR_WIDTH,SCR_HEIGHT,2,
 	0,1,
