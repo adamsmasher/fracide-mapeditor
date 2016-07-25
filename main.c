@@ -63,11 +63,11 @@ static int running = 0;
 static long sigMask = 0;
 static MapEditor *firstMapEditor = NULL;
 
-static void addToSigMask(struct Window *window) {
+static void addWindowToSigMask(struct Window *window) {
 	sigMask |= 1L << window->UserPort->mp_SigBit;
 }
 
-static void removeFromSigMask(struct Window *window) {
+static void removeWindowFromSigMask(struct Window *window) {
 	sigMask &= ~(1L << window->UserPort->mp_SigBit);
 }
 
@@ -110,7 +110,7 @@ static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 static void newMap(void) {
 	MapEditor *mapEditor = newMapEditor();
 	addToMapEditorList(mapEditor);
-	addToSigMask(mapEditor->window);
+	addWindowToSigMask(mapEditor->window);
 }
 
 static void handleMapsMenuPick(UWORD itemNum, UWORD subNum) {
@@ -179,6 +179,7 @@ int main(void) {
 		retCode = -3;
 		goto closeScreen;
 	}
+	addWindowToSigMask(projectWindow);
 
 	vi = GetVisualInfo(screen, TAG_END);
 	if(!vi) {
@@ -212,6 +213,7 @@ freeMenu:
 freeVisualInfo:
 	FreeVisualInfo(vi);
 closeWindow:
+	removeWindowFromSigMask(projectWindow);
 	CloseWindow(projectWindow);
 closeScreen:
 	CloseScreen(screen);
