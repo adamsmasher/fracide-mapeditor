@@ -1,3 +1,3 @@
 #include <intuition/intuition.h>
 
-struct Screen *screen;
+struct Screen *screen = NULL;
