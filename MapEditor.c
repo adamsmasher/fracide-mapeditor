@@ -32,11 +32,11 @@ static struct NewWindow mapEditorNewWindow = {
 struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 
 /* TODO: adjust based on titlebar height */
-#define CURRENT_TILESET_LEFT 260
-#define CURRENT_TILESET_TOP  36
-#define CURRENT_TILESET_WIDTH 100
+#define CURRENT_TILESET_LEFT   230
+#define CURRENT_TILESET_TOP    36
+#define CURRENT_TILESET_WIDTH  144
 #define CURRENT_TILESET_HEIGHT 12
-#define CURRENT_TILESET_ID 0
+#define CURRENT_TILESET_ID     0
 
 static struct NewGadget currentTilesetNewGadget = {
 	CURRENT_TILESET_LEFT, CURRENT_TILESET_TOP,
