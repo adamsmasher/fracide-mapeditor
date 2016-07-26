@@ -4,5 +4,6 @@
 #include <intuition/intuition.h>
 
 extern struct Screen *screen;
+extern void *vi;
 
 #endif

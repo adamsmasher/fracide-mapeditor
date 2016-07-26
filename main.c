@@ -44,9 +44,7 @@ static struct NewWindow projectNewWindow = {
 	SCR_WIDTH,SCR_WIDTH,
 	0xFFFF,0xFFFF,
 	CUSTOMSCREEN
-};	
-
-static APTR vi = NULL;
+};
 
 static struct NewMenu newMenu[] = {
 	{ NM_TITLE, "Project", 0, 0, 0, 0 },
