@@ -38,6 +38,12 @@ struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 #define CURRENT_TILESET_HEIGHT 12
 #define CURRENT_TILESET_ID     0
 
+#define CHOOSE_TILESET_LEFT    CURRENT_TILESET_LEFT
+#define CHOOSE_TILESET_TOP     CURRENT_TILESET_TOP + CURRENT_TILESET_HEIGHT
+#define CHOOSE_TILESET_HEIGHT  12
+#define CHOOSE_TILESET_WIDTH   CURRENT_TILESET_WIDTH
+#define CHOOSE_TILESET_ID      CURRENT_TILESET_ID + 1
+
 static struct NewGadget currentTilesetNewGadget = {
 	CURRENT_TILESET_LEFT, CURRENT_TILESET_TOP,
 	CURRENT_TILESET_WIDTH, CURRENT_TILESET_HEIGHT,
@@ -49,8 +55,20 @@ static struct NewGadget currentTilesetNewGadget = {
 	NULL  /* user data */
 };
 
+static struct NewGadget chooseTilesetNewGadget = {
+	CHOOSE_TILESET_LEFT, CHOOSE_TILESET_TOP,
+	CHOOSE_TILESET_WIDTH, CHOOSE_TILESET_HEIGHT,
+	"Choose Tileset...",
+	&Topaz80,
+	CHOOSE_TILESET_ID,
+	PLACETEXT_IN,
+	NULL, /* visual info, filled in later */
+	NULL  /* user data */
+};
+
 static struct NewGadget *allNewGadgets[] = {
 	&currentTilesetNewGadget,
+	&chooseTilesetNewGadget,
 	NULL
 };
 
@@ -76,6 +94,8 @@ struct Gadget *createMapEditorGadgets(void) {
 		GTTX_Text, "N/A",
 		GTTX_Border, TRUE,
 		TAG_END);
+	
+	gad = CreateGadget(BUTTON_KIND, gad, &chooseTilesetNewGadget, TAG_END);
 
 	if(gad) {
 		return glist;
