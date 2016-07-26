@@ -49,12 +49,21 @@ static struct NewGadget currentTilesetNewGadget = {
 	NULL  /* user data */
 };
 
+static struct NewGadget *allNewGadgets[] = {
+	&currentTilesetNewGadget,
+	NULL
+};
+
 void initMapEditorScreen(void) {
 	mapEditorNewWindow.Screen = screen;
 }
 
-void initMapEditorVi(void) {
-	currentTilesetNewGadget.ng_VisualInfo = vi;
+VOID initMapEditorVi(VOID) {
+	struct NewGadget **i = allNewGadgets;
+	while(*i) {
+		(*i)->ng_VisualInfo = vi;
+		i++;
+	}
 }
 
 struct Gadget *createMapEditorGadgets(void) {
