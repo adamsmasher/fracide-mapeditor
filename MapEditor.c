@@ -42,7 +42,7 @@ static struct NewGadget currentTilesetNewGadget = {
 	CURRENT_TILESET_LEFT, CURRENT_TILESET_TOP,
 	CURRENT_TILESET_WIDTH, CURRENT_TILESET_HEIGHT,
 	"Current Tileset",
-	&Topaz80, /* font */
+	&Topaz80,
 	CURRENT_TILESET_ID,
 	PLACETEXT_ABOVE,
 	NULL, /* visual info, filled in later */
