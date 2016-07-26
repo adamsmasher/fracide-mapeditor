@@ -152,14 +152,22 @@ static void handleProjectMessages(void) {
 }
 
 static void handleMapEditorMessage(MapEditor *mapEditor, struct IntuiMessage *msg) {
-	mapEditor->closed = 1;
+	switch(msg->Class) {
+	case IDCMP_CLOSEWINDOW:
+		mapEditor->closed = 1;
+		break;
+	case IDCMP_REFRESHWINDOW:
+		GT_BeginRefresh(mapEditor->window);
+		GT_EndRefresh(mapEditor->window, TRUE);
+		break;
+	}
 }
 
 static void handleMapEditorMessages(MapEditor *mapEditor) {
 	struct IntuiMessage *msg = NULL;
-	while(msg = (struct IntuiMessage*)GetMsg(mapEditor->window->UserPort)) {
+	while(msg = GT_GetIMsg(mapEditor->window->UserPort)) {
 		handleMapEditorMessage(mapEditor, msg);
-		ReplyMsg((struct Message*)msg);
+		GT_ReplyIMsg(msg);
 	}
 }
 
