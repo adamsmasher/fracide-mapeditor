@@ -237,6 +237,8 @@ int main(void) {
 		goto closeWindow;
 	}
 
+	initMapEditorVi();
+
 	menu = CreateMenus(newMenu, GTMN_FullMenu, TRUE, TAG_END);
 	if(!menu) {
 		retCode = -5;

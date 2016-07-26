@@ -32,6 +32,10 @@ void initMapEditorScreen(void) {
 	mapEditorNewWindow.Screen = screen;
 }
 
+void initMapEditorVi(void) {
+	currentTilesetNewGadget.ng_VisualInfo = vi;
+}
+
 struct Gadget *createMapEditorGadgets(void) {
 	struct Gadget *gad;
 	struct Gadget *glist = NULL;
