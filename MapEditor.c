@@ -28,6 +28,27 @@ static struct NewWindow mapEditorNewWindow = {
 	CUSTOMSCREEN
 };
 
+/* TODO: get the font from the system preferences */
+struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
+
+/* TODO: adjust based on titlebar height */
+#define CURRENT_TILESET_LEFT 260
+#define CURRENT_TILESET_TOP  36
+#define CURRENT_TILESET_WIDTH 100
+#define CURRENT_TILESET_HEIGHT 12
+#define CURRENT_TILESET_ID 0
+
+static struct NewGadget currentTilesetNewGadget = {
+	CURRENT_TILESET_LEFT, CURRENT_TILESET_TOP,
+	CURRENT_TILESET_WIDTH, CURRENT_TILESET_HEIGHT,
+	"Current Tileset",
+	&Topaz80, /* font */
+	CURRENT_TILESET_ID,
+	PLACETEXT_ABOVE,
+	NULL, /* visual info, filled in later */
+	NULL  /* user data */
+};
+
 void initMapEditorScreen(void) {
 	mapEditorNewWindow.Screen = screen;
 }
@@ -42,7 +63,17 @@ struct Gadget *createMapEditorGadgets(void) {
 
 	gad = CreateContext(&glist);
 
-	return glist;
+	gad = CreateGadget(TEXT_KIND, gad, &currentTilesetNewGadget,
+		GTTX_Text, "N/A",
+		GTTX_Border, TRUE,
+		TAG_END);
+
+	if(gad) {
+		return glist;
+	} else {
+		FreeGadgets(glist);
+		return NULL;
+	}
 }
 
 MapEditor *newMapEditor(void) {
@@ -61,6 +92,8 @@ MapEditor *newMapEditor(void) {
 	if(!mapEditor->window) {
 		goto error_freeGadgets;
 	}
+
+	GT_RefreshWindow(mapEditor->window, NULL);
 
 	mapEditor->prev =   NULL;
 	mapEditor->next =   NULL;
