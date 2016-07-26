@@ -3,6 +3,9 @@
 #include <intuition/intuition.h>
 #include <proto/intuition.h>
 
+#include <libraries/gadtools.h>
+#include <proto/gadtools.h>
+
 #include <stdlib.h>
 
 #include "globals.h"
@@ -29,16 +32,30 @@ void initMapEditorScreen(void) {
 	mapEditorNewWindow.Screen = screen;
 }
 
+struct Gadget *createMapEditorGadgets(void) {
+	struct Gadget *gad;
+	struct Gadget *glist = NULL;
+
+	gad = CreateContext(&glist);
+
+	return glist;
+}
+
 MapEditor *newMapEditor(void) {
 	MapEditor *mapEditor = malloc(sizeof(MapEditor));
 	if(!mapEditor) {
-		return NULL;
+		goto error;
 	}
+
+	mapEditor->gadgets = createMapEditorGadgets();
+	if(!mapEditor->gadgets) {
+		goto error_freeEditor;
+	}
+	mapEditorNewWindow.FirstGadget = mapEditor->gadgets;
 
 	mapEditor->window = OpenWindow(&mapEditorNewWindow);
 	if(!mapEditor->window) {
-		free(mapEditor);
-		return NULL;
+		goto error_freeGadgets;
 	}
 
 	mapEditor->prev =   NULL;
@@ -46,9 +63,17 @@ MapEditor *newMapEditor(void) {
 	mapEditor->closed = 0;
 
 	return mapEditor;
+
+error_freeGadgets:
+	FreeGadgets(mapEditor->gadgets);
+error_freeEditor:
+	free(mapEditor);
+error:
+	return NULL;
 }
 
 void closeMapEditor(MapEditor *mapEditor) {
 	CloseWindow(mapEditor->window);
+	FreeGadgets(mapEditor->gadgets);
 	free(mapEditor);
 }
