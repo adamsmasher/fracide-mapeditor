@@ -3,6 +3,9 @@
 
 #include <intuition/intuition.h>
 
+#define CURRENT_TILESET_ID (0)
+#define CHOOSE_TILESET_ID  (CURRENT_TILESET_ID + 1)
+
 typedef struct MapEditorTag {
 	struct MapEditorTag *next;
 	struct MapEditorTag *prev;
