@@ -57,6 +57,14 @@ static struct NewMenu newMenu[] = {
 };
 static struct Menu *menu = NULL;
 
+static struct EasyStruct noTilesetPackageLoadedEasyStruct = {
+	sizeof(struct EasyStruct),
+	0,
+	"No Tileset Package Loaded",
+	"Cannot choose tileset when no tileset package has been loaded.",
+	"Select Tileset Package...|Cancel"
+};
+
 static int running = 0;
 static long sigMask = 0;
 static MapEditor *firstMapEditor = NULL;
@@ -151,6 +159,22 @@ static void handleProjectMessages(void) {
 	}
 }
 
+static void handleChooseTilesetClicked(MapEditor *mapEditor) {
+	int choice = EasyRequest(
+		mapEditor->window,
+		&noTilesetPackageLoadedEasyStruct,
+		NULL);
+}
+
+static void handleMapEditorGadgetUp
+(MapEditor *mapEditor, struct Gadget *gadget) {
+	switch(gadget->GadgetID) {
+	case CHOOSE_TILESET_ID:
+		handleChooseTilesetClicked(mapEditor);
+		break;
+	}
+}
+
 static void handleMapEditorMessage(MapEditor *mapEditor, struct IntuiMessage *msg) {
 	switch(msg->Class) {
 	case IDCMP_CLOSEWINDOW:
@@ -159,6 +183,9 @@ static void handleMapEditorMessage(MapEditor *mapEditor, struct IntuiMessage *ms
 	case IDCMP_REFRESHWINDOW:
 		GT_BeginRefresh(mapEditor->window);
 		GT_EndRefresh(mapEditor->window, TRUE);
+		break;
+	case IDCMP_GADGETUP:
+		handleMapEditorGadgetUp(mapEditor, (struct Gadget*)msg->IAddress);
 		break;
 	}
 }
