@@ -74,7 +74,7 @@ void initMapEditorScreen(void) {
 	mapEditorNewWindow.Screen = screen;
 }
 
-VOID initMapEditorVi(VOID) {
+void initMapEditorVi(void) {
 	struct NewGadget **i = allNewGadgets;
 	while(*i) {
 		(*i)->ng_VisualInfo = vi;
