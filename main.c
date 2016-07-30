@@ -245,6 +245,16 @@ static void mainLoop(void) {
 	}
 }
 
+static void closeAllMapEditors(void) {
+	MapEditor *i = firstMapEditor;
+	while(i) {
+		MapEditor *next = i->next;
+		removeWindowFromSigMask(i->window);
+		closeMapEditor(i);
+		i = next;
+	}
+}
+
 int main(void) {
 	int retCode;
 	
@@ -297,6 +307,8 @@ int main(void) {
 	mainLoop();
 	
 	retCode = 0;
+closeAllMapEditors:
+	closeAllMapEditors();
 clearMenu:
 	ClearMenuStrip(projectWindow);
 freeMenu:
