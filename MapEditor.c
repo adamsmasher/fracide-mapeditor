@@ -10,8 +10,8 @@
 
 #include "globals.h"
 
-#define MAP_EDITOR_WIDTH  512
-#define MAP_EDITOR_HEIGHT 320
+#define MAP_EDITOR_WIDTH  520
+#define MAP_EDITOR_HEIGHT 336
 
 static struct NewWindow mapEditorNewWindow = {
 	40,40,MAP_EDITOR_WIDTH, MAP_EDITOR_HEIGHT,
@@ -31,8 +31,11 @@ static struct NewWindow mapEditorNewWindow = {
 /* TODO: get the font from the system preferences */
 struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 
+#define TILE_WIDTH  16
+#define TILE_HEIGHT 16
+
 /* TODO: adjust based on titlebar height */
-#define CURRENT_TILESET_LEFT   344
+#define CURRENT_TILESET_LEFT   352
 #define CURRENT_TILESET_TOP    36
 #define CURRENT_TILESET_WIDTH  144
 #define CURRENT_TILESET_HEIGHT 12
@@ -44,9 +47,14 @@ struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 
 /* TODO: adjust based on screen */
 #define MAP_BORDER_LEFT   20
-#define MAP_BORDER_TOP    20
+#define MAP_BORDER_TOP    30
 #define MAP_BORDER_WIDTH  320
 #define MAP_BORDER_HEIGHT 288
+
+#define TILESET_BORDER_LEFT   CURRENT_TILESET_LEFT + 10
+#define TILESET_BORDER_TOP    CHOOSE_TILESET_TOP + CHOOSE_TILESET_HEIGHT + 8
+#define TILESET_BORDER_WIDTH  TILE_WIDTH * 4 * 2
+#define TILESET_BORDER_HEIGHT TILE_HEIGHT * 8 * 2
 
 static struct NewGadget currentTilesetNewGadget = {
 	CURRENT_TILESET_LEFT, CURRENT_TILESET_TOP,
@@ -76,6 +84,7 @@ static struct NewGadget *allNewGadgets[] = {
 	NULL
 };
 
+/* TODO: generate these dynamically */
 static WORD mapBorderPoints[] = {
 	0,                  0,
 	MAP_BORDER_WIDTH-1, 0,
@@ -89,6 +98,22 @@ static struct Border mapBorder = {
 	1, 1,
 	JAM1,
 	5, mapBorderPoints,
+	NULL
+};
+
+static WORD tilesetBorderPoints[] = {
+	0,                      0,
+	TILESET_BORDER_WIDTH-1, 0,
+	TILESET_BORDER_WIDTH-1, TILESET_BORDER_HEIGHT-1,
+	0,                      TILESET_BORDER_HEIGHT-1,
+	0,                      0
+};
+
+static struct Border tilesetBorder = {
+	-1, -1,
+	1, 1,
+	JAM1,
+	5, tilesetBorderPoints,
 	NULL
 };
 
@@ -125,9 +150,15 @@ struct Gadget *createMapEditorGadgets(void) {
 	}
 }
 
+/* TODO: make a list and iterate */
+static void drawBorders(struct RastPort *rport) {
+	DrawBorder(rport, &mapBorder,     MAP_BORDER_LEFT, MAP_BORDER_TOP);
+	DrawBorder(rport, &tilesetBorder,
+		TILESET_BORDER_LEFT, TILESET_BORDER_TOP);
+}
+
 void refreshMapEditor(MapEditor *mapEditor) {
-	DrawBorder(mapEditor->window->RPort, &mapBorder,
-		MAP_BORDER_LEFT, MAP_BORDER_TOP);
+	drawBorders(mapEditor->window->RPort);
 }
 
 MapEditor *newMapEditor(void) {
