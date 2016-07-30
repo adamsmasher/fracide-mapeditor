@@ -182,6 +182,7 @@ static void handleMapEditorMessage(MapEditor *mapEditor, struct IntuiMessage *ms
 		break;
 	case IDCMP_REFRESHWINDOW:
 		GT_BeginRefresh(mapEditor->window);
+		refreshMapEditor(mapEditor);
 		GT_EndRefresh(mapEditor->window, TRUE);
 		break;
 	case IDCMP_GADGETUP:

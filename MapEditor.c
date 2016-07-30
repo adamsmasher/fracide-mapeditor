@@ -10,7 +10,7 @@
 
 #include "globals.h"
 
-#define MAP_EDITOR_WIDTH  400
+#define MAP_EDITOR_WIDTH  512
 #define MAP_EDITOR_HEIGHT 320
 
 static struct NewWindow mapEditorNewWindow = {
@@ -32,7 +32,7 @@ static struct NewWindow mapEditorNewWindow = {
 struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 
 /* TODO: adjust based on titlebar height */
-#define CURRENT_TILESET_LEFT   230
+#define CURRENT_TILESET_LEFT   344
 #define CURRENT_TILESET_TOP    36
 #define CURRENT_TILESET_WIDTH  144
 #define CURRENT_TILESET_HEIGHT 12
@@ -41,6 +41,12 @@ struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 #define CHOOSE_TILESET_TOP     CURRENT_TILESET_TOP + CURRENT_TILESET_HEIGHT
 #define CHOOSE_TILESET_HEIGHT  12
 #define CHOOSE_TILESET_WIDTH   CURRENT_TILESET_WIDTH
+
+/* TODO: adjust based on screen */
+#define MAP_BORDER_LEFT   20
+#define MAP_BORDER_TOP    20
+#define MAP_BORDER_WIDTH  320
+#define MAP_BORDER_HEIGHT 288
 
 static struct NewGadget currentTilesetNewGadget = {
 	CURRENT_TILESET_LEFT, CURRENT_TILESET_TOP,
@@ -67,6 +73,22 @@ static struct NewGadget chooseTilesetNewGadget = {
 static struct NewGadget *allNewGadgets[] = {
 	&currentTilesetNewGadget,
 	&chooseTilesetNewGadget,
+	NULL
+};
+
+static WORD mapBorderPoints[] = {
+	0,                  0,
+	MAP_BORDER_WIDTH-1, 0,
+	MAP_BORDER_WIDTH-1, MAP_BORDER_HEIGHT-1,
+	0,                  MAP_BORDER_HEIGHT-1,
+	0,                  0
+};
+
+static struct Border mapBorder = {
+	-1, -1,
+	1, 1,
+	JAM1,
+	5, mapBorderPoints,
 	NULL
 };
 
@@ -103,6 +125,11 @@ struct Gadget *createMapEditorGadgets(void) {
 	}
 }
 
+void refreshMapEditor(MapEditor *mapEditor) {
+	DrawBorder(mapEditor->window->RPort, &mapBorder,
+		MAP_BORDER_LEFT, MAP_BORDER_TOP);
+}
+
 MapEditor *newMapEditor(void) {
 	MapEditor *mapEditor = malloc(sizeof(MapEditor));
 	if(!mapEditor) {
@@ -121,6 +148,7 @@ MapEditor *newMapEditor(void) {
 	}
 
 	GT_RefreshWindow(mapEditor->window, NULL);
+	refreshMapEditor(mapEditor);
 
 	mapEditor->prev =   NULL;
 	mapEditor->next =   NULL;

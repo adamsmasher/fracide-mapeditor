@@ -20,4 +20,6 @@ void initMapEditorVi(void);
 MapEditor *newMapEditor(void);
 void closeMapEditor(MapEditor*);
 
+void refreshMapEditor(MapEditor*);
+
 #endif
