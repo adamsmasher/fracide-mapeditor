@@ -164,6 +164,9 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
 		mapEditor->window,
 		&noTilesetPackageLoadedEasyStruct,
 		NULL);
+	if(choice) {
+		selectTilesetPackage();
+	}
 }
 
 static void handleMapEditorGadgetUp
