@@ -11,7 +11,11 @@ static char correctHeader[HEADER_LENGTH] = {'F', 'R', 'A', 'C'};
 TilesetPackage *tilesetPackageLoadFromFile(char *file) {
 	TilesetPackage *tilesetPackage;
 	BYTE header[HEADER_LENGTH];
-	BPTR fp = Open(file, MODE_OLDFILE);
+	BPTR fp;
+	
+	tilesetPackage = NULL;
+	
+	fp = Open(file, MODE_OLDFILE);
 	if(!fp) {
 		goto done;
 	}
