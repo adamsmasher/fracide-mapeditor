@@ -1,5 +1,7 @@
 #include <proto/exec.h>
 
+#include <proto/dos.h>
+
 #include <intuition/intuition.h>
 #include <proto/intuition.h>
 
@@ -13,8 +15,12 @@
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
+#include <stdlib.h>
+#include <string.h>
+
 #include "globals.h"
 #include "MapEditor.h"
+#include "TilesetPackage.h"
 
 #define SCR_WIDTH  640
 #define SCR_HEIGHT 512
@@ -70,6 +76,7 @@ static struct EasyStruct noTilesetPackageLoadedEasyStruct = {
 static int running = 0;
 static long sigMask = 0;
 static MapEditor *firstMapEditor = NULL;
+static TilesetPackage *tilesetPackage = NULL;
 
 static void addWindowToSigMask(struct Window *window) {
 	sigMask |= 1L << window->UserPort->mp_SigBit;
@@ -95,14 +102,36 @@ static void removeFromMapEditorList(MapEditor *mapEditor) {
 	}
 }
 
+/* TODO: return something so we can retry on error? */
+static void loadTilesetPackage(char *dir, char *file) {
+	int pathSize = strlen(dir) + strlen(file);
+	char *buffer = malloc(pathSize+1);
+	if(!buffer) {
+		goto error;
+	}
+	strcpy(buffer, dir);
+	if(!AddPart(buffer, file, pathSize)) {
+		goto freeBuffer;
+	}
+
+	tilesetPackage = tilesetPackageLoadFromFile(buffer);
+	if(!tilesetPackage) {
+		/* TODO: display an error */
+	}
+freeBuffer:
+	free(buffer);
+error:
+	return;
+}
+
 static void selectTilesetPackage(void) {
-	APTR request = AllocAslRequestTags(ASL_FileRequest,
+	struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
 		ASL_Hail, "Select Tileset Package",
 		ASL_Window, projectWindow,
 		TAG_END);
 	if(request) {
 		if(AslRequest(request, NULL)) {
-			/* TODO: load tileset from request->rf_{Dir/?File} */
+			loadTilesetPackage(request->rf_Dir, request->rf_File);
 		}
 		FreeAslRequest(request);
 	}
@@ -321,6 +350,8 @@ int main(void) {
 	retCode = 0;
 closeAllMapEditors:
 	closeAllMapEditors();
+freeTilesetPackage:
+	free(tilesetPackage);
 clearMenu:
 	ClearMenuStrip(projectWindow);
 freeMenu:
