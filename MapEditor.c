@@ -1,6 +1,7 @@
 #include "MapEditor.h"
 
 #include <intuition/intuition.h>
+#include <intuition/gadgetclass.h>
 #include <proto/intuition.h>
 
 #include <libraries/gadtools.h>
@@ -45,16 +46,21 @@ struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 #define CHOOSE_TILESET_HEIGHT  12
 #define CHOOSE_TILESET_WIDTH   CURRENT_TILESET_WIDTH
 
+#define TILESET_SCROLL_HEIGHT  TILE_HEIGHT * 8 * 2
+#define TILESET_SCROLL_WIDTH   CHOOSE_TILESET_WIDTH - (TILE_WIDTH * 4 * 2)
+#define TILESET_SCROLL_LEFT    CURRENT_TILESET_LEFT + TILE_WIDTH * 4 * 2 - 1
+#define TILESET_SCROLL_TOP     CHOOSE_TILESET_TOP + CHOOSE_TILESET_HEIGHT + 8
+
 /* TODO: adjust based on screen */
 #define MAP_BORDER_LEFT   20
-#define MAP_BORDER_TOP    30
+#define MAP_BORDER_TOP    37
 #define MAP_BORDER_WIDTH  320
 #define MAP_BORDER_HEIGHT 288
 
-#define TILESET_BORDER_LEFT   CURRENT_TILESET_LEFT + 10
-#define TILESET_BORDER_TOP    CHOOSE_TILESET_TOP + CHOOSE_TILESET_HEIGHT + 8
+#define TILESET_BORDER_LEFT   CURRENT_TILESET_LEFT
+#define TILESET_BORDER_TOP    TILESET_SCROLL_TOP + 1
 #define TILESET_BORDER_WIDTH  TILE_WIDTH * 4 * 2
-#define TILESET_BORDER_HEIGHT TILE_HEIGHT * 8 * 2
+#define TILESET_BORDER_HEIGHT TILESET_SCROLL_HEIGHT
 
 static struct NewGadget currentTilesetNewGadget = {
 	CURRENT_TILESET_LEFT, CURRENT_TILESET_TOP,
@@ -78,9 +84,21 @@ static struct NewGadget chooseTilesetNewGadget = {
 	NULL  /* user data */
 };
 
+static struct NewGadget tilesetScrollNewGadget = {
+	TILESET_SCROLL_LEFT,  TILESET_SCROLL_TOP,
+	TILESET_SCROLL_WIDTH, TILESET_SCROLL_HEIGHT,
+	NULL, /* no text */
+	NULL,
+	TILESET_SCROLL_ID,
+	0,    /* flags */
+	NULL, /* visual info, filled in later */
+	NULL  /* user data */
+};
+
 static struct NewGadget *allNewGadgets[] = {
 	&currentTilesetNewGadget,
 	&chooseTilesetNewGadget,
+	&tilesetScrollNewGadget,
 	NULL
 };
 
@@ -141,6 +159,11 @@ struct Gadget *createMapEditorGadgets(void) {
 		TAG_END);
 	
 	gad = CreateGadget(BUTTON_KIND, gad, &chooseTilesetNewGadget, TAG_END);
+
+	gad = CreateGadget(SCROLLER_KIND, gad, &tilesetScrollNewGadget,
+		PGA_Freedom, LORIENT_VERT,
+		GA_Disabled, TRUE,
+		TAG_END);
 
 	if(gad) {
 		return glist;

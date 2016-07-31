@@ -5,6 +5,7 @@
 
 #define CURRENT_TILESET_ID (0)
 #define CHOOSE_TILESET_ID  (CURRENT_TILESET_ID + 1)
+#define TILESET_SCROLL_ID  (CHOOSE_TILESET_ID  + 1)
 
 typedef struct MapEditorTag {
 	struct MapEditorTag *next;
