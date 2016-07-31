@@ -105,12 +105,13 @@ static void removeFromMapEditorList(MapEditor *mapEditor) {
 /* TODO: return something so we can retry on error? */
 static void loadTilesetPackage(char *dir, char *file) {
 	int pathSize = strlen(dir) + strlen(file);
-	char *buffer = malloc(pathSize+1);
+	/* + 2 => NULL byte, possible slash? */
+	char *buffer = malloc(pathSize + 2);
 	if(!buffer) {
 		goto error;
 	}
 	strcpy(buffer, dir);
-	if(!AddPart(buffer, file, pathSize)) {
+	if(!AddPart(buffer, file, pathSize + 2)) {
 		goto freeBuffer;
 	}
 
