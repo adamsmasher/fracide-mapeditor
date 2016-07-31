@@ -4,6 +4,8 @@
 #include <proto/intuition.h>
 
 #include <graphics/gfx.h>
+#include <graphics/view.h>
+#include <proto/graphics.h>
 
 #include <libraries/asl.h>
 #include <proto/asl.h>
@@ -21,7 +23,7 @@ static struct Library *intuition = NULL;
 
 static struct NewScreen newScreen = {
 	0,0,SCR_WIDTH,SCR_HEIGHT,2,
-	0,1,
+	0,3,
 	HIRES|LACE,
 	CUSTOMSCREEN,
 	NULL,
@@ -255,6 +257,14 @@ static void closeAllMapEditors(void) {
 	}
 }
 
+static void initPalette(struct ViewPort *viewport) {
+	int i;
+	UBYTE c = 15;
+	for(i = 0; i < 4; i++, c -= 5) {
+		SetRGB4(viewport, i, c, c, c);
+	}
+}
+
 int main(void) {
 	int retCode;
 	
@@ -269,6 +279,8 @@ int main(void) {
 		retCode = -2;
 		goto closeIntuition;
 	}
+	
+	initPalette(&screen->ViewPort);
 
 	initMapEditorScreen();
 
