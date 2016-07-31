@@ -32,7 +32,12 @@ TilesetPackage *tilesetPackageLoadFromFile(char *file) {
 		goto closeFile;
 	}
 
-	Read(fp, tilesetPackage, sizeof(TilesetPackage));
+	if(Read(fp, tilesetPackage, sizeof(TilesetPackage))
+		!= sizeof(TilesetPackage))
+	{
+		free(tilesetPackage);
+		tilesetPackage = NULL;
+	}
 
 closeFile:	
 	Close(fp);
