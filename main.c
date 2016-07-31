@@ -73,6 +73,14 @@ static struct EasyStruct noTilesetPackageLoadedEasyStruct = {
 	"Select Tileset Package...|Cancel"
 };
 
+static struct EasyStruct tilesetPackageLoadFailEasyStruct = {
+	sizeof(struct EasyStruct),
+	0,
+	"Error Loading Tileset Package",
+	"Could not load tileset package from\n%s.",
+	"OK"
+};
+
 static int running = 0;
 static long sigMask = 0;
 static MapEditor *firstMapEditor = NULL;
@@ -117,8 +125,12 @@ static void loadTilesetPackage(char *dir, char *file) {
 
 	tilesetPackage = tilesetPackageLoadFromFile(buffer);
 	if(!tilesetPackage) {
-		/* TODO: display an error */
+		EasyRequest(projectWindow,
+			&tilesetPackageLoadFailEasyStruct,
+			NULL,
+			buffer);
 	}
+
 freeBuffer:
 	free(buffer);
 error:
