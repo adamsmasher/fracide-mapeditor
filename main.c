@@ -112,6 +112,7 @@ static void removeFromMapEditorList(MapEditor *mapEditor) {
 
 /* TODO: return something so we can retry on error? */
 static void loadTilesetPackage(char *dir, char *file) {
+	TilesetPackage *newTilesetPackage;
 	int pathSize = strlen(dir) + strlen(file);
 	/* + 2 => NULL byte, possible slash? */
 	char *buffer = malloc(pathSize + 2);
@@ -123,13 +124,16 @@ static void loadTilesetPackage(char *dir, char *file) {
 		goto freeBuffer;
 	}
 
-	tilesetPackage = tilesetPackageLoadFromFile(buffer);
-	if(!tilesetPackage) {
+	newTilesetPackage = tilesetPackageLoadFromFile(buffer);
+	if(!newTilesetPackage) {
 		EasyRequest(projectWindow,
 			&tilesetPackageLoadFailEasyStruct,
 			NULL,
 			buffer);
+		goto freeBuffer;
 	}
+	free(tilesetPackage);
+	tilesetPackage = newTilesetPackage;
 
 freeBuffer:
 	free(buffer);
