@@ -18,4 +18,4 @@ globals.o: globals.c
 TilesetPackage.o: TilesetPackage.c
 
 clean:
-   delete main.o MapEditor.o globals.o mapedit mapedit.lnk
+   delete main.o MapEditor.o globals.o tilesetpackage.o mapedit mapedit.lnk
