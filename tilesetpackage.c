@@ -12,6 +12,7 @@ TilesetPackage *tilesetPackageLoadFromFp(BPTR fp) {
 	UBYTE *tilesetPackage;
 	char header[HEADER_LENGTH];
 	long bytesRead;
+	long i;
 	long bytesToRead;
 	
 	tilesetPackage = NULL;
@@ -28,14 +29,16 @@ TilesetPackage *tilesetPackageLoadFromFp(BPTR fp) {
 		goto done;
 	}
 
+	i = 0;
 	bytesRead = 0;
 	bytesToRead = sizeof(TilesetPackage);
-	while(bytesToRead > 0 && (bytesRead = Read(fp, &tilesetPackage[bytesRead], bytesToRead))) {
+	while(bytesToRead > 0L && (bytesRead = Read(fp, &tilesetPackage[i], bytesToRead))) {
 		if(bytesRead == -1L) {
 			free(tilesetPackage);
 			tilesetPackage = NULL;
 			goto done;
 		}
+		i += bytesRead;
 		bytesToRead -= bytesRead;
 	}
 	if(bytesToRead > 0L) {
