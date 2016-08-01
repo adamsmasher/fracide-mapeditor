@@ -10,7 +10,7 @@ typedef struct TilesetPackageTag {
 	WORD  tilesetCnt;
 	char  tilesetNames[TILESETS][16];
 	UBYTE tilesetImgs[TILESETS][TILES_PER_SET][64];
-	BOOL  passable[TILESETS][TILES_PER_SET];	
+	UBYTE passable[TILESETS][TILES_PER_SET];
 } TilesetPackage;
 
 TilesetPackage *tilesetPackageLoadFromFile(char *);
