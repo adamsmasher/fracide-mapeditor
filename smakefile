@@ -4,7 +4,7 @@
 
 OBJS= globals.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o
 
-test: $(OBJS)
+mapedit: $(OBJS)
    sc link to mapedit with <<
 $(OBJS)
 <
