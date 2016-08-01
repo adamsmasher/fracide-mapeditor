@@ -113,7 +113,7 @@ static void removeFromMapEditorList(MapEditor *mapEditor) {
 /* TODO: return something so we can retry on error? */
 static void loadTilesetPackage(char *dir, char *file) {
 	TilesetPackage *newTilesetPackage;
-	int pathSize = strlen(dir) + strlen(file);
+	ULONG pathSize = strlen(dir) + strlen(file);
 	/* + 2 => NULL byte, possible slash? */
 	char *buffer = malloc(pathSize + 2);
 	if(!buffer) {
