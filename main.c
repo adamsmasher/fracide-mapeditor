@@ -208,12 +208,24 @@ static void handleProjectMessages(void) {
 }
 
 static void handleChooseTilesetClicked(MapEditor *mapEditor) {
-	int choice = EasyRequest(
-		mapEditor->window,
-		&noTilesetPackageLoadedEasyStruct,
-		NULL);
-	if(choice) {
-		selectTilesetPackage();
+	if(!tilesetPackage) {
+		int choice = EasyRequest(
+			mapEditor->window,
+			&noTilesetPackageLoadedEasyStruct,
+			NULL);
+		if(choice) {
+			selectTilesetPackage();
+		}
+	}
+
+	/* even after giving the user the opportunity to set the tileset
+	   package, we need to be sure they did so... */
+	if(tilesetPackage && !mapEditor->tilesetRequester) {
+		TilesetRequester *tilesetRequester = newTilesetRequester();
+		if(tilesetRequester) {
+			attachTilesetRequesterToMapEditor(mapEditor, tilesetRequester);
+			addWindowToSigMask(tilesetRequester->window);
+		}
 	}
 }
 
