@@ -113,14 +113,14 @@ static void removeFromMapEditorList(MapEditor *mapEditor) {
 /* TODO: return something so we can retry on error? */
 static void loadTilesetPackage(char *dir, char *file) {
 	TilesetPackage *newTilesetPackage;
-	ULONG pathSize = strlen(dir) + strlen(file);
+	size_t pathSize = strlen(dir) + strlen(file);
 	/* + 2 => NULL byte, possible slash? */
 	char *buffer = malloc(pathSize + 2);
 	if(!buffer) {
 		goto error;
 	}
 	strcpy(buffer, dir);
-	if(!AddPart(buffer, file, pathSize + 2)) {
+	if(!AddPart(buffer, file, (ULONG)(pathSize + 2))) {
 		goto freeBuffer;
 	}
 
@@ -173,7 +173,7 @@ static void handleMapsMenuPick(UWORD itemNum, UWORD subNum) {
 	}
 }
 
-static void handleMenuPick(UWORD menuNumber) {
+static void handleMenuPick(ULONG menuNumber) {
 	UWORD menuNum = MENUNUM(menuNumber);
 	UWORD itemNum = ITEMNUM(menuNumber);
 	UWORD subNum  = SUBNUM(menuNumber);
@@ -183,7 +183,7 @@ static void handleMenuPick(UWORD menuNumber) {
 	}
 }
 
-static void handleMenuPicks(UWORD menuNumber) {
+static void handleMenuPicks(ULONG menuNumber) {
 	struct MenuItem *item = NULL;
 	while(running && menuNumber != MENUNULL) {
 		handleMenuPick(menuNumber);
@@ -195,7 +195,7 @@ static void handleMenuPicks(UWORD menuNumber) {
 static void handleProjectMessage(struct IntuiMessage* msg) {
 	switch(msg->Class) {
 		case IDCMP_MENUPICK:
-			handleMenuPick(msg->Code);
+			handleMenuPicks((ULONG)msg->Code);
 	}
 }
 
@@ -304,8 +304,8 @@ static void closeAllMapEditors(void) {
 }
 
 static void initPalette(struct ViewPort *viewport) {
-	int i;
-	UBYTE c = 15;
+	LONG i;
+	ULONG c = 15;
 	for(i = 0; i < 4; i++, c -= 5) {
 		SetRGB4(viewport, i, c, c, c);
 	}

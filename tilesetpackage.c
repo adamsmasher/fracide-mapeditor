@@ -16,7 +16,7 @@ TilesetPackage *tilesetPackageLoadFromFp(BPTR fp) {
 	
 	tilesetPackage = NULL;
 	
-	if(Read(fp, &header, (long)HEADER_LENGTH) != 4L) {
+	if(Read(fp, header, (long)HEADER_LENGTH) != 4L) {
 		goto done;
 	}
 	if(memcmp(correctHeader, header, HEADER_LENGTH)) {
@@ -38,7 +38,7 @@ TilesetPackage *tilesetPackageLoadFromFp(BPTR fp) {
 		}
 		bytesToRead -= bytesRead;
 	}
-	if(bytesToRead > 0) {
+	if(bytesToRead > 0L) {
 		free(tilesetPackage);
 		tilesetPackage = NULL;
 		goto done;
