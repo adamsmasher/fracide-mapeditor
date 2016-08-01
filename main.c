@@ -21,6 +21,7 @@
 #include "globals.h"
 #include "MapEditor.h"
 #include "TilesetPackage.h"
+#include "TilesetRequester.h"
 
 #define SCR_WIDTH  640
 #define SCR_HEIGHT 512
@@ -340,7 +341,9 @@ int main(void) {
 	
 	initPalette(&screen->ViewPort);
 
+	/* TODO: put these in a list? */
 	initMapEditorScreen();
+	initTilesetRequesterScreen();
 
 	projectNewWindow.Screen = screen;
 	projectWindow = OpenWindow(&projectNewWindow);
@@ -356,7 +359,9 @@ int main(void) {
 		goto closeWindow;
 	}
 
+	/* TODO: put these in a list? */
 	initMapEditorVi();
+	initTilesetRequesterVi();
 
 	menu = CreateMenus(newMenu, GTMN_FullMenu, TRUE, TAG_END);
 	if(!menu) {

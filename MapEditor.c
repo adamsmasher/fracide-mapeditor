@@ -9,6 +9,7 @@
 
 #include <stdlib.h>
 
+#include "TilesetRequester.h"
 #include "globals.h"
 
 #define MAP_EDITOR_WIDTH  520
@@ -204,9 +205,10 @@ MapEditor *newMapEditor(void) {
 	GT_RefreshWindow(mapEditor->window, NULL);
 	refreshMapEditor(mapEditor);
 
-	mapEditor->prev   = NULL;
-	mapEditor->next   = NULL;
-	mapEditor->closed = 0;
+	mapEditor->prev             = NULL;
+	mapEditor->next             = NULL;
+	mapEditor->tilesetRequester = NULL;
+	mapEditor->closed           = 0;
 
 	return mapEditor;
 
@@ -218,8 +220,21 @@ error:
 	return NULL;
 }
 
+static void closeAttachedTilesetRequester(MapEditor *mapEditor) {
+	if(mapEditor->tilesetRequester) {
+		closeTilesetRequester(mapEditor->tilesetRequester);
+		mapEditor->tilesetRequester = NULL;
+	}
+}
+
 void closeMapEditor(MapEditor *mapEditor) {
+	closeAttachedTilesetRequester(mapEditor);
 	CloseWindow(mapEditor->window);
 	FreeGadgets(mapEditor->gadgets);
 	free(mapEditor);
+}
+
+void attachTilesetRequesterToMapEditor
+(MapEditor *mapEditor, TilesetRequester *tilesetRequester) {
+	mapEditor->tilesetRequester = tilesetRequester;
 }
