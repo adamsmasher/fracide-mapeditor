@@ -15,7 +15,7 @@
 #define MAP_EDITOR_HEIGHT 336
 
 static struct NewWindow mapEditorNewWindow = {
-	40,40,MAP_EDITOR_WIDTH, MAP_EDITOR_HEIGHT,
+	40, 40, MAP_EDITOR_WIDTH, MAP_EDITOR_HEIGHT,
 	0xFF, 0xFF,
 	CLOSEWINDOW|REFRESHWINDOW|GADGETUP,
 	WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|WINDOWSIZING|ACTIVATE,
@@ -204,8 +204,8 @@ MapEditor *newMapEditor(void) {
 	GT_RefreshWindow(mapEditor->window, NULL);
 	refreshMapEditor(mapEditor);
 
-	mapEditor->prev =   NULL;
-	mapEditor->next =   NULL;
+	mapEditor->prev   = NULL;
+	mapEditor->next   = NULL;
 	mapEditor->closed = 0;
 
 	return mapEditor;
