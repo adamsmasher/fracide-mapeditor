@@ -64,7 +64,7 @@ static struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 #define TILESET_BORDER_HEIGHT TILESET_SCROLL_HEIGHT
 
 static struct NewGadget currentTilesetNewGadget = {
-	CURRENT_TILESET_LEFT, CURRENT_TILESET_TOP,
+	CURRENT_TILESET_LEFT,  CURRENT_TILESET_TOP,
 	CURRENT_TILESET_WIDTH, CURRENT_TILESET_HEIGHT,
 	"Current Tileset",
 	&Topaz80,
