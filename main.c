@@ -133,7 +133,7 @@ static void loadTilesetPackage(char *dir, char *file) {
 			buffer);
 		goto freeBuffer;
 	}
-	free(tilesetPackage);
+	freeTilesetPackage(tilesetPackage);
 	tilesetPackage = newTilesetPackage;
 
 freeBuffer:
@@ -385,7 +385,7 @@ int main(void) {
 closeAllMapEditors:
 	closeAllMapEditors();
 freeTilesetPackage:
-	free(tilesetPackage);
+	freeTilesetPackage(tilesetPackage);
 clearMenu:
 	ClearMenuStrip(projectWindow);
 freeMenu:
