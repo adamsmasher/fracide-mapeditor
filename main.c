@@ -85,7 +85,6 @@ static struct EasyStruct tilesetPackageLoadFailEasyStruct = {
 static int running = 0;
 static long sigMask = 0;
 static MapEditor *firstMapEditor = NULL;
-static TilesetPackage *tilesetPackage = NULL;
 
 static void addWindowToSigMask(struct Window *window) {
 	sigMask |= 1L << window->UserPort->mp_SigBit;

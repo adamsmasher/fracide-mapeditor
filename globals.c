@@ -1,4 +1,7 @@
 #include <intuition/intuition.h>
 
-struct Screen  *screen = NULL;
-void           *vi     = NULL;
+#include "TilesetPackage.h"
+
+struct Screen  *screen         = NULL;
+void           *vi             = NULL;
+TilesetPackage *tilesetPackage = NULL;

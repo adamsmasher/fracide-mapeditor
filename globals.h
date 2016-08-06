@@ -3,7 +3,10 @@
 
 #include <intuition/intuition.h>
 
-extern struct Screen *screen;
-extern void          *vi;
+#include "TilesetPackage.h"
+
+extern struct Screen  *screen;
+extern void           *vi;
+extern TilesetPackage *tilesetPackage;
 
 #endif
