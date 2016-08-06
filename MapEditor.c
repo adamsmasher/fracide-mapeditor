@@ -31,7 +31,7 @@ static struct NewWindow mapEditorNewWindow = {
 };
 
 /* TODO: get the font from the system preferences */
-struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
+static struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 
 #define TILE_WIDTH  16
 #define TILE_HEIGHT 16
@@ -148,7 +148,7 @@ void initMapEditorVi(void) {
 	}
 }
 
-struct Gadget *createMapEditorGadgets(void) {
+static struct Gadget *createMapEditorGadgets(void) {
 	struct Gadget *gad;
 	struct Gadget *glist = NULL;
 
