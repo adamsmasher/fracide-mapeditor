@@ -8,7 +8,7 @@
 typedef struct TilesetRequesterTag {
 	struct Window *window;
 	struct Gadget *gadgets;
-	int closed;
+	int           closed;
 } TilesetRequester;
 
 void initTilesetRequesterScreen(void);
