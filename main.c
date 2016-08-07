@@ -285,10 +285,62 @@ static void closeDeadMapEditors(void) {
 			} else {
 				firstMapEditor = next;
 			}
+
+			if(i->tilesetRequester) {
+				removeWindowFromSigMask(i->tilesetRequester->window);
+				/* closeMapEditor takes care of everything else */
+			}
+
 			removeWindowFromSigMask(i->window);
 			closeMapEditor(i);
 		}
 		i = next;
+	}
+}
+
+static void handleTilesetRequesterMessage(MapEditor *mapEditor, TilesetRequester *tilesetRequester, struct IntuiMessage *msg) {
+	switch(msg->Class) {
+	case IDCMP_CLOSEWINDOW:
+		tilesetRequester->closed = 1;
+		break;
+	case IDCMP_REFRESHWINDOW:
+		GT_BeginRefresh(tilesetRequester->window);
+		refreshTilesetRequester(tilesetRequester);
+		GT_EndRefresh(tilesetRequester->window, TRUE);
+		break;
+	}
+}
+
+static void handleTilesetRequesterMessages(MapEditor *mapEditor, TilesetRequester *tilesetRequester) {
+	struct IntuiMessage *msg = NULL;
+	while(msg = GT_GetIMsg(tilesetRequester->window->UserPort)) {
+		handleTilesetRequesterMessage(mapEditor, tilesetRequester, msg);
+		GT_ReplyIMsg(msg);
+	}
+}
+
+static void handleAllTilesetRequesterMessages(long signalSet) {
+	MapEditor *i = firstMapEditor;
+	while(i) {
+		TilesetRequester *tilesetRequester = i->tilesetRequester;
+		if(tilesetRequester) {
+			if(1L << tilesetRequester->window->UserPort->mp_SigBit & signalSet) {
+				handleTilesetRequesterMessages(i, tilesetRequester);
+			}
+		}
+		i = i->next;
+	}
+}
+
+static void closeDeadTilesetRequesters(void) {
+	MapEditor *i = firstMapEditor;
+	while(i) {
+		if(i->tilesetRequester && i->tilesetRequester->closed) {
+			removeWindowFromSigMask(i->tilesetRequester->window);
+			closeTilesetRequester(i->tilesetRequester);
+			i->tilesetRequester = NULL;
+		}
+		i = i->next;
 	}
 }
 
@@ -301,7 +353,9 @@ static void mainLoop(void) {
 			handleProjectMessages();
 		}
 		handleAllMapEditorMessages(signalSet);
+		handleAllTilesetRequesterMessages(signalSet);
 		closeDeadMapEditors();
+		closeDeadTilesetRequesters();
 	}
 }
 
@@ -310,6 +364,9 @@ static void closeAllMapEditors(void) {
 	while(i) {
 		MapEditor *next = i->next;
 		removeWindowFromSigMask(i->window);
+		if(i->tilesetRequester) {
+			removeWindowFromSigMask(i->tilesetRequester->window);
+		}
 		closeMapEditor(i);
 		i = next;
 	}
