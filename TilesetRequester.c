@@ -62,8 +62,7 @@ static struct Gadget *createTilesetRequesterGadgets(void) {
 	gad = CreateContext(&glist);
 
 	gad = CreateGadget(LISTVIEW_KIND, gad, &tilesetListNewGadget,
-		GTLV_Labels, tilesetPackage->tilesetNames,
-		GTLV_ReadOnly, TRUE,
+		GTLV_Labels, &tilesetPackage->tilesetNames,
 		TAG_END);
 
 	if(gad) {
