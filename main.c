@@ -298,6 +298,10 @@ static void closeDeadMapEditors(void) {
 	}
 }
 
+static void handleTilesetRequesterGadgetUp(MapEditor *mapEditor, TilesetRequester *tilesetRequester, struct IntuiMessage *msg) {
+	mapEditorSetTileset(mapEditor, msg->Code);
+}
+
 static void handleTilesetRequesterMessage(MapEditor *mapEditor, TilesetRequester *tilesetRequester, struct IntuiMessage *msg) {
 	switch(msg->Class) {
 	case IDCMP_CLOSEWINDOW:
@@ -307,6 +311,9 @@ static void handleTilesetRequesterMessage(MapEditor *mapEditor, TilesetRequester
 		GT_BeginRefresh(tilesetRequester->window);
 		refreshTilesetRequester(tilesetRequester);
 		GT_EndRefresh(tilesetRequester->window, TRUE);
+		break;
+	case IDCMP_GADGETUP:
+		handleTilesetRequesterGadgetUp(mapEditor, tilesetRequester, msg);
 		break;
 	}
 }

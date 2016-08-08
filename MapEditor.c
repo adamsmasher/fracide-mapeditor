@@ -148,7 +148,7 @@ void initMapEditorVi(void) {
 	}
 }
 
-static struct Gadget *createMapEditorGadgets(void) {
+static void createMapEditorGadgets(MapEditor *mapEditor) {
 	struct Gadget *gad;
 	struct Gadget *glist = NULL;
 
@@ -158,6 +158,7 @@ static struct Gadget *createMapEditorGadgets(void) {
 		GTTX_Text, "N/A",
 		GTTX_Border, TRUE,
 		TAG_END);
+	mapEditor->tilesetNameGadget = gad;
 	
 	gad = CreateGadget(BUTTON_KIND, gad, &chooseTilesetNewGadget, TAG_END);
 
@@ -167,10 +168,10 @@ static struct Gadget *createMapEditorGadgets(void) {
 		TAG_END);
 
 	if(gad) {
-		return glist;
+		mapEditor->gadgets = glist;
 	} else {
+		mapEditor->tilesetNameGadget = NULL;
 		FreeGadgets(glist);
-		return NULL;
 	}
 }
 
@@ -191,7 +192,7 @@ MapEditor *newMapEditor(void) {
 		goto error;
 	}
 
-	mapEditor->gadgets = createMapEditorGadgets();
+	createMapEditorGadgets(mapEditor);
 	if(!mapEditor->gadgets) {
 		goto error_freeEditor;
 	}
@@ -237,4 +238,10 @@ void closeMapEditor(MapEditor *mapEditor) {
 void attachTilesetRequesterToMapEditor
 (MapEditor *mapEditor, TilesetRequester *tilesetRequester) {
 	mapEditor->tilesetRequester = tilesetRequester;
+}
+
+void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
+	GT_SetGadgetAttrs(mapEditor->tilesetNameGadget, mapEditor->window, NULL,
+		GTTX_Text, tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber],
+		TAG_END);
 }

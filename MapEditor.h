@@ -14,6 +14,7 @@ typedef struct MapEditorTag {
 	struct MapEditorTag *prev;
 	struct Window *window;
 	struct Gadget *gadgets;
+	struct Gadget *tilesetNameGadget;
 	int closed;
 	TilesetRequester *tilesetRequester;
 } MapEditor;
@@ -27,5 +28,7 @@ void closeMapEditor(MapEditor*);
 void refreshMapEditor(MapEditor*);
 
 void attachTilesetRequesterToMapEditor(MapEditor*, TilesetRequester*);
+
+void mapEditorSetTileset(MapEditor*, UWORD);
 
 #endif
