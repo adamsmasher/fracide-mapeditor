@@ -9,6 +9,9 @@
 #define CHOOSE_TILESET_ID  (CURRENT_TILESET_ID + 1)
 #define TILESET_SCROLL_ID  (CHOOSE_TILESET_ID  + 1)
 
+#define TILESET_PALETTE_TILES_ACROSS 4
+#define TILESET_PALETTE_TILES_HIGH   8
+
 typedef struct MapEditorTag {
 	struct MapEditorTag *next;
 	struct MapEditorTag *prev;
