@@ -1,5 +1,8 @@
 #include "MapEditor.h"
 
+#include <exec/exec.h>
+#include <proto/exec.h>
+
 #include <intuition/intuition.h>
 #include <intuition/gadgetclass.h>
 #include <proto/intuition.h>
@@ -62,6 +65,8 @@ static struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 #define TILESET_BORDER_TOP    TILESET_SCROLL_TOP + 1
 #define TILESET_BORDER_WIDTH  TILE_WIDTH * TILESET_PALETTE_TILES_ACROSS * 2
 #define TILESET_BORDER_HEIGHT TILESET_SCROLL_HEIGHT
+
+#define IMAGE_DATA_SIZE (TILESET_PALETTE_TILES_HIGH * TILESET_PALETTE_TILES_ACROSS * 64)
 
 static struct NewGadget currentTilesetNewGadget = {
 	CURRENT_TILESET_LEFT,  CURRENT_TILESET_TOP,
@@ -186,6 +191,33 @@ void refreshMapEditor(MapEditor *mapEditor) {
 	drawBorders(mapEditor->window->RPort);
 }
 
+static void initMapEditorImages(MapEditor *mapEditor) {
+	int top, left, row, col;
+	struct Image *i = mapEditor->images;
+	UWORD *imageData = mapEditor->imageData;
+
+	top = 0;
+	for(row = 0; row < TILESET_PALETTE_TILES_HIGH; row++) {
+		left = 0;
+		for(col = 0; col < TILESET_PALETTE_TILES_ACROSS; col++) {
+			i->LeftEdge = left;
+			i->TopEdge = top;
+			i->Width = 32;
+			i->Width = 32;
+			i->Depth = 2;
+			i->ImageData = imageData;
+			i->PlanePick = 0x03;
+			i->PlaneOnOff = 0x03;
+			i->NextImage = i + 1;
+
+			i++;
+			left += 32;
+		}
+		top += 32;
+	}
+	mapEditor->images[31].NextImage = NULL;
+}
+
 MapEditor *newMapEditor(void) {
 	MapEditor *mapEditor = malloc(sizeof(MapEditor));
 	if(!mapEditor) {
@@ -198,9 +230,15 @@ MapEditor *newMapEditor(void) {
 	}
 	mapEditorNewWindow.FirstGadget = mapEditor->gadgets;
 
+	mapEditor->imageData = AllocMem(IMAGE_DATA_SIZE, MEMF_CHIP);
+	if(!mapEditor->imageData) {
+		goto error_freeGadgets;
+	}
+	initMapEditorImages(mapEditor);
+
 	mapEditor->window = OpenWindow(&mapEditorNewWindow);
 	if(!mapEditor->window) {
-		goto error_freeGadgets;
+		goto error_freeImageData;
 	}
 
 	GT_RefreshWindow(mapEditor->window, NULL);
@@ -213,6 +251,8 @@ MapEditor *newMapEditor(void) {
 
 	return mapEditor;
 
+error_freeImageData:
+	FreeMem(mapEditor->imageData, IMAGE_DATA_SIZE);
 error_freeGadgets:
 	FreeGadgets(mapEditor->gadgets);
 error_freeEditor:
@@ -232,6 +272,7 @@ void closeMapEditor(MapEditor *mapEditor) {
 	closeAttachedTilesetRequester(mapEditor);
 	CloseWindow(mapEditor->window);
 	FreeGadgets(mapEditor->gadgets);
+	FreeMem(mapEditor->imageData, IMAGE_DATA_SIZE);
 	free(mapEditor);
 }
 

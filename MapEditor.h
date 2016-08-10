@@ -20,6 +20,8 @@ typedef struct MapEditorTag {
 	struct Gadget *tilesetNameGadget;
 	int closed;
 	TilesetRequester *tilesetRequester;
+	struct Image images[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
+	UWORD *imageData;
 } MapEditor;
 
 void initMapEditorScreen(void);
