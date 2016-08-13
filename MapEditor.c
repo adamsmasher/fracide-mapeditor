@@ -212,6 +212,7 @@ static void initMapEditorImages(MapEditor *mapEditor) {
 
 			i++;
 			left += 32;
+			imageData += 128;
 		}
 		top += 32;
 	}
