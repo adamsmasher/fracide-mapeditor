@@ -203,7 +203,7 @@ static void initMapEditorImages(MapEditor *mapEditor) {
 			i->LeftEdge = left;
 			i->TopEdge = top;
 			i->Width = 32;
-			i->Width = 32;
+			i->Height = 32;
 			i->Depth = 2;
 			i->ImageData = imageData;
 			i->PlanePick = 0x03;
