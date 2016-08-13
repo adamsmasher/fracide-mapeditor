@@ -10,6 +10,10 @@
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
+#include <graphics/gfx.h>
+#include <graphics/scale.h>
+#include <proto/graphics.h>
+
 #include <stdlib.h>
 
 #include "TilesetRequester.h"
@@ -282,8 +286,58 @@ void attachTilesetRequesterToMapEditor
 	mapEditor->tilesetRequester = tilesetRequester;
 }
 
+static void copyScaledTileset(UWORD *src, UWORD *dst) {
+	struct BitMap srcBitMap;
+	struct BitMap dstBitMap;
+	struct BitScaleArgs scaleArgs;
+	int tileNum;
+
+	srcBitMap.BytesPerRow = 2;
+	srcBitMap.Rows = 16;
+	srcBitMap.Flags = 0;
+	srcBitMap.Depth = 2;
+
+	dstBitMap.BytesPerRow = 4;
+	dstBitMap.Rows = 32;
+	dstBitMap.Flags = 0;
+	dstBitMap.Depth = 2;
+
+	scaleArgs.bsa_SrcX = 0;
+	scaleArgs.bsa_SrcY = 0;
+	scaleArgs.bsa_SrcWidth = 16;
+	scaleArgs.bsa_SrcHeight = 16;
+	scaleArgs.bsa_XSrcFactor = 1;
+	scaleArgs.bsa_YSrcFactor = 1;
+	scaleArgs.bsa_DestX = 0;
+	scaleArgs.bsa_DestY = 0;
+	scaleArgs.bsa_XDestFactor = 2;
+	scaleArgs.bsa_YDestFactor = 2;
+	scaleArgs.bsa_SrcBitMap = &srcBitMap;
+	scaleArgs.bsa_DestBitMap = &dstBitMap;
+	scaleArgs.bsa_Flags = 0;
+
+	for(tileNum = 0; tileNum < TILES_PER_SET; tileNum++) {
+		srcBitMap.Planes[0] = (PLANEPTR)src;
+		srcBitMap.Planes[1] = (PLANEPTR)(src + 16);
+
+		dstBitMap.Planes[0] = (PLANEPTR)dst;
+		dstBitMap.Planes[1] = (PLANEPTR)(dst + 64);
+
+		BitMapScale(&scaleArgs);
+
+		src += 32;
+		dst += 128;
+	}
+}
+
 void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
 	GT_SetGadgetAttrs(mapEditor->tilesetNameGadget, mapEditor->window, NULL,
 		GTTX_Text, tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber],
 		TAG_END);
+	copyScaledTileset(
+		(UWORD*)tilesetPackage->tilesetPackageFile.tilesetImgs[tilesetNumber],
+		mapEditor->imageData);
+	DrawImage(mapEditor->window->RPort, mapEditor->images,
+		TILESET_BORDER_LEFT,
+		TILESET_BORDER_TOP);
 }
