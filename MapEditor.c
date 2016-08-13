@@ -207,7 +207,7 @@ static void initMapEditorImages(MapEditor *mapEditor) {
 			i->Depth = 2;
 			i->ImageData = imageData;
 			i->PlanePick = 0x03;
-			i->PlaneOnOff = 0x03;
+			i->PlaneOnOff = 0;
 			i->NextImage = i + 1;
 
 			i++;
