@@ -243,10 +243,17 @@ static void handleMapEditorPaletteClick(MapEditor *mapEditor, WORD x, WORD y) {
 	mapEditorSetSelected(mapEditor, tile);
 }
 
+static void handleMapEditorMapClick(MapEditor *mapEditor, WORD x, WORD y) {
+	int tile = mapEditorGetMapTileClicked(x, y);
+	printf("Clicked on tile %d\n", tile);
+}
+
 static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {
 	if(mapEditor->tilesetNum) {
 		if(mapEditorClickInPalette(x, y)) {
 			handleMapEditorPaletteClick(mapEditor, x, y);
+		} else if(mapEditorClickInMap(x, y)) {
+			handleMapEditorMapClick(mapEditor, x, y);
 		}
 	}
 }

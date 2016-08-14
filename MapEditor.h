@@ -42,4 +42,7 @@ int mapEditorClickInPalette(WORD x, WORD y);
 unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y);
 void mapEditorSetSelected(MapEditor*, unsigned int);
 
+int mapEditorClickInMap(WORD x, WORD y);
+unsigned int mapEditorGetMapTileClicked(WORD x, WORD y);
+
 #endif

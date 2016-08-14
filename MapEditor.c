@@ -378,6 +378,13 @@ int mapEditorClickInPalette(WORD x, WORD y) {
 	        (y < TILESET_BORDER_TOP  + TILESET_BORDER_HEIGHT));
 }
 
+int mapEditorClickInMap(WORD x, WORD y) {
+	return ((x > MAP_BORDER_LEFT                    ) &&
+	        (x < MAP_BORDER_LEFT + MAP_BORDER_WIDTH ) &&
+	        (y > MAP_BORDER_TOP                     ) &&
+	        (y < MAP_BORDER_TOP  + MAP_BORDER_HEIGHT));
+}
+
 unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y) {
 	unsigned int row = y;
 	unsigned int col = x;
@@ -389,6 +396,19 @@ unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y) {
 	col >>= 5;
 
 	return (row << 2) + col;
+}
+
+unsigned int mapEditorGetMapTileClicked(WORD x, WORD y) {
+	unsigned int row = y;
+	unsigned int col = x;
+
+	row -= MAP_BORDER_TOP;
+	col -= MAP_BORDER_LEFT;
+
+	row >>= 5;
+	col >>= 5;
+
+	return (row * 10) + col;
 }
 
 void mapEditorSetSelected(MapEditor *mapEditor, unsigned int selected) {
