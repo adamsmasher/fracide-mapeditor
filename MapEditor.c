@@ -211,9 +211,9 @@ void refreshMapEditor(MapEditor *mapEditor) {
 	drawBorders(mapEditor->window->RPort);
 }
 
-static void initMapEditorImages(MapEditor *mapEditor) {
+static void initMapEditorPaletteImages(MapEditor *mapEditor) {
 	int top, left, row, col;
-	struct Image *i = mapEditor->images;
+	struct Image *i = mapEditor->paletteImages;
 	UWORD *imageData = mapEditor->imageData;
 
 	top = 0;
@@ -236,7 +236,7 @@ static void initMapEditorImages(MapEditor *mapEditor) {
 		}
 		top += 32;
 	}
-	mapEditor->images[31].NextImage = NULL;
+	mapEditor->paletteImages[31].NextImage = NULL;
 }
 
 MapEditor *newMapEditor(void) {
@@ -255,7 +255,7 @@ MapEditor *newMapEditor(void) {
 	if(!mapEditor->imageData) {
 		goto error_freeGadgets;
 	}
-	initMapEditorImages(mapEditor);
+	initMapEditorPaletteImages(mapEditor);
 
 	mapEditor->window = OpenWindow(&mapEditorNewWindow);
 	if(!mapEditor->window) {
@@ -355,14 +355,14 @@ void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
 	copyScaledTileset(
 		(UWORD*)tilesetPackage->tilesetPackageFile.tilesetImgs[tilesetNumber],
 		mapEditor->imageData);
-	DrawImage(mapEditor->window->RPort, mapEditor->images,
+	DrawImage(mapEditor->window->RPort, mapEditor->paletteImages,
 		TILESET_BORDER_LEFT,
 		TILESET_BORDER_TOP);
 	mapEditor->tilesetNum = tilesetNumber + 1;
 }
 
-static void redrawTileImage(MapEditor *mapEditor, unsigned int tile) {
-	struct Image *image = &mapEditor->images[tile];
+static void redrawPaletteTile(MapEditor *mapEditor, unsigned int tile) {
+	struct Image *image = &mapEditor->paletteImages[tile];
 	struct Image *next = image->NextImage;
 	image->NextImage = NULL;
 	DrawImage(mapEditor->window->RPort, image,
@@ -416,7 +416,7 @@ void mapEditorSetSelected(MapEditor *mapEditor, unsigned int selected) {
 	long col;
 
 	if(mapEditor->selected >= 0) {
-		redrawTileImage(mapEditor, mapEditor->selected);
+		redrawPaletteTile(mapEditor, mapEditor->selected);
 	}
 
 	mapEditor->selected = (int)selected;
