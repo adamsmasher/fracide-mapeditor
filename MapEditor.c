@@ -62,8 +62,8 @@ static struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 /* TODO: adjust based on screen */
 #define MAP_BORDER_LEFT   20
 #define MAP_BORDER_TOP    37
-#define MAP_BORDER_WIDTH  320
-#define MAP_BORDER_HEIGHT 288
+#define MAP_BORDER_WIDTH  MAP_TILES_ACROSS * TILE_WIDTH  * 2
+#define MAP_BORDER_HEIGHT MAP_TILES_HIGH   * TILE_HEIGHT * 2
 
 #define TILESET_BORDER_LEFT   CURRENT_TILESET_LEFT
 #define TILESET_BORDER_TOP    TILESET_SCROLL_TOP + 1
@@ -239,6 +239,35 @@ static void initMapEditorPaletteImages(MapEditor *mapEditor) {
 	mapEditor->paletteImages[31].NextImage = NULL;
 }
 
+static void initMapEditorMapImages(MapEditor *mapEditor) {
+	int top, left, row, col;
+	struct Image *i = mapEditor->mapImages;
+	UWORD *imageData = mapEditor->imageData;
+
+	top = 0;
+	for(row = 0; row < MAP_TILES_HIGH; row++) {
+		left = 0;
+		for(col = 0; col < MAP_TILES_ACROSS; col++) {
+			i->LeftEdge = left;
+			i->TopEdge = top;
+			i->Width = 32;
+			i->Height = 32;
+			i->Depth = 2;
+			i->ImageData = imageData;
+			i->PlanePick = 0x03;
+			i->PlaneOnOff = 0;
+			i->NextImage = i + 1;
+
+			i++;
+			left += 32;
+		}
+		top += 32;
+	}
+	mapEditor->mapImages[89].NextImage = NULL;
+}
+
+
+
 MapEditor *newMapEditor(void) {
 	MapEditor *mapEditor = malloc(sizeof(MapEditor));
 	if(!mapEditor) {
@@ -256,6 +285,7 @@ MapEditor *newMapEditor(void) {
 		goto error_freeGadgets;
 	}
 	initMapEditorPaletteImages(mapEditor);
+	initMapEditorMapImages(mapEditor);
 
 	mapEditor->window = OpenWindow(&mapEditorNewWindow);
 	if(!mapEditor->window) {
@@ -352,12 +382,19 @@ void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
 	GT_SetGadgetAttrs(mapEditor->tilesetNameGadget, mapEditor->window, NULL,
 		GTTX_Text, tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber],
 		TAG_END);
+
 	copyScaledTileset(
 		(UWORD*)tilesetPackage->tilesetPackageFile.tilesetImgs[tilesetNumber],
 		mapEditor->imageData);
+
 	DrawImage(mapEditor->window->RPort, mapEditor->paletteImages,
 		TILESET_BORDER_LEFT,
 		TILESET_BORDER_TOP);
+
+	DrawImage(mapEditor->window->RPort, mapEditor->mapImages,
+		MAP_BORDER_LEFT,
+		MAP_BORDER_TOP);
+
 	mapEditor->tilesetNum = tilesetNumber + 1;
 }
 

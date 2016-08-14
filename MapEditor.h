@@ -12,18 +12,27 @@
 #define TILESET_PALETTE_TILES_ACROSS 4
 #define TILESET_PALETTE_TILES_HIGH   8
 
+#define MAP_TILES_ACROSS 10
+#define MAP_TILES_HIGH    9
+
 typedef struct MapEditorTag {
 	struct MapEditorTag *next;
 	struct MapEditorTag *prev;
+
 	struct Window *window;
 	struct Gadget *gadgets;
 	struct Gadget *tilesetNameGadget;
+
 	int closed;
+
 	TilesetRequester *tilesetRequester;
+
 	UWORD tilesetNum;
 
 	struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
+	struct Image mapImages[MAP_TILES_ACROSS * MAP_TILES_HIGH];
 	UWORD *imageData;
+
 	int selected;
 } MapEditor;
 
