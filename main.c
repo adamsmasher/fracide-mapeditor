@@ -238,8 +238,17 @@ static void handleMapEditorGadgetUp
 	}
 }
 
+static void handleMapEditorPaletteClick(MapEditor *mapEditor, WORD x, WORD y) {
+	int tile = mapEditorGetPaletteTileClicked(x, y);
+	mapEditorSetSelected(mapEditor, tile);
+}
+
 static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {
-	printf("Got mouse click at (%d, %d)\n", (int)x, (int)y);
+	if(mapEditor->tilesetNum) {
+		if(mapEditorClickInPalette(x, y)) {
+			handleMapEditorPaletteClick(mapEditor, x, y);
+		}
+	}
 }
 
 static void handleMapEditorMessage(MapEditor *mapEditor, struct IntuiMessage *msg) {

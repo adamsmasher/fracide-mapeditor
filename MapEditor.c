@@ -270,6 +270,7 @@ MapEditor *newMapEditor(void) {
 	mapEditor->tilesetRequester = NULL;
 	mapEditor->closed           = 0;
 	mapEditor->selected         = -1;
+	mapEditor->tilesetNum       = 0;
 
 	return mapEditor;
 
@@ -347,9 +348,6 @@ static void copyScaledTileset(UWORD *src, UWORD *dst) {
 	}
 }
 
-/* temporary */
-void mapEditorSetSelected(MapEditor*, unsigned int);
-
 void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
 	GT_SetGadgetAttrs(mapEditor->tilesetNameGadget, mapEditor->window, NULL,
 		GTTX_Text, tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber],
@@ -360,8 +358,7 @@ void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
 	DrawImage(mapEditor->window->RPort, mapEditor->images,
 		TILESET_BORDER_LEFT,
 		TILESET_BORDER_TOP);
-
-	mapEditorSetSelected(mapEditor, 0);
+	mapEditor->tilesetNum = tilesetNumber + 1;
 }
 
 static void redrawTileImage(MapEditor *mapEditor, unsigned int tile) {
@@ -374,13 +371,33 @@ static void redrawTileImage(MapEditor *mapEditor, unsigned int tile) {
 	image->NextImage = next;
 }
 
+int mapEditorClickInPalette(WORD x, WORD y) {
+	return ((x > TILESET_BORDER_LEFT                        ) &&
+	        (x < TILESET_BORDER_LEFT + TILESET_BORDER_WIDTH ) &&
+	        (y > TILESET_BORDER_TOP                         ) &&
+	        (y < TILESET_BORDER_TOP  + TILESET_BORDER_HEIGHT));
+}
+
+unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y) {
+	unsigned int row = y;
+	unsigned int col = x;
+
+	row -= TILESET_BORDER_TOP;
+	col -= TILESET_BORDER_LEFT;
+
+	row >>= 5;
+	col >>= 5;
+
+	return (row << 2) + col;
+}
+
 void mapEditorSetSelected(MapEditor *mapEditor, unsigned int selected) {
 	long row;
 	long col;
 
 	if(mapEditor->selected >= 0) {
 		redrawTileImage(mapEditor, mapEditor->selected);
-}
+	}
 
 	mapEditor->selected = (int)selected;
 

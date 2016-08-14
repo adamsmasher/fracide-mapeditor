@@ -20,6 +20,7 @@ typedef struct MapEditorTag {
 	struct Gadget *tilesetNameGadget;
 	int closed;
 	TilesetRequester *tilesetRequester;
+	UWORD tilesetNum;
 	struct Image images[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
 	UWORD *imageData;
 	int selected;
@@ -36,5 +37,9 @@ void refreshMapEditor(MapEditor*);
 void attachTilesetRequesterToMapEditor(MapEditor*, TilesetRequester*);
 
 void mapEditorSetTileset(MapEditor*, UWORD);
+
+int mapEditorClickInPalette(WORD x, WORD y);
+unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y);
+void mapEditorSetSelected(MapEditor*, unsigned int);
 
 #endif
