@@ -238,6 +238,10 @@ static void handleMapEditorGadgetUp
 	}
 }
 
+static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {
+	printf("Got mouse click at (%d, %d)\n", (int)x, (int)y);
+}
+
 static void handleMapEditorMessage(MapEditor *mapEditor, struct IntuiMessage *msg) {
 	switch(msg->Class) {
 	case IDCMP_CLOSEWINDOW:
@@ -250,6 +254,9 @@ static void handleMapEditorMessage(MapEditor *mapEditor, struct IntuiMessage *ms
 		break;
 	case IDCMP_GADGETUP:
 		handleMapEditorGadgetUp(mapEditor, (struct Gadget*)msg->IAddress);
+		break;
+	case IDCMP_MOUSEBUTTONS:
+		handleMapEditorClick(mapEditor, msg->MouseX, msg->MouseY);
 		break;
 	}
 }
