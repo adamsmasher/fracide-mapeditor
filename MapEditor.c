@@ -145,6 +145,22 @@ static struct Border tilesetBorder = {
 	NULL
 };
 
+static WORD tileBorderPoints[] = {
+	0,  0,
+	31, 0,
+	31, 31,
+	0,  31,
+	0,  0
+};
+
+static struct Border tileBorder = {
+	0, 0,
+	0, 0,
+	COMPLEMENT,
+	5, tileBorderPoints,
+	NULL
+};
+
 void initMapEditorScreen(void) {
 	mapEditorNewWindow.Screen = screen;
 }
@@ -253,6 +269,7 @@ MapEditor *newMapEditor(void) {
 	mapEditor->next             = NULL;
 	mapEditor->tilesetRequester = NULL;
 	mapEditor->closed           = 0;
+	mapEditor->selected         = -1;
 
 	return mapEditor;
 
@@ -330,6 +347,9 @@ static void copyScaledTileset(UWORD *src, UWORD *dst) {
 	}
 }
 
+/* temporary */
+void mapEditorSetSelected(MapEditor*, unsigned int);
+
 void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
 	GT_SetGadgetAttrs(mapEditor->tilesetNameGadget, mapEditor->window, NULL,
 		GTTX_Text, tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber],
@@ -340,4 +360,36 @@ void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
 	DrawImage(mapEditor->window->RPort, mapEditor->images,
 		TILESET_BORDER_LEFT,
 		TILESET_BORDER_TOP);
+
+	mapEditorSetSelected(mapEditor, 0);
+}
+
+static void redrawTileImage(MapEditor *mapEditor, unsigned int tile) {
+	struct Image *image = &mapEditor->images[tile];
+	struct Image *next = image->NextImage;
+	long row = tile >> 2;
+	long col = tile & 0x03;
+	image->NextImage = NULL;
+	DrawImage(mapEditor->window->RPort, image,
+		TILESET_BORDER_LEFT + (col * 32),
+		TILESET_BORDER_TOP  + (row * 32));
+	image->NextImage = next;
+}
+
+void mapEditorSetSelected(MapEditor *mapEditor, unsigned int selected) {
+	long row;
+	long col;
+
+	if(mapEditor->selected >= 0) {
+		redrawTileImage(mapEditor, mapEditor->selected);
+}
+
+	mapEditor->selected = (int)selected;
+
+	row = selected >> 2;
+	col = selected & 0x03;
+
+	DrawBorder(mapEditor->window->RPort, &tileBorder,
+		TILESET_BORDER_LEFT + (col * 32),
+		TILESET_BORDER_TOP  + (row * 32));
 }

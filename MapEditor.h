@@ -22,6 +22,7 @@ typedef struct MapEditorTag {
 	TilesetRequester *tilesetRequester;
 	struct Image images[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
 	UWORD *imageData;
+	int selected;
 } MapEditor;
 
 void initMapEditorScreen(void);
