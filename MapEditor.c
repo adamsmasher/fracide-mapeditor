@@ -367,12 +367,10 @@ void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
 static void redrawTileImage(MapEditor *mapEditor, unsigned int tile) {
 	struct Image *image = &mapEditor->images[tile];
 	struct Image *next = image->NextImage;
-	long row = tile >> 2;
-	long col = tile & 0x03;
 	image->NextImage = NULL;
 	DrawImage(mapEditor->window->RPort, image,
-		TILESET_BORDER_LEFT + (col * 32),
-		TILESET_BORDER_TOP  + (row * 32));
+		TILESET_BORDER_LEFT,
+		TILESET_BORDER_TOP);
 	image->NextImage = next;
 }
 
