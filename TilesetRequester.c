@@ -26,7 +26,7 @@ static struct NewWindow tilesetRequesterNewWindow = {
 	WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|WINDOWSIZING|ACTIVATE,
 	NULL,
 	NULL,
-	"Choose Tileset", /* TODO: dynamically generate this based on tileset name */
+	"Choose Tileset", /* TODO: dynamically generate this based on map name */
 	NULL,
 	NULL,
 	TILESET_REQUESTER_WIDTH, TILESET_REQUESTER_HEIGHT,
