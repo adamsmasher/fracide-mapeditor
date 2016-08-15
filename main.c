@@ -57,11 +57,18 @@ static struct NewWindow projectNewWindow = {
 
 static struct NewMenu newMenu[] = {
 	{ NM_TITLE, "Project", 0, 0, 0, 0 },
+		{ NM_ITEM, "New",                       "N", 0, 0, 0 },
+		{ NM_ITEM, "Open...",                   "O", 0, 0, 0 },
+		{ NM_ITEM, NM_BARLABEL,                  0,  0, 0, 0 },
+		{ NM_ITEM, "Save",                      "S", 0, 0, 0 },
+		{ NM_ITEM, "Save As...",                "A", 0, 0, 0 },
+		{ NM_ITEM, "Revert",                     0,  0, 0, 0 },
 		{ NM_ITEM, "Select Tileset Package...",  0,  0, 0, 0 },
 		{ NM_ITEM, NM_BARLABEL,                  0,  0, 0, 0 },
 		{ NM_ITEM, "Quit",                      "Q", 0, 0, 0 },
 	{ NM_TITLE, "Maps",   0, 0, 0, 0 },
-		{ NM_ITEM, "New Map", 0, 0, 0, 0 },
+		{ NM_ITEM, "New Map",     0, 0, 0, 0 },
+		{ NM_ITEM, "Open Map...", 0, 0, 0, 0 },
 	{ NM_END,   NULL,      0, 0, 0, 0 }
 };
 static struct Menu *menu = NULL;
@@ -156,8 +163,8 @@ static void selectTilesetPackage(void) {
 
 static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 	switch(itemNum) {
-		case 0: selectTilesetPackage(); break;
-		case 2: running = 0; break;
+		case 6: selectTilesetPackage(); break;
+		case 8: running = 0; break;
 	}
 }
 
