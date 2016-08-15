@@ -65,12 +65,29 @@ static struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 #define MAP_BORDER_WIDTH  MAP_TILES_ACROSS * TILE_WIDTH  * 2 + 2
 #define MAP_BORDER_HEIGHT MAP_TILES_HIGH   * TILE_HEIGHT * 2 + 2
 
+#define MAP_NAME_LEFT   (MAP_BORDER_LEFT  + 80)
+#define MAP_NAME_TOP    18
+#define MAP_NAME_WIDTH  (MAP_BORDER_WIDTH - 81)
+#define MAP_NAME_HEIGHT 14
+
 #define TILESET_BORDER_LEFT   CURRENT_TILESET_LEFT
 #define TILESET_BORDER_TOP    TILESET_SCROLL_TOP + 1
 #define TILESET_BORDER_WIDTH  TILE_WIDTH * TILESET_PALETTE_TILES_ACROSS * 2 + 2
 #define TILESET_BORDER_HEIGHT TILESET_SCROLL_HEIGHT
 
 #define IMAGE_DATA_SIZE (TILES_PER_SET * 256)
+
+static struct NewGadget mapNameNewGadget = {
+	MAP_NAME_LEFT,  MAP_NAME_TOP,
+	MAP_NAME_WIDTH, MAP_NAME_HEIGHT,
+	"Map Name:",
+	&Topaz80,
+	MAP_NAME_ID,
+	PLACETEXT_LEFT,
+	NULL, /* visual info, filled in later */
+	NULL /* user data */
+	
+};
 
 static struct NewGadget currentTilesetNewGadget = {
 	CURRENT_TILESET_LEFT,  CURRENT_TILESET_TOP,
@@ -106,6 +123,7 @@ static struct NewGadget tilesetScrollNewGadget = {
 };
 
 static struct NewGadget *allNewGadgets[] = {
+	&mapNameNewGadget,
 	&currentTilesetNewGadget,
 	&chooseTilesetNewGadget,
 	&tilesetScrollNewGadget,
@@ -191,6 +209,11 @@ static void createMapEditorGadgets(MapEditor *mapEditor) {
 		PGA_Freedom, LORIENT_VERT,
 		GA_Disabled, TRUE,
 		TAG_END);
+		
+	gad = CreateGadget(STRING_KIND, gad, &mapNameNewGadget,
+		GA_Disabled, TRUE,
+		TAG_END);
+	
 
 	if(gad) {
 		mapEditor->gadgets = glist;
