@@ -22,6 +22,7 @@ typedef struct MapEditorTag {
 
 	struct Window *window;
 	struct Gadget *gadgets;
+
 	struct Gadget *tilesetNameGadget;
 
 	int closed;
