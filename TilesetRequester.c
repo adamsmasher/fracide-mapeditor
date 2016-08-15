@@ -18,6 +18,7 @@
 #define TILESET_LIST_TOP    20
 #define TILESET_LIST_LEFT   10
 
+/* TODO: make this resizeable up and down */
 static struct NewWindow tilesetRequesterNewWindow = {
 	40, 40, TILESET_REQUESTER_WIDTH, TILESET_REQUESTER_HEIGHT,
 	0xFF, 0xFF,
