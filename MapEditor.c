@@ -211,7 +211,6 @@ static void createMapEditorGadgets(MapEditor *mapEditor) {
 		TAG_END);
 		
 	gad = CreateGadget(STRING_KIND, gad, &mapNameNewGadget,
-		GA_Disabled, TRUE,
 		TAG_END);
 	
 
