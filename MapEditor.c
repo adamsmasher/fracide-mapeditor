@@ -62,8 +62,8 @@ static struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 /* TODO: adjust based on screen */
 #define MAP_BORDER_LEFT   20
 #define MAP_BORDER_TOP    37
-#define MAP_BORDER_WIDTH  MAP_TILES_ACROSS * TILE_WIDTH  * 2
-#define MAP_BORDER_HEIGHT MAP_TILES_HIGH   * TILE_HEIGHT * 2
+#define MAP_BORDER_WIDTH  MAP_TILES_ACROSS * TILE_WIDTH  * 2 + 2
+#define MAP_BORDER_HEIGHT MAP_TILES_HIGH   * TILE_HEIGHT * 2 + 2
 
 #define TILESET_BORDER_LEFT   CURRENT_TILESET_LEFT
 #define TILESET_BORDER_TOP    TILESET_SCROLL_TOP + 1
