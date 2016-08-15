@@ -244,8 +244,8 @@ static void handleMapEditorPaletteClick(MapEditor *mapEditor, WORD x, WORD y) {
 }
 
 static void handleMapEditorMapClick(MapEditor *mapEditor, WORD x, WORD y) {
-	int tile = mapEditorGetMapTileClicked(x, y);
-	printf("Clicked on tile %d\n", tile);
+	unsigned int tile = mapEditorGetMapTileClicked(x, y);
+	mapEditorSetTile(mapEditor, tile);
 }
 
 static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {

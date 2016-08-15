@@ -408,6 +408,16 @@ static void redrawPaletteTile(MapEditor *mapEditor, unsigned int tile) {
 	image->NextImage = next;
 }
 
+static void redrawMapTile(MapEditor *mapEditor, unsigned int tile) {
+	struct Image *image = &mapEditor->mapImages[tile];
+	struct Image *next = image->NextImage;
+	image->NextImage = NULL;
+	DrawImage(mapEditor->window->RPort, image,
+		MAP_BORDER_LEFT,
+		MAP_BORDER_TOP);
+	image->NextImage = next;
+}
+
 int mapEditorClickInPalette(WORD x, WORD y) {
 	return ((x > TILESET_BORDER_LEFT                        ) &&
 	        (x < TILESET_BORDER_LEFT + TILESET_BORDER_WIDTH ) &&
@@ -464,4 +474,14 @@ void mapEditorSetSelected(MapEditor *mapEditor, unsigned int selected) {
 	DrawBorder(mapEditor->window->RPort, &tileBorder,
 		TILESET_BORDER_LEFT + (col * 32),
 		TILESET_BORDER_TOP  + (row * 32));
+}
+
+void mapEditorSetTile(MapEditor *mapEditor, unsigned int tile) {
+	/* TODO: we'll probably want an underlying map or something */
+	UWORD *imageData = mapEditor->imageData;
+
+	imageData += (mapEditor->selected << 7);
+
+	mapEditor->mapImages[tile].ImageData = imageData;
+	redrawMapTile(mapEditor, tile);
 }
