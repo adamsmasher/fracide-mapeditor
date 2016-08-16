@@ -417,6 +417,15 @@ static void initPalette(struct ViewPort *viewport) {
 	}
 }
 
+void initProject(void) {
+	int i;
+	Map **map;
+	project.tilesetPackageName = NULL;
+	for(i = 0, map = project.maps; i < 128; i++, map++) {
+		*map = NULL;
+	}
+}
+
 int main(void) {
 	int retCode;
 	
@@ -471,6 +480,8 @@ int main(void) {
 	SetMenuStrip(projectWindow, menu);
 
 	ActivateWindow(projectWindow);
+	
+	initProject();
 
 	mainLoop();
 	
