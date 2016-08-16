@@ -121,15 +121,15 @@ static void removeFromMapEditorList(MapEditor *mapEditor) {
 /* TODO: return something so we can retry on error? */
 static void loadTilesetPackage(char *dir, char *file) {
 	TilesetPackage *newTilesetPackage;
-	size_t pathSize = strlen(dir) + strlen(file);
-	/* + 2 => NULL byte, possible slash? */
-	char *buffer = malloc(pathSize + 2);
-	if(!buffer) {
+	char buffer[TILESET_PACKAGE_PATH_SIZE];
+
+	if(strlen(dir) >= sizeof(buffer)) {
 		goto error;
 	}
+
 	strcpy(buffer, dir);
-	if(!AddPart(buffer, file, (ULONG)(pathSize + 2))) {
-		goto freeBuffer;
+	if(!AddPart(buffer, file, TILESET_PACKAGE_PATH_SIZE)) {
+		goto error;
 	}
 
 	newTilesetPackage = tilesetPackageLoadFromFile(buffer);
@@ -138,13 +138,12 @@ static void loadTilesetPackage(char *dir, char *file) {
 			&tilesetPackageLoadFailEasyStruct,
 			NULL,
 			buffer);
-		goto freeBuffer;
+		goto error;
 	}
 	freeTilesetPackage(tilesetPackage);
 	tilesetPackage = newTilesetPackage;
+	strcpy(project.tilesetPackagePath, buffer);
 
-freeBuffer:
-	free(buffer);
 error:
 	return;
 }
@@ -166,7 +165,7 @@ static void closeAllMapEditors(void) {
 static void initProject(void) {
 	int i;
 	Map **map;
-	project.tilesetPackageName = NULL;
+	project.tilesetPackagePath[0] = 0;
 	for(i = 0, map = project.maps; i < 128; i++, map++) {
 		*map = NULL;
 	}

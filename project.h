@@ -4,6 +4,8 @@
 #define MAP_TILES_WIDE 10
 #define MAP_TILES_HIGH  9
 
+#define TILESET_PACKAGE_PATH_SIZE 256
+
 typedef struct Map_tag {
 	char name[64];
 	UWORD tilesetNum;
@@ -11,7 +13,7 @@ typedef struct Map_tag {
 } Map;
 
 typedef struct Project_tag {
-	char *tilesetPackageName;
+	char tilesetPackagePath[TILESET_PACKAGE_PATH_SIZE];
 	Map *maps[128];
 } Project;
 
