@@ -149,6 +149,19 @@ error:
 	return;
 }
 
+static void closeAllMapEditors(void) {
+	MapEditor *i = firstMapEditor;
+	while(i) {
+		MapEditor *next = i->next;
+		removeWindowFromSigMask(i->window);
+		if(i->tilesetRequester) {
+			removeWindowFromSigMask(i->tilesetRequester->window);
+		}
+		closeMapEditor(i);
+		i = next;
+	}
+}
+
 static void initProject(void) {
 	int i;
 	Map **map;
@@ -160,7 +173,9 @@ static void initProject(void) {
 
 static void newProject(void) {
 	/* TODO: check for unsaved maps */
-	/* TODO: close all windows and stuff */
+	closeAllMapEditors();
+	freeTilesetPackage(tilesetPackage);
+	tilesetPackage = NULL;
 	initProject();
 }
 
@@ -410,19 +425,6 @@ static void mainLoop(void) {
 		handleAllTilesetRequesterMessages(signalSet);
 		closeDeadMapEditors();
 		closeDeadTilesetRequesters();
-	}
-}
-
-static void closeAllMapEditors(void) {
-	MapEditor *i = firstMapEditor;
-	while(i) {
-		MapEditor *next = i->next;
-		removeWindowFromSigMask(i->window);
-		if(i->tilesetRequester) {
-			removeWindowFromSigMask(i->tilesetRequester->window);
-		}
-		closeMapEditor(i);
-		i = next;
 	}
 }
 
