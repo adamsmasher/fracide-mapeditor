@@ -148,6 +148,21 @@ error:
 	return;
 }
 
+static void initProject(void) {
+	int i;
+	Map **map;
+	project.tilesetPackageName = NULL;
+	for(i = 0, map = project.maps; i < 128; i++, map++) {
+		*map = NULL;
+	}
+}
+
+static void newProject(void) {
+	/* TODO: check for unsaved maps */
+	/* TODO: close all windows and stuff */
+	initProject();
+}
+
 static void selectTilesetPackage(void) {
 	struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
 		ASL_Hail, "Select Tileset Package",
@@ -163,6 +178,7 @@ static void selectTilesetPackage(void) {
 
 static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 	switch(itemNum) {
+		case 0: newProject();
 		case 6: selectTilesetPackage(); break;
 		case 8: running = 0; break;
 	}
@@ -414,15 +430,6 @@ static void initPalette(struct ViewPort *viewport) {
 	ULONG c = 15;
 	for(i = 0; i < 4; i++, c -= 5) {
 		SetRGB4(viewport, i, c, c, c);
-	}
-}
-
-void initProject(void) {
-	int i;
-	Map **map;
-	project.tilesetPackageName = NULL;
-	for(i = 0, map = project.maps; i < 128; i++, map++) {
-		*map = NULL;
 	}
 }
 
