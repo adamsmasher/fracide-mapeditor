@@ -179,7 +179,7 @@ static void selectTilesetPackage(void) {
 
 static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 	switch(itemNum) {
-		case 0: newProject();
+		case 0: newProject(); break;
 		case 7: selectTilesetPackage(); break;
 		case 9: running = 0; break;
 	}
