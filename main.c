@@ -160,6 +160,7 @@ static void closeAllMapEditors(void) {
 		closeMapEditor(i);
 		i = next;
 	}
+	firstMapEditor = NULL;
 }
 
 static void initProject(void) {
