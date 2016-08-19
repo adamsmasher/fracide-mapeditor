@@ -58,6 +58,7 @@ static struct NewWindow projectNewWindow = {
 static struct NewMenu newMenu[] = {
 	{ NM_TITLE, "Project", 0, 0, 0, 0 },
 		{ NM_ITEM, "New",                       "N", 0, 0, 0 },
+		{ NM_ITEM, NM_BARLABEL,                  0,  0, 0, 0 },
 		{ NM_ITEM, "Open...",                   "O", 0, 0, 0 },
 		{ NM_ITEM, NM_BARLABEL,                  0,  0, 0, 0 },
 		{ NM_ITEM, "Save",                      "S", 0, 0, 0 },
@@ -195,8 +196,8 @@ static void selectTilesetPackage(void) {
 static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 	switch(itemNum) {
 		case 0: newProject(); break;
-		case 7: selectTilesetPackage(); break;
-		case 9: running = 0; break;
+		case 8: selectTilesetPackage(); break;
+		case 10: running = 0; break;
 	}
 }
 
