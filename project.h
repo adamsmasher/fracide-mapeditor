@@ -19,4 +19,6 @@ typedef struct Project_tag {
 	Map *maps[128];
 } Project;
 
+int loadProjectFromFile(char *file, Project*);
+
 #endif

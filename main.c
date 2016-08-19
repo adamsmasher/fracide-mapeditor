@@ -15,6 +15,7 @@
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -87,6 +88,14 @@ static struct EasyStruct tilesetPackageLoadFailEasyStruct = {
 	sizeof(struct EasyStruct),
 	0,
 	"Error Loading Tileset Package",
+	"Could not load tileset package from\n%s.",
+	"OK"
+};
+
+static struct EasyStruct projectLoadFailEasyStruct = {
+	sizeof(struct EasyStruct),
+	0,
+	"Error Loading Project",
 	"Could not load tileset package from\n%s.",
 	"OK"
 };
@@ -174,6 +183,7 @@ static void initProject(void) {
 
 static void newProject(void) {
 	/* TODO: check for unsaved maps */
+	/* TODO: free maps */
 	closeAllMapEditors();
 	freeTilesetPackage(tilesetPackage);
 	tilesetPackage = NULL;
@@ -181,6 +191,46 @@ static void newProject(void) {
 }
 
 static void openProjectFromAsl(char *dir, char *file) {
+	Project myNewProject;
+	size_t bufferLen = strlen(dir) + strlen(file) + 2;
+	char *buffer = malloc(bufferLen);
+
+	if(!buffer) {
+		fprintf(
+			stderr,
+			"openProjectFromAsl: failed to allocate buffer "
+			"(dir: %s) (file: %s)\n",
+			dir  ? dir  : "NULL",
+			file ? file : "NULL");
+		goto done;
+	}
+
+	strcpy(buffer, dir);
+	if(!AddPart(buffer, file, (ULONG)bufferLen)) {
+		fprintf(
+			stderr,
+			"openProjectFromAsl: failed to add part "
+			"(buffer: %s) (file: %s) (len: %d)\n",
+			buffer ? buffer : "NULL",
+			file   ? file   : "NULL",
+			bufferLen);
+		goto freeBuffer;
+	}
+
+	if(!loadProjectFromFile(buffer, &myNewProject)) {
+		EasyRequest(projectWindow,
+			&projectLoadFailEasyStruct,
+			NULL,
+			buffer);
+		goto freeBuffer;
+	}
+	newProject();
+	memcpy(&project, &myNewProject, sizeof(Project));
+
+freeBuffer:
+	free(buffer);
+done:
+	return;
 }
 
 static void openProject(void) {
