@@ -180,6 +180,29 @@ static void newProject(void) {
 	initProject();
 }
 
+static void openProjectFromAsl(char *dir, char *file) {
+}
+
+static void openProject(void) {
+	/* TODO: check for unsaved maps */
+	struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
+		ASL_Hail, "Open Project",
+		ASL_Window, projectWindow,
+		TAG_END);
+	if(!request) {
+		goto error;
+	}
+
+	if(AslRequest(request, NULL)) {
+		openProjectFromAsl(request->rf_Dir, request->rf_File);
+	}
+
+	FreeAslRequest(request);
+	return;
+error:
+	return;
+}
+
 static void selectTilesetPackage(void) {
 	struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
 		ASL_Hail, "Select Tileset Package",
@@ -196,6 +219,7 @@ static void selectTilesetPackage(void) {
 static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 	switch(itemNum) {
 		case 0: newProject(); break;
+		case 2: openProject(); break;
 		case 8: selectTilesetPackage(); break;
 		case 10: running = 0; break;
 	}
