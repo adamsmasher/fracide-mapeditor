@@ -6,6 +6,8 @@
 
 #define TILESET_PACKAGE_PATH_SIZE 256
 
+#include <exec/types.h>
+
 typedef struct Map_tag {
 	char name[64];
 	UWORD tilesetNum;
