@@ -22,4 +22,4 @@ TilesetRequester.o: TilesetRequester.c globals.h
 Project.o: Project.c Project.h
 
 clean:
-   delete main.o MapEditor.o globals.o tilesetpackage.o tilesetrequester.o mapedit mapedit.lnk
+   delete main.o MapEditor.o globals.o project.o tilesetpackage.o tilesetrequester.o mapedit mapedit.lnk
