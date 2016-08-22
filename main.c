@@ -172,15 +172,6 @@ static void closeAllMapEditors(void) {
 	firstMapEditor = NULL;
 }
 
-static void initProject(void) {
-	int i;
-	Map **map;
-	project.tilesetPackagePath[0] = 0;
-	for(i = 0, map = project.maps; i < 128; i++, map++) {
-		*map = NULL;
-	}
-}
-
 static void freeProject(void) {
 	int i;
 	Map **map;
@@ -195,7 +186,7 @@ static void newProject(void) {
 	freeTilesetPackage(tilesetPackage);
 	tilesetPackage = NULL;
 	freeProject();
-	initProject();
+	initProject(&project);
 }
 
 static void openProjectFromAsl(char *dir, char *file) {
@@ -574,7 +565,7 @@ int main(void) {
 
 	ActivateWindow(projectWindow);
 	
-	initProject();
+	initProject(&project);
 
 	mainLoop();
 	

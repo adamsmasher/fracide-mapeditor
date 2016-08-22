@@ -19,6 +19,7 @@ typedef struct Project_tag {
 	Map *maps[128];
 } Project;
 
+void initProject(Project*);
 int loadProjectFromFile(char *file, Project*);
 
 #endif
