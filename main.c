@@ -100,6 +100,14 @@ static struct EasyStruct projectLoadFailEasyStruct = {
 	"OK"
 };
 
+static struct EasyStruct projectSaveFailEasyStruct = {
+	sizeof(struct EasyStruct),
+	0,
+	"Error Saving Project",
+	"Could not save project to \n%s.",
+	"OK"
+};
+
 static int running = 0;
 static long sigMask = 0;
 static MapEditor *firstMapEditor = NULL;
@@ -249,6 +257,65 @@ static void openProject(void) {
 	FreeAslRequest(request);
 done:
 	return;
+}
+
+static void saveProjectToAsl(char *dir, char *file) {
+	size_t bufferLen = strlen(dir) + strlen(file) + 2;
+	char *buffer = malloc(bufferLen);
+
+	if(!buffer) {
+		fprintf(
+			stderr,
+			"saveProjectToAsl: failed to allocate buffer "
+			"(dir: %s) (file: %s)\n",
+			dir  ? dir  : "NULL",
+			file ? file : "NULL");
+		goto done;
+	}
+
+	strcpy(buffer, dir);
+	if(!AddPart(buffer, file, (ULONG)bufferLen)) {
+		fprintf(
+			stderr,
+			"saveProjectToAsl: failed to add part "
+			"(buffer: %s) (file: %s) (len: %d)\n",
+			buffer ? buffer : "NULL",
+			file   ? file   : "NULL",
+			bufferLen);
+		goto freeBuffer;
+	}
+
+	if(!saveProjectToFile(buffer)) {
+		EasyRequest(projectWindow,
+			&projectSaveFailEasyStruct,
+			NULL,
+			buffer);
+	}
+
+	/* TODO: mark things as saved */
+
+freeBuffer:
+	free(buffer);
+done:
+	return;
+}
+
+static void saveProjectAs(void) {
+	struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
+		ASL_Hail, "Save Project As",
+		ASL_Window, projectWindow,
+		ASL_FuncFlags, FILF_SAVE,
+		TAG_END);
+	if(!request) {
+		goto done;
+	}
+
+	if(AslRequest(request, NULL)) {
+		saveProjectToAsl(request->rf_Dir, request->rf_File);
+	}
+
+	FreeAslRequest(request);
+done:
 	return;
 }
 
@@ -269,6 +336,7 @@ static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 	switch(itemNum) {
 		case 0: newProject(); break;
 		case 2: openProject(); break;
+		case 5: saveProjectAs(); break;
 		case 8: selectTilesetPackage(); break;
 		case 10: running = 0; break;
 	}
