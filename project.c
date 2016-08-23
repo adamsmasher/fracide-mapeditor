@@ -1,5 +1,7 @@
 #include "project.h"
 
+#include "globals.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -101,6 +103,49 @@ int loadProjectFromFile(char *file, Project *project) {
 	}
 
 	ret = loadProjectFromFp(fp, project);
+
+	fclose(fp);
+done:
+	return ret;
+}
+
+static void saveProjectToFp(FILE *fp) {
+	ULONG header;
+	UWORD version;
+	UWORD i;
+
+	header = HEADER;
+	fwrite(&header, 4, 1, fp);
+
+	version = VERSION;
+	fwrite(&version, 2, 1, fp);
+
+	fwrite(project.tilesetPackagePath, 1, 256, fp);
+
+	fwrite(&project.mapCnt, 2, 1, fp);
+
+	/* TODO: write the index */
+
+	for(i = 0; i < project.mapCnt; i++) {
+		if(project.maps[i] != NULL) {
+			fwrite(&i, 2, 1, fp);
+			fwrite(project.maps[i], sizeof(Map), 1, fp);
+		}
+	}
+}
+
+int saveProjectToFile(char *file) {
+	int ret;
+	FILE *fp = fopen(file, "wb");
+
+	if(!fp) {
+		fprintf(stderr, "saveProjectToFile: error opening %s\n", file);
+		ret = 0;
+		goto done;
+	}
+
+	saveProjectToFp(fp);
+	ret = 1;
 
 	fclose(fp);
 done:
