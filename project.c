@@ -18,7 +18,7 @@ void initProject(Project *project) {
 
 static int loadProjectFromFp(FILE *fp, Project *project) {
 	int i;
-	long header;
+	ULONG header;
 	UWORD version;
 
 	initProject(project);
