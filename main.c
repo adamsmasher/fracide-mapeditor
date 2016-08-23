@@ -96,7 +96,7 @@ static struct EasyStruct projectLoadFailEasyStruct = {
 	sizeof(struct EasyStruct),
 	0,
 	"Error Loading Project",
-	"Could not load tileset package from\n%s.",
+	"Could not load project from\n%s.",
 	"OK"
 };
 
