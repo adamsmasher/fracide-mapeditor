@@ -10,6 +10,7 @@ void initProject(Project *project) {
 	int i;
 
 	project->tilesetPackagePath[0] = '\0';
+	project->mapCnt = 0;
 	for(i = 0; i < 128; i++) {
 		project->maps[i] = NULL;
 	}
@@ -19,7 +20,6 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
 	int i;
 	long header;
 	UWORD version;
-	UWORD mapCnt;
 
 	initProject(project);
 
@@ -48,7 +48,7 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
 		return 0;
 	}
 
-	if(fread(&mapCnt, 2, 1, fp) != 2) {
+	if(fread(&project->mapCnt, 2, 1, fp) != 2) {
 		fprintf(stderr, "loadProjectFromFp: Error loading mapcnt\n");
 		return 0;
 	}
@@ -56,7 +56,7 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
 	/* skip the index, we don't need it */
 	fseek(fp, 256, SEEK_CUR);
 
-	for(i = 0; i < mapCnt; i++) {
+	for(i = 0; i < project->mapCnt; i++) {
 		UWORD mapNum;
 		Map *map;
 

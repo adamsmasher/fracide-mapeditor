@@ -16,6 +16,7 @@ typedef struct Map_tag {
 
 typedef struct Project_tag {
 	char tilesetPackagePath[TILESET_PACKAGE_PATH_SIZE];
+	UWORD mapCnt;
 	Map *maps[128];
 } Project;
 
