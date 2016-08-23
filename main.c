@@ -239,7 +239,7 @@ static void openProject(void) {
 		ASL_Window, projectWindow,
 		TAG_END);
 	if(!request) {
-		goto error;
+		goto done;
 	}
 
 	if(AslRequest(request, NULL)) {
@@ -247,8 +247,8 @@ static void openProject(void) {
 	}
 
 	FreeAslRequest(request);
+done:
 	return;
-error:
 	return;
 }
 
