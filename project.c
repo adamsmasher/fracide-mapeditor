@@ -112,6 +112,21 @@ done:
 	return ret;
 }
 
+static void writeIndexToFp(FILE *fp) {
+	int i;
+	UWORD zero = 0;
+	UWORD cnt =  1;
+
+	for(i = 0; i < 128; i++) {
+		if(project.maps[i]) {
+			fwrite(&cnt, 2, 1, fp);
+			cnt++;
+		} else {
+			fwrite(&zero, 2, 1, fp);
+		}
+	}
+}
+
 static void saveProjectToFp(FILE *fp) {
 	ULONG header;
 	UWORD version;
@@ -127,7 +142,7 @@ static void saveProjectToFp(FILE *fp) {
 
 	fwrite(&project.mapCnt, 2, 1, fp);
 
-	/* TODO: write the index */
+	writeIndexToFp(fp);
 
 	for(i = 0; i < project.mapCnt; i++) {
 		if(project.maps[i] != NULL) {
