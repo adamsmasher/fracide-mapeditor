@@ -62,7 +62,10 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
 		UWORD mapNum;
 		Map *map;
 
-		fread(&mapNum, 2, 1, fp);
+		if(fread(&mapNum, 2, 1, fp) != 1) {
+			fprintf(stderr, "loadProjectFromFp: couldn't read map num\n");
+			goto freeMaps_error;
+		}
 
 		if(mapNum >= 128) {
 			fprintf(stderr, "loadProjectFromFp: invalid map number\n");
