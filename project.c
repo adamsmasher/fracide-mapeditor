@@ -25,7 +25,7 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
 
 	initProject(project);
 
-	if(fread(&header, 4, 1, fp) != 4) {
+	if(fread(&header, 4, 1, fp) != 1) {
 		fprintf(stderr, "loadProjectFromFp: couldn't read header\n");
 		return 0;
 	}
@@ -35,7 +35,7 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
 		return 0;
 	}
 
-	if(fread(&version, 2, 1, fp) != 2) {
+	if(fread(&version, 2, 1, fp) != 1) {
 		fprintf(stderr, "loadProjectFromFp: Error loading version\n");
 		return 0;
 	}
@@ -50,7 +50,7 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
 		return 0;
 	}
 
-	if(fread(&project->mapCnt, 2, 1, fp) != 2) {
+	if(fread(&project->mapCnt, 2, 1, fp) != 1) {
 		fprintf(stderr, "loadProjectFromFp: Error loading mapcnt\n");
 		return 0;
 	}
