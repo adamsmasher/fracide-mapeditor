@@ -634,6 +634,8 @@ closeAllMapEditors:
 	closeAllMapEditors();
 freeTilesetPackage:
 	freeTilesetPackage(tilesetPackage);
+freeProject:
+	freeProject(&project);
 clearMenu:
 	ClearMenuStrip(projectWindow);
 freeMenu:
