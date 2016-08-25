@@ -21,6 +21,8 @@ typedef struct Project_tag {
 } Project;
 
 void initProject(Project*);
+void freeProject(Project*);
+
 int loadProjectFromFile(char *file, Project*);
 int saveProjectToFile(char *file);
 

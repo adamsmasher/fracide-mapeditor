@@ -18,6 +18,13 @@ void initProject(Project *project) {
 	}
 }
 
+void freeProject(Project *project) {
+	int i;
+	for(i = 0; i < 128; i++) {
+		free(project->maps[i]);
+	}
+}
+
 static int loadProjectFromFp(FILE *fp, Project *project) {
 	int i;
 	ULONG header;

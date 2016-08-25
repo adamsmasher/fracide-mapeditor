@@ -180,20 +180,12 @@ static void closeAllMapEditors(void) {
 	firstMapEditor = NULL;
 }
 
-static void freeProject(void) {
-	int i;
-	Map **map;
-	for(i = 0, map = project.maps; i < 128; i++, map++) {
-		free(*map);
-	}
-}
-
 static void newProject(void) {
 	/* TODO: check for unsaved maps */
 	closeAllMapEditors();
 	freeTilesetPackage(tilesetPackage);
 	tilesetPackage = NULL;
-	freeProject();
+	freeProject(&project);
 	initProject(&project);
 }
 
