@@ -288,9 +288,7 @@ static void initMapEditorMapImages(MapEditor *mapEditor) {
 	mapEditor->mapImages[89].NextImage = NULL;
 }
 
-
-
-MapEditor *newMapEditor(void) {
+MapEditor *newMapEditor(Map *map) {
 	MapEditor *mapEditor = malloc(sizeof(MapEditor));
 	if(!mapEditor) {
 		goto error;
@@ -314,6 +312,9 @@ MapEditor *newMapEditor(void) {
 		goto error_freeImageData;
 	}
 
+	mapEditor->map = map;
+	/* TODO: draw map */
+
 	GT_RefreshWindow(mapEditor->window, NULL);
 	refreshMapEditor(mapEditor);
 
@@ -322,7 +323,6 @@ MapEditor *newMapEditor(void) {
 	mapEditor->tilesetRequester = NULL;
 	mapEditor->closed           = 0;
 	mapEditor->selected         = -1;
-	mapEditor->tilesetNum       = 0;
 
 	return mapEditor;
 
@@ -348,6 +348,7 @@ void closeMapEditor(MapEditor *mapEditor) {
 	CloseWindow(mapEditor->window);
 	FreeGadgets(mapEditor->gadgets);
 	FreeMem(mapEditor->imageData, IMAGE_DATA_SIZE);
+	/* TODO: free the map...if it's not owned by the project */
 	free(mapEditor);
 }
 
@@ -417,7 +418,7 @@ void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
 		MAP_BORDER_LEFT,
 		MAP_BORDER_TOP);
 
-	mapEditor->tilesetNum = tilesetNumber + 1;
+	mapEditor->map->tilesetNum = tilesetNumber + 1;
 }
 
 static void redrawPaletteTile(MapEditor *mapEditor, unsigned int tile) {

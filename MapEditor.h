@@ -2,6 +2,7 @@
 #define MAP_EDITOR_H
 
 #include "TilesetRequester.h"
+#include "Map.h"
 
 #include <intuition/intuition.h>
 
@@ -23,13 +24,13 @@ typedef struct MapEditorTag {
 	struct Window *window;
 	struct Gadget *gadgets;
 
+	Map *map;
+
 	struct Gadget *tilesetNameGadget;
 
 	int closed;
 
 	TilesetRequester *tilesetRequester;
-
-	UWORD tilesetNum;
 
 	struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
 	struct Image mapImages[MAP_TILES_ACROSS * MAP_TILES_HIGH];
@@ -41,7 +42,7 @@ typedef struct MapEditorTag {
 void initMapEditorScreen(void);
 void initMapEditorVi(void);
 
-MapEditor *newMapEditor(void);
+MapEditor *newMapEditor(Map*);
 void closeMapEditor(MapEditor*);
 
 void refreshMapEditor(MapEditor*);

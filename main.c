@@ -335,7 +335,8 @@ static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 }
 
 static void newMap(void) {
-	MapEditor *mapEditor = newMapEditor();
+	Map *map = allocMap();
+	MapEditor *mapEditor = newMapEditor(map);
 	addToMapEditorList(mapEditor);
 	addWindowToSigMask(mapEditor->window);
 }
@@ -422,7 +423,7 @@ static void handleMapEditorMapClick(MapEditor *mapEditor, WORD x, WORD y) {
 }
 
 static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {
-	if(mapEditor->tilesetNum) {
+	if(mapEditor->map->tilesetNum) {
 		if(mapEditorClickInPalette(x, y)) {
 			handleMapEditorPaletteClick(mapEditor, x, y);
 		} else if(mapEditorClickInMap(x, y)) {
