@@ -403,11 +403,20 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
 	}
 }
 
+static void handleUpdateMapName(MapEditor *mapEditor) {
+	struct StringInfo *stringInfo =
+		(struct StringInfo*)mapEditor->mapNameGadget->SpecialInfo;
+	strcpy(mapEditor->map->name, stringInfo->Buffer);
+}
+
 static void handleMapEditorGadgetUp
 (MapEditor *mapEditor, struct Gadget *gadget) {
 	switch(gadget->GadgetID) {
 	case CHOOSE_TILESET_ID:
 		handleChooseTilesetClicked(mapEditor);
+		break;
+	case MAP_NAME_ID:
+		handleUpdateMapName(mapEditor);
 		break;
 	}
 }

@@ -212,12 +212,13 @@ static void createMapEditorGadgets(MapEditor *mapEditor) {
 		
 	gad = CreateGadget(STRING_KIND, gad, &mapNameNewGadget,
 		TAG_END);
-	
+	mapEditor->mapNameGadget = gad;
 
 	if(gad) {
 		mapEditor->gadgets = glist;
 	} else {
 		mapEditor->tilesetNameGadget = NULL;
+		mapEditor->mapNameGadget = NULL;
 		FreeGadgets(glist);
 	}
 }
