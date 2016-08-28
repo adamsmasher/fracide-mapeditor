@@ -348,7 +348,9 @@ void closeMapEditor(MapEditor *mapEditor) {
 	CloseWindow(mapEditor->window);
 	FreeGadgets(mapEditor->gadgets);
 	FreeMem(mapEditor->imageData, IMAGE_DATA_SIZE);
-	/* TODO: free the map...if it's not owned by the project */
+	if(!mapEditor->map->mapNum) {
+		free(mapEditor->map);
+	}
 	free(mapEditor);
 }
 

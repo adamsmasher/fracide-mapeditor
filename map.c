@@ -5,6 +5,7 @@
 
 Map *allocMap(void) {
 	Map *map = malloc(sizeof(Map));
+	map->mapNum = 0;
 	map->name[0] = '\0';
 	map->tilesetNum = 0;
 	memset(map->tiles, 0, MAP_TILES_WIDE * MAP_TILES_HIGH);
