@@ -85,7 +85,7 @@ static struct NewGadget mapNameNewGadget = {
 	MAP_NAME_ID,
 	PLACETEXT_LEFT,
 	NULL, /* visual info, filled in later */
-	NULL /* user data */
+	NULL  /* user data */
 	
 };
 
