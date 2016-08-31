@@ -122,6 +122,9 @@ static void removeWindowFromSigMask(struct Window *window) {
 
 static void addToMapEditorList(MapEditor *mapEditor) {
 	mapEditor->next = firstMapEditor;
+	if(firstMapEditor) {
+		firstMapEditor->prev = mapEditor;
+	}
 	firstMapEditor = mapEditor;
 }
 
@@ -132,7 +135,7 @@ static void removeFromMapEditorList(MapEditor *mapEditor) {
 	if(mapEditor->prev) {
 		mapEditor->prev->next = mapEditor->next;
 	} else {
-		mapEditor = mapEditor->next;
+		firstMapEditor = mapEditor->next;
 	}
 }
 
