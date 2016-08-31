@@ -66,7 +66,18 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
 	fseek(fp, 256, SEEK_CUR);
 
 	for(i = 0; i < project->mapCnt; i++) {
+		UWORD mapNum;
 		Map *map;
+
+		if(fread(&mapNum, 2, 1, fp) != 1) {
+			fprintf(stderr, "loadProjectFromFp: couldn't read map number\n");
+			goto freeMaps_error;
+		}
+
+		if(mapNum >= 128) {
+			fprintf(stderr, "loadProjectFromFp: invalid map number\n");
+			goto freeMaps_error;
+		}
 
 		map = malloc(sizeof(Map));
 		if(!map) {
@@ -80,13 +91,7 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
 			goto freeMaps_error;
 		}
 
-		if(!map->mapNum || map->mapNum > 128) {
-			fprintf(stderr, "loadProjectFromFp: invalid map number\n");
-			free(map);
-			goto freeMaps_error;
-		}
-
-		project->maps[map->mapNum - 1] = map;
+		project->maps[mapNum] = map;
 	}
 
 	return 1;
@@ -133,7 +138,7 @@ static void writeIndexToFp(FILE *fp) {
 static void saveProjectToFp(FILE *fp) {
 	ULONG header;
 	UWORD version;
-	int i;
+	UWORD i;
 
 	header = HEADER;
 	fwrite(&header, 4, 1, fp);
@@ -149,6 +154,7 @@ static void saveProjectToFp(FILE *fp) {
 
 	for(i = 0; i < project.mapCnt; i++) {
 		if(project.maps[i] != NULL) {
+			fwrite(&i, 2, 1, fp);
 			fwrite(project.maps[i], sizeof(Map), 1, fp);
 		}
 	}

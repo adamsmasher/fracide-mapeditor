@@ -7,8 +7,6 @@
 #define MAP_TILES_HIGH  9
 
 typedef struct Map_tag {
-	/* 1-indexed */
-	UWORD mapNum;
 	char name[64];
 	/* 1-indexed */
 	UWORD tilesetNum;
