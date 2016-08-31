@@ -295,9 +295,14 @@ MapEditor *newMapEditor(Map *map) {
 		goto error;
 	}
 
+	mapEditor->map = allocMap();
+	if(!mapEditor->map) {
+		goto error_freeEditor;
+	}
+
 	createMapEditorGadgets(mapEditor);
 	if(!mapEditor->gadgets) {
-		goto error_freeEditor;
+		goto error_freeMap;
 	}
 	mapEditorNewWindow.FirstGadget = mapEditor->gadgets;
 
@@ -331,6 +336,8 @@ error_freeImageData:
 	FreeMem(mapEditor->imageData, IMAGE_DATA_SIZE);
 error_freeGadgets:
 	FreeGadgets(mapEditor->gadgets);
+error_freeMap:
+	free(mapEditor->map);
 error_freeEditor:
 	free(mapEditor);
 error:
@@ -349,9 +356,7 @@ void closeMapEditor(MapEditor *mapEditor) {
 	CloseWindow(mapEditor->window);
 	FreeGadgets(mapEditor->gadgets);
 	FreeMem(mapEditor->imageData, IMAGE_DATA_SIZE);
-	if(!mapEditor->map->mapNum) {
-		free(mapEditor->map);
-	}
+	free(mapEditor->map);
 	free(mapEditor);
 }
 
