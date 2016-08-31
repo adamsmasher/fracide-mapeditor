@@ -347,7 +347,7 @@ static void handleMapsMenuPick(UWORD itemNum, UWORD subNum) {
 	}
 }
 
-static void handleMenuPick(ULONG menuNumber) {
+static void handleMainMenuPick(ULONG menuNumber) {
 	UWORD menuNum = MENUNUM(menuNumber);
 	UWORD itemNum = ITEMNUM(menuNumber);
 	UWORD subNum  = SUBNUM(menuNumber);
@@ -357,10 +357,10 @@ static void handleMenuPick(ULONG menuNumber) {
 	}
 }
 
-static void handleMenuPicks(ULONG menuNumber) {
+static void handleMainMenuPicks(ULONG menuNumber) {
 	struct MenuItem *item = NULL;
 	while(running && menuNumber != MENUNULL) {
-		handleMenuPick(menuNumber);
+		handleMainMenuPick(menuNumber);
 		item = ItemAddress(menu, menuNumber);
 		menuNumber = item->NextSelect;
 	}
@@ -369,7 +369,7 @@ static void handleMenuPicks(ULONG menuNumber) {
 static void handleProjectMessage(struct IntuiMessage* msg) {
 	switch(msg->Class) {
 		case IDCMP_MENUPICK:
-			handleMenuPicks((ULONG)msg->Code);
+			handleMainMenuPicks((ULONG)msg->Code);
 	}
 }
 
@@ -441,6 +441,32 @@ static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {
 	}
 }
 
+static void handleMapMenuPick(MapEditor *mapEditor, UWORD itemNum, UWORD subNum) {
+	switch(itemNum) {
+		case 8:
+			mapEditor->closed = 1;
+			break;
+	}
+}
+
+static void handleMapEditorMenuPick(MapEditor *mapEditor, ULONG menuNumber) {
+	UWORD menuNum = MENUNUM(menuNumber);
+	UWORD itemNum = ITEMNUM(menuNumber);
+	UWORD subNum  = SUBNUM(menuNumber);
+	switch(menuNum) {
+		case 0: handleMapMenuPick(mapEditor, itemNum, subNum); break;
+	}
+}
+
+static void handleMapEditorMenuPicks(MapEditor *mapEditor, ULONG menuNumber) {
+	struct MenuItem *item = NULL;
+	while(!mapEditor->closed && menuNumber != MENUNULL) {
+		handleMapEditorMenuPick(mapEditor, menuNumber);
+		item = ItemAddress(menu, menuNumber);
+		menuNumber = item->NextSelect;
+	}
+}
+
 static void handleMapEditorMessage(MapEditor *mapEditor, struct IntuiMessage *msg) {
 	switch(msg->Class) {
 	case IDCMP_CLOSEWINDOW:
@@ -456,6 +482,9 @@ static void handleMapEditorMessage(MapEditor *mapEditor, struct IntuiMessage *ms
 		break;
 	case IDCMP_MOUSEBUTTONS:
 		handleMapEditorClick(mapEditor, msg->MouseX, msg->MouseY);
+		break;
+	case IDCMP_MENUPICK:
+		handleMapEditorMenuPick(mapEditor, (ULONG)msg->Code);
 		break;
 	}
 }
