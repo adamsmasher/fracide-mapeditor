@@ -64,7 +64,7 @@ static struct NewMenu newMenu[] = {
 		{ NM_ITEM, NM_BARLABEL,                  0,  0,               0, 0 },
 		{ NM_ITEM, "Save",                      "S", 0,               0, 0 },
 		{ NM_ITEM, "Save As...",                "A", 0,               0, 0 },
-		{ NM_ITEM, "Revert",                     0,  0,               0, 0 },
+		{ NM_ITEM, "Revert",                     0,  NM_ITEMDISABLED, 0, 0 },
 		{ NM_ITEM, NM_BARLABEL,                  0,  0,               0, 0 },
 		{ NM_ITEM, "Select Tileset Package...",  0,  0,               0, 0 },
 		{ NM_ITEM, NM_BARLABEL,                  0,  0,               0, 0 },
