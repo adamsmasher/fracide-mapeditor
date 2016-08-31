@@ -503,8 +503,9 @@ void mapEditorSetSelected(MapEditor *mapEditor, unsigned int selected) {
 }
 
 void mapEditorSetTile(MapEditor *mapEditor, unsigned int tile) {
-	/* TODO: we'll probably want an underlying map or something */
 	UWORD *imageData = mapEditor->imageData;
+
+	mapEditor->map->tiles[tile] = mapEditor->selected;
 
 	imageData += (mapEditor->selected << 7);
 
