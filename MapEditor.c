@@ -24,15 +24,15 @@
 
 static struct NewMenu newMenu[] = {
 	{ NM_TITLE, "Map", 0, 0, 0, 0 },
-		{ NM_ITEM, "New",        "N", 0, 0, 0 },
-		{ NM_ITEM, NM_BARLABEL,  0,  0, 0, 0 },
-		{ NM_ITEM, "Open...",    "O", 0, 0, 0 },
-		{ NM_ITEM, NM_BARLABEL,  0,  0, 0, 0 },
-		{ NM_ITEM, "Save",       "S", 0, 0, 0 },
-		{ NM_ITEM, "Save As...", "A", 0, 0, 0 },
-		{ NM_ITEM, "Revert",     0,  0, 0, 0 },
-		{ NM_ITEM, NM_BARLABEL,  0,  0, 0, 0 },
-		{ NM_ITEM, "Close",      "Q", 0, 0, 0 },
+		{ NM_ITEM, "New",        "N", 0,               0, 0 },
+		{ NM_ITEM, NM_BARLABEL,  0,   0,               0, 0 },
+		{ NM_ITEM, "Open...",    "O", 0,               0, 0 },
+		{ NM_ITEM, NM_BARLABEL,  0,   0,               0, 0 },
+		{ NM_ITEM, "Save",       "S", 0,               0, 0 },
+		{ NM_ITEM, "Save As...", "A", 0,               0, 0 },
+		{ NM_ITEM, "Revert",     0,   0,               0, 0 },
+		{ NM_ITEM, NM_BARLABEL,  0,   0,               0, 0 },
+		{ NM_ITEM, "Close",      "Q", 0,               0, 0 },
 	{ NM_END,   NULL,   0, 0, 0, 0 }
 };
 static struct Menu *menu = NULL;
