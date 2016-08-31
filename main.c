@@ -443,6 +443,9 @@ static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {
 
 static void handleMapMenuPick(MapEditor *mapEditor, UWORD itemNum, UWORD subNum) {
 	switch(itemNum) {
+		case 0:
+			newMap();
+			break;
 		case 8:
 			mapEditor->closed = 1;
 			break;
