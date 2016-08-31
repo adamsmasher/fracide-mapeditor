@@ -631,6 +631,12 @@ int main(void) {
 
 	}
 
+	if(!initMapEditorMenu()) {
+		retCode = -7;
+		goto freeMenu;
+	}
+
+
 	SetMenuStrip(projectWindow, menu);
 
 	ActivateWindow(projectWindow);
@@ -648,6 +654,8 @@ freeProject:
 	freeProject(&project);
 clearMenu:
 	ClearMenuStrip(projectWindow);
+freeMapEditorMenu:
+	freeMapEditorMenu();
 freeMenu:
 	FreeMenus(menu);
 freeVisualInfo:

@@ -43,6 +43,9 @@ typedef struct MapEditorTag {
 void initMapEditorScreen(void);
 void initMapEditorVi(void);
 
+struct Menu *initMapEditorMenu(void);
+void freeMapEditorMenu(void);
+
 MapEditor *newMapEditor(Map*);
 void closeMapEditor(MapEditor*);
 

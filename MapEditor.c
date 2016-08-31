@@ -22,6 +22,21 @@
 #define MAP_EDITOR_WIDTH  520
 #define MAP_EDITOR_HEIGHT 336
 
+static struct NewMenu newMenu[] = {
+	{ NM_TITLE, "Map", 0, 0, 0, 0 },
+		{ NM_ITEM, "New",        "N", 0, 0, 0 },
+		{ NM_ITEM, NM_BARLABEL,  0,  0, 0, 0 },
+		{ NM_ITEM, "Open...",    "O", 0, 0, 0 },
+		{ NM_ITEM, NM_BARLABEL,  0,  0, 0, 0 },
+		{ NM_ITEM, "Save",       "S", 0, 0, 0 },
+		{ NM_ITEM, "Save As...", "A", 0, 0, 0 },
+		{ NM_ITEM, "Revert",     0,  0, 0, 0 },
+		{ NM_ITEM, NM_BARLABEL,  0,  0, 0, 0 },
+		{ NM_ITEM, "Close",      "Q", 0, 0, 0 },
+	{ NM_END,   NULL,   0, 0, 0, 0 }
+};
+static struct Menu *menu = NULL;
+
 static struct NewWindow mapEditorNewWindow = {
 	40, 40, MAP_EDITOR_WIDTH, MAP_EDITOR_HEIGHT,
 	0xFF, 0xFF,
@@ -191,6 +206,28 @@ void initMapEditorVi(void) {
 	}
 }
 
+struct Menu *initMapEditorMenu(void) {
+	menu = CreateMenus(newMenu, GTMN_FullMenu, TRUE, TAG_END);
+	if(!menu) {
+		goto error;
+	}
+
+	if(!LayoutMenus(menu, vi, TAG_END)) {
+		goto error_freeMenu;
+	}
+
+	return menu;
+	
+error_freeMenu:
+	FreeMenus(menu);
+error:
+	return NULL;
+}
+
+void freeMapEditorMenu(void) {
+	FreeMenus(menu);
+}
+
 static void createMapEditorGadgets(MapEditor *mapEditor) {
 	struct Gadget *gad;
 	struct Gadget *glist = NULL;
@@ -318,6 +355,8 @@ MapEditor *newMapEditor(Map *map) {
 		goto error_freeImageData;
 	}
 
+	SetMenuStrip(mapEditor->window, menu);
+
 	mapEditor->map = map;
 	/* TODO: draw map */
 
@@ -353,6 +392,7 @@ static void closeAttachedTilesetRequester(MapEditor *mapEditor) {
 
 void closeMapEditor(MapEditor *mapEditor) {
 	closeAttachedTilesetRequester(mapEditor);
+	ClearMenuStrip(mapEditor->window);
 	CloseWindow(mapEditor->window);
 	FreeGadgets(mapEditor->gadgets);
 	FreeMem(mapEditor->imageData, IMAGE_DATA_SIZE);
