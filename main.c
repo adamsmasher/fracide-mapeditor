@@ -228,7 +228,7 @@ static void openProjectFromAsl(char *dir, char *file) {
 	}
 	newProject();
 	memcpy(&project, &myNewProject, sizeof(Project));
-
+	OnMenu(projectWindow, SHIFTMENU(0) | SHIFTITEM(6));
 freeBuffer:
 	free(buffer);
 done:
@@ -285,7 +285,9 @@ static void saveProjectToAsl(char *dir, char *file) {
 			&projectSaveFailEasyStruct,
 			NULL,
 			buffer);
+		goto freeBuffer;
 	}
+	OnMenu(projectWindow, SHIFTMENU(0) | SHIFTITEM(6));
 
 	/* TODO: mark things as saved */
 
