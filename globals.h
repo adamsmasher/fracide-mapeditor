@@ -6,9 +6,12 @@
 #include "TilesetPackage.h"
 #include "Project.h"
 
+#define PROJECT_FILENAME_LENGTH 256
+
 extern struct Screen  *screen;
 extern void           *vi;
 extern TilesetPackage *tilesetPackage;
 extern Project        project;
+extern char           projectFilename[PROJECT_FILENAME_LENGTH];
 
 #endif

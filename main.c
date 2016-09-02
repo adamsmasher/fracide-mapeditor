@@ -183,6 +183,18 @@ static void closeAllMapEditors(void) {
 	firstMapEditor = NULL;
 }
 
+static void setProjectFilename(char *filename) {
+	/* TODO: range check on filename length */
+	UWORD revertMenuItem = SHIFTMENU(0) | SHIFTITEM(6);
+	if(filename) {
+		strcpy(projectFilename, filename);
+		OnMenu(projectWindow, revertMenuItem);
+	} else {
+		projectFilename[0] = '\0';
+		OffMenu(projectWindow, revertMenuItem);
+	}	
+}
+
 static void newProject(void) {
 	/* TODO: check for unsaved maps */
 	closeAllMapEditors();
@@ -190,6 +202,7 @@ static void newProject(void) {
 	tilesetPackage = NULL;
 	freeProject(&project);
 	initProject(&project);
+	setProjectFilename(NULL);
 }
 
 static void openProjectFromAsl(char *dir, char *file) {
@@ -228,7 +241,8 @@ static void openProjectFromAsl(char *dir, char *file) {
 	}
 	newProject();
 	memcpy(&project, &myNewProject, sizeof(Project));
-	OnMenu(projectWindow, SHIFTMENU(0) | SHIFTITEM(6));
+	setProjectFilename(buffer);
+
 freeBuffer:
 	free(buffer);
 done:
@@ -287,7 +301,7 @@ static void saveProjectToAsl(char *dir, char *file) {
 			buffer);
 		goto freeBuffer;
 	}
-	OnMenu(projectWindow, SHIFTMENU(0) | SHIFTITEM(6));
+	setProjectFilename(buffer);
 
 	/* TODO: mark things as saved */
 
@@ -316,6 +330,19 @@ done:
 	return;
 }
 
+static void saveProject(void) {
+	if(*projectFilename) {
+		if(!saveProjectToFile(projectFilename)) {
+			EasyRequest(projectWindow,
+				&projectSaveFailEasyStruct,
+				NULL,
+				projectFilename);
+		}
+	} else {
+		saveProjectAs();
+	}
+}
+
 static void selectTilesetPackage(void) {
 	struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
 		ASL_Hail, "Select Tileset Package",
@@ -333,6 +360,7 @@ static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 	switch(itemNum) {
 		case 0: newProject(); break;
 		case 2: openProject(); break;
+		case 4: saveProject(); break;
 		case 5: saveProjectAs(); break;
 		case 8: selectTilesetPackage(); break;
 		case 10: running = 0; break;
