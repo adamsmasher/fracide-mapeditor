@@ -10,3 +10,11 @@ Map *allocMap(void) {
 	memset(map->tiles, 0, MAP_TILES_WIDE * MAP_TILES_HIGH);
 	return map;
 }
+
+Map *copyMap(Map *oldMap) {
+    Map *newMap = malloc(sizeof(Map));
+    strcpy(newMap->name, oldMap->name);
+    newMap->tilesetNum = oldMap->tilesetNum;
+    memcpy(newMap->tiles, oldMap->tiles, MAP_TILES_WIDE * MAP_TILES_HIGH);
+    return newMap;
+}

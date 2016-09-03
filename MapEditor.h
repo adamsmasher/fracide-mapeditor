@@ -25,6 +25,7 @@ typedef struct MapEditorTag {
   struct Gadget *gadgets;
 
   Map *map;
+  int mapNum;
 
   struct Gadget *tilesetNameGadget;
   struct Gadget *mapNameGadget;
@@ -46,7 +47,8 @@ void initMapEditorVi(void);
 struct Menu *initMapEditorMenu(void);
 void freeMapEditorMenu(void);
 
-MapEditor *newMapEditor(Map*);
+MapEditor *newMapEditorNewMap(void);
+MapEditor *newMapEditorWithMap(Map*, int mapNum);
 void closeMapEditor(MapEditor*);
 
 void refreshMapEditor(MapEditor*);

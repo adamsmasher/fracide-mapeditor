@@ -325,7 +325,7 @@ static void initMapEditorMapImages(MapEditor *mapEditor) {
 	mapEditor->mapImages[89].NextImage = NULL;
 }
 
-MapEditor *newMapEditor(Map *map) {
+static MapEditor *newMapEditor(void) {
 	MapEditor *mapEditor = malloc(sizeof(MapEditor));
 	if(!mapEditor) {
 		goto error;
@@ -356,9 +356,6 @@ MapEditor *newMapEditor(Map *map) {
 
 	SetMenuStrip(mapEditor->window, menu);
 
-	mapEditor->map = map;
-	/* TODO: draw map */
-
 	GT_RefreshWindow(mapEditor->window, NULL);
 	refreshMapEditor(mapEditor);
 
@@ -380,6 +377,20 @@ error_freeEditor:
 	free(mapEditor);
 error:
 	return NULL;
+}
+
+MapEditor *newMapEditorNewMap(void) {
+    MapEditor *mapEditor = newMapEditor();
+    mapEditor->map = allocMap();
+    mapEditor->mapNum = 0;
+    return mapEditor;
+}
+
+MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
+    MapEditor *mapEditor = newMapEditor();
+    mapEditor->map = copyMap(map);
+    mapEditor->mapNum = mapNum;
+    return mapEditor;
 }
 
 static void closeAttachedTilesetRequester(MapEditor *mapEditor) {

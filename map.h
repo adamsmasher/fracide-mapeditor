@@ -14,5 +14,6 @@ typedef struct Map_tag {
 } Map;
 
 Map *allocMap(void);
+Map *copyMap(Map*);
 
 #endif

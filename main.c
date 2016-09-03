@@ -368,8 +368,7 @@ static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 }
 
 static void newMap(void) {
-	Map *map = allocMap();
-	MapEditor *mapEditor = newMapEditor(map);
+	MapEditor *mapEditor = newMapEditorNewMap();
 	addToMapEditorList(mapEditor);
 	addWindowToSigMask(mapEditor->window);
 }
@@ -474,14 +473,23 @@ static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {
 	}
 }
 
+static void saveMapAs(MapEditor *mapEditor) {
+	/* TODO: save map as */
+}
+
+static void saveMap(MapEditor *mapEditor) {
+	if(!mapEditor->mapNum) {
+		saveMapAs(mapEditor);
+	} else {
+		/* TODO: save map */
+	}
+}
+
 static void handleMapMenuPick(MapEditor *mapEditor, UWORD itemNum, UWORD subNum) {
 	switch(itemNum) {
-		case 0:
-			newMap();
-			break;
-		case 8:
-			mapEditor->closed = 1;
-			break;
+		case 0: newMap(); break;
+		case 4: saveMap(mapEditor); break;
+		case 8: mapEditor->closed = 1; break;
 	}
 }
 
