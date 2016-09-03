@@ -23,33 +23,33 @@
 #define MAP_EDITOR_HEIGHT 336
 
 static struct NewMenu newMenu[] = {
-	{ NM_TITLE, "Map", 0, 0, 0, 0 },
-		{ NM_ITEM, "New",        "N", 0,               0, 0 },
-		{ NM_ITEM, NM_BARLABEL,  0,   0,               0, 0 },
-		{ NM_ITEM, "Open...",    "O", 0,               0, 0 },
-		{ NM_ITEM, NM_BARLABEL,  0,   0,               0, 0 },
-		{ NM_ITEM, "Save",       "S", 0,               0, 0 },
-		{ NM_ITEM, "Save As...", "A", 0,               0, 0 },
-		{ NM_ITEM, "Revert",     0,   NM_ITEMDISABLED, 0, 0 },
-		{ NM_ITEM, NM_BARLABEL,  0,   0,               0, 0 },
-		{ NM_ITEM, "Close",      "Q", 0,               0, 0 },
-	{ NM_END,   NULL,   0, 0, 0, 0 }
+  { NM_TITLE, "Map", 0, 0, 0, 0 },
+    { NM_ITEM, "New",        "N", 0,               0, 0 },
+    { NM_ITEM, NM_BARLABEL,  0,   0,               0, 0 },
+    { NM_ITEM, "Open...",    "O", 0,               0, 0 },
+    { NM_ITEM, NM_BARLABEL,  0,   0,               0, 0 },
+    { NM_ITEM, "Save",       "S", 0,               0, 0 },
+    { NM_ITEM, "Save As...", "A", 0,               0, 0 },
+    { NM_ITEM, "Revert",     0,   NM_ITEMDISABLED, 0, 0 },
+    { NM_ITEM, NM_BARLABEL,  0,   0,               0, 0 },
+    { NM_ITEM, "Close",      "Q", 0,               0, 0 },
+  { NM_END,   NULL,   0, 0, 0, 0 }
 };
 static struct Menu *menu = NULL;
 
 static struct NewWindow mapEditorNewWindow = {
-	40, 40, MAP_EDITOR_WIDTH, MAP_EDITOR_HEIGHT,
-	0xFF, 0xFF,
-	CLOSEWINDOW|REFRESHWINDOW|GADGETUP|MOUSEBUTTONS|MENUPICK,
-	WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|ACTIVATE,
-	NULL,
-	NULL,
-	"Map Editor",
-	NULL,
-	NULL,
-	MAP_EDITOR_WIDTH,MAP_EDITOR_HEIGHT,
-	MAP_EDITOR_WIDTH,MAP_EDITOR_HEIGHT,
-	CUSTOMSCREEN
+  40, 40, MAP_EDITOR_WIDTH, MAP_EDITOR_HEIGHT,
+  0xFF, 0xFF,
+  CLOSEWINDOW|REFRESHWINDOW|GADGETUP|MOUSEBUTTONS|MENUPICK,
+  WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|ACTIVATE,
+  NULL,
+  NULL,
+  "Map Editor",
+  NULL,
+  NULL,
+  MAP_EDITOR_WIDTH,MAP_EDITOR_HEIGHT,
+  MAP_EDITOR_WIDTH,MAP_EDITOR_HEIGHT,
+  CUSTOMSCREEN
 };
 
 /* TODO: get the font from the system preferences */
@@ -93,26 +93,25 @@ static struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 #define IMAGE_DATA_SIZE (TILES_PER_SET * 256)
 
 static struct NewGadget mapNameNewGadget = {
-	MAP_NAME_LEFT,  MAP_NAME_TOP,
-	MAP_NAME_WIDTH, MAP_NAME_HEIGHT,
-	"Map Name:",
-	&Topaz80,
-	MAP_NAME_ID,
-	PLACETEXT_LEFT,
-	NULL, /* visual info, filled in later */
-	NULL  /* user data */
-	
+  MAP_NAME_LEFT,  MAP_NAME_TOP,
+  MAP_NAME_WIDTH, MAP_NAME_HEIGHT,
+  "Map Name:",
+  &Topaz80,
+  MAP_NAME_ID,
+  PLACETEXT_LEFT,
+  NULL, /* visual info, filled in later */
+  NULL  /* user data */
 };
 
 static struct NewGadget currentTilesetNewGadget = {
-	CURRENT_TILESET_LEFT,  CURRENT_TILESET_TOP,
-	CURRENT_TILESET_WIDTH, CURRENT_TILESET_HEIGHT,
-	"Current Tileset",
-	&Topaz80,
-	CURRENT_TILESET_ID,
-	PLACETEXT_ABOVE,
-	NULL, /* visual info, filled in later */
-	NULL  /* user data */
+  CURRENT_TILESET_LEFT,  CURRENT_TILESET_TOP,
+  CURRENT_TILESET_WIDTH, CURRENT_TILESET_HEIGHT,
+  "Current Tileset",
+  &Topaz80,
+  CURRENT_TILESET_ID,
+  PLACETEXT_ABOVE,
+  NULL, /* visual info, filled in later */
+  NULL  /* user data */
 };
 
 static struct NewGadget chooseTilesetNewGadget = {
