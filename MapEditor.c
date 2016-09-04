@@ -331,14 +331,9 @@ static MapEditor *newMapEditor(void) {
 		goto error;
 	}
 
-	mapEditor->map = allocMap();
-	if(!mapEditor->map) {
-		goto error_freeEditor;
-	}
-
 	createMapEditorGadgets(mapEditor);
 	if(!mapEditor->gadgets) {
-		goto error_freeMap;
+		goto error_freeEditor;
 	}
 	mapEditorNewWindow.FirstGadget = mapEditor->gadgets;
 
@@ -371,8 +366,6 @@ error_freeImageData:
 	FreeMem(mapEditor->imageData, IMAGE_DATA_SIZE);
 error_freeGadgets:
 	FreeGadgets(mapEditor->gadgets);
-error_freeMap:
-	free(mapEditor->map);
 error_freeEditor:
 	free(mapEditor);
 error:
@@ -380,17 +373,51 @@ error:
 }
 
 MapEditor *newMapEditorNewMap(void) {
-    MapEditor *mapEditor = newMapEditor();
-    mapEditor->map = allocMap();
+    Map *map;
+    MapEditor *mapEditor;
+
+    map = allocMap();
+    if(!map) {
+        goto error;
+    }
+
+    mapEditor = newMapEditor();
+    if(!mapEditor) {
+        goto error_freeMap;
+    }
+
+    mapEditor->map = map;
     mapEditor->mapNum = 0;
     return mapEditor;
+
+error_freeMap:
+    free(map);
+error:
+    return NULL;
 }
 
 MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
-    MapEditor *mapEditor = newMapEditor();
-    mapEditor->map = copyMap(map);
+    Map *mapCopy;
+    MapEditor *mapEditor;
+
+    mapCopy = copyMap(map);
+    if(!mapCopy) {
+        goto error;
+    }
+
+    mapEditor = newMapEditor();
+    if(!mapEditor) {
+        goto error_freeMap;
+    }
+
+    mapEditor->map = mapCopy;
     mapEditor->mapNum = mapNum;
     return mapEditor;
+
+error_freeMap:
+    free(mapCopy);
+error:
+    return NULL;
 }
 
 static void closeAttachedTilesetRequester(MapEditor *mapEditor) {
