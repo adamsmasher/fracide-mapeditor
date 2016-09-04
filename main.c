@@ -21,6 +21,7 @@
 
 #include "globals.h"
 #include "MapEditor.h"
+#include "MapRequester.h"
 #include "TilesetPackage.h"
 #include "TilesetRequester.h"
 
@@ -474,7 +475,7 @@ static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {
 }
 
 static void saveMapAs(MapEditor *mapEditor) {
-	/* TODO: save map as */
+    int selected = saveMapRequester(mapEditor);
 }
 
 static void saveMap(MapEditor *mapEditor) {
@@ -489,6 +490,7 @@ static void handleMapMenuPick(MapEditor *mapEditor, UWORD itemNum, UWORD subNum)
 	switch(itemNum) {
 		case 0: newMap(); break;
 		case 4: saveMap(mapEditor); break;
+        case 5: saveMapAs(mapEditor); break;
 		case 8: mapEditor->closed = 1; break;
 	}
 }
@@ -672,6 +674,7 @@ int main(void) {
 
 	/* TODO: put these in a list? */
 	initMapEditorScreen();
+    initMapRequesterScreen();
 	initTilesetRequesterScreen();
 
 	projectNewWindow.Screen = screen;
@@ -690,6 +693,7 @@ int main(void) {
 
 	/* TODO: put these in a list? */
 	initMapEditorVi();
+    initMapRequesterVi();
 	initTilesetRequesterVi();
 
 	menu = CreateMenus(newMenu, GTMN_FullMenu, TRUE, TAG_END);
