@@ -146,7 +146,7 @@ static void handleRequesterGadgetUp(MapRequester *mapRequester, struct Gadget *g
     case MAP_LIST_ID:
         mapRequester->highlighted = code;
         GT_SetGadgetAttrs(mapRequester->okButton, mapRequester->window, NULL,
-            GA_Disabled, TRUE,
+            GA_Disabled, FALSE,
             TAG_END);
         break;
     }
