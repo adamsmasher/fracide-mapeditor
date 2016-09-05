@@ -35,9 +35,17 @@ void initProject(Project *project) {
 
 void freeProject(Project *project) {
 	int i;
+    struct Node *node, *next;
+
 	for(i = 0; i < 128; i++) {
 		free(project->maps[i]);
 	}
+
+    node = project->mapNames.lh_Head;
+    while(next = node->ln_Succ) {
+        free(node);
+        node = next;
+    }
 }
 
 static int loadProjectFromFp(FILE *fp, Project *project) {
