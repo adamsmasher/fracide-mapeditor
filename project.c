@@ -1,5 +1,7 @@
 #include "project.h"
 
+#include <proto/exec.h>
+
 #include "globals.h"
 
 #include <stdio.h>
@@ -10,12 +12,25 @@
 
 void initProject(Project *project) {
 	int i;
+    struct Node *node;
 
 	project->tilesetPackagePath[0] = '\0';
+
 	project->mapCnt = 0;
+
 	for(i = 0; i < 128; i++) {
 		project->maps[i] = NULL;
+        sprintf(project->mapNameStrs[i], "%d:", i);
 	}
+
+    NewList(&project->mapNames);
+
+    for(i = 0; i < 128; i++) {
+        node = malloc(sizeof(struct Node));
+        /* TODO: handle node creation failure */
+        node->ln_Name = project->mapNameStrs[i];
+        AddTail(&project->mapNames, node);
+    }
 }
 
 void freeProject(Project *project) {
