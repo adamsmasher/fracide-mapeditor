@@ -126,10 +126,23 @@ error:
     return NULL;
 }
 
+static void handleRequesterGadgetUp(struct Window *window, struct Gadget *gadget, int *selected) {
+    /* TODO: implement other things  */
+    /* TODO: make a real structure for this */
+    switch(gadget->GadgetID) {
+    case CANCEL_BUTTON_ID:
+        *selected = -1;
+        break;
+    }
+}
+
 static void handleRequesterMessage(struct Window *window, struct IntuiMessage *msg, int *selected) {
     switch(msg->Class) {
     case IDCMP_CLOSEWINDOW:
         *selected = -1;
+        break;
+    case IDCMP_GADGETUP:
+        handleRequesterGadgetUp(window, (struct Gadget*)msg->IAddress, selected);
         break;
     case IDCMP_REFRESHWINDOW:
         GT_BeginRefresh(window);
