@@ -115,6 +115,7 @@ static void createMapRequesterGadgets(MapRequester *mapRequester) {
 
     gad = CreateGadget(LISTVIEW_KIND, gad, &mapListNewGadget,
         GTLV_Labels, &project.mapNames,
+        GTLV_ShowSelected, NULL,
         TAG_END);
 
     gad = CreateGadget(BUTTON_KIND, gad, &okButtonNewGadget,
