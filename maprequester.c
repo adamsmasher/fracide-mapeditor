@@ -89,6 +89,11 @@ static struct NewGadget cancelButtonNewGadget = {
 
 static struct Requester requester;
 
+typedef struct MapRequester_tag {
+    struct Window *window;
+    int selected;
+} MapRequester;
+
 void initMapRequesterScreen(void) {
     mapRequesterNewWindow.Screen = screen;
 }
@@ -126,59 +131,53 @@ error:
     return NULL;
 }
 
-static void handleRequesterGadgetUp(struct Window *window, struct Gadget *gadget, int *selected) {
+static void handleRequesterGadgetUp(MapRequester *mapRequester, struct Gadget *gadget) {
     /* TODO: implement other things  */
-    /* TODO: make a real structure for this */
     switch(gadget->GadgetID) {
     case CANCEL_BUTTON_ID:
-        *selected = -1;
+        mapRequester->selected = -1;
         break;
     }
 }
 
-static void handleRequesterMessage(struct Window *window, struct IntuiMessage *msg, int *selected) {
+static void handleRequesterMessage(MapRequester *mapRequester, struct IntuiMessage *msg) {
     switch(msg->Class) {
     case IDCMP_CLOSEWINDOW:
-        *selected = -1;
+        mapRequester->selected = -1;
         break;
     case IDCMP_GADGETUP:
-        handleRequesterGadgetUp(window, (struct Gadget*)msg->IAddress, selected);
+        handleRequesterGadgetUp(mapRequester, (struct Gadget*)msg->IAddress);
         break;
     case IDCMP_REFRESHWINDOW:
-        GT_BeginRefresh(window);
-        GT_EndRefresh(window, TRUE);
+        GT_BeginRefresh(mapRequester->window);
+        GT_EndRefresh(mapRequester->window, TRUE);
         break;
     }
 }
 
-static int handleRequesterMessages(struct Window *window) {
+static void handleRequesterMessages(MapRequester *mapRequester) {
     struct IntuiMessage *msg = NULL;
-    int selected = 0;
-    while(msg = GT_GetIMsg(window->UserPort)) {
-        handleRequesterMessage(window, msg, &selected);
+    while(msg = GT_GetIMsg(mapRequester->window->UserPort)) {
+        handleRequesterMessage(mapRequester, msg);
         GT_ReplyIMsg(msg);
     }
-    return selected;
 }
 
-static int requesterLoop(struct Window *window) {
-    long signal = 1L << window->UserPort->mp_SigBit;
-    int selected = 0;
-    while(!selected) {
+static void requesterLoop(MapRequester *mapRequester) {
+    long signal = 1L << mapRequester->window->UserPort->mp_SigBit;
+    mapRequester->selected = 0;
+    while(!mapRequester->selected) {
         Wait(signal);
-        selected = handleRequesterMessages(window);
+        handleRequesterMessages(mapRequester);
     }
-    if(selected == -1) {
-        return 0;
-    } else {
-        return selected;
+    if(mapRequester->selected == -1) {
+        mapRequester->selected = 0;
     }
 }
 
 int saveMapRequester(MapEditor *mapEditor) {
-    int result;
-    struct Window *window;
     struct Gadget *glist;
+    MapRequester mapRequester;
 
     if(!Request(&requester, mapEditor->window)) {
         fprintf(stderr, "saveMapRequester: couldn't start requester\n");
@@ -192,23 +191,23 @@ int saveMapRequester(MapEditor *mapEditor) {
     }
     mapRequesterNewWindow.FirstGadget = glist;
 
-    window = OpenWindow(&mapRequesterNewWindow);
-    if(!window) {
+    mapRequester.window = OpenWindow(&mapRequesterNewWindow);
+    if(!mapRequester.window) {
         fprintf(stderr, "saveMapRequester: couldn't open window\n");
         goto error_FreeGadgets;
     }
 
-    GT_RefreshWindow(window, NULL);
+    GT_RefreshWindow(mapRequester.window, NULL);
 
-    result = requesterLoop(window);
+    requesterLoop(&mapRequester);
 
-    CloseWindow(window);
+    CloseWindow(mapRequester.window);
 
     FreeGadgets(glist);
 
     EndRequest(&requester, mapEditor->window);
 
-    return result;
+    return mapRequester.selected;
 
 error_FreeGadgets:
     FreeGadgets(glist);
