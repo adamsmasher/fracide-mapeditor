@@ -92,6 +92,9 @@ static struct Requester requester;
 typedef struct MapRequester_tag {
     struct Window *window;
     int selected;
+    int highlighted;
+    struct Gadget *okButton;
+    struct Gadget *gadgets;
 } MapRequester;
 
 void initMapRequesterScreen(void) {
@@ -104,11 +107,11 @@ void initMapRequesterVi(void) {
     cancelButtonNewGadget.ng_VisualInfo = vi;
 }
 
-static struct Gadget *createMapRequesterGadgets(void) {
+static void createMapRequesterGadgets(MapRequester *mapRequester) {
     struct Gadget *gad;
-    struct Gadget *glist = NULL;
+    mapRequester->gadgets = NULL;
 
-    gad = CreateContext(&glist);
+    gad = CreateContext(&mapRequester->gadgets);
 
     gad = CreateGadget(LISTVIEW_KIND, gad, &mapListNewGadget,
         /* TODO: get list of maps */
@@ -117,6 +120,7 @@ static struct Gadget *createMapRequesterGadgets(void) {
     gad = CreateGadget(BUTTON_KIND, gad, &okButtonNewGadget,
         GA_Disabled, TRUE,
         TAG_END);
+    mapRequester->okButton = gad;
 
     gad = CreateGadget(BUTTON_KIND, gad, &cancelButtonNewGadget, TAG_END);
 
@@ -124,18 +128,25 @@ static struct Gadget *createMapRequesterGadgets(void) {
         goto error;
     }
 
-    return glist;
-
+    return;
 error:
-    FreeGadgets(glist);
-    return NULL;
+    FreeGadgets(mapRequester->gadgets);
+    mapRequester->okButton = NULL;
 }
 
-static void handleRequesterGadgetUp(MapRequester *mapRequester, struct Gadget *gadget) {
-    /* TODO: implement other things  */
+static void handleRequesterGadgetUp(MapRequester *mapRequester, struct Gadget *gadget, UWORD code) {
     switch(gadget->GadgetID) {
+    case OK_BUTTON_ID:
+        mapRequester->selected = mapRequester->highlighted + 1;
+        break;
     case CANCEL_BUTTON_ID:
         mapRequester->selected = -1;
+        break;
+    case MAP_LIST_ID:
+        mapRequester->highlighted = code;
+        GT_SetGadgetAttrs(mapRequester->okButton, mapRequester->window, NULL,
+            GA_Disabled, TRUE,
+            TAG_END);
         break;
     }
 }
@@ -146,7 +157,7 @@ static void handleRequesterMessage(MapRequester *mapRequester, struct IntuiMessa
         mapRequester->selected = -1;
         break;
     case IDCMP_GADGETUP:
-        handleRequesterGadgetUp(mapRequester, (struct Gadget*)msg->IAddress);
+        handleRequesterGadgetUp(mapRequester, (struct Gadget*)msg->IAddress, msg->Code);
         break;
     case IDCMP_REFRESHWINDOW:
         GT_BeginRefresh(mapRequester->window);
@@ -176,7 +187,6 @@ static void requesterLoop(MapRequester *mapRequester) {
 }
 
 int saveMapRequester(MapEditor *mapEditor) {
-    struct Gadget *glist;
     MapRequester mapRequester;
 
     if(!Request(&requester, mapEditor->window)) {
@@ -184,12 +194,12 @@ int saveMapRequester(MapEditor *mapEditor) {
         goto error;
     }
 
-    glist = createMapRequesterGadgets();
-    if(!glist) {
+    createMapRequesterGadgets(&mapRequester);
+    if(!mapRequester.gadgets) {
         fprintf(stderr, "saveMapRequester: couldn't create gadgets\n");
         goto error_EndRequest;
     }
-    mapRequesterNewWindow.FirstGadget = glist;
+    mapRequesterNewWindow.FirstGadget = mapRequester.gadgets;
 
     mapRequester.window = OpenWindow(&mapRequesterNewWindow);
     if(!mapRequester.window) {
@@ -203,14 +213,14 @@ int saveMapRequester(MapEditor *mapEditor) {
 
     CloseWindow(mapRequester.window);
 
-    FreeGadgets(glist);
+    FreeGadgets(mapRequester.gadgets);
 
     EndRequest(&requester, mapEditor->window);
 
     return mapRequester.selected;
 
 error_FreeGadgets:
-    FreeGadgets(glist);
+    FreeGadgets(mapRequester.gadgets);
 error_EndRequest:
     EndRequest(&requester, mapEditor->window);
 error:
