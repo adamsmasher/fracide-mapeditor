@@ -81,7 +81,7 @@ static struct NewGadget cancelButtonNewGadget = {
     CANCEL_BUTTON_WIDTH, CANCEL_BUTTON_HEIGHT,
     "Cancel",
     &Topaz80,
-    OK_BUTTON_ID,
+    CANCEL_BUTTON_ID,
     0,
     NULL, /* visual info filled in later */
     NULL  /* user data */
