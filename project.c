@@ -53,7 +53,6 @@ void freeProject(Project *project) {
     }
 }
 
-/* TODO: load mapnames */
 static int loadProjectFromFp(FILE *fp, Project *project) {
 	int i;
 	ULONG header;
@@ -121,6 +120,7 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
 		}
 
 		project->maps[mapNum] = map;
+        updateProjectMapName(project, mapNum, map);
 	}
 
 	return 1;
