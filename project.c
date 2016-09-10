@@ -3,12 +3,17 @@
 #include <proto/exec.h>
 
 #include "globals.h"
+#include "map.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #define VERSION 1
 #define HEADER (('F' << 24) | ('R' << 16) | ('M' << 8) | 'P')
+
+void updateProjectMapName(int mapNum, Map *map) {
+    sprintf(project.mapNameStrs[mapNum], "%d: %s", mapNum, map->name);
+}
 
 void initProject(Project *project) {
 	int i;
