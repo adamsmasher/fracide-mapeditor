@@ -15,5 +15,6 @@ typedef struct Map_tag {
 
 Map *allocMap(void);
 Map *copyMap(Map*);
+void overwriteMap(Map *srcMap, Map *destMap);
 
 #endif

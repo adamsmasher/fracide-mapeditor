@@ -15,14 +15,18 @@ Map *allocMap(void) {
 	return map;
 }
 
+void overwriteMap(Map *srcMap, Map *destMap) {
+    strcpy(destMap->name, srcMap->name);
+    destMap->tilesetNum = srcMap->tilesetNum;
+    memcpy(destMap->tiles, srcMap->tiles, MAP_TILES_WIDE * MAP_TILES_HIGH);
+}
+
 Map *copyMap(Map *oldMap) {
     Map *newMap = malloc(sizeof(Map));
     if(!newMap) {
         return NULL;
     }
+    overwriteMap(oldMap, newMap);
 
-    strcpy(newMap->name, oldMap->name);
-    newMap->tilesetNum = oldMap->tilesetNum;
-    memcpy(newMap->tiles, oldMap->tiles, MAP_TILES_WIDE * MAP_TILES_HIGH);
     return newMap;
 }
