@@ -114,7 +114,7 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
 			goto freeMaps_error;
 		}
 
-		if(fread(map, sizeof(Map), 1, fp) != sizeof(Map)) {
+		if(fread(map, sizeof(Map), 1, fp) != 1) {
 			fprintf(stderr, "loadProjectFromFp: couldn't read map\n");
 			free(map);
 			goto freeMaps_error;
