@@ -476,6 +476,23 @@ static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {
 
 static void saveMapAs(MapEditor *mapEditor) {
     int selected = saveMapRequester(mapEditor);
+    if(!selected) {
+        return;
+    }
+
+    /* TODO: add a prompt if the map is already occupied */
+
+    if(!project.maps[selected-1]) {
+        project.mapCnt++;
+        project.maps[selected-1] = copyMap(mapEditor->map);
+        /* TODO: test for failure in copy */
+    } else {
+        overwriteMap(mapEditor->map, project.maps[selected-1]);
+    }
+
+    mapEditor->mapNum = selected;
+
+    updateProjectMapName(selected - 1, mapEditor->map);
 }
 
 static void saveMap(MapEditor *mapEditor) {
