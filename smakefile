@@ -19,7 +19,7 @@ TilesetPackage.o: TilesetPackage.c
 
 TilesetRequester.o: TilesetRequester.c globals.h
 
-Project.o: Project.c Project.h
+Project.o: Project.c Project.h globals.h
 
 MapRequester.o: MapRequester.c MapRequester.h MapEditor.h
 
