@@ -16,17 +16,17 @@ void updateProjectMapName(Project *project, int mapNum, Map *map) {
 }
 
 void initProject(Project *project) {
-	int i;
+    int i;
     struct Node *node;
 
-	project->tilesetPackagePath[0] = '\0';
+    project->tilesetPackagePath[0] = '\0';
 
-	project->mapCnt = 0;
+    project->mapCnt = 0;
 
-	for(i = 0; i < 128; i++) {
-		project->maps[i] = NULL;
+    for(i = 0; i < 128; i++) {
+        project->maps[i] = NULL;
         sprintf(project->mapNameStrs[i], "%d:", i);
-	}
+    }
 
     NewList(&project->mapNames);
 
@@ -39,12 +39,12 @@ void initProject(Project *project) {
 }
 
 void freeProject(Project *project) {
-	int i;
+    int i;
     struct Node *node, *next;
 
-	for(i = 0; i < 128; i++) {
-		free(project->maps[i]);
-	}
+    for(i = 0; i < 128; i++) {
+        free(project->maps[i]);
+    }
 
     node = project->mapNames.lh_Head;
     while(next = node->ln_Succ) {
