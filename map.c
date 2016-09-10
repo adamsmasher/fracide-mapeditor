@@ -4,15 +4,15 @@
 #include <string.h>
 
 Map *allocMap(void) {
-	Map *map = malloc(sizeof(Map));
+    Map *map = malloc(sizeof(Map));
     if(!map) {
         return NULL;
     }
 
-	map->name[0] = '\0';
-	map->tilesetNum = 0;
-	memset(map->tiles, 0, MAP_TILES_WIDE * MAP_TILES_HIGH);
-	return map;
+    map->name[0] = '\0';
+    map->tilesetNum = 0;
+    memset(map->tiles, 0, MAP_TILES_WIDE * MAP_TILES_HIGH);
+    return map;
 }
 
 void overwriteMap(Map *srcMap, Map *destMap) {
