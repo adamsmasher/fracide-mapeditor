@@ -207,7 +207,7 @@ static void newProject(void) {
 }
 
 static void openProjectFromAsl(char *dir, char *file) {
-	Project myNewProject;
+    Project *myNewProject;
 	size_t bufferLen = strlen(dir) + strlen(file) + 2;
 	char *buffer = malloc(bufferLen);
 
@@ -221,6 +221,12 @@ static void openProjectFromAsl(char *dir, char *file) {
 		goto done;
 	}
 
+    myNewProject = malloc(sizeof(Project));
+    if(!myNewProject) {
+        fprintf(stderr, "openProjectFromAsl: failed to allocate project\n");
+        goto freeBuffer;
+    }
+
 	strcpy(buffer, dir);
 	if(!AddPart(buffer, file, (ULONG)bufferLen)) {
 		fprintf(
@@ -230,20 +236,22 @@ static void openProjectFromAsl(char *dir, char *file) {
 			buffer ? buffer : "NULL",
 			file   ? file   : "NULL",
 			bufferLen);
-		goto freeBuffer;
+		goto freeProject;
 	}
 
-	if(!loadProjectFromFile(buffer, &myNewProject)) {
+	if(!loadProjectFromFile(buffer, myNewProject)) {
 		EasyRequest(projectWindow,
 			&projectLoadFailEasyStruct,
 			NULL,
 			buffer);
-		goto freeBuffer;
+		goto freeProject;
 	}
 	newProject();
 	memcpy(&project, &myNewProject, sizeof(Project));
 	setProjectFilename(buffer);
 
+freeProject:
+    free(myNewProject);
 freeBuffer:
 	free(buffer);
 done:
