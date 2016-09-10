@@ -500,7 +500,7 @@ static void saveMapAs(MapEditor *mapEditor) {
 
     mapEditor->mapNum = selected;
 
-    updateProjectMapName(selected - 1, mapEditor->map);
+    updateProjectMapName(&project, selected - 1, mapEditor->map);
 }
 
 static void saveMap(MapEditor *mapEditor) {

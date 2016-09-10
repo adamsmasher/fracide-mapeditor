@@ -21,6 +21,6 @@ void freeProject(Project*);
 int loadProjectFromFile(char *file, Project*);
 int saveProjectToFile(char *file);
 
-void updateProjectMapName(int mapNum, Map*);
+void updateProjectMapName(Project*, int mapNum, Map*);
 
 #endif
