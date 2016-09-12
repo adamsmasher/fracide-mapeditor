@@ -247,7 +247,7 @@ static void openProjectFromAsl(char *dir, char *file) {
 		goto freeProject;
 	}
 	newProject();
-	memcpy(&project, &myNewProject, sizeof(Project));
+    copyProject(myNewProject, &project);
 	setProjectFilename(buffer);
 
 freeProject:
