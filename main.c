@@ -196,12 +196,16 @@ static void setProjectFilename(char *filename) {
 	}	
 }
 
-static void newProject(void) {
+static void clearProject(void) {
 	/* TODO: check for unsaved maps */
 	closeAllMapEditors();
 	freeTilesetPackage(tilesetPackage);
 	tilesetPackage = NULL;
 	freeProject(&project);
+}
+
+static void newProject(void) {
+    clearProject();
 	initProject(&project);
 	setProjectFilename(NULL);
 }
@@ -246,7 +250,7 @@ static void openProjectFromAsl(char *dir, char *file) {
 			buffer);
 		goto freeProject;
 	}
-	newProject();
+	clearProject();
     copyProject(myNewProject, &project);
 	setProjectFilename(buffer);
 
