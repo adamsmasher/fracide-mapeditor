@@ -7,12 +7,26 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define VERSION 1
 #define HEADER (('F' << 24) | ('R' << 16) | ('M' << 8) | 'P')
 
 void updateProjectMapName(Project *project, int mapNum, Map *map) {
     sprintf(project->mapNameStrs[mapNum], "%d: %s", mapNum, map->name);
+}
+
+static void initMapNameNodes(Project *project) {
+    int i;
+    struct Node *node, *next;
+
+    node = project->mapNames.lh_Head;
+    i = 0;
+    while(next = node->ln_Succ) {
+        node->ln_Name = project->mapNameStrs[i];
+        node = next;
+        i++;
+    }
 }
 
 void initProject(Project *project) {
@@ -33,9 +47,10 @@ void initProject(Project *project) {
     for(i = 0; i < 128; i++) {
         node = malloc(sizeof(struct Node));
         /* TODO: handle node creation failure */
-        node->ln_Name = project->mapNameStrs[i];
         AddTail(&project->mapNames, node);
     }
+
+    initMapNameNodes(project);
 }
 
 void freeProject(Project *project) {
@@ -51,6 +66,12 @@ void freeProject(Project *project) {
         free(node);
         node = next;
     }
+}
+
+void copyProject(Project *src, Project *dest) {
+    memcpy(dest, src, sizeof(Project));
+    /* fix up internal pointers */
+    initMapNameNodes(dest);
 }
 
 static int loadProjectFromFp(FILE *fp, Project *project) {
