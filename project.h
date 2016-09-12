@@ -8,9 +8,9 @@
 #define TILESET_PACKAGE_PATH_SIZE 256
 
 typedef struct Project_tag {
-	char tilesetPackagePath[TILESET_PACKAGE_PATH_SIZE];
-	UWORD mapCnt;
-	Map *maps[128];
+    char tilesetPackagePath[TILESET_PACKAGE_PATH_SIZE];
+    UWORD mapCnt;
+    Map *maps[128];
     struct List mapNames;
     char mapNameStrs[128][80];
 } Project;
