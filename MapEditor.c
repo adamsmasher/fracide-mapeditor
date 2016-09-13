@@ -410,6 +410,8 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
         goto error_freeMap;
     }
 
+    /* TODO: draw the map and stuff */
+
     mapEditor->map = mapCopy;
     mapEditor->mapNum = mapNum;
     return mapEditor;

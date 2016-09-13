@@ -380,6 +380,7 @@ static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 }
 
 static void newMap(void) {
+    /* TODO: handle failure */
 	MapEditor *mapEditor = newMapEditorNewMap();
 	addToMapEditorList(mapEditor);
 	addWindowToSigMask(mapEditor->window);
