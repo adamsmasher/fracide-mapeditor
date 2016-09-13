@@ -385,10 +385,27 @@ static void newMap(void) {
 	addWindowToSigMask(mapEditor->window);
 }
 
+static void openMap(void) {
+    MapEditor *mapEditor;
+
+    int selected = openMapRequester();
+    if(!selected) {
+        return;
+    }
+
+    /* TODO: check if the map is already open; if so, just bring it up */
+
+    /* TODO: handle failure */
+    mapEditor = newMapEditorWithMap(project.maps[selected - 1], selected - 1);
+    addToMapEditorList(mapEditor);
+    addWindowToSigMask(mapEditor->window);
+}
+
 static void handleMapsMenuPick(UWORD itemNum, UWORD subNum) {
-	switch(itemNum) {
-		case 0: newMap(); break;
-	}
+    switch(itemNum) {
+        case 0: newMap(); break;
+        case 1: openMap(); break;
+    }
 }
 
 static void handleMainMenuPick(ULONG menuNumber) {
