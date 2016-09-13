@@ -187,24 +187,24 @@ static void requesterLoop(MapRequester *mapRequester) {
     }
 }
 
-int saveMapRequester(MapEditor *mapEditor) {
+static int spawnRequester(struct Window *window) {
     MapRequester mapRequester;
 
-    if(!Request(&requester, mapEditor->window)) {
-        fprintf(stderr, "saveMapRequester: couldn't start requester\n");
+    if(!Request(&requester, window)) {
+        fprintf(stderr, "spawnRequester: couldn't start requester\n");
         goto error;
     }
 
     createMapRequesterGadgets(&mapRequester);
     if(!mapRequester.gadgets) {
-        fprintf(stderr, "saveMapRequester: couldn't create gadgets\n");
+        fprintf(stderr, "spawnRequester: couldn't create gadgets\n");
         goto error_EndRequest;
     }
     mapRequesterNewWindow.FirstGadget = mapRequester.gadgets;
 
     mapRequester.window = OpenWindow(&mapRequesterNewWindow);
     if(!mapRequester.window) {
-        fprintf(stderr, "saveMapRequester: couldn't open window\n");
+        fprintf(stderr, "spawnRequester: couldn't open window\n");
         goto error_FreeGadgets;
     }
 
@@ -216,14 +216,25 @@ int saveMapRequester(MapEditor *mapEditor) {
 
     FreeGadgets(mapRequester.gadgets);
 
-    EndRequest(&requester, mapEditor->window);
+    EndRequest(&requester, window);
 
     return mapRequester.selected;
 
 error_FreeGadgets:
     FreeGadgets(mapRequester.gadgets);
 error_EndRequest:
-    EndRequest(&requester, mapEditor->window);
+    EndRequest(&requester, window);
 error:
     return 0;
+}
+
+int openMapRequester(void) {
+    mapRequesterNewWindow.Title = "Open Map";
+    return spawnRequester(projectWindow);
+}
+
+int saveMapRequester(MapEditor *mapEditor) {
+    /* TODO: dynamically generate me */
+    mapRequesterNewWindow.Title = "Save Map";
+    return spawnRequester(mapEditor->window);
 }

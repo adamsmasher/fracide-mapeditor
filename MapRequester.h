@@ -5,6 +5,8 @@
 
 void initMapRequesterScreen(void);
 void initMapRequesterVi(void);
+
+int openMapRequester(void);
 int saveMapRequester(MapEditor*);
 
 #endif
