@@ -8,5 +8,6 @@
 struct Screen  *screen         = NULL;
 void           *vi             = NULL;
 TilesetPackage *tilesetPackage = NULL;
+struct Window  *projectWindow  = NULL;
 Project        project;
 char           projectFilename[PROJECT_FILENAME_LENGTH];

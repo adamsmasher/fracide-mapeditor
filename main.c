@@ -41,7 +41,6 @@ static struct NewScreen newScreen = {
 	NULL
 };	
 
-static struct Window *projectWindow = NULL;
 static struct NewWindow projectNewWindow = {
 	0,0,SCR_WIDTH,SCR_HEIGHT,
 	0xFF,0xFF,
