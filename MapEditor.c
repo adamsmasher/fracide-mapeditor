@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 
+#include "map.h"
 #include "TilesetRequester.h"
 #include "globals.h"
 
@@ -529,12 +530,16 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
         goto error_freeMap;
     }
 
-    /* TODO: draw the map and stuff */
     GT_SetGadgetAttrs(mapEditor->mapNameGadget, mapEditor->window, NULL,
         GTST_String, map->name,
         TAG_END);
+
     if(map->tilesetNum) {
+        int i;
         mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1);
+        for(i = 0; i < MAP_TILES_WIDE * MAP_TILES_HIGH; i++) {
+            mapEditorSetTileTo(mapEditor, i, map->tiles[i]);
+        }
     }
 
     mapEditor->map = mapCopy;
