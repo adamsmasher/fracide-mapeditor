@@ -596,13 +596,12 @@ void mapEditorSetSelected(MapEditor *mapEditor, unsigned int selected) {
 		TILESET_BORDER_TOP  + (row * 32));
 }
 
+static void mapEditorSetTileTo(MapEditor *mapEditor, unsigned int tile, UBYTE to) {
+    mapEditor->map->tiles[tile] = to;
+    mapEditor->mapImages[tile].ImageData = mapEditor->imageData + (to << 7);
+    redrawMapTile(mapEditor, tile);
+}
+
 void mapEditorSetTile(MapEditor *mapEditor, unsigned int tile) {
-	UWORD *imageData = mapEditor->imageData;
-
-	mapEditor->map->tiles[tile] = mapEditor->selected;
-
-	imageData += (mapEditor->selected << 7);
-
-	mapEditor->mapImages[tile].ImageData = imageData;
-	redrawMapTile(mapEditor, tile);
+    mapEditorSetTileTo(mapEditor, tile, mapEditor->selected);
 }
