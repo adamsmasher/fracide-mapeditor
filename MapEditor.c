@@ -400,8 +400,9 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
     Map *mapCopy;
     MapEditor *mapEditor;
 
-    mapCopy = copyMap(map);
-    if(!mapCopy) {
+    mapCopy = map ? copyMap(map) : allocMap();
+
+   if(!mapCopy) {
         goto error;
     }
 
