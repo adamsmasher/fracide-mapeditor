@@ -414,6 +414,35 @@ void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
     mapEditorSetTilesetUpdateUI(mapEditor, tilesetNumber);
 }
 
+static void redrawPaletteTile(MapEditor *mapEditor, unsigned int tile) {
+	struct Image *image = &mapEditor->paletteImages[tile];
+	struct Image *next = image->NextImage;
+	image->NextImage = NULL;
+	DrawImage(mapEditor->window->RPort, image,
+		TILESET_BORDER_LEFT,
+		TILESET_BORDER_TOP);
+	image->NextImage = next;
+}
+
+static void redrawMapTile(MapEditor *mapEditor, unsigned int tile) {
+	struct Image *image = &mapEditor->mapImages[tile];	struct Image *next = image->NextImage;
+	image->NextImage = NULL;
+	DrawImage(mapEditor->window->RPort, image,
+		MAP_BORDER_LEFT,
+		MAP_BORDER_TOP);
+	image->NextImage = next;
+}
+
+static void mapEditorSetTileTo(MapEditor *mapEditor, unsigned int tile, UBYTE to) {
+    mapEditor->map->tiles[tile] = to;
+    mapEditor->mapImages[tile].ImageData = mapEditor->imageData + (to << 7);
+    redrawMapTile(mapEditor, tile);
+}
+
+void mapEditorSetTile(MapEditor *mapEditor, unsigned int tile) {
+    mapEditorSetTileTo(mapEditor, tile, mapEditor->selected);
+}
+
 static MapEditor *newMapEditor(void) {
 	MapEditor *mapEditor = malloc(sizeof(MapEditor));
 	if(!mapEditor) {
@@ -518,26 +547,6 @@ error:
     return NULL;
 }
 
-static void redrawPaletteTile(MapEditor *mapEditor, unsigned int tile) {
-	struct Image *image = &mapEditor->paletteImages[tile];
-	struct Image *next = image->NextImage;
-	image->NextImage = NULL;
-	DrawImage(mapEditor->window->RPort, image,
-		TILESET_BORDER_LEFT,
-		TILESET_BORDER_TOP);
-	image->NextImage = next;
-}
-
-static void redrawMapTile(MapEditor *mapEditor, unsigned int tile) {
-	struct Image *image = &mapEditor->mapImages[tile];
-	struct Image *next = image->NextImage;
-	image->NextImage = NULL;
-	DrawImage(mapEditor->window->RPort, image,
-		MAP_BORDER_LEFT,
-		MAP_BORDER_TOP);
-	image->NextImage = next;
-}
-
 int mapEditorClickInPalette(WORD x, WORD y) {
 	return ((x > TILESET_BORDER_LEFT                        ) &&
 	        (x < TILESET_BORDER_LEFT + TILESET_BORDER_WIDTH ) &&
@@ -594,14 +603,4 @@ void mapEditorSetSelected(MapEditor *mapEditor, unsigned int selected) {
 	DrawBorder(mapEditor->window->RPort, &tileBorder,
 		TILESET_BORDER_LEFT + (col * 32),
 		TILESET_BORDER_TOP  + (row * 32));
-}
-
-static void mapEditorSetTileTo(MapEditor *mapEditor, unsigned int tile, UBYTE to) {
-    mapEditor->map->tiles[tile] = to;
-    mapEditor->mapImages[tile].ImageData = mapEditor->imageData + (to << 7);
-    redrawMapTile(mapEditor, tile);
-}
-
-void mapEditorSetTile(MapEditor *mapEditor, unsigned int tile) {
-    mapEditorSetTileTo(mapEditor, tile, mapEditor->selected);
 }
