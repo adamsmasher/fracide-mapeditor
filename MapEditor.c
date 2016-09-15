@@ -412,6 +412,9 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
     }
 
     /* TODO: draw the map and stuff */
+    GT_SetGadgetAttrs(mapEditor->mapNameGadget, mapEditor->window, NULL,
+        GTST_String, map->name,
+        TAG_END);
 
     mapEditor->map = mapCopy;
     mapEditor->mapNum = mapNum;
