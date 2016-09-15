@@ -504,6 +504,9 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
     GT_SetGadgetAttrs(mapEditor->mapNameGadget, mapEditor->window, NULL,
         GTST_String, map->name,
         TAG_END);
+    if(map->tilesetNum) {
+        mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1);
+    }
 
     mapEditor->map = mapCopy;
     mapEditor->mapNum = mapNum;
