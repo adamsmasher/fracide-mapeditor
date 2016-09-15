@@ -209,6 +209,7 @@ static void newProject(void) {
 	setProjectFilename(NULL);
 }
 
+/* TODO: load tileset as well */
 static void openProjectFromAsl(char *dir, char *file) {
     Project *myNewProject;
 	size_t bufferLen = strlen(dir) + strlen(file) + 2;
