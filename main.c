@@ -139,34 +139,42 @@ static void removeFromMapEditorList(MapEditor *mapEditor) {
 	}
 }
 
-/* TODO: return something so we can retry on error? */
-static void loadTilesetPackage(char *dir, char *file) {
-	TilesetPackage *newTilesetPackage;
-	char buffer[TILESET_PACKAGE_PATH_SIZE];
+static void loadTilesetPackageFromFile(char *file) {
+    TilesetPackage *newTilesetPackage;
 
-	if(strlen(dir) >= sizeof(buffer)) {
-		goto error;
-	}
-
-	strcpy(buffer, dir);
-	if(!AddPart(buffer, file, TILESET_PACKAGE_PATH_SIZE)) {
-		goto error;
-	}
-
-	newTilesetPackage = tilesetPackageLoadFromFile(buffer);
-	if(!newTilesetPackage) {
-		EasyRequest(projectWindow,
-			&tilesetPackageLoadFailEasyStruct,
-			NULL,
-			buffer);
-		goto error;
-	}
-	freeTilesetPackage(tilesetPackage);
-	tilesetPackage = newTilesetPackage;
-	strcpy(project.tilesetPackagePath, buffer);
+    newTilesetPackage = tilesetPackageLoadFromFile(file);
+    if(!newTilesetPackage) {
+        EasyRequest(projectWindow,
+            &tilesetPackageLoadFailEasyStruct,
+            NULL,
+            file);
+        goto error;
+    }
+    freeTilesetPackage(tilesetPackage);
+    tilesetPackage = newTilesetPackage;
+    strcpy(project.tilesetPackagePath, file);
 
 error:
-	return;
+    return;
+}
+
+/* TODO: return something so we can retry on error? */
+static void loadTilesetPackage(char *dir, char *file) {
+    char buffer[TILESET_PACKAGE_PATH_SIZE];
+
+    if(strlen(dir) >= sizeof(buffer)) {
+        goto error;
+    }
+
+    strcpy(buffer, dir);
+    if(!AddPart(buffer, file, TILESET_PACKAGE_PATH_SIZE)) {
+        goto error;
+    }
+
+    loadTilesetPackageFromFile(buffer);
+
+error:
+    return;
 }
 
 static void closeAllMapEditors(void) {
