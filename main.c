@@ -217,7 +217,6 @@ static void newProject(void) {
 	setProjectFilename(NULL);
 }
 
-/* TODO: load tileset as well */
 static void openProjectFromAsl(char *dir, char *file) {
     Project *myNewProject;
 	size_t bufferLen = strlen(dir) + strlen(file) + 2;
@@ -258,9 +257,13 @@ static void openProjectFromAsl(char *dir, char *file) {
 			buffer);
 		goto freeProject;
 	}
+
 	clearProject();
     copyProject(myNewProject, &project);
 	setProjectFilename(buffer);
+
+    /* TODO: handle error */
+    loadTilesetPackageFromFile(myNewProject->tilesetPackagePath);
 
 freeProject:
     free(myNewProject);
