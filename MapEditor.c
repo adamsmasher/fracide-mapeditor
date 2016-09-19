@@ -493,6 +493,7 @@ error:
 	return NULL;
 }
 
+/* TODO: put something indicating save status in title bar */
 MapEditor *newMapEditorNewMap(void) {
     Map *map;
     MapEditor *mapEditor;
