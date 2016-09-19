@@ -540,7 +540,7 @@ static void saveMap(MapEditor *mapEditor) {
 	if(!mapEditor->mapNum) {
 		saveMapAs(mapEditor);
 	} else {
-		/* TODO: save map */
+        overwriteMap(mapEditor->map, project.maps[mapEditor->mapNum - 1]);
 	}
 }
 
