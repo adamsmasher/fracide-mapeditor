@@ -413,6 +413,7 @@ static void mapEditorSetTilesetUpdateUI(MapEditor *mapEditor, UWORD tilesetNumbe
 void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
 	mapEditor->map->tilesetNum = tilesetNumber + 1;
     mapEditorSetTilesetUpdateUI(mapEditor, tilesetNumber);
+    mapEditor->saved = 0;
 }
 
 static void redrawPaletteTile(MapEditor *mapEditor, unsigned int tile) {
@@ -438,6 +439,7 @@ static void mapEditorSetTileTo(MapEditor *mapEditor, unsigned int tile, UBYTE to
     mapEditor->map->tiles[tile] = to;
     mapEditor->mapImages[tile].ImageData = mapEditor->imageData + (to << 7);
     redrawMapTile(mapEditor, tile);
+    mapEditor->saved = 0;
 }
 
 void mapEditorSetTile(MapEditor *mapEditor, unsigned int tile) {
@@ -507,6 +509,7 @@ MapEditor *newMapEditorNewMap(void) {
 
     mapEditor->map = map;
     mapEditor->mapNum = 0;
+    mapEditor->saved = 0;
     return mapEditor;
 
 error_freeMap:
@@ -544,6 +547,7 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
 
     mapEditor->map = mapCopy;
     mapEditor->mapNum = mapNum;
+    mapEditor->saved = 1;
     return mapEditor;
 
 error_freeMap:

@@ -31,6 +31,7 @@ typedef struct MapEditorTag {
   struct Gadget *mapNameGadget;
 
   int closed;
+  int saved;
 
   TilesetRequester *tilesetRequester;
 

@@ -532,6 +532,7 @@ static void saveMapAs(MapEditor *mapEditor) {
     }
 
     mapEditor->mapNum = selected;
+    mapEditor->saved  = 1;
 
     updateProjectMapName(&project, selected - 1, mapEditor->map);
 }
@@ -541,6 +542,7 @@ static void saveMap(MapEditor *mapEditor) {
 		saveMapAs(mapEditor);
 	} else {
         overwriteMap(mapEditor->map, project.maps[mapEditor->mapNum - 1]);
+        mapEditor->saved = 1;
 	}
 }
 
