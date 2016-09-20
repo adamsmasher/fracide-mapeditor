@@ -334,13 +334,13 @@ static void closeAttachedTilesetRequester(MapEditor *mapEditor) {
 }
 
 void closeMapEditor(MapEditor *mapEditor) {
-	closeAttachedTilesetRequester(mapEditor);
-	ClearMenuStrip(mapEditor->window);
-	CloseWindow(mapEditor->window);
-	FreeGadgets(mapEditor->gadgets);
-	FreeMem(mapEditor->imageData, IMAGE_DATA_SIZE);
-	free(mapEditor->map);
-	free(mapEditor);
+    closeAttachedTilesetRequester(mapEditor);
+    ClearMenuStrip(mapEditor->window);
+    CloseWindow(mapEditor->window);
+    FreeGadgets(mapEditor->gadgets);
+    FreeMem(mapEditor->imageData, IMAGE_DATA_SIZE);
+    free(mapEditor->map);
+    free(mapEditor);
 }
 
 void attachTilesetRequesterToMapEditor
