@@ -139,6 +139,17 @@ static void removeFromMapEditorList(MapEditor *mapEditor) {
 	}
 }
 
+static MapEditor *findMapEditor(int mapNum) {
+    MapEditor *mapEditor = firstMapEditor;
+    while(mapEditor) {
+        if(mapEditor->mapNum - 1 == mapNum) {
+            return mapEditor;
+        }
+        mapEditor = mapEditor->next;
+    }
+    return NULL;
+}
+
 static void loadTilesetPackageFromFile(char *file) {
     TilesetPackage *newTilesetPackage;
 
@@ -406,12 +417,15 @@ static void openMap(void) {
         return;
     }
 
-    /* TODO: check if the map is already open; if so, just bring it up */
-
-    /* TODO: handle failure */
-    mapEditor = newMapEditorWithMap(project.maps[selected - 1], selected - 1);
-    addToMapEditorList(mapEditor);
-    addWindowToSigMask(mapEditor->window);
+    mapEditor = findMapEditor(selected - 1);
+    if(mapEditor) {
+        WindowToFront(mapEditor->window);
+    } else {
+        /* TODO: handle failure */
+        mapEditor = newMapEditorWithMap(project.maps[selected - 1], selected - 1);
+        addToMapEditorList(mapEditor);
+        addWindowToSigMask(mapEditor->window);
+    }
 }
 
 static void handleMapsMenuPick(UWORD itemNum, UWORD subNum) {
