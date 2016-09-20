@@ -108,6 +108,22 @@ static struct EasyStruct projectSaveFailEasyStruct = {
 	"OK"
 };
 
+static struct EasyStruct unsavedMapAlertEasyStructWithNum = {
+    sizeof(struct EasyStruct),
+    0,
+    "Unsaved Map",
+    "Save changes to map %d, \"%s\"?",
+    "Save|Don't Save|Cancel"
+};
+
+static struct EasyStruct unsavedMapAlertEasyStructNoNum = {
+    sizeof(struct EasyStruct),
+    0,
+    "Unsaved Map",
+    "Save changes to \"%s\"?",
+    "Save|Don't Save|Cancel"
+};
+
 static int running = 0;
 static long sigMask = 0;
 static MapEditor *firstMapEditor = NULL;
@@ -561,6 +577,32 @@ static void saveMap(MapEditor *mapEditor) {
 	}
 }
 
+static int unsavedMapEditorAlert(MapEditor *mapEditor) {
+    int response;
+    if(mapEditor->mapNum) {
+        response = EasyRequest(
+            mapEditor->window,
+            &unsavedMapAlertEasyStructWithNum,
+            NULL,
+            mapEditor->mapNum - 1, mapEditor->map->name);
+    } else {
+        response = EasyRequest(
+            mapEditor->window,
+            &unsavedMapAlertEasyStructNoNum,
+            NULL,
+            mapEditor->map->name);
+    }
+
+    switch(response) {
+        case 0: return 0;           /* cancel */
+        case 1: saveMap(mapEditor); /* save - fall through intentional */
+        case 2: return 1;           /* don't save */
+        default:
+            fprintf(stderr, "unsavedMapEditorAlert: unknown response %d\n", response);
+            return 0;
+    }
+}
+
 static void handleMapMenuPick(MapEditor *mapEditor, UWORD itemNum, UWORD subNum) {
     /* TODO: implement revert */
 	switch(itemNum) {
@@ -568,7 +610,11 @@ static void handleMapMenuPick(MapEditor *mapEditor, UWORD itemNum, UWORD subNum)
         case 2: openMap(); break;
 		case 4: saveMap(mapEditor); break;
         case 5: saveMapAs(mapEditor); break;
-		case 8: mapEditor->closed = 1; break;
+		case 8:
+            if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
+                mapEditor->closed = 1;
+            };
+            break;
 	}
 }
 
@@ -593,7 +639,9 @@ static void handleMapEditorMenuPicks(MapEditor *mapEditor, ULONG menuNumber) {
 static void handleMapEditorMessage(MapEditor *mapEditor, struct IntuiMessage *msg) {
 	switch(msg->Class) {
 	case IDCMP_CLOSEWINDOW:
-		mapEditor->closed = 1;
+        if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
+		    mapEditor->closed = 1;
+        }
 		break;
 	case IDCMP_REFRESHWINDOW:
 		GT_BeginRefresh(mapEditor->window);
