@@ -392,6 +392,7 @@ static void selectTilesetPackage(void) {
 }
 
 static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
+    /* TODO: implement revert */
 	switch(itemNum) {
 		case 0: newProject(); break;
 		case 2: openProject(); break;
@@ -561,8 +562,10 @@ static void saveMap(MapEditor *mapEditor) {
 }
 
 static void handleMapMenuPick(MapEditor *mapEditor, UWORD itemNum, UWORD subNum) {
+    /* TODO: implement revert */
 	switch(itemNum) {
 		case 0: newMap(); break;
+        case 2: openMap(); break;
 		case 4: saveMap(mapEditor); break;
         case 5: saveMapAs(mapEditor); break;
 		case 8: mapEditor->closed = 1; break;
