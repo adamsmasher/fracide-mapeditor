@@ -464,15 +464,39 @@ static int unsavedMapEditorAlert(MapEditor *mapEditor) {
     }
 }
 
+static int ensureMapEditorsSaved(void) {
+    MapEditor *i = firstMapEditor;
+    while(i) {
+        if(!i->saved && !unsavedMapEditorAlert(i)) {
+            return 0;
+        }
+        i = i->next;
+    }
+    return 1;
+}
+
+static int ensureEverythingSaved(void) {
+    /* TODO: ensure the project is saved, too */
+    return ensureMapEditorsSaved();
+}
+
 static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
     /* TODO: implement revert */
 	switch(itemNum) {
-		case 0: newProject(); break;
+		case 0:
+            if(ensureEverythingSaved()) {
+                newProject();
+            }
+            break;
 		case 2: openProject(); break;
 		case 4: saveProject(); break;
 		case 5: saveProjectAs(); break;
 		case 8: selectTilesetPackage(); break;
-		case 10: running = 0; break;
+		case 10:
+            if(ensureEverythingSaved()) {
+                running = 0;
+            }
+            break;
 	}
 }
 
