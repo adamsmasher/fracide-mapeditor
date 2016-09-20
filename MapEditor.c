@@ -547,7 +547,7 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
     }
 
     mapEditor->map = mapCopy;
-    mapEditor->mapNum = mapNum;
+    mapEditor->mapNum = mapNum + 1;
     mapEditor->saved = 1;
     return mapEditor;
 
