@@ -231,7 +231,6 @@ static void setProjectFilename(char *filename) {
 }
 
 static void clearProject(void) {
-	/* TODO: check for unsaved maps */
 	closeAllMapEditors();
 	freeTilesetPackage(tilesetPackage);
 	tilesetPackage = NULL;
