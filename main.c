@@ -299,6 +299,79 @@ done:
 	return;
 }
 
+static void saveMapAs(MapEditor *mapEditor) {
+    int selected = saveMapRequester(mapEditor);
+    if(!selected) {
+        return;
+    }
+
+    /* TODO: add a prompt if the map is already occupied */
+
+    if(!project.maps[selected-1]) {
+        project.mapCnt++;
+        project.maps[selected-1] = copyMap(mapEditor->map);
+        /* TODO: test for failure in copy */
+    } else {
+        overwriteMap(mapEditor->map, project.maps[selected-1]);
+    }
+
+    mapEditor->mapNum = selected;
+    mapEditor->saved  = 1;
+
+    updateProjectMapName(&project, selected - 1, mapEditor->map);
+}
+
+static void saveMap(MapEditor *mapEditor) {
+	if(!mapEditor->mapNum) {
+		saveMapAs(mapEditor);
+	} else {
+        overwriteMap(mapEditor->map, project.maps[mapEditor->mapNum - 1]);
+        mapEditor->saved = 1;
+	}
+}
+
+static int unsavedMapEditorAlert(MapEditor *mapEditor) {
+    int response;
+    if(mapEditor->mapNum) {
+        response = EasyRequest(
+            mapEditor->window,
+            &unsavedMapAlertEasyStructWithNum,
+            NULL,
+            mapEditor->mapNum - 1, mapEditor->map->name);
+    } else {
+        response = EasyRequest(
+            mapEditor->window,
+            &unsavedMapAlertEasyStructNoNum,
+            NULL,
+            mapEditor->map->name);
+    }
+
+    switch(response) {
+        case 0: return 0;           /* cancel */
+        case 1: saveMap(mapEditor); /* save - fall through intentional */
+        case 2: return 1;           /* don't save */
+        default:
+            fprintf(stderr, "unsavedMapEditorAlert: unknown response %d\n", response);
+            return 0;
+    }
+}
+
+static int ensureMapEditorsSaved(void) {
+    MapEditor *i = firstMapEditor;
+    while(i) {
+        if(!i->saved && !unsavedMapEditorAlert(i)) {
+            return 0;
+        }
+        i = i->next;
+    }
+    return 1;
+}
+
+static int ensureEverythingSaved(void) {
+    /* TODO: ensure the project is saved, too */
+    return ensureMapEditorsSaved();
+}
+
 static void openProject(void) {
 	/* TODO: check for unsaved maps */
 	struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
@@ -404,79 +477,6 @@ static void selectTilesetPackage(void) {
 		}
 		FreeAslRequest(request);
 	}
-}
-
-static void saveMapAs(MapEditor *mapEditor) {
-    int selected = saveMapRequester(mapEditor);
-    if(!selected) {
-        return;
-    }
-
-    /* TODO: add a prompt if the map is already occupied */
-
-    if(!project.maps[selected-1]) {
-        project.mapCnt++;
-        project.maps[selected-1] = copyMap(mapEditor->map);
-        /* TODO: test for failure in copy */
-    } else {
-        overwriteMap(mapEditor->map, project.maps[selected-1]);
-    }
-
-    mapEditor->mapNum = selected;
-    mapEditor->saved  = 1;
-
-    updateProjectMapName(&project, selected - 1, mapEditor->map);
-}
-
-static void saveMap(MapEditor *mapEditor) {
-	if(!mapEditor->mapNum) {
-		saveMapAs(mapEditor);
-	} else {
-        overwriteMap(mapEditor->map, project.maps[mapEditor->mapNum - 1]);
-        mapEditor->saved = 1;
-	}
-}
-
-static int unsavedMapEditorAlert(MapEditor *mapEditor) {
-    int response;
-    if(mapEditor->mapNum) {
-        response = EasyRequest(
-            mapEditor->window,
-            &unsavedMapAlertEasyStructWithNum,
-            NULL,
-            mapEditor->mapNum - 1, mapEditor->map->name);
-    } else {
-        response = EasyRequest(
-            mapEditor->window,
-            &unsavedMapAlertEasyStructNoNum,
-            NULL,
-            mapEditor->map->name);
-    }
-
-    switch(response) {
-        case 0: return 0;           /* cancel */
-        case 1: saveMap(mapEditor); /* save - fall through intentional */
-        case 2: return 1;           /* don't save */
-        default:
-            fprintf(stderr, "unsavedMapEditorAlert: unknown response %d\n", response);
-            return 0;
-    }
-}
-
-static int ensureMapEditorsSaved(void) {
-    MapEditor *i = firstMapEditor;
-    while(i) {
-        if(!i->saved && !unsavedMapEditorAlert(i)) {
-            return 0;
-        }
-        i = i->next;
-    }
-    return 1;
-}
-
-static int ensureEverythingSaved(void) {
-    /* TODO: ensure the project is saved, too */
-    return ensureMapEditorsSaved();
 }
 
 static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
