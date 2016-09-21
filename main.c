@@ -124,6 +124,14 @@ static struct EasyStruct unsavedMapAlertEasyStructNoNum = {
     "Save|Don't Save|Cancel"
 };
 
+static struct EasyStruct saveIntoFullSlotEasyStruct = {
+    sizeof(struct EasyStruct),
+    0,
+    "Confirm Overwrite",
+    "Map slot %d is already occupied by \"%s\".\nAre you sure you want to overwrite it?",
+    "Overwrite|Cancel"
+};
+
 static int running = 0;
 static long sigMask = 0;
 static MapEditor *firstMapEditor = NULL;
@@ -305,14 +313,23 @@ static void saveMapAs(MapEditor *mapEditor) {
         return;
     }
 
-    /* TODO: add a prompt if the map is already occupied */
-
     if(!project.maps[selected-1]) {
         project.mapCnt++;
         project.maps[selected-1] = copyMap(mapEditor->map);
         /* TODO: test for failure in copy */
     } else {
-        overwriteMap(mapEditor->map, project.maps[selected-1]);
+        /* TODO: string isn't working why */
+        int response = EasyRequest(
+            mapEditor->window,
+            &saveIntoFullSlotEasyStruct,
+            NULL,
+            selected - 1,
+            project.maps[selected - 1]->name);
+        if(response) {
+            overwriteMap(mapEditor->map, project.maps[selected-1]);
+        } else {
+            return;
+        }
     }
 
     mapEditor->mapNum = selected;
