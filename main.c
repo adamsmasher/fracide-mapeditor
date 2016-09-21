@@ -373,22 +373,27 @@ static int ensureEverythingSaved(void) {
 }
 
 static void openProject(void) {
-	/* TODO: check for unsaved maps */
-	struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
-		ASL_Hail, "Open Project",
-		ASL_Window, projectWindow,
-		TAG_END);
-	if(!request) {
-		goto done;
-	}
+    struct FileRequester *request;
 
-	if(AslRequest(request, NULL)) {
-		openProjectFromAsl(request->rf_Dir, request->rf_File);
-	}
+    if(!ensureEverythingSaved()) {
+        goto done;
+    }
 
-	FreeAslRequest(request);
+    request = AllocAslRequestTags(ASL_FileRequest,
+        ASL_Hail, "Open Project",
+        ASL_Window, projectWindow,
+        TAG_END);
+    if(!request) {
+        goto done;
+    }
+
+    if(AslRequest(request, NULL)) {
+        openProjectFromAsl(request->rf_Dir, request->rf_File);
+    }
+
+    FreeAslRequest(request);
 done:
-	return;
+    return;
 }
 
 static void saveProjectToAsl(char *dir, char *file) {
