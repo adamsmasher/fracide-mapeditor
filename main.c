@@ -308,6 +308,7 @@ done:
     return;
 }
 
+/* TODO: return something so e.g. on close clicking cancel doesn't close */
 static void saveMapAs(MapEditor *mapEditor) {
     int selected = saveMapRequester(mapEditor);
     if(!selected) {
