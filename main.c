@@ -387,6 +387,7 @@ static int ensureMapEditorsSaved(void) {
     return 1;
 }
 
+/* TODO: handle failure */
 static void saveProjectToAsl(char *dir, char *file) {
 	size_t bufferLen = strlen(dir) + strlen(file) + 2;
 	char *buffer = malloc(bufferLen);
