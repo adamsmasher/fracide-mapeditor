@@ -613,9 +613,9 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
 
 /* TODO: this maybe belongs in the mapeditor file */
 static void handleUpdateMapName(MapEditor *mapEditor) {
-	struct StringInfo *stringInfo =
-		(struct StringInfo*)mapEditor->mapNameGadget->SpecialInfo;
-	strcpy(mapEditor->map->name, stringInfo->Buffer);
+    struct StringInfo *stringInfo =
+        (struct StringInfo*)mapEditor->mapNameGadget->SpecialInfo;
+    strcpy(mapEditor->map->name, stringInfo->Buffer);
 }
 
 static void handleMapEditorGadgetUp
