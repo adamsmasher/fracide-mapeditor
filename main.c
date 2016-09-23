@@ -308,11 +308,10 @@ done:
     return;
 }
 
-/* TODO: return something so e.g. on close clicking cancel doesn't close */
-static void saveMapAs(MapEditor *mapEditor) {
+static int saveMapAs(MapEditor *mapEditor) {
     int selected = saveMapRequester(mapEditor);
     if(!selected) {
-        return;
+        return 0;
     }
 
     if(!project.maps[selected - 1]) {
@@ -328,7 +327,7 @@ static void saveMapAs(MapEditor *mapEditor) {
         if(response) {
             overwriteMap(mapEditor->map, project.maps[selected - 1]);
         } else {
-            return;
+            return 0;
         }
     }
 
@@ -336,14 +335,17 @@ static void saveMapAs(MapEditor *mapEditor) {
     mapEditor->saved  = 1;
 
     updateProjectMapName(&project, selected - 1, mapEditor->map);
+
+    return 1;
 }
 
-static void saveMap(MapEditor *mapEditor) {
+static int saveMap(MapEditor *mapEditor) {
 	if(!mapEditor->mapNum) {
-		saveMapAs(mapEditor);
+		return saveMapAs(mapEditor);
 	} else {
         overwriteMap(mapEditor->map, project.maps[mapEditor->mapNum - 1]);
         mapEditor->saved = 1;
+        return 1;
 	}
 }
 
@@ -366,7 +368,7 @@ static int unsavedMapEditorAlert(MapEditor *mapEditor) {
 
     switch(response) {
         case 0: return 0;           /* cancel */
-        case 1: saveMap(mapEditor); /* save - fall through intentional */
+        case 1: return saveMap(mapEditor); /* save */
         case 2: return 1;           /* don't save */
         default:
             fprintf(stderr, "unsavedMapEditorAlert: unknown response %d\n", response);
