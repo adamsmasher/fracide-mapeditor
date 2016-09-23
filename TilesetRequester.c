@@ -34,7 +34,6 @@ static struct NewWindow tilesetRequesterNewWindow = {
     CUSTOMSCREEN
 };
 
-/* TODO: get the font from the system preferences */
 static struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
 
 static struct NewGadget tilesetListNewGadget = {
