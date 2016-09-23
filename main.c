@@ -320,7 +320,6 @@ static void saveMapAs(MapEditor *mapEditor) {
         project.maps[selected - 1] = copyMap(mapEditor->map);
         /* TODO: test for failure in copy */
     } else {
-        /* TODO: string isn't working why */
         int response = EasyRequest(
             mapEditor->window,
             &saveIntoFullSlotEasyStruct,
