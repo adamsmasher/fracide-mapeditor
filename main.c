@@ -367,9 +367,9 @@ static int unsavedMapEditorAlert(MapEditor *mapEditor) {
     }
 
     switch(response) {
-        case 0: return 0;           /* cancel */
+        case 0: return 0;                  /* cancel */
         case 1: return saveMap(mapEditor); /* save */
-        case 2: return 1;           /* don't save */
+        case 2: return 1;                  /* don't save */
         default:
             fprintf(stderr, "unsavedMapEditorAlert: unknown response %d\n", response);
             return 0;
