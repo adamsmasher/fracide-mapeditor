@@ -315,9 +315,9 @@ static void saveMapAs(MapEditor *mapEditor) {
         return;
     }
 
-    if(!project.maps[selected-1]) {
+    if(!project.maps[selected - 1]) {
         project.mapCnt++;
-        project.maps[selected-1] = copyMap(mapEditor->map);
+        project.maps[selected - 1] = copyMap(mapEditor->map);
         /* TODO: test for failure in copy */
     } else {
         /* TODO: string isn't working why */
@@ -325,10 +325,9 @@ static void saveMapAs(MapEditor *mapEditor) {
             mapEditor->window,
             &saveIntoFullSlotEasyStruct,
             NULL,
-            selected - 1,
-            project.maps[selected - 1]->name);
+            selected - 1, project.maps[selected - 1]->name);
         if(response) {
-            overwriteMap(mapEditor->map, project.maps[selected-1]);
+            overwriteMap(mapEditor->map, project.maps[selected - 1]);
         } else {
             return;
         }
