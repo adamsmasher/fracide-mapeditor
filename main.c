@@ -387,35 +387,6 @@ static int ensureMapEditorsSaved(void) {
     return 1;
 }
 
-static int ensureEverythingSaved(void) {
-    /* TODO: ensure the project is saved, too */
-    return ensureMapEditorsSaved();
-}
-
-static void openProject(void) {
-    struct FileRequester *request;
-
-    if(!ensureEverythingSaved()) {
-        goto done;
-    }
-
-    request = AllocAslRequestTags(ASL_FileRequest,
-        ASL_Hail, "Open Project",
-        ASL_Window, projectWindow,
-        TAG_END);
-    if(!request) {
-        goto done;
-    }
-
-    if(AslRequest(request, NULL)) {
-        openProjectFromAsl(request->rf_Dir, request->rf_File);
-    }
-
-    FreeAslRequest(request);
-done:
-    return;
-}
-
 static void saveProjectToAsl(char *dir, char *file) {
 	size_t bufferLen = strlen(dir) + strlen(file) + 2;
 	char *buffer = malloc(bufferLen);
@@ -459,36 +430,68 @@ done:
 	return;
 }
 
-static void saveProjectAs(void) {
+static int saveProjectAs(void) {
+    BOOL result;
 	struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
 		ASL_Hail, "Save Project As",
 		ASL_Window, projectWindow,
 		ASL_FuncFlags, FILF_SAVE,
 		TAG_END);
 	if(!request) {
-		goto done;
+		return 0;
 	}
 
-	if(AslRequest(request, NULL)) {
+    result = AslRequest(request, NULL);
+    if(result) {
 		saveProjectToAsl(request->rf_Dir, request->rf_File);
 	}
 
 	FreeAslRequest(request);
-done:
-	return;
+	return result;
 }
 
-static void saveProject(void) {
-	if(*projectFilename) {
-		if(!saveProjectToFile(projectFilename)) {
-			EasyRequest(projectWindow,
-				&projectSaveFailEasyStruct,
-				NULL,
-				projectFilename);
+static int saveProject(void) {
+    if(*projectFilename) {
+        if(!saveProjectToFile(projectFilename)) {
+            EasyRequest(
+                projectWindow,
+                &projectSaveFailEasyStruct,
+                NULL,
+                projectFilename);
+            return 0;
 		}
-	} else {
-		saveProjectAs();
-	}
+        return 1;
+    } else {
+        return saveProjectAs();
+    }
+}
+
+static int ensureEverythingSaved(void) {
+    return ensureMapEditorsSaved();
+}
+
+static void openProject(void) {
+    struct FileRequester *request;
+
+    if(!ensureEverythingSaved()) {
+        goto done;
+    }
+
+    request = AllocAslRequestTags(ASL_FileRequest,
+        ASL_Hail, "Open Project",
+        ASL_Window, projectWindow,
+        TAG_END);
+    if(!request) {
+        goto done;
+    }
+
+    if(AslRequest(request, NULL)) {
+        openProjectFromAsl(request->rf_Dir, request->rf_File);
+    }
+
+    FreeAslRequest(request);
+done:
+    return;
 }
 
 static void selectTilesetPackage(void) {
