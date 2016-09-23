@@ -112,7 +112,7 @@ static struct EasyStruct unsavedMapAlertEasyStructWithNum = {
     sizeof(struct EasyStruct),
     0,
     "Unsaved Map",
-    "Save changes to map %d, \"%s\"?",
+    "Save changes to map %ld, \"%s\"?",
     "Save|Don't Save|Cancel"
 };
 
@@ -128,7 +128,7 @@ static struct EasyStruct saveIntoFullSlotEasyStruct = {
     sizeof(struct EasyStruct),
     0,
     "Confirm Overwrite",
-    "Map slot %d is already occupied by \"%s\".\nAre you sure you want to overwrite it?",
+    "Map slot %ld is already occupied by \"%s\".\nAre you sure you want to overwrite it?",
     "Overwrite|Cancel"
 };
 
