@@ -253,18 +253,18 @@ static void newProject(void) {
 
 static void openProjectFromAsl(char *dir, char *file) {
     Project *myNewProject;
-	size_t bufferLen = strlen(dir) + strlen(file) + 2;
-	char *buffer = malloc(bufferLen);
+    size_t bufferLen = strlen(dir) + strlen(file) + 2;
+    char *buffer = malloc(bufferLen);
 
-	if(!buffer) {
-		fprintf(
-			stderr,
-			"openProjectFromAsl: failed to allocate buffer "
-			"(dir: %s) (file: %s)\n",
-			dir  ? dir  : "NULL",
-			file ? file : "NULL");
-		goto done;
-	}
+    if(!buffer) {
+        fprintf(
+            stderr,
+            "openProjectFromAsl: failed to allocate buffer "
+            "(dir: %s) (file: %s)\n",
+            dir  ? dir  : "NULL",
+            file ? file : "NULL");
+    goto done;
+    }
 
     myNewProject = malloc(sizeof(Project));
     if(!myNewProject) {
@@ -272,29 +272,30 @@ static void openProjectFromAsl(char *dir, char *file) {
         goto freeBuffer;
     }
 
-	strcpy(buffer, dir);
-	if(!AddPart(buffer, file, (ULONG)bufferLen)) {
-		fprintf(
-			stderr,
-			"openProjectFromAsl: failed to add part "
-			"(buffer: %s) (file: %s) (len: %d)\n",
-			buffer ? buffer : "NULL",
-			file   ? file   : "NULL",
-			bufferLen);
-		goto freeProject;
-	}
+    strcpy(buffer, dir);
+    if(!AddPart(buffer, file, (ULONG)bufferLen)) {
+        fprintf(
+            stderr,
+            "openProjectFromAsl: failed to add part "
+            "(buffer: %s) (file: %s) (len: %d)\n",
+            buffer ? buffer : "NULL",
+            file   ? file   : "NULL",
+            bufferLen);
+        goto freeProject;
+    }
 
-	if(!loadProjectFromFile(buffer, myNewProject)) {
-		EasyRequest(projectWindow,
-			&projectLoadFailEasyStruct,
-			NULL,
-			buffer);
-		goto freeProject;
-	}
+    if(!loadProjectFromFile(buffer, myNewProject)) {
+        EasyRequest(
+            projectWindow,
+            &projectLoadFailEasyStruct,
+            NULL,
+            buffer);
+        goto freeProject;
+    }
 
-	clearProject();
+    clearProject();
     copyProject(myNewProject, &project);
-	setProjectFilename(buffer);
+    setProjectFilename(buffer);
 
     /* TODO: handle error */
     loadTilesetPackageFromFile(myNewProject->tilesetPackagePath);
@@ -302,9 +303,9 @@ static void openProjectFromAsl(char *dir, char *file) {
 freeProject:
     free(myNewProject);
 freeBuffer:
-	free(buffer);
+    free(buffer);
 done:
-	return;
+    return;
 }
 
 static void saveMapAs(MapEditor *mapEditor) {
