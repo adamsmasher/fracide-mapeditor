@@ -349,6 +349,7 @@ static void saveMap(MapEditor *mapEditor) {
 
 static int unsavedMapEditorAlert(MapEditor *mapEditor) {
     int response;
+
     if(mapEditor->mapNum) {
         response = EasyRequest(
             mapEditor->window,
