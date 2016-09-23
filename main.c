@@ -132,6 +132,14 @@ static struct EasyStruct saveIntoFullSlotEasyStruct = {
     "Overwrite|Cancel"
 };
 
+static struct EasyStruct unsavedProjectAlertEasyStruct = {
+    sizeof(struct EasyStruct),
+    0,
+    "Unsaved Project",
+    "Some changes to this project haven't been committed to disk.\nSave changes to project?",
+    "Save|Don't Save|Cancel"
+};
+
 static int running = 0;
 static long sigMask = 0;
 static MapEditor *firstMapEditor = NULL;
@@ -188,6 +196,7 @@ static void loadTilesetPackageFromFile(char *file) {
     freeTilesetPackage(tilesetPackage);
     tilesetPackage = newTilesetPackage;
     strcpy(project.tilesetPackagePath, file);
+    projectSaved = 0;
 
 error:
     return;
@@ -243,6 +252,7 @@ static void clearProject(void) {
 	freeTilesetPackage(tilesetPackage);
 	tilesetPackage = NULL;
 	freeProject(&project);
+    projectSaved = 1;
 }
 
 static void newProject(void) {
@@ -335,6 +345,7 @@ static int saveMapAs(MapEditor *mapEditor) {
     mapEditor->saved  = 1;
 
     updateProjectMapName(&project, selected - 1, mapEditor->map);
+    projectSaved = 0;
 
     return 1;
 }
@@ -345,6 +356,7 @@ static int saveMap(MapEditor *mapEditor) {
 	} else {
         overwriteMap(mapEditor->map, project.maps[mapEditor->mapNum - 1]);
         mapEditor->saved = 1;
+        projectSaved = 0;
         return 1;
 	}
 }
@@ -423,7 +435,7 @@ static void saveProjectToAsl(char *dir, char *file) {
 	}
 	setProjectFilename(buffer);
 
-	/* TODO: mark things as saved */
+    projectSaved = 1;
 
 freeBuffer:
 	free(buffer);
@@ -467,8 +479,28 @@ static int saveProject(void) {
     }
 }
 
+static int unsavedProjectAlert(void) {
+    int response = EasyRequest(
+        projectWindow,
+        &unsavedProjectAlertEasyStruct,
+        NULL);
+
+    switch(response) {
+        case 0: return 0;
+        case 1: return saveProject();
+        case 2: return 1;
+        default:
+            fprintf(stderr, "unsavedProjectAlert: unknown response %d\n", response);
+            return 0;
+    }
+}
+
+static int ensureProjectSaved(void) {
+    return projectSaved || unsavedProjectAlert();
+}
+
 static int ensureEverythingSaved(void) {
-    return ensureMapEditorsSaved();
+    return ensureMapEditorsSaved() && ensureProjectSaved();
 }
 
 static void openProject(void) {

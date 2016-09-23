@@ -13,6 +13,7 @@ extern void           *vi;
 extern TilesetPackage *tilesetPackage;
 extern struct Window  *projectWindow;
 extern Project        project;
+extern int            projectSaved;
 extern char           projectFilename[PROJECT_FILENAME_LENGTH];
 
 #endif
