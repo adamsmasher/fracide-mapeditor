@@ -616,6 +616,7 @@ static void handleUpdateMapName(MapEditor *mapEditor) {
     struct StringInfo *stringInfo =
         (struct StringInfo*)mapEditor->mapNameGadget->SpecialInfo;
     strcpy(mapEditor->map->name, stringInfo->Buffer);
+    mapEditor->saved = 0;
 }
 
 static void handleMapEditorGadgetUp
