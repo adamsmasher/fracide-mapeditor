@@ -18,28 +18,28 @@
 #define MAP_TILES_HIGH    9
 
 typedef struct MapEditorTag {
-  struct MapEditorTag *next;
-  struct MapEditorTag *prev;
+    struct MapEditorTag *next;
+    struct MapEditorTag *prev;
 
-  struct Window *window;
-  struct Gadget *gadgets;
+    struct Window *window;
+    struct Gadget *gadgets;
 
-  Map *map;
-  int mapNum;
+    Map *map;
+    int mapNum;
 
-  struct Gadget *tilesetNameGadget;
-  struct Gadget *mapNameGadget;
+    struct Gadget *tilesetNameGadget;
+    struct Gadget *mapNameGadget;
 
-  int closed;
-  int saved;
+    int closed;
+    int saved;
 
-  TilesetRequester *tilesetRequester;
+    TilesetRequester *tilesetRequester;
 
-  struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
-  struct Image mapImages[MAP_TILES_ACROSS * MAP_TILES_HIGH];
-  UWORD *imageData;
+    struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
+    struct Image mapImages[MAP_TILES_ACROSS * MAP_TILES_HIGH];
+    UWORD *imageData;
 
-  int selected;
+    int selected;
 } MapEditor;
 
 void initMapEditorScreen(void);
