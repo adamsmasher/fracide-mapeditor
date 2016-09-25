@@ -245,14 +245,15 @@ static void closeAllMapEditors(void) {
     firstMapEditor = NULL;
 }
 
+#define REVERT_PROJECT_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
+
 static void setProjectFilename(char *filename) {
-    ULONG revertMenuItem = SHIFTMENU(0) | SHIFTITEM(6);
     if(filename) {
         strcpy(projectFilename, filename);
-        OnMenu(projectWindow, revertMenuItem);
+        OnMenu(projectWindow, REVERT_PROJECT_MENU_ITEM);
     } else {
         projectFilename[0] = '\0';
-        OffMenu(projectWindow, revertMenuItem);
+        OffMenu(projectWindow, REVERT_PROJECT_MENU_ITEM);
     }
 }
 
