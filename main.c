@@ -952,7 +952,6 @@ int main(void) {
     
     initPalette(&screen->ViewPort);
 
-    /* TODO: put these in a list? */
     initMapEditorScreen();
     initMapRequesterScreen();
     initTilesetRequesterScreen();
@@ -971,7 +970,6 @@ int main(void) {
         goto closeWindow;
     }
 
-    /* TODO: put these in a list? */
     initMapEditorVi();
     initMapRequesterVi();
     initTilesetRequesterVi();
