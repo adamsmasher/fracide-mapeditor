@@ -429,8 +429,8 @@ static int ensureMapEditorsSaved(void) {
     return 1;
 }
 
-/* TODO: handle failure */
-static void saveProjectToAsl(char *dir, char *file) {
+static int saveProjectToAsl(char *dir, char *file) {
+    int result;
 	size_t bufferLen = strlen(dir) + strlen(file) + 2;
 	char *buffer = malloc(bufferLen);
 
@@ -441,6 +441,7 @@ static void saveProjectToAsl(char *dir, char *file) {
 			"(dir: %s) (file: %s)\n",
 			dir  ? dir  : "NULL",
 			file ? file : "NULL");
+        result = 0;
 		goto done;
 	}
 
@@ -453,6 +454,7 @@ static void saveProjectToAsl(char *dir, char *file) {
 			buffer ? buffer : "NULL",
 			file   ? file   : "NULL",
 			bufferLen);
+        result = 0;
 		goto freeBuffer;
 	}
 
@@ -461,16 +463,18 @@ static void saveProjectToAsl(char *dir, char *file) {
 			&projectSaveFailEasyStruct,
 			NULL,
 			buffer);
+        result = 0;
 		goto freeBuffer;
 	}
 	setProjectFilename(buffer);
 
     projectSaved = 1;
+    result = 1;
 
 freeBuffer:
 	free(buffer);
 done:
-	return;
+	return result;
 }
 
 static int saveProjectAs(void) {
@@ -481,15 +485,17 @@ static int saveProjectAs(void) {
 		ASL_FuncFlags, FILF_SAVE,
 		TAG_END);
 	if(!request) {
-		return 0;
+		result = 0;
+        goto done;
 	}
 
     result = AslRequest(request, NULL);
     if(result) {
-		saveProjectToAsl(request->rf_Dir, request->rf_File);
+		result = saveProjectToAsl(request->rf_Dir, request->rf_File);
 	}
 
 	FreeAslRequest(request);
+done:
 	return result;
 }
 
