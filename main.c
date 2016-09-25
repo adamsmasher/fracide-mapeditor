@@ -565,16 +565,23 @@ done:
 }
 
 static void selectTilesetPackage(void) {
-	struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
-		ASL_Hail, "Select Tileset Package",
-		ASL_Window, projectWindow,
-		TAG_END);
-	if(request) {
-		if(AslRequest(request, NULL)) {
-			loadTilesetPackageFromAsl(request->rf_Dir, request->rf_File);
-		}
-		FreeAslRequest(request);
-	}
+    struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
+        ASL_Hail, "Select Tileset Package",
+        ASL_Window, projectWindow,
+        TAG_END);
+    if(!request) {
+        fprintf(stderr, "selectTilesetPackage: failed to allocate requester\n");
+        goto done;
+    }
+
+    if(AslRequest(request, NULL)) {
+        loadTilesetPackageFromAsl(request->rf_Dir, request->rf_File);
+    }
+
+    FreeAslRequest(request);
+
+done:
+    return;
 }
 
 static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
