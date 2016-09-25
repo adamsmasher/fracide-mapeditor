@@ -550,22 +550,22 @@ static void selectTilesetPackage(void) {
 
 static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
     /* TODO: implement revert */
-	switch(itemNum) {
-		case 0:
+    switch(itemNum) {
+        case 0:
             if(ensureEverythingSaved()) {
                 newProject();
             }
             break;
-		case 2: openProject(); break;
-		case 4: saveProject(); break;
-		case 5: saveProjectAs(); break;
-		case 8: selectTilesetPackage(); break;
-		case 10:
+        case 2: openProject(); break;
+        case 4: saveProject(); break;
+        case 5: saveProjectAs(); break;
+        case 8: selectTilesetPackage(); break;
+        case 10:
             if(ensureEverythingSaved()) {
                 running = 0;
             }
             break;
-	}
+    }
 }
 
 static void newMap(void) {
