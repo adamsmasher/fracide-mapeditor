@@ -140,6 +140,14 @@ static struct EasyStruct unsavedProjectAlertEasyStruct = {
     "Save|Don't Save|Cancel"
 };
 
+static struct EasyStruct confirmRevertEasyStruct = {
+    sizeof(struct EasyStruct),
+    0,
+    "Confirm Revert",
+    "Are you sure you want to revert this project\nto the last saved version on disk?",
+    "Revert|Don't Revert"
+};
+
 static int running = 0;
 static long sigMask = 0;
 static MapEditor *firstMapEditor = NULL;
@@ -535,6 +543,24 @@ done:
     return;
 }
 
+static int confirmRevert(void) {
+    return EasyRequest(
+        projectWindow,
+        &confirmRevertEasyStruct,
+        NULL);
+}
+
+static void revertProject(void) {
+    if(!confirmRevert()) {
+        goto done;
+    }
+
+    openProjectFromFile(projectFilename);
+
+done:
+    return;
+}
+
 static void selectTilesetPackage(void) {
 	struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
 		ASL_Hail, "Select Tileset Package",
@@ -549,7 +575,6 @@ static void selectTilesetPackage(void) {
 }
 
 static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
-    /* TODO: implement revert */
     switch(itemNum) {
         case 0:
             if(ensureEverythingSaved()) {
@@ -559,6 +584,7 @@ static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
         case 2: openProject(); break;
         case 4: saveProject(); break;
         case 5: saveProjectAs(); break;
+        case 6: revertProject(); break;
         case 8: selectTilesetPackage(); break;
         case 10:
             if(ensureEverythingSaved()) {
