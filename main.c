@@ -624,8 +624,11 @@ static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
 }
 
 static void newMap(void) {
-    /* TODO: handle failure */
     MapEditor *mapEditor = newMapEditorNewMap();
+    if(!mapEditor) {
+        fprintf("newMap: failed to create mapEditor\n");
+        return;
+    }
     addToMapEditorList(mapEditor);
     addWindowToSigMask(mapEditor->window);
 }

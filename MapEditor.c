@@ -443,17 +443,20 @@ void mapEditorSetTile(MapEditor *mapEditor, unsigned int tile) {
 static MapEditor *newMapEditor(void) {
     MapEditor *mapEditor = malloc(sizeof(MapEditor));
     if(!mapEditor) {
+        fprintf(stderr, "newMapEditor: failed to allocate mapEditor\n");
         goto error;
     }
 
     createMapEditorGadgets(mapEditor);
     if(!mapEditor->gadgets) {
+        fprintf(stderr, "newMapEditor: failed to create gadgets\n");
         goto error_freeEditor;
     }
     mapEditorNewWindow.FirstGadget = mapEditor->gadgets;
 
     mapEditor->imageData = AllocMem(IMAGE_DATA_SIZE, MEMF_CHIP);
     if(!mapEditor->imageData) {
+        fprintf(stderr, "newMapEditor: failed to allocate image data\n");
         goto error_freeGadgets;
     }
     initMapEditorPaletteImages(mapEditor);
@@ -461,6 +464,7 @@ static MapEditor *newMapEditor(void) {
 
     mapEditor->window = OpenWindow(&mapEditorNewWindow);
     if(!mapEditor->window) {
+        fprintf(stderr, "newMapEditor: failed to open window\n");
         goto error_freeImageData;
     }
 
