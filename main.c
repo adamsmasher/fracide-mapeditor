@@ -212,17 +212,17 @@ error:
     return 0;
 }
 
-static int loadTilesetPackage(char *dir, char *file) {
+static int loadTilesetPackageFromAsl(char *dir, char *file) {
     char buffer[TILESET_PACKAGE_PATH_SIZE];
 
     if(strlen(dir) >= sizeof(buffer)) {
-        fprintf(stderr, "loadTilesetPackage: dir %s file %s doesn't fit in buffer\n", dir, file);
+        fprintf(stderr, "loadTilesetPackageFromAsl: dir %s file %s doesn't fit in buffer\n", dir, file);
         goto error;
     }
 
     strcpy(buffer, dir);
     if(!AddPart(buffer, file, TILESET_PACKAGE_PATH_SIZE)) {
-        fprintf(stderr, "loadTilesetPackage: dir %s file %s doesn't fit in buffer\n", dir, file);
+        fprintf(stderr, "loadTilesetPackageFromAsl: dir %s file %s doesn't fit in buffer\n", dir, file);
         goto error;
     }
 
@@ -571,7 +571,7 @@ static void selectTilesetPackage(void) {
 		TAG_END);
 	if(request) {
 		if(AslRequest(request, NULL)) {
-			loadTilesetPackage(request->rf_Dir, request->rf_File);
+			loadTilesetPackageFromAsl(request->rf_Dir, request->rf_File);
 		}
 		FreeAslRequest(request);
 	}
