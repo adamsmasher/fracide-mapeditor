@@ -246,7 +246,6 @@ static void closeAllMapEditors(void) {
 }
 
 static void setProjectFilename(char *filename) {
-	/* TODO: range check on filename length */
 	ULONG revertMenuItem = SHIFTMENU(0) | SHIFTITEM(6);
 	if(filename) {
 		strcpy(projectFilename, filename);
