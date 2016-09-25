@@ -351,9 +351,13 @@ static int saveMapAs(MapEditor *mapEditor) {
     }
 
     if(!project.maps[selected - 1]) {
+        Map *map = copyMap(mapEditor->map);
+        if(!map) {
+            fprintf(stderr, "saveMapAs: failed to allocate map copy\n");
+            return 0;
+        }
         project.mapCnt++;
-        project.maps[selected - 1] = copyMap(mapEditor->map);
-        /* TODO: test for failure in copy */
+        project.maps[selected - 1] = map;
     } else {
         int response = EasyRequest(
             mapEditor->window,
