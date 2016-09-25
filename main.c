@@ -645,8 +645,11 @@ static void openMap(void) {
     if(mapEditor) {
         WindowToFront(mapEditor->window);
     } else {
-        /* TODO: handle failure */
         mapEditor = newMapEditorWithMap(project.maps[selected - 1], selected - 1);
+        if(!mapEditor) {
+            fprintf(stderr, "openMap: failed to create new map editor\n");
+            return;
+        }
         addToMapEditorList(mapEditor);
         addWindowToSigMask(mapEditor->window);
     }
