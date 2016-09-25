@@ -204,7 +204,6 @@ static int loadTilesetPackageFromFile(char *file) {
     freeTilesetPackage(tilesetPackage);
     tilesetPackage = newTilesetPackage;
     strcpy(project.tilesetPackagePath, file);
-    projectSaved = 0;
 
     return 1;
 
@@ -575,7 +574,9 @@ static void selectTilesetPackage(void) {
     }
 
     if(AslRequest(request, NULL)) {
-        loadTilesetPackageFromAsl(request->rf_Dir, request->rf_File);
+        if(loadTilesetPackageFromAsl(request->rf_Dir, request->rf_File)) {
+            projectSaved = 0;
+        }
     }
 
     FreeAslRequest(request);
