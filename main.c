@@ -787,6 +787,7 @@ static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {
 
 static void revertMap(MapEditor *mapEditor) {
     if(confirmRevertMap(mapEditor)) {
+        /* TODO: this crashes for some raisin */
         mapEditor->closed = 1;
         openMapNum(mapEditor->mapNum - 1);
     }
