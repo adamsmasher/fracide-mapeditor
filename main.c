@@ -634,6 +634,18 @@ static void newMap(void) {
     addWindowToSigMask(mapEditor->window);
 }
 
+static void openMapNum(int mapNum) {
+    MapEditor *mapEditor =
+        newMapEditorWithMap(project.maps[mapNum], mapNum);
+    if(!mapEditor) {
+        fprintf(stderr, "openMapNum: failed to create new map editor\n");
+        return;
+    }
+    addToMapEditorList(mapEditor);
+    addWindowToSigMask(mapEditor->window);
+    enableMapRevert(mapEditor);
+}
+
 static void openMap(void) {
     MapEditor *mapEditor;
 
@@ -646,13 +658,7 @@ static void openMap(void) {
     if(mapEditor) {
         WindowToFront(mapEditor->window);
     } else {
-        mapEditor = newMapEditorWithMap(project.maps[selected - 1], selected - 1);
-        if(!mapEditor) {
-            fprintf(stderr, "openMap: failed to create new map editor\n");
-            return;
-        }
-        addToMapEditorList(mapEditor);
-        addWindowToSigMask(mapEditor->window);
+        openMapNum(selected - 1);
     }
 }
 
