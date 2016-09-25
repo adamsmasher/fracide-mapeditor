@@ -261,8 +261,38 @@ static void newProject(void) {
 	setProjectFilename(NULL);
 }
 
-static void openProjectFromAsl(char *dir, char *file) {
+static void openProjectFromFile(char *file) {
     Project *myNewProject;
+
+    myNewProject = malloc(sizeof(Project));
+    if(!myNewProject) {
+        fprintf(stderr, "openProjectFromFile: failed to allocate project\n");
+        goto done;
+    }
+
+    if(!loadProjectFromFile(file, myNewProject)) {
+        EasyRequest(
+            projectWindow,
+            &projectLoadFailEasyStruct,
+            NULL,
+            file);
+        goto freeProject;
+    }
+
+    clearProject();
+    copyProject(myNewProject, &project);
+    setProjectFilename(file);
+
+    /* TODO: handle error */
+    loadTilesetPackageFromFile(myNewProject->tilesetPackagePath);
+
+freeProject:
+    free(myNewProject);
+done:
+    return;
+}
+
+static void openProjectFromAsl(char *dir, char *file) {
     size_t bufferLen = strlen(dir) + strlen(file) + 2;
     char *buffer = malloc(bufferLen);
 
@@ -273,13 +303,7 @@ static void openProjectFromAsl(char *dir, char *file) {
             "(dir: %s) (file: %s)\n",
             dir  ? dir  : "NULL",
             file ? file : "NULL");
-    goto done;
-    }
-
-    myNewProject = malloc(sizeof(Project));
-    if(!myNewProject) {
-        fprintf(stderr, "openProjectFromAsl: failed to allocate project\n");
-        goto freeBuffer;
+        goto done;
     }
 
     strcpy(buffer, dir);
@@ -291,27 +315,11 @@ static void openProjectFromAsl(char *dir, char *file) {
             buffer ? buffer : "NULL",
             file   ? file   : "NULL",
             bufferLen);
-        goto freeProject;
+        goto freeBuffer;
     }
 
-    if(!loadProjectFromFile(buffer, myNewProject)) {
-        EasyRequest(
-            projectWindow,
-            &projectLoadFailEasyStruct,
-            NULL,
-            buffer);
-        goto freeProject;
-    }
+    openProjectFromFile(buffer);
 
-    clearProject();
-    copyProject(myNewProject, &project);
-    setProjectFilename(buffer);
-
-    /* TODO: handle error */
-    loadTilesetPackageFromFile(myNewProject->tilesetPackagePath);
-
-freeProject:
-    free(myNewProject);
 freeBuffer:
     free(buffer);
 done:
