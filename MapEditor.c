@@ -14,7 +14,9 @@
 #include <graphics/scale.h>
 #include <proto/graphics.h>
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "map.h"
 #include "TilesetRequester.h"
@@ -611,4 +613,11 @@ void mapEditorSetSelected(MapEditor *mapEditor, unsigned int selected) {
     DrawBorder(mapEditor->window->RPort, &tileBorder,
         TILESET_BORDER_LEFT + (col * 32),
         TILESET_BORDER_TOP  + (row * 32));
+}
+
+void updateMapEditorMapName(MapEditor *mapEditor) {
+    struct StringInfo *stringInfo =
+        (struct StringInfo*)mapEditor->mapNameGadget->SpecialInfo;
+    strcpy(mapEditor->map->name, stringInfo->Buffer);
+    mapEditor->saved = 0;
 }

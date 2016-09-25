@@ -65,5 +65,6 @@ void mapEditorSetSelected(MapEditor*, unsigned int);
 int mapEditorClickInMap(WORD x, WORD y);
 unsigned int mapEditorGetMapTileClicked(WORD x, WORD y);
 void mapEditorSetTile(MapEditor*, unsigned int);
+void updateMapEditorMapName(MapEditor*);
 
 #endif

@@ -718,14 +718,6 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
     }
 }
 
-/* TODO: this maybe belongs in the mapeditor file */
-static void handleUpdateMapName(MapEditor *mapEditor) {
-    struct StringInfo *stringInfo =
-        (struct StringInfo*)mapEditor->mapNameGadget->SpecialInfo;
-    strcpy(mapEditor->map->name, stringInfo->Buffer);
-    mapEditor->saved = 0;
-}
-
 static void handleMapEditorGadgetUp
 (MapEditor *mapEditor, struct Gadget *gadget) {
     switch(gadget->GadgetID) {
@@ -733,7 +725,7 @@ static void handleMapEditorGadgetUp
         handleChooseTilesetClicked(mapEditor);
         break;
     case MAP_NAME_ID:
-        handleUpdateMapName(mapEditor);
+        updateMapEditorMapName(mapEditor);
         break;
     }
 }
