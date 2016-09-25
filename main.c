@@ -148,6 +148,14 @@ static struct EasyStruct confirmRevertProjectEasyStruct = {
     "Revert|Don't Revert"
 };
 
+static struct EasyStruct confirmRevertMapEasyStruct = {
+    sizeof(struct EasyStruct),
+    0,
+    "Confirm Revert",
+    "Are you sure you want to revert map %ld \"%s\"\nto the last version saved in the project?",
+    "Revert|Don't Revert"
+};
+
 static int running = 0;
 static long sigMask = 0;
 static MapEditor *firstMapEditor = NULL;
@@ -255,6 +263,16 @@ static void setProjectFilename(char *filename) {
         projectFilename[0] = '\0';
         OffMenu(projectWindow, REVERT_PROJECT_MENU_ITEM);
     }
+}
+
+#define REVERT_MAP_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
+
+static void enableMapRevert(MapEditor *mapEditor) {
+    OnMenu(mapEditor->window, REVERT_MAP_MENU_ITEM);
+}
+
+static void disableMapRevert(MapEditor *mapEditor) {
+    OffMenu(mapEditor->window, REVERT_MAP_MENU_ITEM);
 }
 
 static void clearProject(void) {
@@ -373,6 +391,8 @@ static int saveMapAs(MapEditor *mapEditor) {
     }
 
     mapEditor->mapNum = selected;
+    enableMapRevert(mapEditor);
+
     mapEditor->saved  = 1;
 
     updateProjectMapName(&project, selected - 1, mapEditor->map);
@@ -571,6 +591,14 @@ static int confirmRevertProject(void) {
         NULL);
 }
 
+static int confirmRevertMap(MapEditor *mapEditor) {
+    return EasyRequest(
+        mapEditor->window,
+        &confirmRevertMapEasyStruct,
+        NULL,
+        mapEditor->mapNum - 1, mapEditor->map->name);
+}
+
 static void revertProject(void) {
     if(!confirmRevertProject()) {
         goto done;
@@ -757,13 +785,20 @@ static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {
     }
 }
 
+static void revertMap(MapEditor *mapEditor) {
+    if(confirmRevertMap(mapEditor)) {
+        mapEditor->closed = 1;
+        openMapNum(mapEditor->mapNum - 1);
+    }
+}
+
 static void handleMapMenuPick(MapEditor *mapEditor, UWORD itemNum, UWORD subNum) {
-    /* TODO: implement revert */
     switch(itemNum) {
         case 0: newMap(); break;
         case 2: openMap(); break;
         case 4: saveMap(mapEditor); break;
         case 5: saveMapAs(mapEditor); break;
+        case 6: revertMap(mapEditor); break;
         case 8:
             if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
                 mapEditor->closed = 1;
