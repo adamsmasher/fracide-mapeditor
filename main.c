@@ -292,8 +292,17 @@ static void openProjectFromFile(char *file) {
     copyProject(myNewProject, &project);
     setProjectFilename(file);
 
-    /* TODO: handle error */
-    loadTilesetPackageFromFile(myNewProject->tilesetPackagePath);
+    if(*project.tilesetPackagePath && !loadTilesetPackageFromFile(project.tilesetPackagePath)) {
+        EasyRequest(
+            projectWindow,
+            &tilesetPackageLoadFailEasyStruct,
+            NULL,
+            project.tilesetPackagePath);
+
+        /* because the tileset will now be empty, we've changed from the
+           saved version */
+        projectSaved = 0;
+    }
 
 freeProject:
     free(myNewProject);
