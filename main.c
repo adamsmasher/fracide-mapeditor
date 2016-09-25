@@ -190,7 +190,7 @@ static MapEditor *findMapEditor(int mapNum) {
     return NULL;
 }
 
-static void loadTilesetPackageFromFile(char *file) {
+static int loadTilesetPackageFromFile(char *file) {
     TilesetPackage *newTilesetPackage;
 
     newTilesetPackage = tilesetPackageLoadFromFile(file);
@@ -206,27 +206,30 @@ static void loadTilesetPackageFromFile(char *file) {
     strcpy(project.tilesetPackagePath, file);
     projectSaved = 0;
 
+    return 1;
+
 error:
-    return;
+    return 0;
 }
 
-/* TODO: return something so we can retry on error? */
-static void loadTilesetPackage(char *dir, char *file) {
+static int loadTilesetPackage(char *dir, char *file) {
     char buffer[TILESET_PACKAGE_PATH_SIZE];
 
     if(strlen(dir) >= sizeof(buffer)) {
+        fprintf(stderr, "loadTilesetPackage: dir %s file %s doesn't fit in buffer\n", dir, file);
         goto error;
     }
 
     strcpy(buffer, dir);
     if(!AddPart(buffer, file, TILESET_PACKAGE_PATH_SIZE)) {
+        fprintf(stderr, "loadTilesetPackage: dir %s file %s doesn't fit in buffer\n", dir, file);
         goto error;
     }
 
-    loadTilesetPackageFromFile(buffer);
+    return loadTilesetPackageFromFile(buffer);
 
 error:
-    return;
+    return 0;
 }
 
 static void closeAllMapEditors(void) {
