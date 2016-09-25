@@ -140,7 +140,7 @@ static struct EasyStruct unsavedProjectAlertEasyStruct = {
     "Save|Don't Save|Cancel"
 };
 
-static struct EasyStruct confirmRevertEasyStruct = {
+static struct EasyStruct confirmRevertProjectEasyStruct = {
     sizeof(struct EasyStruct),
     0,
     "Confirm Revert",
@@ -563,15 +563,15 @@ done:
     return;
 }
 
-static int confirmRevert(void) {
+static int confirmRevertProject(void) {
     return EasyRequest(
         projectWindow,
-        &confirmRevertEasyStruct,
+        &confirmRevertProjectEasyStruct,
         NULL);
 }
 
 static void revertProject(void) {
-    if(!confirmRevert()) {
+    if(!confirmRevertProject()) {
         goto done;
     }
 
