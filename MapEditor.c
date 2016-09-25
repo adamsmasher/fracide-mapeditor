@@ -510,7 +510,7 @@ MapEditor *newMapEditorNewMap(void) {
 
     mapEditor->map = map;
     mapEditor->mapNum = 0;
-    mapEditor->saved = 0;
+    mapEditor->saved = 1;
     return mapEditor;
 
 error_freeMap:
