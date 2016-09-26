@@ -537,6 +537,8 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
         GTST_String, map->name,
         TAG_END);
 
+    mapEditor->map = mapCopy;
+
     if(map->tilesetNum) {
         int i;
         mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1);
@@ -545,7 +547,6 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
         }
     }
 
-    mapEditor->map = mapCopy;
     mapEditor->mapNum = mapNum + 1;
     mapEditor->saved = 1;
     return mapEditor;
