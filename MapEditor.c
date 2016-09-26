@@ -257,7 +257,7 @@ static void createMapEditorGadgets(MapEditor *mapEditor) {
 }
 
 static void drawBorders(struct RastPort *rport) {
-    DrawBorder(rport, &mapBorder,     MAP_BORDER_LEFT, MAP_BORDER_TOP);
+    DrawBorder(rport, &mapBorder, MAP_BORDER_LEFT, MAP_BORDER_TOP);
     DrawBorder(rport, &tilesetBorder,
         TILESET_BORDER_LEFT, TILESET_BORDER_TOP);
 }
@@ -524,7 +524,7 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
 
     mapCopy = map ? copyMap(map) : allocMap();
 
-   if(!mapCopy) {
+    if(!mapCopy) {
         goto error;
     }
 
