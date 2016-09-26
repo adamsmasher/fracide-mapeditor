@@ -256,7 +256,6 @@ static void createMapEditorGadgets(MapEditor *mapEditor) {
     }
 }
 
-/* TODO: make a list and iterate */
 static void drawBorders(struct RastPort *rport) {
     DrawBorder(rport, &mapBorder,     MAP_BORDER_LEFT, MAP_BORDER_TOP);
     DrawBorder(rport, &tilesetBorder,
