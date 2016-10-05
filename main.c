@@ -22,6 +22,7 @@
 #include "globals.h"
 #include "MapEditor.h"
 #include "MapRequester.h"
+#include "SongNames.h"
 #include "TilesetPackage.h"
 #include "TilesetRequester.h"
 
@@ -72,6 +73,8 @@ static struct NewMenu newMenu[] = {
     { NM_TITLE, "Maps",   0, 0, 0, 0 },
         { NM_ITEM, "New Map",     0, 0, 0, 0 },
         { NM_ITEM, "Open Map...", 0, 0, 0, 0 },
+    { NM_TITLE, "Music",  0, 0, 0, 0 },
+        { NM_ITEM, "Song Names...", 0, 0, 0, 0 },
     { NM_END,   NULL,      0, 0, 0, 0 }
 };
 static struct Menu *menu = NULL;
@@ -697,6 +700,12 @@ static void handleMapsMenuPick(UWORD itemNum, UWORD subNum) {
     }
 }
 
+static void handleMusicMenuPick(UWORD itemNum, UWORD subNum) {
+    switch(itemNum) {
+        case 0: showSongNamesEditor(); break;
+    }
+}
+
 static void handleMainMenuPick(ULONG menuNumber) {
     UWORD menuNum = MENUNUM(menuNumber);
     UWORD itemNum = ITEMNUM(menuNumber);
@@ -704,6 +713,7 @@ static void handleMainMenuPick(ULONG menuNumber) {
     switch(menuNum) {
         case 0: handleProjectMenuPick(itemNum, subNum); break;
         case 1: handleMapsMenuPick(itemNum, subNum); break;
+        case 2: handleMusicMenuPick(itemNum, subNum); break;
     }
 }
 
