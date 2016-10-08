@@ -1,5 +1,7 @@
 #include "SongNames.h"
 
+#include <intuition/intuition.h>
+#include <intuition/gadgetclass.h>
 #include <proto/intuition.h>
 
 #include <libraries/gadtools.h>
@@ -17,6 +19,11 @@
 #define SONG_LIST_HEIGHT 310
 #define SONG_LIST_TOP    20
 #define SONG_LIST_LEFT   10
+
+#define SONG_NAME_WIDTH  SONG_LIST_WIDTH
+#define SONG_NAME_HEIGHT 12
+#define SONG_NAME_TOP    310
+#define SONG_NAME_LEFT   SONG_LIST_LEFT
 
 /* TODO: make this resizeable up and down */
 static struct NewWindow songNamesNewWindow = {
@@ -45,12 +52,24 @@ static struct NewGadget songListNewGadget = {
     NULL  /* user data */
 };
 
+static struct NewGadget songNameNewGadget = {
+    SONG_NAME_LEFT,  SONG_NAME_TOP,
+    SONG_NAME_WIDTH, SONG_NAME_HEIGHT,
+    NULL,
+    &Topaz80,
+    SONG_NAME_ID,
+    0,
+    NULL, /* visual info filled in later */
+    NULL  /* user data */
+};
+
 void initSongNamesScreen(void) {
     songNamesNewWindow.Screen = screen;
 }
 
 void initSongNamesVi(void) {
     songListNewGadget.ng_VisualInfo = vi;
+    songNameNewGadget.ng_VisualInfo = vi;
 }
 
 static struct Gadget *createSongNamesGadgets(void) {
@@ -59,9 +78,13 @@ static struct Gadget *createSongNamesGadgets(void) {
 
     gad = CreateContext(&glist);
 
-    /* TODO: use GTLV_Labels to get song names;
-             use GTLV_ShowSelected and a STRING gadget to edit the names */
+    gad = CreateGadget(STRING_KIND, gad, &songNameNewGadget,
+        GTST_MaxChars, 64,
+        GA_Disabled, TRUE);
+
+    /* TODO: use GTLV_Labels to get song names */
     gad = CreateGadget(LISTVIEW_KIND, gad, &songListNewGadget,
+        GTLV_ShowSelected, gad,
         TAG_END);
 
     if(gad) {

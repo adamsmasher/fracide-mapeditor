@@ -3,7 +3,8 @@
 
 #include <proto/intuition.h>
 
-#define SONG_LIST_ID 0
+#define SONG_LIST_ID (0)
+#define SONG_NAME_ID (SONG_LIST_ID + 1)
 
 typedef struct SongNamesEditor_tag {
     struct Window *window;
