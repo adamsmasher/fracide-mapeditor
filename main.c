@@ -1061,6 +1061,7 @@ int main(void) {
     initMapEditorVi();
     initMapRequesterVi();
     initTilesetRequesterVi();
+    initSongNamesVi();
 
     menu = CreateMenus(newMenu, GTMN_FullMenu, TRUE, TAG_END);
     if(!menu) {

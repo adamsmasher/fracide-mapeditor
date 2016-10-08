@@ -3,12 +3,16 @@
 
 #include <proto/intuition.h>
 
+#define SONG_LIST_ID 0
+
 typedef struct SongNamesEditor_tag {
     struct Window *window;
+    struct Gadget *gadgets;
     int closed;
 } SongNamesEditor;
 
 void initSongNamesScreen(void);
+void initSongNamesVi(void);
 
 SongNamesEditor *newSongNamesEditor(void);
 void freeSongNamesEditor(SongNamesEditor*);
