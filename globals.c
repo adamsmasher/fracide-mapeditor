@@ -9,6 +9,7 @@ struct Screen  *screen         = NULL;
 void           *vi             = NULL;
 TilesetPackage *tilesetPackage = NULL;
 struct Window  *projectWindow  = NULL;
+struct Window  *songNamesEditor = NULL;
 Project        project;
 int            projectSaved    = 1;
 char           projectFilename[PROJECT_FILENAME_LENGTH];

@@ -1001,6 +1001,7 @@ int main(void) {
     initMapEditorScreen();
     initMapRequesterScreen();
     initTilesetRequesterScreen();
+    initSongNamesScreen();
 
     projectNewWindow.Screen = screen;
     projectWindow = OpenWindow(&projectNewWindow);
@@ -1047,6 +1048,8 @@ int main(void) {
     mainLoop();
     
     retCode = 0;
+closeSongNamesEditor:
+    if(songNamesEditor) CloseWindow(songNamesEditor);
 closeAllMapEditors:
     closeAllMapEditors();
 freeTilesetPackage:
