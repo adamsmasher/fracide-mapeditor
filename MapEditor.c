@@ -55,8 +55,6 @@ static struct NewWindow mapEditorNewWindow = {
   CUSTOMSCREEN
 };
 
-static struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
-
 #define TILE_WIDTH  16
 #define TILE_HEIGHT 16
 

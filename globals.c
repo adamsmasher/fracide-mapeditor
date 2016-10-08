@@ -13,3 +13,4 @@ SongNamesEditor *songNamesEditor = NULL;
 Project         project;
 int             projectSaved     = 1;
 char            projectFilename[PROJECT_FILENAME_LENGTH];
+struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };

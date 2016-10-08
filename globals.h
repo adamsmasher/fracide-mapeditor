@@ -17,5 +17,6 @@ extern SongNamesEditor *songNamesEditor;
 extern Project         project;
 extern int             projectSaved;
 extern char            projectFilename[PROJECT_FILENAME_LENGTH];
+extern struct TextAttr Topaz80;
 
 #endif

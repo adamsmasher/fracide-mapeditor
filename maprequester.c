@@ -51,9 +51,6 @@ static struct NewWindow mapRequesterNewWindow = {
     CUSTOMSCREEN
 };
 
-/* TODO: make this global */
-static struct TextAttr Topaz80 = { "topaz.font", 8, 0, 0 };
-
 static struct NewGadget mapListNewGadget = {
 	MAP_LIST_LEFT,  MAP_LIST_TOP,
 	MAP_LIST_WIDTH, MAP_LIST_HEIGHT,
