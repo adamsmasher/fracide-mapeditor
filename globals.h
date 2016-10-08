@@ -3,18 +3,19 @@
 
 #include <intuition/intuition.h>
 
-#include "TilesetPackage.h"
 #include "Project.h"
+#include "SongNames.h"
+#include "TilesetPackage.h"
 
 #define PROJECT_FILENAME_LENGTH 256
 
-extern struct Screen  *screen;
-extern void           *vi;
-extern TilesetPackage *tilesetPackage;
-extern struct Window  *projectWindow;
-extern struct Window  *songNamesEditor;
-extern Project        project;
-extern int            projectSaved;
-extern char           projectFilename[PROJECT_FILENAME_LENGTH];
+extern struct Screen   *screen;
+extern void            *vi;
+extern TilesetPackage  *tilesetPackage;
+extern struct Window   *projectWindow;
+extern SongNamesEditor *songNamesEditor;
+extern Project         project;
+extern int             projectSaved;
+extern char            projectFilename[PROJECT_FILENAME_LENGTH];
 
 #endif

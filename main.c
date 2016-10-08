@@ -704,7 +704,16 @@ static void handleMapsMenuPick(UWORD itemNum, UWORD subNum) {
 
 static void handleMusicMenuPick(UWORD itemNum, UWORD subNum) {
     switch(itemNum) {
-        case 0: showSongNamesEditor(); break;
+        case 0:
+            if(songNamesEditor) {
+                WindowToFront(songNamesEditor->window);
+            } else {
+                songNamesEditor = newSongNamesEditor();
+                if(songNamesEditor) {
+                    addWindowToSigMask(songNamesEditor->window);
+                }
+            }
+            break;
     }
 }
 
@@ -740,6 +749,30 @@ static void handleProjectMessages(void) {
     while(msg = (struct IntuiMessage*)GetMsg(projectWindow->UserPort)) {
         handleProjectMessage(msg);
         ReplyMsg((struct Message*)msg);
+    }
+}
+
+static void handleSongNamesEditorMessage(struct IntuiMessage* msg) {
+    switch(msg->Class) {
+    case IDCMP_CLOSEWINDOW:
+        songNamesEditor->closed = 1;
+        break;
+    }
+}
+
+static void handleSongNamesEditorMessages(void) {
+    struct IntuiMessage *msg;
+    while(msg = (struct IntuiMessage*)GetMsg(songNamesEditor->window->UserPort)) {
+        handleSongNamesEditorMessage(msg);
+        ReplyMsg((struct Message*)msg);
+    }
+}
+
+static void closeSongNamesEditor(void) {
+    if(songNamesEditor) {
+        removeWindowFromSigMask(songNamesEditor->window);
+        freeSongNamesEditor(songNamesEditor);
+        songNamesEditor = NULL;
     }
 }
 
@@ -966,6 +999,14 @@ static void mainLoop(void) {
         if(1L << projectWindow->UserPort->mp_SigBit & signalSet) {
             handleProjectMessages();
         }
+        if(songNamesEditor) {
+            if(1L << songNamesEditor->window->UserPort->mp_SigBit & signalSet) {
+                handleSongNamesEditorMessages();
+            }
+            if(songNamesEditor->closed) {
+                closeSongNamesEditor();
+            }
+        }
         handleAllMapEditorMessages(signalSet);
         handleAllTilesetRequesterMessages(signalSet);
         closeDeadMapEditors();
@@ -978,12 +1019,6 @@ static void initPalette(struct ViewPort *viewport) {
     ULONG c = 15;
     for(i = 0; i < 4; i++, c -= 5) {
         SetRGB4(viewport, i, c, c, c);
-    }
-}
-
-static void closeSongNamesEditor(void) {
-    if(songNamesEditor) {
-        CloseWindow(songNamesEditor);
     }
 }
 

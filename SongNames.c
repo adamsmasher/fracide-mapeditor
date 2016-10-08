@@ -6,6 +6,7 @@
 #include <proto/gadtools.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "globals.h"
 
@@ -32,14 +33,31 @@ void initSongNamesScreen(void) {
     songNamesNewWindow.Screen = screen;
 }
 
-void showSongNamesEditor(void) {
+SongNamesEditor *newSongNamesEditor(void) {
+    SongNamesEditor *songNamesEditor = malloc(sizeof(SongNamesEditor));
     if(!songNamesEditor) {
-        songNamesEditor = OpenWindow(&songNamesNewWindow);
-        if(!songNamesEditor) {
-            fprintf(stderr, "showSongNamesEditor: couldn't open window\n");
-            return;
-        }
-    } else {
-        WindowToFront(songNamesEditor);
+        fprintf(stderr, "showSongNamesEditor: couldn't allocate editor\n");
+        goto error;
     }
+
+    songNamesEditor->window = OpenWindow(&songNamesNewWindow);
+    if(!songNamesEditor->window) {
+        fprintf(stderr, "showSongNamesEditor: couldn't open window\n");
+        goto error_freeEditor;
+    }
+
+    songNamesEditor->closed = 0;
+
+    return songNamesEditor;
+
+error_freeEditor:
+    free(songNamesEditor);
+error:
+    return NULL;
 }
+
+void freeSongNamesEditor(SongNamesEditor *songNamesEditor) {
+    CloseWindow(songNamesEditor->window);
+    free(songNamesEditor);
+}
+
