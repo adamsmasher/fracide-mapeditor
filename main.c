@@ -981,6 +981,12 @@ static void initPalette(struct ViewPort *viewport) {
     }
 }
 
+static void closeSongNamesEditor(void) {
+    if(songNamesEditor) {
+        CloseWindow(songNamesEditor);
+    }
+}
+
 int main(void) {
     int retCode;
     
@@ -1049,7 +1055,7 @@ int main(void) {
     
     retCode = 0;
 closeSongNamesEditor:
-    if(songNamesEditor) CloseWindow(songNamesEditor);
+    closeSongNamesEditor();
 closeAllMapEditors:
     closeAllMapEditors();
 freeTilesetPackage:
