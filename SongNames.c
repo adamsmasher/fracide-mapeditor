@@ -36,7 +36,7 @@ void initSongNamesScreen(void) {
 SongNamesEditor *newSongNamesEditor(void) {
     SongNamesEditor *songNamesEditor = malloc(sizeof(SongNamesEditor));
     if(!songNamesEditor) {
-        fprintf(stderr, "showSongNamesEditor: couldn't allocate editor\n");
+        fprintf(stderr, "newSongNamesEditor: couldn't allocate editor\n");
         goto error;
     }
 
