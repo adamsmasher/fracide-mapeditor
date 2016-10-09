@@ -11,6 +11,7 @@ typedef struct SongNamesEditor_tag {
     struct Gadget *gadgets;
     struct Gadget *songNameGadget;
     int closed;
+    int selected;
 } SongNamesEditor;
 
 void initSongNamesScreen(void);

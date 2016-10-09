@@ -753,23 +753,56 @@ static void handleProjectMessages(void) {
     }
 }
 
-static void handleSongNamesEditorGadgetUp(struct Gadget *gadget) {
+static int songNameStart(int selected) {
+    if(selected < 10) {
+        return 2;
+    } else if(selected < 100) {
+        return 3;
+    } else {
+        return 4;
+    }
+}
+
+static void handleSongNamesEditorSelectSong(struct IntuiMessage *msg) {
+    int selected = msg->Code;
+    int i = songNameStart(selected);
+
+    GT_SetGadgetAttrs(songNamesEditor->songNameGadget, songNamesEditor->window, NULL,
+       GTST_String, &project.songNameStrs[selected][i],
+       GA_Disabled, FALSE,
+       TAG_END);
+
+    songNamesEditor->selected = selected + 1;
+}
+
+static void handleSongNamesEditorUpdateSong(struct IntuiMessage *msg) {
+    int selected = songNamesEditor->selected - 1;
+    strcpy(
+        &project.songNameStrs[selected][songNameStart(selected)],
+        ((struct StringInfo*)songNamesEditor->songNameGadget->SpecialInfo)->Buffer);
+    GT_RefreshWindow(songNamesEditor->window, NULL);
+}
+
+static void handleSongNamesEditorGadgetUp(struct IntuiMessage *msg) {
+    struct Gadget *gadget = (struct Gadget*)msg->IAddress;
     switch(gadget->GadgetID) {
     case SONG_LIST_ID:
-        GT_SetGadgetAttrs(songNamesEditor->songNameGadget, songNamesEditor->window, NULL,
-            GA_Disabled, FALSE,
-            TAG_END);
+        handleSongNamesEditorSelectSong(msg);
+        break;
+    case SONG_NAME_ID:
+        handleSongNamesEditorUpdateSong(msg);
         break;
     }
 }
 
+/* TODO: why doesn't the up/down arrow work */
 static void handleSongNamesEditorMessage(struct IntuiMessage* msg) {
     switch(msg->Class) {
     case IDCMP_CLOSEWINDOW:
         songNamesEditor->closed = 1;
         break;
     case IDCMP_GADGETUP:
-        handleSongNamesEditorGadgetUp((struct Gadget*)msg->IAddress);
+        handleSongNamesEditorGadgetUp(msg);
         break;
     case IDCMP_REFRESHWINDOW:
         GT_BeginRefresh(songNamesEditor->window);

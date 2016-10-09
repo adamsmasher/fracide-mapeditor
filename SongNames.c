@@ -119,6 +119,7 @@ SongNamesEditor *newSongNamesEditor(void) {
     GT_RefreshWindow(songNamesEditor->window, NULL);
 
     songNamesEditor->closed = 0;
+    songNamesEditor->selected = 0;
 
     return songNamesEditor;
 
