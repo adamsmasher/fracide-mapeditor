@@ -29,6 +29,19 @@ static void initMapNameNodes(Project *project) {
     }
 }
 
+static void initSongNameNodes(Project *project) {
+    int i;
+    struct Node *node, *next;
+
+    node = project->songNames.lh_Head;
+    i = 0;
+    while(next = node->ln_Succ) {
+        node->ln_Name = project->songNameStrs[i];
+        node = next;
+        i++;
+    }
+}
+
 void initProject(Project *project) {
     int i;
     struct Node *node;
@@ -51,6 +64,17 @@ void initProject(Project *project) {
     }
 
     initMapNameNodes(project);
+
+    NewList(&project->songNames);
+
+    for(i = 0; i < 128; i++) {
+        sprintf(project->songNameStrs[i], "%d:", i);
+        node = malloc(sizeof(struct Node));
+        /* TODO: handle node creation failure */
+        AddTail(&project->songNames, node);
+    }
+
+    initSongNameNodes(project);
 }
 
 void freeProject(Project *project) {
@@ -66,12 +90,19 @@ void freeProject(Project *project) {
         free(node);
         node = next;
     }
+
+    node = project->songNames.lh_Head;
+    while(next = node->ln_Succ) {
+        free(node);
+        node = next;
+    }
 }
 
 void copyProject(Project *src, Project *dest) {
     memcpy(dest, src, sizeof(Project));
     /* fix up internal pointers */
     initMapNameNodes(dest);
+    initSongNameNodes(dest);
 }
 
 static int loadProjectFromFp(FILE *fp, Project *project) {

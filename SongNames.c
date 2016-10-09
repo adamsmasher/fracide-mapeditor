@@ -85,6 +85,7 @@ static struct Gadget *createSongNamesGadgets(void) {
     /* TODO: use GTLV_Labels to get song names */
     gad = CreateGadget(LISTVIEW_KIND, gad, &songListNewGadget,
         GTLV_ShowSelected, gad,
+        GTLV_Labels, &project.songNames,
         TAG_END);
 
     if(gad) {
