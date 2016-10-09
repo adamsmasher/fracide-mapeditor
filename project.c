@@ -175,6 +175,11 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
         updateProjectMapName(project, mapNum, map);
     }
 
+    if(fread(project->songNameStrs, 80, 128, fp) != 128) {
+        fprintf(stderr, "loadProjectFromFp: couldn't read song names\n");
+        goto freeMaps_error;
+    }
+
     return 1;
 
 freeMaps_error:
@@ -239,6 +244,8 @@ static void saveProjectToFp(FILE *fp) {
 			fwrite(project.maps[i], sizeof(Map), 1, fp);
 		}
 	}
+
+    fwrite(project.songNameStrs, 80, 128, fp);
 }
 
 int saveProjectToFile(char *file) {
