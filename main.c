@@ -3,6 +3,7 @@
 #include <proto/dos.h>
 
 #include <intuition/intuition.h>
+#include <intuition/gadgetclass.h>
 #include <proto/intuition.h>
 
 #include <graphics/gfx.h>
@@ -752,10 +753,23 @@ static void handleProjectMessages(void) {
     }
 }
 
+static void handleSongNamesEditorGadgetUp(struct Gadget *gadget) {
+    switch(gadget->GadgetID) {
+    case SONG_LIST_ID:
+        GT_SetGadgetAttrs(songNamesEditor->songNameGadget, songNamesEditor->window, NULL,
+            GA_Disabled, FALSE,
+            TAG_END);
+        break;
+    }
+}
+
 static void handleSongNamesEditorMessage(struct IntuiMessage* msg) {
     switch(msg->Class) {
     case IDCMP_CLOSEWINDOW:
         songNamesEditor->closed = 1;
+        break;
+    case IDCMP_GADGETUP:
+        handleSongNamesEditorGadgetUp((struct Gadget*)msg->IAddress);
         break;
     case IDCMP_REFRESHWINDOW:
         GT_BeginRefresh(songNamesEditor->window);

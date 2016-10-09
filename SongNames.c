@@ -81,10 +81,11 @@ static void createSongNamesGadgets(SongNamesEditor *songNamesEditor) {
     gad = CreateGadget(STRING_KIND, gad, &songNameNewGadget,
         GTST_MaxChars, 64,
         GA_Disabled, TRUE);
+    songNamesEditor->songNameGadget = gad;
 
     /* TODO: use GTLV_Labels to get song names */
     gad = CreateGadget(LISTVIEW_KIND, gad, &songListNewGadget,
-        GTLV_ShowSelected, gad,
+        GTLV_ShowSelected, songNamesEditor->songNameGadget,
         GTLV_Labels, &project.songNames,
         TAG_END);
 
@@ -92,6 +93,7 @@ static void createSongNamesGadgets(SongNamesEditor *songNamesEditor) {
         songNamesEditor->gadgets = glist;
     } else {
         FreeGadgets(glist);
+        songNamesEditor->songNameGadget = NULL;
     }
 }
 

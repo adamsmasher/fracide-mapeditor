@@ -9,6 +9,7 @@
 typedef struct SongNamesEditor_tag {
     struct Window *window;
     struct Gadget *gadgets;
+    struct Gadget *songNameGadget;
     int closed;
 } SongNamesEditor;
 
