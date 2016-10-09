@@ -781,6 +781,7 @@ static void handleSongNamesEditorUpdateSong(struct IntuiMessage *msg) {
         &project.songNameStrs[selected][songNameStart(selected)],
         ((struct StringInfo*)songNamesEditor->songNameGadget->SpecialInfo)->Buffer);
     GT_RefreshWindow(songNamesEditor->window, NULL);
+    projectSaved = 0;
 }
 
 static void handleSongNamesEditorGadgetUp(struct IntuiMessage *msg) {
