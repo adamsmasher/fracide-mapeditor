@@ -72,7 +72,7 @@ void initSongNamesVi(void) {
     songNameNewGadget.ng_VisualInfo = vi;
 }
 
-static struct Gadget *createSongNamesGadgets(void) {
+static void createSongNamesGadgets(SongNamesEditor *songNamesEditor) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
 
@@ -89,10 +89,9 @@ static struct Gadget *createSongNamesGadgets(void) {
         TAG_END);
 
     if(gad) {
-        return glist;
+        songNamesEditor->gadgets = glist;
     } else {
         FreeGadgets(glist);
-        return NULL;
     }
 }
 
@@ -103,7 +102,7 @@ SongNamesEditor *newSongNamesEditor(void) {
         goto error;
     }
 
-    songNamesEditor->gadgets = createSongNamesGadgets();
+    createSongNamesGadgets(songNamesEditor);
     if(!songNamesEditor->gadgets) {
         fprintf(stderr, "newSongNamesEditor: couldn't create gadgets\n");
         goto error_freeEditor;
