@@ -757,6 +757,10 @@ static void handleSongNamesEditorMessage(struct IntuiMessage* msg) {
     case IDCMP_CLOSEWINDOW:
         songNamesEditor->closed = 1;
         break;
+    case IDCMP_REFRESHWINDOW:
+        GT_BeginRefresh(songNamesEditor->window);
+        GT_EndRefresh(songNamesEditor->window, TRUE);
+        break;
     }
 }
 
