@@ -766,9 +766,9 @@ static void handleSongNamesEditorMessage(struct IntuiMessage* msg) {
 
 static void handleSongNamesEditorMessages(void) {
     struct IntuiMessage *msg;
-    while(msg = (struct IntuiMessage*)GetMsg(songNamesEditor->window->UserPort)) {
+    while(msg = GT_GetIMsg(songNamesEditor->window->UserPort)) {
         handleSongNamesEditorMessage(msg);
-        ReplyMsg((struct Message*)msg);
+        GT_ReplyIMsg(msg);
     }
 }
 
