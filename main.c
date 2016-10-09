@@ -796,7 +796,6 @@ static void handleSongNamesEditorGadgetUp(struct IntuiMessage *msg) {
     }
 }
 
-/* TODO: why doesn't the up/down arrow work */
 static void handleSongNamesEditorMessage(struct IntuiMessage* msg) {
     switch(msg->Class) {
     case IDCMP_CLOSEWINDOW:
