@@ -10,6 +10,8 @@ typedef struct Map_tag {
     char name[64];
     /* 1-indexed */
     UWORD tilesetNum;
+    /* 1-indexed */
+    UWORD songNum;
     UBYTE tiles[MAP_TILES_WIDE * MAP_TILES_HIGH];
 } Map;
 

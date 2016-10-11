@@ -11,6 +11,7 @@ Map *allocMap(void) {
 
     map->name[0] = '\0';
     map->tilesetNum = 0;
+    map->songNum = 0;
     memset(map->tiles, 0, MAP_TILES_WIDE * MAP_TILES_HIGH);
     return map;
 }
