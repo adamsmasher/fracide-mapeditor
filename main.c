@@ -850,6 +850,18 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
     }
 }
 
+static void handleChangeSongClicked(MapEditor *mapEditor) {
+    if(!mapEditor->songRequester) {
+        /* TODO: custom write the name of the map in here */
+        char title[] = "Change Soundtrack";
+        SongRequester *songRequester = newSongRequester(title);
+        if(songRequester) {
+            attachSongRequesterToMapEditor(mapEditor, songRequester);
+            addWindowToSigMask(songRequester->window);
+        }
+    }
+}
+
 static void handleMapEditorGadgetUp
 (MapEditor *mapEditor, struct Gadget *gadget) {
     switch(gadget->GadgetID) {
@@ -858,6 +870,9 @@ static void handleMapEditorGadgetUp
         break;
     case MAP_NAME_ID:
         updateMapEditorMapName(mapEditor);
+        break;
+    case SONG_CHANGE_ID:
+        handleChangeSongClicked(mapEditor);
         break;
     }
 }
@@ -1018,26 +1033,65 @@ static void handleTilesetRequesterMessages(MapEditor *mapEditor, TilesetRequeste
     }
 }
 
-static void handleAllTilesetRequesterMessages(long signalSet) {
+static void handleSongRequesterGadgetUp(MapEditor *mapEditor, SongRequester *songRequester, struct IntuiMessage *msg) {
+    mapEditorSetSong(mapEditor, msg->Code);
+}
+
+/* TODO: make NO SONG a thing */
+static void handleSongRequesterMessage(MapEditor *mapEditor, SongRequester *songRequester, struct IntuiMessage *msg) {
+    switch(msg->Class) {
+    case IDCMP_CLOSEWINDOW:
+        songRequester->closed = 1;
+        break;
+    case IDCMP_REFRESHWINDOW:
+        GT_BeginRefresh(songRequester->window);
+        GT_EndRefresh(songRequester->window, TRUE);
+        break;
+    case IDCMP_GADGETUP:
+        handleSongRequesterGadgetUp(mapEditor, songRequester, msg);
+        break;
+    }
+}
+
+static void handleSongRequesterMessages(MapEditor *mapEditor, SongRequester *songRequester) {
+    struct IntuiMessage *msg = NULL;
+    while(msg = GT_GetIMsg(songRequester->window->UserPort)) {
+        handleSongRequesterMessage(mapEditor, songRequester, msg);
+        GT_ReplyIMsg(msg);
+    }
+}
+
+static void handleAllMapEditorChildMessages(long signalSet) {
     MapEditor *i = firstMapEditor;
     while(i) {
         TilesetRequester *tilesetRequester = i->tilesetRequester;
+        SongRequester *songRequester = i->songRequester;
         if(tilesetRequester) {
             if(1L << tilesetRequester->window->UserPort->mp_SigBit & signalSet) {
                 handleTilesetRequesterMessages(i, tilesetRequester);
+            }
+        }
+        if(songRequester) {
+            if(1L << songRequester->window->UserPort->mp_SigBit & signalSet) {
+                handleSongRequesterMessages(i, songRequester);
             }
         }
         i = i->next;
     }
 }
 
-static void closeDeadTilesetRequesters(void) {
+static void closeDeadMapEditorChildren(void) {
     MapEditor *i = firstMapEditor;
     while(i) {
         if(i->tilesetRequester && i->tilesetRequester->closed) {
             removeWindowFromSigMask(i->tilesetRequester->window);
             closeTilesetRequester(i->tilesetRequester);
             i->tilesetRequester = NULL;
+        }
+        if(i->songRequester && i->songRequester->closed) {
+            removeWindowFromSigMask(i->songRequester->window);
+            freeSongRequester(i->songRequester);
+            i->songRequester = NULL;
         }
         i = i->next;
     }
@@ -1060,9 +1114,9 @@ static void mainLoop(void) {
             }
         }
         handleAllMapEditorMessages(signalSet);
-        handleAllTilesetRequesterMessages(signalSet);
+        handleAllMapEditorChildMessages(signalSet);
         closeDeadMapEditors();
-        closeDeadTilesetRequesters();
+        closeDeadMapEditorChildren();
     }
 }
 
