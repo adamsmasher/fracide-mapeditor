@@ -72,16 +72,20 @@ void initSongNamesVi(void) {
     songNameNewGadget.ng_VisualInfo = vi;
 }
 
-static void createSongRequesterGadgets(SongRequester *songRequester) {
+static void createSongRequesterGadgets(SongRequester *songRequester, int editable) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
 
     gad = CreateContext(&glist);
 
-    gad = CreateGadget(STRING_KIND, gad, &songNameNewGadget,
-        GTST_MaxChars, 64,
-        GA_Disabled, TRUE);
-    songRequester->songNameGadget = gad;
+    if(editable) {
+        gad = CreateGadget(STRING_KIND, gad, &songNameNewGadget,
+            GTST_MaxChars, 64,
+            GA_Disabled, TRUE);
+        songRequester->songNameGadget = gad;
+    } else {
+        songRequester->songNameGadget = NULL;
+    }
 
     /* TODO: use GTLV_Labels to get song names */
     gad = CreateGadget(LISTVIEW_KIND, gad, &songListNewGadget,
@@ -97,23 +101,23 @@ static void createSongRequesterGadgets(SongRequester *songRequester) {
     }
 }
 
-static SongRequester *newSongRequester(void) {
+static SongRequester *newGenericSongRequester(int editable) {
     SongRequester *songRequester = malloc(sizeof(SongRequester));
     if(!songRequester) {
-        fprintf(stderr, "newSongRequester: couldn't allocate requester\n");
+        fprintf(stderr, "newGenericSongRequester: couldn't allocate requester\n");
         goto error;
     }
 
-    createSongRequesterGadgets(songRequester);
+    createSongRequesterGadgets(songRequester, editable);
     if(!songRequester->gadgets) {
-        fprintf(stderr, "newSongRequester: couldn't create gadgets\n");
+        fprintf(stderr, "newGenericSongRequester: couldn't create gadgets\n");
         goto error_freeRequester;
     }
     songNamesNewWindow.FirstGadget = songRequester->gadgets;
 
     songRequester->window = OpenWindow(&songNamesNewWindow);
     if(!songRequester->window) {
-        fprintf(stderr, "newSongRequester: couldn't open window\n");
+        fprintf(stderr, "newGenericSongRequester: couldn't open window\n");
         goto error_freeGadgets;
     }
     GT_RefreshWindow(songRequester->window, NULL);
@@ -131,9 +135,17 @@ error:
     return NULL;
 }
 
+#define EDITABLE 1
+#define NON_EDITABLE 0
+
+SongRequester *newSongRequester(char *title) {
+    songNamesNewWindow.Title = title;
+    return newGenericSongRequester(NON_EDITABLE);
+}
+
 SongRequester *newSongNamesEditor(void) {
     songNamesNewWindow.Title = "Edit Song Names";
-    return newSongRequester();
+    return newGenericSongRequester(EDITABLE);
 }
 
 void freeSongRequester(SongRequester *songRequester) {

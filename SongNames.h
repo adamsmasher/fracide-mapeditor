@@ -17,6 +17,7 @@ typedef struct SongRequester_tag {
 void initSongNamesScreen(void);
 void initSongNamesVi(void);
 
+SongRequester *newSongRequester(char *title);
 SongRequester *newSongNamesEditor(void);
 
 void freeSongRequester(SongRequester*);
