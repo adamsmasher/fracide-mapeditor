@@ -454,6 +454,18 @@ void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
     mapEditor->saved = 0;
 }
 
+static void mapEditorSetSongUpdateUI(MapEditor *mapEditor, UWORD songNumber) {
+    GT_SetGadgetAttrs(mapEditor->songNameGadget, mapEditor->window, NULL,
+        GTTX_Text, project.songNameStrs[songNumber],
+        TAG_END);
+}
+
+void mapEditorSetSong(MapEditor *mapEditor, UWORD songNumber) {
+    mapEditor->map->songNum = songNumber;
+    mapEditorSetSongUpdateUI(mapEditor, songNumber);
+    mapEditor->saved = 0;
+}
+
 static void redrawPaletteTile(MapEditor *mapEditor, unsigned int tile) {
     struct Image *image = &mapEditor->paletteImages[tile];
     struct Image *next = image->NextImage;

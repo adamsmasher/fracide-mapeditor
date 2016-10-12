@@ -60,6 +60,7 @@ void refreshMapEditor(MapEditor*);
 void attachTilesetRequesterToMapEditor(MapEditor*, TilesetRequester*);
 
 void mapEditorSetTileset(MapEditor*, UWORD);
+void mapEditorSetSong(MapEditor*, UWORD);
 
 int mapEditorClickInPalette(WORD x, WORD y);
 unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y);
