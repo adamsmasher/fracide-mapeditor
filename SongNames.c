@@ -87,7 +87,6 @@ static void createSongRequesterGadgets(SongRequester *songRequester, int editabl
         songRequester->songNameGadget = NULL;
     }
 
-    /* TODO: use GTLV_Labels to get song names */
     gad = CreateGadget(LISTVIEW_KIND, gad, &songListNewGadget,
         GTLV_ShowSelected, songRequester->songNameGadget,
         GTLV_Labels, &project.songNames,
