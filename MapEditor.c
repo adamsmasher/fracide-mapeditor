@@ -285,6 +285,7 @@ static void createMapEditorGadgets(MapEditor *mapEditor) {
         GTTX_Text, "N/A",
         GTTX_Border, TRUE,
         TAG_END);
+    mapEditor->songNameGadget = gad;
 
     gad = CreateGadget(BUTTON_KIND, gad, &songChangeNewGadget, TAG_END);
 
@@ -293,6 +294,7 @@ static void createMapEditorGadgets(MapEditor *mapEditor) {
     } else {
         mapEditor->tilesetNameGadget = NULL;
         mapEditor->mapNameGadget = NULL;
+        mapEditor->songNameGadget = NULL;
         FreeGadgets(glist);
     }
 }
