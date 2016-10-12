@@ -775,6 +775,7 @@ static void handleSongNamesEditorSelectSong(struct IntuiMessage *msg) {
     songNamesEditor->selected = selected + 1;
 }
 
+/* TODO: refresh the lists in all selectors you have open */
 static void handleSongNamesEditorUpdateSong(struct IntuiMessage *msg) {
     int selected = songNamesEditor->selected - 1;
     strcpy(
