@@ -823,7 +823,7 @@ static void handleSongNamesEditorMessages(void) {
 static void closeSongNamesEditor(void) {
     if(songNamesEditor) {
         removeWindowFromSigMask(songNamesEditor->window);
-        freeSongNamesEditor(songNamesEditor);
+        freeSongRequester(songNamesEditor);
         songNamesEditor = NULL;
     }
 }

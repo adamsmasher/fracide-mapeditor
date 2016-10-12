@@ -72,7 +72,7 @@ void initSongNamesVi(void) {
     songNameNewGadget.ng_VisualInfo = vi;
 }
 
-static void createSongNamesGadgets(SongNamesEditor *songNamesEditor) {
+static void createSongRequesterGadgets(SongRequester *songRequester) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
 
@@ -81,59 +81,63 @@ static void createSongNamesGadgets(SongNamesEditor *songNamesEditor) {
     gad = CreateGadget(STRING_KIND, gad, &songNameNewGadget,
         GTST_MaxChars, 64,
         GA_Disabled, TRUE);
-    songNamesEditor->songNameGadget = gad;
+    songRequester->songNameGadget = gad;
 
     /* TODO: use GTLV_Labels to get song names */
     gad = CreateGadget(LISTVIEW_KIND, gad, &songListNewGadget,
-        GTLV_ShowSelected, songNamesEditor->songNameGadget,
+        GTLV_ShowSelected, songRequester->songNameGadget,
         GTLV_Labels, &project.songNames,
         TAG_END);
 
     if(gad) {
-        songNamesEditor->gadgets = glist;
+        songRequester->gadgets = glist;
     } else {
         FreeGadgets(glist);
-        songNamesEditor->songNameGadget = NULL;
+        songRequester->songNameGadget = NULL;
     }
 }
 
-SongNamesEditor *newSongNamesEditor(void) {
-    SongNamesEditor *songNamesEditor = malloc(sizeof(SongNamesEditor));
-    if(!songNamesEditor) {
-        fprintf(stderr, "newSongNamesEditor: couldn't allocate editor\n");
+static SongRequester *newSongRequester(void) {
+    SongRequester *songRequester = malloc(sizeof(SongRequester));
+    if(!songRequester) {
+        fprintf(stderr, "newSongRequester: couldn't allocate requester\n");
         goto error;
     }
 
-    createSongNamesGadgets(songNamesEditor);
-    if(!songNamesEditor->gadgets) {
-        fprintf(stderr, "newSongNamesEditor: couldn't create gadgets\n");
-        goto error_freeEditor;
+    createSongRequesterGadgets(songRequester);
+    if(!songRequester->gadgets) {
+        fprintf(stderr, "newSongRequester: couldn't create gadgets\n");
+        goto error_freeRequester;
     }
-    songNamesNewWindow.FirstGadget = songNamesEditor->gadgets;
+    songNamesNewWindow.FirstGadget = songRequester->gadgets;
 
-    songNamesEditor->window = OpenWindow(&songNamesNewWindow);
-    if(!songNamesEditor->window) {
-        fprintf(stderr, "showSongNamesEditor: couldn't open window\n");
+    songRequester->window = OpenWindow(&songNamesNewWindow);
+    if(!songRequester->window) {
+        fprintf(stderr, "newSongRequester: couldn't open window\n");
         goto error_freeGadgets;
     }
-    GT_RefreshWindow(songNamesEditor->window, NULL);
+    GT_RefreshWindow(songRequester->window, NULL);
 
-    songNamesEditor->closed = 0;
-    songNamesEditor->selected = 0;
+    songRequester->closed = 0;
+    songRequester->selected = 0;
 
-    return songNamesEditor;
+    return songRequester;
 
 error_freeGadgets:
-    free(songNamesEditor->gadgets);
-error_freeEditor:
-    free(songNamesEditor);
+    free(songRequester->gadgets);
+error_freeRequester:
+    free(songRequester);
 error:
     return NULL;
 }
 
-void freeSongNamesEditor(SongNamesEditor *songNamesEditor) {
-    CloseWindow(songNamesEditor->window);
-    FreeGadgets(songNamesEditor->gadgets);
-    free(songNamesEditor);
+SongRequester *newSongNamesEditor(void) {
+    songNamesNewWindow.Title = "Edit Song Names";
+    return newSongRequester();
 }
 
+void freeSongRequester(SongRequester *songRequester) {
+    CloseWindow(songRequester->window);
+    FreeGadgets(songRequester->gadgets);
+    free(songRequester);
+}
