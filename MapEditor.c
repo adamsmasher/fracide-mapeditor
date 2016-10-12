@@ -371,8 +371,16 @@ static void closeAttachedTilesetRequester(MapEditor *mapEditor) {
     }
 }
 
+static void closeAttachedSongRequester(MapEditor *mapEditor) {
+    if(mapEditor->songRequester) {
+        freeSongRequester(mapEditor->songRequester);
+        mapEditor->songRequester = NULL;
+    }
+}
+
 void closeMapEditor(MapEditor *mapEditor) {
     closeAttachedTilesetRequester(mapEditor);
+    closeAttachedSongRequester(mapEditor);
     ClearMenuStrip(mapEditor->window);
     CloseWindow(mapEditor->window);
     FreeGadgets(mapEditor->gadgets);
@@ -384,6 +392,11 @@ void closeMapEditor(MapEditor *mapEditor) {
 void attachTilesetRequesterToMapEditor
 (MapEditor *mapEditor, TilesetRequester *tilesetRequester) {
     mapEditor->tilesetRequester = tilesetRequester;
+}
+
+void attachSongRequesterToMapEditor
+(MapEditor *mapEditor, SongRequester *songRequester) {
+    mapEditor->songRequester = songRequester;
 }
 
 static void copyScaledTileset(UWORD *src, UWORD *dst) {
@@ -532,6 +545,7 @@ static MapEditor *newMapEditor(void) {
     mapEditor->prev             = NULL;
     mapEditor->next             = NULL;
     mapEditor->tilesetRequester = NULL;
+    mapEditor->songRequester    = NULL;
     mapEditor->closed           = 0;
     mapEditor->selected         = -1;
 

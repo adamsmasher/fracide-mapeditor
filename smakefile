@@ -11,7 +11,7 @@ $(OBJS)
 
 main.o: main.c MapEditor.h globals.h TilesetPackage.h TilesetRequester.h MapRequester.h SongNames.h
 
-MapEditor.o: MapEditor.c MapEditor.h globals.h tilesetRequester.h map.h
+MapEditor.o: MapEditor.c MapEditor.h globals.h SongNames.h tilesetRequester.h map.h
 
 globals.o: globals.c Project.h SongNames.h TilesetPackage.h
 
