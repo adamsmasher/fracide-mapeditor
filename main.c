@@ -859,6 +859,8 @@ static void handleChangeSongClicked(MapEditor *mapEditor) {
             attachSongRequesterToMapEditor(mapEditor, songRequester);
             addWindowToSigMask(songRequester->window);
         }
+    } else {
+        WindowToFront(mapEditor->songRequester->window);
     }
 }
 
