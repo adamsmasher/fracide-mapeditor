@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "globals.h"
 
@@ -100,17 +101,25 @@ static void createSongRequesterGadgets(SongRequester *songRequester, int editabl
     }
 }
 
-static SongRequester *newGenericSongRequester(int editable) {
+static SongRequester *newGenericSongRequester(char *title, int editable) {
     SongRequester *songRequester = malloc(sizeof(SongRequester));
     if(!songRequester) {
         fprintf(stderr, "newGenericSongRequester: couldn't allocate requester\n");
         goto error;
     }
 
+    songRequester->title = malloc(strlen(title) + 1);
+    if(!songRequester->title) {
+        fprintf(stderr, "newGenericSongRequester: couldn't allocate title\n");
+        goto error_freeRequester;
+    }
+    strcpy(songRequester->title, title);
+    songNamesNewWindow.Title = songRequester->title;
+
     createSongRequesterGadgets(songRequester, editable);
     if(!songRequester->gadgets) {
         fprintf(stderr, "newGenericSongRequester: couldn't create gadgets\n");
-        goto error_freeRequester;
+        goto error_freeTitle;
     }
     songNamesNewWindow.FirstGadget = songRequester->gadgets;
 
@@ -128,6 +137,8 @@ static SongRequester *newGenericSongRequester(int editable) {
 
 error_freeGadgets:
     free(songRequester->gadgets);
+error_freeTitle:
+    free(songRequester->title);
 error_freeRequester:
     free(songRequester);
 error:
@@ -138,17 +149,16 @@ error:
 #define NON_EDITABLE 0
 
 SongRequester *newSongRequester(char *title) {
-    songNamesNewWindow.Title = title;
-    return newGenericSongRequester(NON_EDITABLE);
+    return newGenericSongRequester(title, NON_EDITABLE);
 }
 
 SongRequester *newSongNamesEditor(void) {
-    songNamesNewWindow.Title = "Edit Song Names";
-    return newGenericSongRequester(EDITABLE);
+    return newGenericSongRequester("Edit Song Names", EDITABLE);
 }
 
 void freeSongRequester(SongRequester *songRequester) {
     CloseWindow(songRequester->window);
     FreeGadgets(songRequester->gadgets);
+    free(songRequester->title);
     free(songRequester);
 }

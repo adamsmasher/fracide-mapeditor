@@ -10,6 +10,7 @@ typedef struct SongRequester_tag {
     struct Window *window;
     struct Gadget *gadgets;
     struct Gadget *songNameGadget;
+    char *title;
     int closed;
     int selected;
 } SongRequester;
