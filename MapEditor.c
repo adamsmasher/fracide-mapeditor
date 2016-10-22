@@ -616,6 +616,10 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
         }
     }
 
+    if(map->songNum) {
+        mapEditorSetSong(mapEditor, map->songNum - 1);
+    }
+
     mapEditor->mapNum = mapNum + 1;
     mapEditor->saved = 1;
     return mapEditor;
