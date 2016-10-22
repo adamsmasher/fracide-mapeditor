@@ -19,6 +19,7 @@ Map *allocMap(void) {
 void overwriteMap(Map *srcMap, Map *destMap) {
     strcpy(destMap->name, srcMap->name);
     destMap->tilesetNum = srcMap->tilesetNum;
+    destMap->songNum = srcMap->songNum;
     memcpy(destMap->tiles, srcMap->tiles, MAP_TILES_WIDE * MAP_TILES_HIGH);
 }
 
