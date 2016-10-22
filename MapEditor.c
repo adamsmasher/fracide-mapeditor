@@ -474,7 +474,7 @@ static void mapEditorSetSongUpdateUI(MapEditor *mapEditor, UWORD songNumber) {
 }
 
 void mapEditorSetSong(MapEditor *mapEditor, UWORD songNumber) {
-    mapEditor->map->songNum = songNumber;
+    mapEditor->map->songNum = songNumber + 1;
     mapEditorSetSongUpdateUI(mapEditor, songNumber);
     mapEditor->saved = 0;
 }
