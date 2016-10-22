@@ -22,8 +22,8 @@
 #include "TilesetRequester.h"
 #include "globals.h"
 
-#define MAP_EDITOR_WIDTH  520
-#define MAP_EDITOR_HEIGHT 356
+#define MAP_EDITOR_WIDTH  536
+#define MAP_EDITOR_HEIGHT 384
 
 static struct NewMenu newMenu[] = {
   { NM_TITLE, "Map", 0, 0, 0, 0 },
@@ -59,7 +59,7 @@ static struct NewWindow mapEditorNewWindow = {
 #define TILE_HEIGHT 16
 
 /* TODO: adjust based on titlebar height */
-#define CURRENT_TILESET_LEFT   352
+#define CURRENT_TILESET_LEFT   378
 #define CURRENT_TILESET_TOP    36
 #define CURRENT_TILESET_WIDTH  144
 #define CURRENT_TILESET_HEIGHT 12
@@ -75,10 +75,10 @@ static struct NewWindow mapEditorNewWindow = {
 #define TILESET_SCROLL_TOP     CHOOSE_TILESET_TOP + CHOOSE_TILESET_HEIGHT + 8
 
 /* TODO: adjust based on screen */
-#define MAP_BORDER_LEFT   20
-#define MAP_BORDER_TOP    37
-#define MAP_BORDER_WIDTH  MAP_TILES_ACROSS * TILE_WIDTH  * 2 + 2
-#define MAP_BORDER_HEIGHT MAP_TILES_HIGH   * TILE_HEIGHT * 2 + 2
+#define MAP_BORDER_LEFT   28
+#define MAP_BORDER_TOP    51
+#define MAP_BORDER_WIDTH  (MAP_TILES_ACROSS * TILE_WIDTH  * 2 + 2)
+#define MAP_BORDER_HEIGHT (MAP_TILES_HIGH   * TILE_HEIGHT * 2 + 2)
 
 #define MAP_NAME_LEFT   (MAP_BORDER_LEFT  + 80)
 #define MAP_NAME_TOP    18
@@ -86,12 +86,12 @@ static struct NewWindow mapEditorNewWindow = {
 #define MAP_NAME_HEIGHT 14
 
 #define TILESET_BORDER_LEFT   CURRENT_TILESET_LEFT
-#define TILESET_BORDER_TOP    TILESET_SCROLL_TOP + 1
-#define TILESET_BORDER_WIDTH  TILE_WIDTH * TILESET_PALETTE_TILES_ACROSS * 2 + 2
+#define TILESET_BORDER_TOP    (TILESET_SCROLL_TOP + 1)
+#define TILESET_BORDER_WIDTH  (TILE_WIDTH * TILESET_PALETTE_TILES_ACROSS * 2 + 2)
 #define TILESET_BORDER_HEIGHT TILESET_SCROLL_HEIGHT
 
 #define SONG_NAME_LEFT   (MAP_BORDER_LEFT + 95)
-#define SONG_NAME_TOP    (MAP_BORDER_TOP + MAP_BORDER_HEIGHT + 4)
+#define SONG_NAME_TOP    (MAP_BORDER_TOP + MAP_BORDER_HEIGHT + 20)
 #define SONG_NAME_WIDTH  (MAP_BORDER_WIDTH - 182)
 #define SONG_NAME_HEIGHT 14
 
@@ -105,9 +105,27 @@ static struct NewWindow mapEditorNewWindow = {
 #define SONG_CLEAR_WIDTH  14
 #define SONG_CLEAR_HEIGHT 14
 
-#define IMAGE_DATA_SIZE (TILES_PER_SET * 256)
+#define MAP_UP_LEFT   (MAP_BORDER_LEFT - 3)
+#define MAP_UP_TOP    (MAP_BORDER_TOP - 15)
+#define MAP_UP_WIDTH  (MAP_BORDER_WIDTH + 4)
+#define MAP_UP_HEIGHT 14
 
-/* TODO: add gadgets for moving between maps quickly */
+#define MAP_DOWN_LEFT   MAP_UP_LEFT
+#define MAP_DOWN_TOP    (MAP_BORDER_TOP + MAP_BORDER_HEIGHT - 1)
+#define MAP_DOWN_WIDTH  MAP_UP_WIDTH
+#define MAP_DOWN_HEIGHT MAP_UP_HEIGHT
+
+#define MAP_LEFT_LEFT   (MAP_BORDER_LEFT - 15)
+#define MAP_LEFT_TOP    MAP_BORDER_TOP - 2
+#define MAP_LEFT_WIDTH  14
+#define MAP_LEFT_HEIGHT MAP_BORDER_HEIGHT + 2
+
+#define MAP_RIGHT_LEFT   (MAP_BORDER_LEFT + MAP_BORDER_WIDTH - 1)
+#define MAP_RIGHT_TOP    MAP_LEFT_TOP
+#define MAP_RIGHT_WIDTH  MAP_LEFT_WIDTH
+#define MAP_RIGHT_HEIGHT MAP_LEFT_HEIGHT
+
+#define IMAGE_DATA_SIZE (TILES_PER_SET * 256)
 
 static struct NewGadget mapNameNewGadget = {
   MAP_NAME_LEFT,  MAP_NAME_TOP,
@@ -186,6 +204,50 @@ static struct NewGadget songClearNewGadget = {
   NULL
 };
 
+static struct NewGadget mapLeftNewGadget = {
+  MAP_LEFT_LEFT,  MAP_LEFT_TOP,
+  MAP_LEFT_WIDTH, MAP_LEFT_HEIGHT,
+  "<",
+  &Topaz80,
+  MAP_LEFT_ID,
+  0,
+  NULL,
+  NULL
+};
+
+static struct NewGadget mapRightNewGadget = {
+  MAP_RIGHT_LEFT,  MAP_RIGHT_TOP,
+  MAP_RIGHT_WIDTH, MAP_RIGHT_HEIGHT,
+  ">",
+  &Topaz80,
+  MAP_RIGHT_ID,
+  0,
+  NULL,
+  NULL
+};
+
+static struct NewGadget mapUpNewGadget = {
+  MAP_UP_LEFT,  MAP_UP_TOP,
+  MAP_UP_WIDTH, MAP_UP_HEIGHT,
+  "^",
+  &Topaz80,
+  MAP_UP_ID,
+  0,
+  NULL,
+  NULL
+};
+
+static struct NewGadget mapDownNewGadget = {
+  MAP_DOWN_LEFT,  MAP_DOWN_TOP,
+  MAP_DOWN_WIDTH, MAP_DOWN_HEIGHT,
+  "v",
+  &Topaz80,
+  MAP_DOWN_ID,
+  0,
+  NULL,
+  NULL
+};
+
 static struct NewGadget *allNewGadgets[] = {
   &mapNameNewGadget,
   &currentTilesetNewGadget,
@@ -194,6 +256,10 @@ static struct NewGadget *allNewGadgets[] = {
   &songNameNewGadget,
   &songChangeNewGadget,
   &songClearNewGadget,
+  &mapLeftNewGadget,
+  &mapRightNewGadget,
+  &mapUpNewGadget,
+  &mapDownNewGadget,
   NULL
 };
 
@@ -306,6 +372,19 @@ static void createMapEditorGadgets(MapEditor *mapEditor) {
 
     gad = CreateGadget(BUTTON_KIND, gad, &songChangeNewGadget, TAG_END);
     gad = CreateGadget(BUTTON_KIND, gad, &songClearNewGadget, TAG_END);
+
+    gad = CreateGadget(BUTTON_KIND, gad, &mapLeftNewGadget,
+        GA_Disabled, TRUE,
+        TAG_END);
+    gad = CreateGadget(BUTTON_KIND, gad, &mapRightNewGadget,
+        GA_Disabled, TRUE,
+        TAG_END);
+    gad = CreateGadget(BUTTON_KIND, gad, &mapUpNewGadget,
+        GA_Disabled, TRUE,
+        TAG_END);
+    gad = CreateGadget(BUTTON_KIND, gad, &mapDownNewGadget,
+        GA_Disabled, TRUE,
+        TAG_END);
 
     if(gad) {
         mapEditor->gadgets = glist;
