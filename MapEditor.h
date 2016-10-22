@@ -13,6 +13,7 @@
 #define MAP_NAME_ID        (TILESET_SCROLL_ID  + 1)
 #define SONG_NAME_LABEL_ID (MAP_NAME_ID        + 1)
 #define SONG_CHANGE_ID     (SONG_NAME_LABEL_ID + 1)
+#define SONG_CLEAR_ID      (SONG_CHANGE_ID     + 1)
 
 #define TILESET_PALETTE_TILES_ACROSS 4
 #define TILESET_PALETTE_TILES_HIGH   8
@@ -64,6 +65,7 @@ void attachSongRequesterToMapEditor(MapEditor*, SongRequester*);
 
 void mapEditorSetTileset(MapEditor*, UWORD);
 void mapEditorSetSong(MapEditor*, UWORD);
+void mapEditorClearSong(MapEditor*);
 
 int mapEditorClickInPalette(WORD x, WORD y);
 unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y);

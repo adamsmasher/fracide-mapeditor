@@ -92,13 +92,18 @@ static struct NewWindow mapEditorNewWindow = {
 
 #define SONG_NAME_LEFT   (MAP_BORDER_LEFT + 95)
 #define SONG_NAME_TOP    (MAP_BORDER_TOP + MAP_BORDER_HEIGHT + 4)
-#define SONG_NAME_WIDTH  (MAP_BORDER_WIDTH - 170)
+#define SONG_NAME_WIDTH  (MAP_BORDER_WIDTH - 182)
 #define SONG_NAME_HEIGHT 14
 
 #define SONG_CHANGE_LEFT   (SONG_NAME_LEFT + SONG_NAME_WIDTH - 2)
 #define SONG_CHANGE_TOP    SONG_NAME_TOP
 #define SONG_CHANGE_WIDTH  76
 #define SONG_CHANGE_HEIGHT 14
+
+#define SONG_CLEAR_LEFT   (SONG_CHANGE_LEFT + SONG_CHANGE_WIDTH - 2)
+#define SONG_CLEAR_TOP    SONG_CHANGE_TOP
+#define SONG_CLEAR_WIDTH  14
+#define SONG_CLEAR_HEIGHT 14
 
 #define IMAGE_DATA_SIZE (TILES_PER_SET * 256)
 
@@ -170,6 +175,17 @@ static struct NewGadget songChangeNewGadget = {
   NULL
 };
 
+static struct NewGadget songClearNewGadget = {
+  SONG_CLEAR_LEFT,  SONG_CLEAR_TOP,
+  SONG_CLEAR_WIDTH, SONG_CLEAR_HEIGHT,
+  "X",
+  &Topaz80,
+  SONG_CLEAR_ID,
+  0,
+  NULL,
+  NULL
+};
+
 static struct NewGadget *allNewGadgets[] = {
   &mapNameNewGadget,
   &currentTilesetNewGadget,
@@ -177,6 +193,7 @@ static struct NewGadget *allNewGadgets[] = {
   &tilesetScrollNewGadget,
   &songNameNewGadget,
   &songChangeNewGadget,
+  &songClearNewGadget,
   NULL
 };
 
@@ -288,6 +305,7 @@ static void createMapEditorGadgets(MapEditor *mapEditor) {
     mapEditor->songNameGadget = gad;
 
     gad = CreateGadget(BUTTON_KIND, gad, &songChangeNewGadget, TAG_END);
+    gad = CreateGadget(BUTTON_KIND, gad, &songClearNewGadget, TAG_END);
 
     if(gad) {
         mapEditor->gadgets = glist;
@@ -473,9 +491,21 @@ static void mapEditorSetSongUpdateUI(MapEditor *mapEditor, UWORD songNumber) {
         TAG_END);
 }
 
+static void mapEditorClearSongUpdateUI(MapEditor *mapEditor) {
+    GT_SetGadgetAttrs(mapEditor->songNameGadget, mapEditor->window, NULL,
+        GTTX_Text, "N/A",
+        TAG_END);
+}
+
 void mapEditorSetSong(MapEditor *mapEditor, UWORD songNumber) {
     mapEditor->map->songNum = songNumber + 1;
     mapEditorSetSongUpdateUI(mapEditor, songNumber);
+    mapEditor->saved = 0;
+}
+
+void mapEditorClearSong(MapEditor *mapEditor) {
+    mapEditor->map->songNum = 0;
+    mapEditorClearSongUpdateUI(mapEditor);
     mapEditor->saved = 0;
 }
 

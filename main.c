@@ -862,6 +862,10 @@ static void handleChangeSongClicked(MapEditor *mapEditor) {
     }
 }
 
+static void handleClearSongClicked(MapEditor *mapEditor) {
+    mapEditorClearSong(mapEditor);
+}
+
 static void handleMapEditorGadgetUp
 (MapEditor *mapEditor, struct Gadget *gadget) {
     switch(gadget->GadgetID) {
@@ -873,6 +877,9 @@ static void handleMapEditorGadgetUp
         break;
     case SONG_CHANGE_ID:
         handleChangeSongClicked(mapEditor);
+        break;
+    case SONG_CLEAR_ID:
+        handleClearSongClicked(mapEditor);
         break;
     }
 }
