@@ -868,6 +868,34 @@ static void handleClearSongClicked(MapEditor *mapEditor) {
     mapEditorClearSong(mapEditor);
 }
 
+static void handleMapUp(MapEditor *mapEditor) {
+    if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
+        mapEditor->closed = 1;
+        openMapNum(mapEditor->mapNum - 17);
+    }
+}
+
+static void handleMapDown(MapEditor *mapEditor) {
+    if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
+        mapEditor->closed = 1;
+        openMapNum(mapEditor->mapNum + 15);
+    }
+}
+
+static void handleMapLeft(MapEditor *mapEditor) {
+    if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
+        mapEditor->closed = 1;
+        openMapNum(mapEditor->mapNum - 2);
+    }
+}
+
+static void handleMapRight(MapEditor *mapEditor) {
+    if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
+        mapEditor->closed = 1;
+        openMapNum(mapEditor->mapNum);
+    }
+}
+
 static void handleMapEditorGadgetUp
 (MapEditor *mapEditor, struct Gadget *gadget) {
     switch(gadget->GadgetID) {
@@ -882,6 +910,18 @@ static void handleMapEditorGadgetUp
         break;
     case SONG_CLEAR_ID:
         handleClearSongClicked(mapEditor);
+        break;
+    case MAP_LEFT_ID:
+        handleMapLeft(mapEditor);
+        break;
+    case MAP_RIGHT_ID:
+        handleMapRight(mapEditor);
+        break;
+    case MAP_UP_ID:
+        handleMapUp(mapEditor);
+        break;
+    case MAP_DOWN_ID:
+        handleMapDown(mapEditor);
         break;
     }
 }
