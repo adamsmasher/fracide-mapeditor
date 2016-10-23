@@ -38,6 +38,10 @@ typedef struct MapEditorTag {
     struct Gadget *tilesetNameGadget;
     struct Gadget *mapNameGadget;
     struct Gadget *songNameGadget;
+    struct Gadget *leftGadget;
+    struct Gadget *rightGadget;
+    struct Gadget *upGadget;
+    struct Gadget *downGadget;
 
     int closed;
     int saved;
@@ -67,6 +71,7 @@ void refreshMapEditor(MapEditor*);
 void attachTilesetRequesterToMapEditor(MapEditor*, TilesetRequester*);
 void attachSongRequesterToMapEditor(MapEditor*, SongRequester*);
 
+void mapEditorSetMapNum(MapEditor*, UWORD);
 void mapEditorSetTileset(MapEditor*, UWORD);
 void mapEditorSetSong(MapEditor*, UWORD);
 void mapEditorClearSong(MapEditor*);

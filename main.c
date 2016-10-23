@@ -394,7 +394,7 @@ static int saveMapAs(MapEditor *mapEditor) {
         }
     }
 
-    mapEditor->mapNum = selected;
+    mapEditorSetMapNum(mapEditor, selected - 1);
     enableMapRevert(mapEditor);
 
     mapEditor->saved  = 1;

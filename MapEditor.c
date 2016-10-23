@@ -376,15 +376,22 @@ static void createMapEditorGadgets(MapEditor *mapEditor) {
     gad = CreateGadget(BUTTON_KIND, gad, &mapLeftNewGadget,
         GA_Disabled, TRUE,
         TAG_END);
+    mapEditor->leftGadget = gad;
+
     gad = CreateGadget(BUTTON_KIND, gad, &mapRightNewGadget,
         GA_Disabled, TRUE,
         TAG_END);
+    mapEditor->rightGadget = gad;
+
     gad = CreateGadget(BUTTON_KIND, gad, &mapUpNewGadget,
         GA_Disabled, TRUE,
         TAG_END);
+    mapEditor->upGadget = gad;
+
     gad = CreateGadget(BUTTON_KIND, gad, &mapDownNewGadget,
         GA_Disabled, TRUE,
         TAG_END);
+    mapEditor->downGadget = gad;
 
     if(gad) {
         mapEditor->gadgets = glist;
@@ -392,6 +399,10 @@ static void createMapEditorGadgets(MapEditor *mapEditor) {
         mapEditor->tilesetNameGadget = NULL;
         mapEditor->mapNameGadget = NULL;
         mapEditor->songNameGadget = NULL;
+        mapEditor->leftGadget = NULL;
+        mapEditor->rightGadget = NULL;
+        mapEditor->upGadget = NULL;
+        mapEditor->downGadget = NULL;
         FreeGadgets(glist);
     }
 }
@@ -618,6 +629,50 @@ void mapEditorSetTile(MapEditor *mapEditor, unsigned int tile) {
     mapEditorSetTileTo(mapEditor, tile, mapEditor->selected);
 }
 
+void mapEditorSetMapNum(MapEditor *mapEditor, UWORD mapNum) {
+    mapEditor->mapNum = mapNum + 1;
+
+    if(mapNum < 16) {
+        GT_SetGadgetAttrs(mapEditor->upGadget, mapEditor->window, NULL,
+            GA_Disabled, TRUE,
+            TAG_END);
+    } else {
+        GT_SetGadgetAttrs(mapEditor->upGadget, mapEditor->window, NULL,
+            GA_Disabled, FALSE,
+            TAG_END);
+    }
+
+    if(mapNum >= 112) {
+        GT_SetGadgetAttrs(mapEditor->downGadget, mapEditor->window, NULL,
+            GA_Disabled, TRUE,
+            TAG_END);
+    } else {
+        GT_SetGadgetAttrs(mapEditor->downGadget, mapEditor->window, NULL,
+            GA_Disabled, FALSE,
+            TAG_END);
+    }
+
+    if(mapNum % 16 == 0) {
+        GT_SetGadgetAttrs(mapEditor->leftGadget, mapEditor->window, NULL,
+            GA_Disabled, TRUE,
+            TAG_END);
+    } else {
+        GT_SetGadgetAttrs(mapEditor->leftGadget, mapEditor->window, NULL,
+            GA_Disabled, FALSE,
+            TAG_END);
+    }
+
+    if(mapNum % 16 == 15) {
+        GT_SetGadgetAttrs(mapEditor->rightGadget, mapEditor->window, NULL,
+            GA_Disabled, TRUE,
+            TAG_END);
+    } else {
+        GT_SetGadgetAttrs(mapEditor->rightGadget, mapEditor->window, NULL,
+            GA_Disabled, FALSE,
+            TAG_END);
+    }
+}
+
 static MapEditor *newMapEditor(void) {
     MapEditor *mapEditor = malloc(sizeof(MapEditor));
     if(!mapEditor) {
@@ -729,7 +784,7 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
         mapEditorSetSong(mapEditor, map->songNum - 1);
     }
 
-    mapEditor->mapNum = mapNum + 1;
+    mapEditorSetMapNum(mapEditor, mapNum);
     mapEditor->saved = 1;
     return mapEditor;
 
