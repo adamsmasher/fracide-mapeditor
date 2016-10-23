@@ -868,6 +868,8 @@ static void handleClearSongClicked(MapEditor *mapEditor) {
     mapEditorClearSong(mapEditor);
 }
 
+/* TODO: properly initiate unused maps */
+
 static void handleMapUp(MapEditor *mapEditor) {
     if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
         mapEditor->closed = 1;
