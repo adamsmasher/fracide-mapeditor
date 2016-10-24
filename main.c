@@ -682,6 +682,7 @@ static void openMapNum(int mapNum) {
         }
         project.mapCnt++;
         project.maps[mapNum] = map;
+        projectSaved = 0;
     }
 
     mapEditor = newMapEditorWithMap(project.maps[mapNum], mapNum);
