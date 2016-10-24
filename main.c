@@ -1116,7 +1116,6 @@ static void handleSongRequesterGadgetUp(MapEditor *mapEditor, SongRequester *son
     mapEditorSetSong(mapEditor, msg->Code);
 }
 
-/* TODO: make NO SONG a thing */
 static void handleSongRequesterMessage(MapEditor *mapEditor, SongRequester *songRequester, struct IntuiMessage *msg) {
     switch(msg->Class) {
     case IDCMP_CLOSEWINDOW:
