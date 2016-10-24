@@ -160,6 +160,14 @@ static struct EasyStruct confirmRevertMapEasyStruct = {
     "Revert|Don't Revert"
 };
 
+static struct EasyStruct confirmCreateMapEasyStruct = {
+    sizeof(struct EasyStruct),
+    0,
+    "Confirm Create",
+    "Map %ld doesn't exist yet. Create it?",
+    "Create|Don't Create"
+};
+
 static int running = 0;
 static long sigMask = 0;
 static MapEditor *firstMapEditor = NULL;
@@ -669,31 +677,41 @@ static void newMap(void) {
     addWindowToSigMask(mapEditor->window);
 }
 
-static void openMapNum(int mapNum) {
+static int confirmCreateMap(int mapNum) {
+    return EasyRequest(
+        projectWindow,
+        &confirmCreateMapEasyStruct,
+        NULL,
+        mapNum);
+}
+
+static int openMapNum(int mapNum) {
     MapEditor *mapEditor;
 
     if(!project.maps[mapNum]) {
-        /* TODO: ask to create */
+        if(!confirmCreateMap(mapNum)) {
+            return 0;
+        }
 
-        Map *map = allocMap();
-        if(!map) {
+        project.maps[mapNum] = allocMap();
+        if(!project.maps[mapNum]) {
             fprintf(stderr, "openMapNum: failed to allocate new map\n");
-            return;
+            return 0;
         }
         project.mapCnt++;
-        project.maps[mapNum] = map;
         projectSaved = 0;
     }
 
     mapEditor = newMapEditorWithMap(project.maps[mapNum], mapNum);
     if(!mapEditor) {
         fprintf(stderr, "openMapNum: failed to create new map editor\n");
-        return;
+        return 0;
     }
 
     addToMapEditorList(mapEditor);
     addWindowToSigMask(mapEditor->window);
     enableMapRevert(mapEditor);
+    return 1;
 }
 
 static void openMap(void) {
@@ -884,32 +902,28 @@ static void handleClearSongClicked(MapEditor *mapEditor) {
     mapEditorClearSong(mapEditor);
 }
 
-static void handleMapUp(MapEditor *mapEditor) {
+static void moveToMap(MapEditor *mapEditor, int mapNum) {
     if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
-        mapEditor->closed = 1;
-        openMapNum(mapEditor->mapNum - 17);
+        if(openMapNum(mapNum - 1)) {
+            mapEditor->closed = 1;
+        }
     }
+}
+
+static void handleMapUp(MapEditor *mapEditor) {
+    moveToMap(mapEditor, mapEditor->mapNum - 16);
 }
 
 static void handleMapDown(MapEditor *mapEditor) {
-    if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
-        mapEditor->closed = 1;
-        openMapNum(mapEditor->mapNum + 15);
-    }
+    moveToMap(mapEditor, mapEditor->mapNum + 16);
 }
 
 static void handleMapLeft(MapEditor *mapEditor) {
-    if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
-        mapEditor->closed = 1;
-        openMapNum(mapEditor->mapNum - 2);
-    }
+    moveToMap(mapEditor, mapEditor->mapNum - 1);
 }
 
 static void handleMapRight(MapEditor *mapEditor) {
-    if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
-        mapEditor->closed = 1;
-        openMapNum(mapEditor->mapNum);
-    }
+    moveToMap(mapEditor, mapEditor->mapNum + 1);
 }
 
 static void handleMapEditorGadgetUp
