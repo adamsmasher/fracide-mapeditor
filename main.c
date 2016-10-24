@@ -668,13 +668,29 @@ static void newMap(void) {
     addWindowToSigMask(mapEditor->window);
 }
 
+/* TODO: there's something wrong with labels when creating a map this way...? */
+
 static void openMapNum(int mapNum) {
-    MapEditor *mapEditor =
-        newMapEditorWithMap(project.maps[mapNum], mapNum);
+    MapEditor *mapEditor;
+
+    if(!project.maps[mapNum]) {
+        /* TODO: ask to create */
+
+        Map *map = allocMap();
+        if(!map) {
+            fprintf(stderr, "openMapNum: failed to allocate new map\n");
+            return;
+        }
+        project.mapCnt++;
+        project.maps[mapNum] = map;
+    }
+
+    mapEditor = newMapEditorWithMap(project.maps[mapNum], mapNum);
     if(!mapEditor) {
         fprintf(stderr, "openMapNum: failed to create new map editor\n");
         return;
     }
+
     addToMapEditorList(mapEditor);
     addWindowToSigMask(mapEditor->window);
     enableMapRevert(mapEditor);
@@ -867,8 +883,6 @@ static void handleChangeSongClicked(MapEditor *mapEditor) {
 static void handleClearSongClicked(MapEditor *mapEditor) {
     mapEditorClearSong(mapEditor);
 }
-
-/* TODO: properly initiate unused maps */
 
 static void handleMapUp(MapEditor *mapEditor) {
     if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
