@@ -410,6 +410,7 @@ static int saveMap(MapEditor *mapEditor) {
         return saveMapAs(mapEditor);
     } else {
         overwriteMap(mapEditor->map, project.maps[mapEditor->mapNum - 1]);
+        updateProjectMapName(&project, mapEditor->mapNum - 1, mapEditor->map);
         mapEditor->saved = 1;
         projectSaved = 0;
         return 1;
@@ -667,8 +668,6 @@ static void newMap(void) {
     addToMapEditorList(mapEditor);
     addWindowToSigMask(mapEditor->window);
 }
-
-/* TODO: there's something wrong with labels when creating a map this way...? */
 
 static void openMapNum(int mapNum) {
     MapEditor *mapEditor;
