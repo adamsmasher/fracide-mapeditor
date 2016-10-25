@@ -1104,7 +1104,6 @@ static void handleTilesetRequesterMessage(MapEditor *mapEditor, TilesetRequester
         break;
     case IDCMP_REFRESHWINDOW:
         GT_BeginRefresh(tilesetRequester->window);
-        refreshTilesetRequester(tilesetRequester);
         GT_EndRefresh(tilesetRequester->window, TRUE);
         break;
     case IDCMP_GADGETUP:

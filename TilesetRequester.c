@@ -90,7 +90,6 @@ TilesetRequester *newTilesetRequester(void) {
         goto error_freeGadgets;
     }
     GT_RefreshWindow(tilesetRequester->window, NULL);
-    refreshTilesetRequester(tilesetRequester);
 
     tilesetRequester->closed = 0;
 
@@ -109,5 +108,3 @@ void closeTilesetRequester(TilesetRequester *tilesetRequester) {
     free(tilesetRequester);
 }
 
-void refreshTilesetRequester(TilesetRequester *tilesetRequester) {
-}
