@@ -593,6 +593,12 @@ void mapEditorSetSong(MapEditor *mapEditor, UWORD songNumber) {
     mapEditor->saved = 0;
 }
 
+void mapEditorRefreshSong(MapEditor *mapEditor) {
+    if(mapEditor->map->songNum) {
+        mapEditorSetSongUpdateUI(mapEditor, mapEditor->map->songNum - 1);
+    }
+}
+
 void mapEditorClearSong(MapEditor *mapEditor) {
     mapEditor->map->songNum = 0;
     mapEditorClearSongUpdateUI(mapEditor);

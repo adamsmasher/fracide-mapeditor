@@ -807,7 +807,17 @@ static void handleSongNamesEditorSelectSong(struct IntuiMessage *msg) {
     songNamesEditor->selected = selected + 1;
 }
 
-/* TODO: refresh the lists in all selectors/maps you have open */
+static void refreshAllSongDisplays(void) {
+    MapEditor *i = firstMapEditor;
+    while(i) {
+        if(i->songRequester) {
+            GT_RefreshWindow(i->songRequester->window, NULL);
+        }
+        mapEditorRefreshSong(i);
+        i = i->next;
+    }
+}
+
 static void handleSongNamesEditorUpdateSong(struct IntuiMessage *msg) {
     int selected = songNamesEditor->selected - 1;
     strcpy(
@@ -815,6 +825,7 @@ static void handleSongNamesEditorUpdateSong(struct IntuiMessage *msg) {
         ((struct StringInfo*)songNamesEditor->songNameGadget->SpecialInfo)->Buffer);
     GT_RefreshWindow(songNamesEditor->window, NULL);
     projectSaved = 0;
+    refreshAllSongDisplays();
 }
 
 static void handleSongNamesEditorGadgetUp(struct IntuiMessage *msg) {

@@ -67,6 +67,7 @@ MapEditor *newMapEditorWithMap(Map*, int mapNum);
 void closeMapEditor(MapEditor*);
 
 void refreshMapEditor(MapEditor*);
+void mapEditorRefreshSong(MapEditor*);
 
 void attachTilesetRequesterToMapEditor(MapEditor*, TilesetRequester*);
 void attachSongRequesterToMapEditor(MapEditor*, SongRequester*);
