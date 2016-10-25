@@ -53,7 +53,7 @@ void initTilesetRequesterVi(void) {
     tilesetListNewGadget.ng_VisualInfo = vi;
 }
 
-static struct Gadget *createTilesetRequesterGadgets(void) {
+static void createTilesetRequesterGadgets(TilesetRequester *tilesetRequester) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
 
@@ -62,12 +62,14 @@ static struct Gadget *createTilesetRequesterGadgets(void) {
     gad = CreateGadget(LISTVIEW_KIND, gad, &tilesetListNewGadget,
         GTLV_Labels, &tilesetPackage->tilesetNames,
         TAG_END);
+    tilesetRequester->tilesetList = gad;
 
     if(gad) {
-        return glist;
+        tilesetRequester->gadgets = glist;
 	} else {
+        tilesetRequester->tilesetList = NULL;
         FreeGadgets(glist);
-        return NULL;
+        tilesetRequester->gadgets = NULL;
     }	
 }
 
@@ -77,7 +79,7 @@ TilesetRequester *newTilesetRequester(void) {
         goto error;
     }
 
-    tilesetRequester->gadgets = createTilesetRequesterGadgets();
+    createTilesetRequesterGadgets(tilesetRequester);
     if(!tilesetRequester->gadgets) {
         goto error_freeRequester;
     }
