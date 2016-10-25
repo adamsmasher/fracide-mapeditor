@@ -108,3 +108,8 @@ void closeTilesetRequester(TilesetRequester *tilesetRequester) {
     free(tilesetRequester);
 }
 
+void refreshTilesetRequesterList(TilesetRequester *tilesetRequester) {
+    GT_SetGadgetAttrs(tilesetRequester->tilesetList, tilesetRequester->window, NULL,
+        GTLV_Labels, &tilesetPackage->tilesetNames,
+        TAG_END);
+}
