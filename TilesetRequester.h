@@ -6,10 +6,10 @@
 #define TILESET_LIST_ID 0
 
 typedef struct TilesetRequesterTag {
-	struct Window *window;
-	struct Gadget *gadgets;
+    struct Window *window;
+    struct Gadget *gadgets;
     struct Gadget *tilesetList;
-	int           closed;
+    int           closed;
 } TilesetRequester;
 
 void initTilesetRequesterScreen(void);
