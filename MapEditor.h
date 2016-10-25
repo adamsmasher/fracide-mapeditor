@@ -74,6 +74,7 @@ void attachSongRequesterToMapEditor(MapEditor*, SongRequester*);
 
 void mapEditorSetMapNum(MapEditor*, UWORD);
 void mapEditorSetTileset(MapEditor*, UWORD);
+void mapEditorRefreshTileset(MapEditor*);
 void mapEditorSetSong(MapEditor*, UWORD);
 void mapEditorClearSong(MapEditor*);
 

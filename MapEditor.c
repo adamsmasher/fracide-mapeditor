@@ -569,6 +569,13 @@ static void mapEditorSetTilesetUpdateUI(MapEditor *mapEditor, UWORD tilesetNumbe
         MAP_BORDER_TOP);
 }
 
+/* TODO: check to see if we've gone out of bounds */
+void mapEditorRefreshTileset(MapEditor *mapEditor) {
+    if(mapEditor->map->tilesetNum) {
+        mapEditorSetTilesetUpdateUI(mapEditor, mapEditor->map->tilesetNum - 1);
+    }
+}
+
 void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
     mapEditor->map->tilesetNum = tilesetNumber + 1;
     mapEditorSetTilesetUpdateUI(mapEditor, tilesetNumber);

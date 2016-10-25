@@ -621,8 +621,17 @@ done:
     return;
 }
 
-/* TODO: if the tileset package changed, we need to update all the existing
-         map editors/tileset package requesters */
+static void updateAllTileDisplays(void) {
+    MapEditor *i = firstMapEditor;
+    while(i) {
+        if(i->tilesetRequester) {
+            refreshTilesetRequesterList(i->tilesetRequester);
+        }
+        mapEditorRefreshTileset(i);
+        i = i->next;
+    }
+}
+
 static void selectTilesetPackage(void) {
     struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
         ASL_Hail, "Select Tileset Package",
@@ -636,6 +645,7 @@ static void selectTilesetPackage(void) {
     if(AslRequest(request, NULL)) {
         if(loadTilesetPackageFromAsl(request->rf_Dir, request->rf_File)) {
             projectSaved = 0;
+            updateAllTileDisplays();
         }
     }
 
