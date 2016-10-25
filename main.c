@@ -30,8 +30,6 @@
 #define SCR_WIDTH  640
 #define SCR_HEIGHT 512
 
-static struct Library *intuition = NULL;
-
 static struct NewScreen newScreen = {
     0,0,SCR_WIDTH,SCR_HEIGHT,2,
     0,3,
@@ -1209,16 +1207,10 @@ static void initPalette(struct ViewPort *viewport) {
 int main(void) {
     int retCode;
     
-    intuition =    OpenLibrary("intuition.library", 0);
-    if(!intuition) {
-        retCode = -1;
-        goto done;
-    }
-
     screen = OpenScreen(&newScreen);
     if(!screen) {
         retCode = -2;
-        goto closeIntuition;
+        goto done;
     }
     
     initPalette(&screen->ViewPort);
@@ -1295,8 +1287,6 @@ closeWindow:
     CloseWindow(projectWindow);
 closeScreen:
     CloseScreen(screen);
-closeIntuition:
-    CloseLibrary(intuition);
 done:
     return retCode;
 }
