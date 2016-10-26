@@ -307,6 +307,14 @@ static struct Border tileBorder = {
   NULL
 };
 
+static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
+    sizeof(struct EasyStruct),
+    0,
+    "Tileset Not In New Tileset Package",
+    "This map had tileset %ld, which does not exist\nin the new package.\nThe tileset has been removed from this map.",
+    "OK"
+};
+
 void initMapEditorScreen(void) {
   mapEditorNewWindow.Screen = screen;
 }
@@ -569,10 +577,40 @@ static void mapEditorSetTilesetUpdateUI(MapEditor *mapEditor, UWORD tilesetNumbe
         MAP_BORDER_TOP);
 }
 
-/* TODO: check to see if we've gone out of bounds */
+static void mapEditorClearTilesetUI(MapEditor *mapEditor) {
+    struct RastPort *rport = mapEditor->window->RPort;
+
+    GT_SetGadgetAttrs(mapEditor->tilesetNameGadget, mapEditor->window, NULL,
+        GTTX_Text, "N/A",
+        TAG_END);
+
+    SetAPen(rport, 0);
+    SetDrMd(rport, JAM1);
+
+    RectFill(rport,
+        TILESET_BORDER_LEFT,
+        TILESET_BORDER_TOP,
+        TILESET_BORDER_LEFT + TILESET_BORDER_WIDTH  - 3,
+        TILESET_BORDER_TOP  + TILESET_BORDER_HEIGHT - 3);
+
+    RectFill(rport,
+        MAP_BORDER_LEFT,
+        MAP_BORDER_TOP,
+        MAP_BORDER_LEFT + MAP_BORDER_WIDTH  - 3,
+        MAP_BORDER_TOP  + MAP_BORDER_HEIGHT - 3);
+}
+
 void mapEditorRefreshTileset(MapEditor *mapEditor) {
     if(mapEditor->map->tilesetNum) {
-        mapEditorSetTilesetUpdateUI(mapEditor, mapEditor->map->tilesetNum - 1);
+        if(mapEditor->map->tilesetNum < tilesetPackage->tilesetPackageFile.tilesetCnt) {
+            mapEditorSetTilesetUpdateUI(mapEditor, mapEditor->map->tilesetNum - 1);
+        } else {
+            mapEditorClearTilesetUI(mapEditor);
+            EasyRequest(mapEditor->window, &tilesetOutOfBoundsEasyStruct, NULL,
+                mapEditor->map->tilesetNum - 1);
+            mapEditor->map->tilesetNum = 0;
+            mapEditor->saved = 0;
+        }
     }
 }
 
