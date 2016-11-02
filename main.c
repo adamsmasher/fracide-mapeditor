@@ -862,6 +862,9 @@ static void handleSongNamesEditorMessage(struct IntuiMessage* msg) {
         GT_BeginRefresh(songNamesEditor->window);
         GT_EndRefresh(songNamesEditor->window, TRUE);
         break;
+    case IDCMP_NEWSIZE:
+        resizeSongRequester(songNamesEditor);
+        break;
     }
 }
 

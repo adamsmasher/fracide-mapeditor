@@ -22,6 +22,8 @@ void initSongNamesVi(void);
 SongRequester *newSongRequester(char *title);
 SongRequester *newSongNamesEditor(void);
 
+void resizeSongRequester(SongRequester*);
+
 void freeSongRequester(SongRequester*);
 
 #endif
