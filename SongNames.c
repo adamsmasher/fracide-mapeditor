@@ -96,8 +96,8 @@ static void createSongRequesterGadgets(SongRequester *songRequester) {
     if(gad) {
         songRequester->gadgets = glist;
     } else {
-        FreeGadgets(glist);
         songRequester->songNameGadget = NULL;
+        FreeGadgets(glist);
     }
 }
 
