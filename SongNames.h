@@ -13,6 +13,7 @@ typedef struct SongRequester_tag {
     char *title;
     int closed;
     int selected;
+    int editable;
 } SongRequester;
 
 void initSongNamesScreen(void);

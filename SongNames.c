@@ -73,13 +73,13 @@ void initSongNamesVi(void) {
     songNameNewGadget.ng_VisualInfo = vi;
 }
 
-static void createSongRequesterGadgets(SongRequester *songRequester, int editable) {
+static void createSongRequesterGadgets(SongRequester *songRequester) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
 
     gad = CreateContext(&glist);
 
-    if(editable) {
+    if(songRequester->editable) {
         gad = CreateGadget(STRING_KIND, gad, &songNameNewGadget,
             GTST_MaxChars, 64,
             GA_Disabled, TRUE);
@@ -107,6 +107,7 @@ static SongRequester *newGenericSongRequester(char *title, int editable) {
         fprintf(stderr, "newGenericSongRequester: couldn't allocate requester\n");
         goto error;
     }
+    songRequester->editable = editable;
 
     songRequester->title = malloc(strlen(title) + 1);
     if(!songRequester->title) {
@@ -116,7 +117,7 @@ static SongRequester *newGenericSongRequester(char *title, int editable) {
     strcpy(songRequester->title, title);
     songNamesNewWindow.Title = songRequester->title;
 
-    createSongRequesterGadgets(songRequester, editable);
+    createSongRequesterGadgets(songRequester);
     if(!songRequester->gadgets) {
         fprintf(stderr, "newGenericSongRequester: couldn't create gadgets\n");
         goto error_freeTitle;
