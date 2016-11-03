@@ -1122,6 +1122,9 @@ static void handleTilesetRequesterMessage(MapEditor *mapEditor, TilesetRequester
     case IDCMP_GADGETUP:
         handleTilesetRequesterGadgetUp(mapEditor, tilesetRequester, msg);
         break;
+    case IDCMP_NEWSIZE:
+        resizeTilesetRequester(tilesetRequester);
+        break;
     }
 }
 

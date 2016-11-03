@@ -19,5 +19,6 @@ TilesetRequester *newTilesetRequester(void);
 void closeTilesetRequester(TilesetRequester*);
 
 void refreshTilesetRequesterList(TilesetRequester*);
+void resizeTilesetRequester(TilesetRequester*);
 
 #endif
