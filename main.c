@@ -1149,6 +1149,9 @@ static void handleSongRequesterMessage(MapEditor *mapEditor, SongRequester *song
     case IDCMP_GADGETUP:
         handleSongRequesterGadgetUp(mapEditor, songRequester, msg);
         break;
+    case IDCMP_NEWSIZE:
+        resizeSongRequester(songRequester);
+        break;
     }
 }
 
