@@ -11,49 +11,51 @@
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
+#include <graphics/gfx.h>
+#include <proto/graphics.h>
+
 #include "globals.h"
 
 #define MAP_REQUESTER_WIDTH  320
 #define MAP_REQUESTER_HEIGHT 336
 
-#define MAP_LIST_LEFT   20
-#define MAP_LIST_TOP    20
-#define MAP_LIST_WIDTH  268
-#define MAP_LIST_HEIGHT 264
+#define MAP_LIST_LEFT         20
+#define MAP_LIST_TOP          20
+#define MAP_LIST_WIDTH        268
+#define MAP_LIST_HEIGHT_DELTA 72
 
-#define OK_BUTTON_LEFT   20
-#define OK_BUTTON_TOP    300
-#define OK_BUTTON_WIDTH  72
-#define OK_BUTTON_HEIGHT 16
+#define OK_BUTTON_LEFT          20
+#define OK_BUTTON_BOTTOM_OFFSET 36
+#define OK_BUTTON_WIDTH         72
+#define OK_BUTTON_HEIGHT        16
 
-#define CANCEL_BUTTON_LEFT   216
-#define CANCEL_BUTTON_TOP    300
-#define CANCEL_BUTTON_WIDTH  72
-#define CANCEL_BUTTON_HEIGHT 16
+#define CANCEL_BUTTON_LEFT          216
+#define CANCEL_BUTTON_BOTTOM_OFFSET 36
+#define CANCEL_BUTTON_WIDTH         72
+#define CANCEL_BUTTON_HEIGHT        16
 
 #define MAP_LIST_ID      1
 #define OK_BUTTON_ID     (MAP_LIST_ID  + 1)
 #define CANCEL_BUTTON_ID (OK_BUTTON_ID + 1)
 
-/* TODO: make this resizeable up and down */
 static struct NewWindow mapRequesterNewWindow = {
     40, 40, MAP_REQUESTER_WIDTH, MAP_REQUESTER_HEIGHT,
     0xFF, 0xFF,
-    CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP,
+    CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP|NEWSIZE,
     WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|WINDOWSIZING|ACTIVATE,
     NULL,
     NULL,
     "Save Map", /* TODO: dynamically generate this */
     NULL,
     NULL,
-    MAP_REQUESTER_WIDTH, MAP_REQUESTER_HEIGHT,
-    MAP_REQUESTER_WIDTH, MAP_REQUESTER_HEIGHT,
+    MAP_REQUESTER_WIDTH, 16,
+    MAP_REQUESTER_WIDTH, 0xFFFF,
     CUSTOMSCREEN
 };
 
 static struct NewGadget mapListNewGadget = {
 	MAP_LIST_LEFT,  MAP_LIST_TOP,
-	MAP_LIST_WIDTH, MAP_LIST_HEIGHT,
+	MAP_LIST_WIDTH, MAP_REQUESTER_HEIGHT - MAP_LIST_HEIGHT_DELTA,
 	NULL,
 	&Topaz80,
 	MAP_LIST_ID,
@@ -63,7 +65,7 @@ static struct NewGadget mapListNewGadget = {
 };
 
 static struct NewGadget okButtonNewGadget = {
-    OK_BUTTON_LEFT,  OK_BUTTON_TOP,
+    OK_BUTTON_LEFT,  MAP_REQUESTER_HEIGHT - OK_BUTTON_BOTTOM_OFFSET,
     OK_BUTTON_WIDTH, OK_BUTTON_HEIGHT,
     "OK",
     &Topaz80,
@@ -74,7 +76,7 @@ static struct NewGadget okButtonNewGadget = {
 };
 
 static struct NewGadget cancelButtonNewGadget = {
-    CANCEL_BUTTON_LEFT,  CANCEL_BUTTON_TOP,
+    CANCEL_BUTTON_LEFT,  MAP_REQUESTER_HEIGHT - CANCEL_BUTTON_BOTTOM_OFFSET,
     CANCEL_BUTTON_WIDTH, CANCEL_BUTTON_HEIGHT,
     "Cancel",
     &Topaz80,
@@ -106,20 +108,24 @@ void initMapRequesterVi(void) {
 
 static void createMapRequesterGadgets(MapRequester *mapRequester) {
     struct Gadget *gad;
+    int height = mapRequester->window ? mapRequester->window->Height : MAP_REQUESTER_HEIGHT;
     mapRequester->gadgets = NULL;
 
     gad = CreateContext(&mapRequester->gadgets);
 
+    mapListNewGadget.ng_Height = height - MAP_LIST_HEIGHT_DELTA;
     gad = CreateGadget(LISTVIEW_KIND, gad, &mapListNewGadget,
         GTLV_Labels, &project.mapNames,
         GTLV_ShowSelected, NULL,
         TAG_END);
 
+    okButtonNewGadget.ng_TopEdge = height - OK_BUTTON_BOTTOM_OFFSET;
     gad = CreateGadget(BUTTON_KIND, gad, &okButtonNewGadget,
         GA_Disabled, TRUE,
         TAG_END);
     mapRequester->okButton = gad;
 
+    cancelButtonNewGadget.ng_TopEdge = height - CANCEL_BUTTON_BOTTOM_OFFSET;
     gad = CreateGadget(BUTTON_KIND, gad, &cancelButtonNewGadget, TAG_END);
 
     if(!gad) {
@@ -149,6 +155,21 @@ static void handleRequesterGadgetUp(MapRequester *mapRequester, struct Gadget *g
     }
 }
 
+static void resizeMapRequester(MapRequester *mapRequester) {
+    RemoveGList(mapRequester->window, mapRequester->gadgets, -1);
+    FreeGadgets(mapRequester->gadgets);
+    SetRast(mapRequester->window->RPort, 0);
+    createMapRequesterGadgets(mapRequester);
+    if(!mapRequester->gadgets) {
+        fprintf(stderr, "resizeMapRequester: couldn't make gadgets");
+        return;
+    }
+    AddGList(mapRequester->window, mapRequester->gadgets, (UWORD)~0, -1, NULL);
+    RefreshWindowFrame(mapRequester->window);
+    RefreshGList(mapRequester->gadgets, mapRequester->window, NULL, -1);
+    GT_RefreshWindow(mapRequester->window, NULL);
+}
+
 static void handleRequesterMessage(MapRequester *mapRequester, struct IntuiMessage *msg) {
     switch(msg->Class) {
     case IDCMP_CLOSEWINDOW:
@@ -160,6 +181,9 @@ static void handleRequesterMessage(MapRequester *mapRequester, struct IntuiMessa
     case IDCMP_REFRESHWINDOW:
         GT_BeginRefresh(mapRequester->window);
         GT_EndRefresh(mapRequester->window, TRUE);
+        break;
+    case IDCMP_NEWSIZE:
+        resizeMapRequester(mapRequester);
         break;
     }
 }
@@ -186,6 +210,7 @@ static void requesterLoop(MapRequester *mapRequester) {
 
 static int spawnRequester(struct Window *window) {
     MapRequester mapRequester;
+    mapRequester.window = NULL;
 
     if(!Request(&requester, window)) {
         fprintf(stderr, "spawnRequester: couldn't start requester\n");
