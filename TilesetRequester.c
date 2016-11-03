@@ -14,8 +14,9 @@
 
 #include "globals.h"
 
-#define TILESET_REQUESTER_WIDTH  200
-#define TILESET_REQUESTER_HEIGHT 336
+#define TILESET_REQUESTER_WIDTH      200
+#define TILESET_REQUESTER_HEIGHT     336
+#define TILESET_REQUESTER_MIN_HEIGHT 48
 
 #define TILESET_LIST_WIDTH        165
 #define TILESET_LIST_HEIGHT_DELTA 26
@@ -32,7 +33,7 @@ static struct NewWindow tilesetRequesterNewWindow = {
     "Choose Tileset", /* TODO: dynamically generate this based on map name */
     NULL,
     NULL,
-    TILESET_REQUESTER_WIDTH, 16,
+    TILESET_REQUESTER_WIDTH, TILESET_REQUESTER_MIN_HEIGHT,
     TILESET_REQUESTER_WIDTH, 0xFFFF,
     CUSTOMSCREEN
 };

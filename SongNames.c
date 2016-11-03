@@ -16,8 +16,9 @@
 
 #include "globals.h"
 
-#define SONG_NAMES_WIDTH  200
-#define SONG_NAMES_HEIGHT 336
+#define SONG_NAMES_WIDTH      200
+#define SONG_NAMES_HEIGHT     336
+#define SONG_NAMES_MIN_HEIGHT 48
 
 #define SONG_LIST_WIDTH        165
 #define SONG_LIST_HEIGHT_DELTA 26
@@ -39,7 +40,7 @@ static struct NewWindow songNamesNewWindow = {
     "Edit Song Names",
     NULL,
     NULL,
-    SONG_NAMES_WIDTH, 16,
+    SONG_NAMES_WIDTH, SONG_NAMES_MIN_HEIGHT,
     SONG_NAMES_WIDTH, 0xFFFF,
     CUSTOMSCREEN
 };

@@ -16,8 +16,9 @@
 
 #include "globals.h"
 
-#define MAP_REQUESTER_WIDTH  320
-#define MAP_REQUESTER_HEIGHT 336
+#define MAP_REQUESTER_WIDTH      320
+#define MAP_REQUESTER_HEIGHT     336
+#define MAP_REQUESTER_MIN_HEIGHT 100
 
 #define MAP_LIST_LEFT         20
 #define MAP_LIST_TOP          20
@@ -48,7 +49,7 @@ static struct NewWindow mapRequesterNewWindow = {
     "Save Map", /* TODO: dynamically generate this */
     NULL,
     NULL,
-    MAP_REQUESTER_WIDTH, 16,
+    MAP_REQUESTER_WIDTH, MAP_REQUESTER_MIN_HEIGHT,
     MAP_REQUESTER_WIDTH, 0xFFFF,
     CUSTOMSCREEN
 };
