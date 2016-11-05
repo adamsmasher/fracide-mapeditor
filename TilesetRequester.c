@@ -19,12 +19,11 @@
 #define TILESET_REQUESTER_HEIGHT     336
 #define TILESET_REQUESTER_MIN_HEIGHT 48
 
-#define TILESET_LIST_WIDTH        165
+#define TILESET_LIST_WIDTH_DELTA  35
 #define TILESET_LIST_HEIGHT_DELTA 26
 #define TILESET_LIST_TOP          20
 #define TILESET_LIST_LEFT         10
 
-/* TODO: Make me width adjustable */
 static struct NewWindow tilesetRequesterNewWindow = {
     40, 40, TILESET_REQUESTER_WIDTH, TILESET_REQUESTER_HEIGHT,
     0xFF, 0xFF,
@@ -36,13 +35,14 @@ static struct NewWindow tilesetRequesterNewWindow = {
     NULL,
     NULL,
     TILESET_REQUESTER_WIDTH, TILESET_REQUESTER_MIN_HEIGHT,
-    TILESET_REQUESTER_WIDTH, 0xFFFF,
+    0xFFFF, 0xFFFF,
     CUSTOMSCREEN
 };
 
 static struct NewGadget tilesetListNewGadget = {
     TILESET_LIST_LEFT,  TILESET_LIST_TOP,
-    TILESET_LIST_WIDTH, TILESET_REQUESTER_HEIGHT - TILESET_LIST_HEIGHT_DELTA,
+    TILESET_REQUESTER_WIDTH  - TILESET_LIST_WIDTH_DELTA,
+    TILESET_REQUESTER_HEIGHT - TILESET_LIST_HEIGHT_DELTA,
     NULL,
     &Topaz80,
     TILESET_LIST_ID,
@@ -63,10 +63,12 @@ static void createTilesetRequesterGadgets(TilesetRequester *tilesetRequester) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
     int height = tilesetRequester->window ? tilesetRequester->window->Height : TILESET_REQUESTER_HEIGHT;
+    int width  = tilesetRequester->window ? tilesetRequester->window->Width  : TILESET_REQUESTER_WIDTH;
 
     gad = CreateContext(&glist);
 
     tilesetListNewGadget.ng_Height = height - TILESET_LIST_HEIGHT_DELTA;
+    tilesetListNewGadget.ng_Width  = width  - TILESET_LIST_WIDTH_DELTA;
     gad = CreateGadget(LISTVIEW_KIND, gad, &tilesetListNewGadget,
         GTLV_Labels, &tilesetPackage->tilesetNames,
         TAG_END);
