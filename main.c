@@ -888,6 +888,11 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
     TilesetRequester *tilesetRequester;
     char *title = "Choose Tileset For Map ###";
 
+    if(mapEditor->tilesetRequester) {
+        WindowToFront(mapEditor->tilesetRequester->window);
+        return;
+    }
+
     if(!tilesetPackage) {
         int choice = EasyRequest(
             mapEditor->window,
@@ -898,10 +903,9 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
         }
     }
 
-    /* TODO: show the requester if it already exists earlier on */
     /* even after giving the user the opportunity to set the tileset
        package, we need to be sure they did so... */
-    if(!tilesetPackage || mapEditor->tilesetRequester) {
+    if(!tilesetPackage) {
         return;
     }
 
