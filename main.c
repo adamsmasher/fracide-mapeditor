@@ -885,6 +885,9 @@ static void closeSongNamesEditor(void) {
 }
 
 static void handleChooseTilesetClicked(MapEditor *mapEditor) {
+    TilesetRequester *tilesetRequester;
+    char *title = "Choose Tileset For Map ###";
+
     if(!tilesetPackage) {
         int choice = EasyRequest(
             mapEditor->window,
@@ -895,15 +898,27 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
         }
     }
 
+    /* TODO: show the requester if it already exists earlier on */
     /* even after giving the user the opportunity to set the tileset
        package, we need to be sure they did so... */
-    if(tilesetPackage && !mapEditor->tilesetRequester) {
-        TilesetRequester *tilesetRequester = newTilesetRequester();
-        if(tilesetRequester) {
-            attachTilesetRequesterToMapEditor(mapEditor, tilesetRequester);
-            addWindowToSigMask(tilesetRequester->window);
-        }
+    if(!tilesetPackage || mapEditor->tilesetRequester) {
+        return;
     }
+
+    if(mapEditor->mapNum) {
+        sprintf(title, "Choose Tileset For Map %d", mapEditor->mapNum - 1);
+    } else {
+        title = "Choose Tileset";
+    }
+
+    tilesetRequester = newTilesetRequester(title);
+    if(!tilesetRequester) {
+        fprintf(stderr, "handleChooseTilesetClicked: couldn't make requester\n");
+        return;
+    }
+
+    attachTilesetRequesterToMapEditor(mapEditor, tilesetRequester);
+    addWindowToSigMask(tilesetRequester->window);
 }
 
 static void handleChangeSongClicked(MapEditor *mapEditor) {

@@ -10,12 +10,13 @@ typedef struct TilesetRequesterTag {
     struct Gadget *gadgets;
     struct Gadget *tilesetList;
     int           closed;
+    char          *title;
 } TilesetRequester;
 
 void initTilesetRequesterScreen(void);
 void initTilesetRequesterVi(void);
 
-TilesetRequester *newTilesetRequester(void);
+TilesetRequester *newTilesetRequester(char *title);
 void closeTilesetRequester(TilesetRequester*);
 
 void refreshTilesetRequesterList(TilesetRequester*);

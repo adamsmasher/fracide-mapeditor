@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "globals.h"
 
@@ -79,19 +80,27 @@ static void createTilesetRequesterGadgets(TilesetRequester *tilesetRequester) {
     }	
 }
 
-TilesetRequester *newTilesetRequester(void) {
+TilesetRequester *newTilesetRequester(char *title) {
     TilesetRequester *tilesetRequester = malloc(sizeof(TilesetRequester));
     if(!tilesetRequester) {
         goto error;
     }
     tilesetRequester->window = NULL;
 
+    tilesetRequester->title = malloc(strlen(title) + 1);
+    if(!tilesetRequester->title) {
+        fprintf(stderr, "newTilesetRequester: couldn't allocate title\n");
+        goto error_freeRequester;
+    }
+    strcpy(tilesetRequester->title, title);
+
     createTilesetRequesterGadgets(tilesetRequester);
     if(!tilesetRequester->gadgets) {
-        goto error_freeRequester;
+        goto error_freeTitle;
     }
     tilesetRequesterNewWindow.FirstGadget = tilesetRequester->gadgets;
 
+    tilesetRequesterNewWindow.Title = tilesetRequester->title;
     tilesetRequester->window = OpenWindow(&tilesetRequesterNewWindow);
     if(!tilesetRequester) {
         goto error_freeGadgets;
@@ -103,6 +112,8 @@ TilesetRequester *newTilesetRequester(void) {
     return tilesetRequester;
 error_freeGadgets:
     FreeGadgets(tilesetRequester->gadgets);
+error_freeTitle:
+    free(tilesetRequester->title);
 error_freeRequester:
     free(tilesetRequester);
 error:
@@ -112,6 +123,7 @@ error:
 void closeTilesetRequester(TilesetRequester *tilesetRequester) {
     CloseWindow(tilesetRequester->window);
     FreeGadgets(tilesetRequester->gadgets);
+    free(tilesetRequester->title);
     free(tilesetRequester);
 }
 
