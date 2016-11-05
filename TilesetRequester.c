@@ -24,6 +24,7 @@
 #define TILESET_LIST_TOP          20
 #define TILESET_LIST_LEFT         10
 
+/* TODO: Make me width adjustable */
 static struct NewWindow tilesetRequesterNewWindow = {
     40, 40, TILESET_REQUESTER_WIDTH, TILESET_REQUESTER_HEIGHT,
     0xFF, 0xFF,
@@ -31,7 +32,7 @@ static struct NewWindow tilesetRequesterNewWindow = {
     WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|WINDOWSIZING|ACTIVATE,
     NULL,
     NULL,
-    "Choose Tileset", /* TODO: dynamically generate this based on map name */
+    "Choose Tileset",
     NULL,
     NULL,
     TILESET_REQUESTER_WIDTH, TILESET_REQUESTER_MIN_HEIGHT,

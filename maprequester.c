@@ -39,6 +39,7 @@
 #define OK_BUTTON_ID     (MAP_LIST_ID  + 1)
 #define CANCEL_BUTTON_ID (OK_BUTTON_ID + 1)
 
+/* TODO: make me width adjustable */
 static struct NewWindow mapRequesterNewWindow = {
     40, 40, MAP_REQUESTER_WIDTH, MAP_REQUESTER_HEIGHT,
     0xFF, 0xFF,

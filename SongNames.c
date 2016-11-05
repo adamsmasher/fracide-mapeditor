@@ -30,6 +30,7 @@
 #define SONG_NAME_BOTTOM_OFFSET 26
 #define SONG_NAME_LEFT          SONG_LIST_LEFT
 
+/* TODO: make me width adjustable */
 static struct NewWindow songNamesNewWindow = {
     40, 40, SONG_NAMES_WIDTH, SONG_NAMES_HEIGHT,
     0xFF, 0xFF,
