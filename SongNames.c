@@ -20,17 +20,16 @@
 #define SONG_NAMES_HEIGHT     336
 #define SONG_NAMES_MIN_HEIGHT 48
 
-#define SONG_LIST_WIDTH        165
+#define SONG_LIST_WIDTH_DELTA  35
 #define SONG_LIST_HEIGHT_DELTA 26
 #define SONG_LIST_TOP          20
 #define SONG_LIST_LEFT         10
 
-#define SONG_NAME_WIDTH         SONG_LIST_WIDTH
+#define SONG_NAME_WIDTH_DELTA   SONG_LIST_WIDTH_DELTA
 #define SONG_NAME_HEIGHT        12
 #define SONG_NAME_BOTTOM_OFFSET 26
 #define SONG_NAME_LEFT          SONG_LIST_LEFT
 
-/* TODO: make me width adjustable */
 static struct NewWindow songNamesNewWindow = {
     40, 40, SONG_NAMES_WIDTH, SONG_NAMES_HEIGHT,
     0xFF, 0xFF,
@@ -42,13 +41,14 @@ static struct NewWindow songNamesNewWindow = {
     NULL,
     NULL,
     SONG_NAMES_WIDTH, SONG_NAMES_MIN_HEIGHT,
-    SONG_NAMES_WIDTH, 0xFFFF,
+    0xFFFF, 0xFFFF,
     CUSTOMSCREEN
 };
 
 static struct NewGadget songListNewGadget = {
     SONG_LIST_LEFT,  SONG_LIST_TOP,
-    SONG_LIST_WIDTH, SONG_NAMES_HEIGHT - SONG_LIST_HEIGHT_DELTA,
+    SONG_NAMES_WIDTH - SONG_LIST_WIDTH_DELTA,
+    SONG_NAMES_HEIGHT - SONG_LIST_HEIGHT_DELTA,
     NULL,
     &Topaz80,
     SONG_LIST_ID,
@@ -59,7 +59,7 @@ static struct NewGadget songListNewGadget = {
 
 static struct NewGadget songNameNewGadget = {
     SONG_NAME_LEFT,  SONG_NAMES_HEIGHT - SONG_NAME_BOTTOM_OFFSET,
-    SONG_NAME_WIDTH, SONG_NAME_HEIGHT,
+    SONG_NAMES_WIDTH - SONG_NAME_WIDTH_DELTA, SONG_NAME_HEIGHT,
     NULL,
     &Topaz80,
     SONG_NAME_ID,
@@ -78,16 +78,16 @@ void initSongNamesVi(void) {
 }
 
 static void createSongRequesterGadgets(SongRequester *songRequester) {
-    int height;
     struct Gadget *gad;
     struct Gadget *glist = NULL;
+    int height = songRequester->window ? songRequester->window->Height : SONG_NAMES_HEIGHT;
+    int width  = songRequester->window ? songRequester->window->Width  : SONG_NAMES_WIDTH;
 
     gad = CreateContext(&glist);
 
-    height = songRequester->window ? songRequester->window->Height : SONG_NAMES_HEIGHT;
-
     if(songRequester->editable) {
         songNameNewGadget.ng_TopEdge = height - SONG_NAME_BOTTOM_OFFSET;
+        songNameNewGadget.ng_Width   = width  - SONG_NAME_WIDTH_DELTA;
         gad = CreateGadget(STRING_KIND, gad, &songNameNewGadget,
             GTST_MaxChars, 64,
             GA_Disabled, TRUE);
@@ -97,6 +97,7 @@ static void createSongRequesterGadgets(SongRequester *songRequester) {
     }
 
     songListNewGadget.ng_Height = height - SONG_LIST_HEIGHT_DELTA;
+    songListNewGadget.ng_Width  = width  - SONG_LIST_WIDTH_DELTA;
     gad = CreateGadget(LISTVIEW_KIND, gad, &songListNewGadget,
         GTLV_ShowSelected, songRequester->songNameGadget,
         GTLV_Labels, &project.songNames,
