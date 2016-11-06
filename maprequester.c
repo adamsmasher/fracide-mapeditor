@@ -22,7 +22,7 @@
 
 #define MAP_LIST_LEFT         20
 #define MAP_LIST_TOP          20
-#define MAP_LIST_WIDTH        268
+#define MAP_LIST_WIDTH_DELTA  52
 #define MAP_LIST_HEIGHT_DELTA 72
 
 #define OK_BUTTON_LEFT          20
@@ -30,7 +30,7 @@
 #define OK_BUTTON_WIDTH         72
 #define OK_BUTTON_HEIGHT        16
 
-#define CANCEL_BUTTON_LEFT          216
+#define CANCEL_BUTTON_RIGHT_OFFSET  104
 #define CANCEL_BUTTON_BOTTOM_OFFSET 36
 #define CANCEL_BUTTON_WIDTH         72
 #define CANCEL_BUTTON_HEIGHT        16
@@ -39,7 +39,6 @@
 #define OK_BUTTON_ID     (MAP_LIST_ID  + 1)
 #define CANCEL_BUTTON_ID (OK_BUTTON_ID + 1)
 
-/* TODO: make me width adjustable */
 static struct NewWindow mapRequesterNewWindow = {
     40, 40, MAP_REQUESTER_WIDTH, MAP_REQUESTER_HEIGHT,
     0xFF, 0xFF,
@@ -51,13 +50,14 @@ static struct NewWindow mapRequesterNewWindow = {
     NULL,
     NULL,
     MAP_REQUESTER_WIDTH, MAP_REQUESTER_MIN_HEIGHT,
-    MAP_REQUESTER_WIDTH, 0xFFFF,
+    0xFFFF, 0xFFFF,
     CUSTOMSCREEN
 };
 
 static struct NewGadget mapListNewGadget = {
 	MAP_LIST_LEFT,  MAP_LIST_TOP,
-	MAP_LIST_WIDTH, MAP_REQUESTER_HEIGHT - MAP_LIST_HEIGHT_DELTA,
+	MAP_REQUESTER_WIDTH  - MAP_LIST_WIDTH_DELTA,
+    MAP_REQUESTER_HEIGHT - MAP_LIST_HEIGHT_DELTA,
 	NULL,
 	&Topaz80,
 	MAP_LIST_ID,
@@ -78,7 +78,8 @@ static struct NewGadget okButtonNewGadget = {
 };
 
 static struct NewGadget cancelButtonNewGadget = {
-    CANCEL_BUTTON_LEFT,  MAP_REQUESTER_HEIGHT - CANCEL_BUTTON_BOTTOM_OFFSET,
+    MAP_REQUESTER_WIDTH  - CANCEL_BUTTON_RIGHT_OFFSET,
+    MAP_REQUESTER_HEIGHT - CANCEL_BUTTON_BOTTOM_OFFSET,
     CANCEL_BUTTON_WIDTH, CANCEL_BUTTON_HEIGHT,
     "Cancel",
     &Topaz80,
@@ -111,10 +112,12 @@ void initMapRequesterVi(void) {
 static void createMapRequesterGadgets(MapRequester *mapRequester) {
     struct Gadget *gad;
     int height = mapRequester->window ? mapRequester->window->Height : MAP_REQUESTER_HEIGHT;
+    int width  = mapRequester->window ? mapRequester->window->Width  : MAP_REQUESTER_WIDTH;
     mapRequester->gadgets = NULL;
 
     gad = CreateContext(&mapRequester->gadgets);
 
+    mapListNewGadget.ng_Width  = width  - MAP_LIST_WIDTH_DELTA;
     mapListNewGadget.ng_Height = height - MAP_LIST_HEIGHT_DELTA;
     gad = CreateGadget(LISTVIEW_KIND, gad, &mapListNewGadget,
         GTLV_Labels, &project.mapNames,
@@ -127,7 +130,8 @@ static void createMapRequesterGadgets(MapRequester *mapRequester) {
         TAG_END);
     mapRequester->okButton = gad;
 
-    cancelButtonNewGadget.ng_TopEdge = height - CANCEL_BUTTON_BOTTOM_OFFSET;
+    cancelButtonNewGadget.ng_TopEdge  = height - CANCEL_BUTTON_BOTTOM_OFFSET;
+    cancelButtonNewGadget.ng_LeftEdge = width  - CANCEL_BUTTON_RIGHT_OFFSET;
     gad = CreateGadget(BUTTON_KIND, gad, &cancelButtonNewGadget, TAG_END);
 
     if(!gad) {
