@@ -54,6 +54,8 @@ typedef struct MapEditorTag {
     UWORD *imageData;
 
     int selected;
+
+    char title[16];
 } MapEditor;
 
 void initMapEditorScreen(void);
@@ -86,5 +88,10 @@ int mapEditorClickInMap(WORD x, WORD y);
 unsigned int mapEditorGetMapTileClicked(WORD x, WORD y);
 void mapEditorSetTile(MapEditor*, unsigned int);
 void updateMapEditorMapName(MapEditor*);
+
+#define UNSAVED 0
+#define SAVED   1
+
+void mapEditorSetSaveStatus(MapEditor*, int);
 
 #endif

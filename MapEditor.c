@@ -600,6 +600,21 @@ static void mapEditorClearTilesetUI(MapEditor *mapEditor) {
         MAP_BORDER_TOP  + MAP_BORDER_HEIGHT - 3);
 }
 
+static void updateMapEditorTitle(MapEditor *mapEditor) {
+    char unsaved = mapEditor->saved ? '\0' : '*';
+    if(mapEditor->mapNum) {
+        sprintf(mapEditor->title, "Map %d%c", mapEditor->mapNum - 1, unsaved);
+    } else {
+        sprintf(mapEditor->title, "Map Editor%c", unsaved);
+    }
+    SetWindowTitles(mapEditor->window, mapEditor->title, (STRPTR)-1);
+}
+
+void mapEditorSetSaveStatus(MapEditor *mapEditor, int status) {
+    mapEditor->saved = status;
+    updateMapEditorTitle(mapEditor);
+}
+
 void mapEditorRefreshTileset(MapEditor *mapEditor) {
     if(mapEditor->map->tilesetNum) {
         if(mapEditor->map->tilesetNum < tilesetPackage->tilesetPackageFile.tilesetCnt) {
@@ -609,7 +624,7 @@ void mapEditorRefreshTileset(MapEditor *mapEditor) {
             EasyRequest(mapEditor->window, &tilesetOutOfBoundsEasyStruct, NULL,
                 mapEditor->map->tilesetNum - 1);
             mapEditor->map->tilesetNum = 0;
-            mapEditor->saved = 0;
+            mapEditorSetSaveStatus(mapEditor, UNSAVED);
         }
     }
 }
@@ -617,7 +632,7 @@ void mapEditorRefreshTileset(MapEditor *mapEditor) {
 void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
     mapEditor->map->tilesetNum = tilesetNumber + 1;
     mapEditorSetTilesetUpdateUI(mapEditor, tilesetNumber);
-    mapEditor->saved = 0;
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
 static void mapEditorSetSongUpdateUI(MapEditor *mapEditor, UWORD songNumber) {
@@ -635,7 +650,7 @@ static void mapEditorClearSongUpdateUI(MapEditor *mapEditor) {
 void mapEditorSetSong(MapEditor *mapEditor, UWORD songNumber) {
     mapEditor->map->songNum = songNumber + 1;
     mapEditorSetSongUpdateUI(mapEditor, songNumber);
-    mapEditor->saved = 0;
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
 void mapEditorRefreshSong(MapEditor *mapEditor) {
@@ -647,7 +662,7 @@ void mapEditorRefreshSong(MapEditor *mapEditor) {
 void mapEditorClearSong(MapEditor *mapEditor) {
     mapEditor->map->songNum = 0;
     mapEditorClearSongUpdateUI(mapEditor);
-    mapEditor->saved = 0;
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
 static void redrawPaletteTile(MapEditor *mapEditor, unsigned int tile) {
@@ -673,7 +688,7 @@ static void mapEditorSetTileTo(MapEditor *mapEditor, unsigned int tile, UBYTE to
     mapEditor->map->tiles[tile] = to;
     mapEditor->mapImages[tile].ImageData = mapEditor->imageData + (to << 7);
     redrawMapTile(mapEditor, tile);
-    mapEditor->saved = 0;
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
 void mapEditorSetTile(MapEditor *mapEditor, unsigned int tile) {
@@ -722,6 +737,8 @@ void mapEditorSetMapNum(MapEditor *mapEditor, UWORD mapNum) {
             GA_Disabled, FALSE,
             TAG_END);
     }
+
+    updateMapEditorTitle(mapEditor);
 }
 
 static MapEditor *newMapEditor(void) {
@@ -776,7 +793,6 @@ error:
     return NULL;
 }
 
-/* TODO: put something indicating save status in title bar */
 MapEditor *newMapEditorNewMap(void) {
     Map *map;
     MapEditor *mapEditor;
@@ -793,7 +809,7 @@ MapEditor *newMapEditorNewMap(void) {
 
     mapEditor->map = map;
     mapEditor->mapNum = 0;
-    mapEditor->saved = 1;
+    mapEditorSetSaveStatus(mapEditor, SAVED);
     return mapEditor;
 
 error_freeMap:
@@ -836,7 +852,7 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
     }
 
     mapEditorSetMapNum(mapEditor, mapNum);
-    mapEditor->saved = 1;
+    mapEditorSetSaveStatus(mapEditor, SAVED);
     return mapEditor;
 
 error_freeMap:
@@ -907,5 +923,5 @@ void updateMapEditorMapName(MapEditor *mapEditor) {
     struct StringInfo *stringInfo =
         (struct StringInfo*)mapEditor->mapNameGadget->SpecialInfo;
     strcpy(mapEditor->map->name, stringInfo->Buffer);
-    mapEditor->saved = 0;
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }

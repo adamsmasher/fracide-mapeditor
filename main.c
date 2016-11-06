@@ -403,7 +403,7 @@ static int saveMapAs(MapEditor *mapEditor) {
     mapEditorSetMapNum(mapEditor, selected - 1);
     enableMapRevert(mapEditor);
 
-    mapEditor->saved  = 1;
+    mapEditorSetSaveStatus(mapEditor, SAVED);
 
     updateProjectMapName(&project, selected - 1, mapEditor->map);
     projectSaved = 0;
@@ -417,7 +417,7 @@ static int saveMap(MapEditor *mapEditor) {
     } else {
         overwriteMap(mapEditor->map, project.maps[mapEditor->mapNum - 1]);
         updateProjectMapName(&project, mapEditor->mapNum - 1, mapEditor->map);
-        mapEditor->saved = 1;
+        mapEditorSetSaveStatus(mapEditor, SAVED);
         projectSaved = 0;
         return 1;
     }
