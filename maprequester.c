@@ -46,7 +46,7 @@ static struct NewWindow mapRequesterNewWindow = {
     WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|WINDOWSIZING|ACTIVATE,
     NULL,
     NULL,
-    "Save Map", /* TODO: dynamically generate this */
+    "Save Map",
     NULL,
     NULL,
     MAP_REQUESTER_WIDTH, MAP_REQUESTER_MIN_HEIGHT,
@@ -214,7 +214,7 @@ static void requesterLoop(MapRequester *mapRequester) {
     }
 }
 
-static int spawnRequester(struct Window *window) {
+static int spawnRequester(struct Window *window, char *title) {
     MapRequester mapRequester;
     mapRequester.window = NULL;
 
@@ -229,6 +229,8 @@ static int spawnRequester(struct Window *window) {
         goto error_EndRequest;
     }
     mapRequesterNewWindow.FirstGadget = mapRequester.gadgets;
+
+    mapRequesterNewWindow.Title = title;
 
     mapRequester.window = OpenWindow(&mapRequesterNewWindow);
     if(!mapRequester.window) {
@@ -257,12 +259,11 @@ error:
 }
 
 int openMapRequester(void) {
-    mapRequesterNewWindow.Title = "Open Map";
-    return spawnRequester(projectWindow);
+    return spawnRequester(projectWindow, "Open Map");
 }
 
 int saveMapRequester(MapEditor *mapEditor) {
-    /* TODO: dynamically generate me */
-    mapRequesterNewWindow.Title = "Save Map";
-    return spawnRequester(mapEditor->window);
+    char title[96];
+    sprintf(title, "Save Map %s", mapEditor->map->name);
+    return spawnRequester(mapEditor->window, title);
 }
