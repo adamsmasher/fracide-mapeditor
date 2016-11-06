@@ -16,7 +16,7 @@
 
 #include "globals.h"
 
-#define MAP_REQUESTER_WIDTH      320
+#define MAP_REQUESTER_WIDTH      240
 #define MAP_REQUESTER_HEIGHT     336
 #define MAP_REQUESTER_MIN_HEIGHT 100
 
