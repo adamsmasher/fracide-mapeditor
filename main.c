@@ -927,9 +927,16 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
 
 static void handleChangeSongClicked(MapEditor *mapEditor) {
     if(!mapEditor->songRequester) {
-        /* TODO: custom write the name of the map in here */
-        char title[] = "Change Soundtrack";
-        SongRequester *songRequester = newSongRequester(title);
+        char title[32];
+        SongRequester *songRequester;
+
+        if(mapEditor->mapNum) {
+            sprintf(title, "Change Soundtrack For Map %d", mapEditor->mapNum - 1);
+        } else {
+            strcpy(title, "Change Soundtrack");
+        }
+
+        songRequester = newSongRequester(title);
         if(songRequester) {
             attachSongRequesterToMapEditor(mapEditor, songRequester);
             addWindowToSigMask(songRequester->window);
