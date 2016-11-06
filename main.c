@@ -886,7 +886,7 @@ static void closeSongNamesEditor(void) {
 
 static void handleChooseTilesetClicked(MapEditor *mapEditor) {
     TilesetRequester *tilesetRequester;
-    char *title = "Choose Tileset For Map ###";
+    char title[32];
 
     if(mapEditor->tilesetRequester) {
         WindowToFront(mapEditor->tilesetRequester->window);
@@ -912,7 +912,7 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
     if(mapEditor->mapNum) {
         sprintf(title, "Choose Tileset For Map %d", mapEditor->mapNum - 1);
     } else {
-        title = "Choose Tileset";
+        strcpy(title, "Choose Tileset");
     }
 
     tilesetRequester = newTilesetRequester(title);
