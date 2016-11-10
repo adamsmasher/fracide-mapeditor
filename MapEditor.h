@@ -18,6 +18,7 @@
 #define MAP_RIGHT_ID       (MAP_LEFT_ID        + 1)
 #define MAP_UP_ID          (MAP_RIGHT_ID       + 1)
 #define MAP_DOWN_ID        (MAP_UP_ID          + 1)
+#define ENTITIES_ID        (MAP_DOWN_ID        + 1)
 
 #define TILESET_PALETTE_TILES_ACROSS 4
 #define TILESET_PALETTE_TILES_HIGH   8

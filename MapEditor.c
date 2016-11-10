@@ -90,6 +90,11 @@ static struct NewWindow mapEditorNewWindow = {
 #define TILESET_BORDER_WIDTH  (TILE_WIDTH * TILESET_PALETTE_TILES_ACROSS * 2 + 2)
 #define TILESET_BORDER_HEIGHT TILESET_SCROLL_HEIGHT
 
+#define ENTITIES_LEFT   (TILESET_BORDER_LEFT - 1)
+#define ENTITIES_TOP    (TILESET_BORDER_TOP + TILESET_BORDER_HEIGHT + 10)
+#define ENTITIES_WIDTH  (TILESET_BORDER_WIDTH + TILESET_SCROLL_WIDTH)
+#define ENTITIES_HEIGHT 14
+
 #define SONG_NAME_LEFT   (MAP_BORDER_LEFT + 95)
 #define SONG_NAME_TOP    (MAP_BORDER_TOP + MAP_BORDER_HEIGHT + 20)
 #define SONG_NAME_WIDTH  (MAP_BORDER_WIDTH - 182)
@@ -248,6 +253,17 @@ static struct NewGadget mapDownNewGadget = {
   NULL
 };
 
+static struct NewGadget entitiesNewGadget = {
+  ENTITIES_LEFT,  ENTITIES_TOP,
+  ENTITIES_WIDTH, ENTITIES_HEIGHT,
+  "Entities...",
+  &Topaz80,
+  ENTITIES_ID,
+  0,
+  NULL,
+  NULL
+};
+
 static struct NewGadget *allNewGadgets[] = {
   &mapNameNewGadget,
   &currentTilesetNewGadget,
@@ -260,6 +276,7 @@ static struct NewGadget *allNewGadgets[] = {
   &mapRightNewGadget,
   &mapUpNewGadget,
   &mapDownNewGadget,
+  &entitiesNewGadget,
   NULL
 };
 
@@ -400,6 +417,8 @@ static void createMapEditorGadgets(MapEditor *mapEditor) {
         GA_Disabled, TRUE,
         TAG_END);
     mapEditor->downGadget = gad;
+
+    gad = CreateGadget(BUTTON_KIND, gad, &entitiesNewGadget, TAG_END);
 
     if(gad) {
         mapEditor->gadgets = glist;
