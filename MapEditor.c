@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "EntityBrowser.h"
 #include "map.h"
 #include "TilesetRequester.h"
 #include "globals.h"
@@ -513,9 +514,17 @@ static void closeAttachedSongRequester(MapEditor *mapEditor) {
     }
 }
 
+static void closeAttachedEntityBrowser(MapEditor *mapEditor) {
+    if(mapEditor->entityBrowser) {
+        freeEntityBrowser(mapEditor->entityBrowser);
+        mapEditor->entityBrowser = NULL;
+    }
+}
+
 void closeMapEditor(MapEditor *mapEditor) {
     closeAttachedTilesetRequester(mapEditor);
     closeAttachedSongRequester(mapEditor);
+    closeAttachedEntityBrowser(mapEditor);
     ClearMenuStrip(mapEditor->window);
     CloseWindow(mapEditor->window);
     FreeGadgets(mapEditor->gadgets);
@@ -532,6 +541,11 @@ void attachTilesetRequesterToMapEditor
 void attachSongRequesterToMapEditor
 (MapEditor *mapEditor, SongRequester *songRequester) {
     mapEditor->songRequester = songRequester;
+}
+
+void attachEntityBrowserToMapEditor
+(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
+    mapEditor->entityBrowser = entityBrowser;
 }
 
 static void copyScaledTileset(UWORD *src, UWORD *dst) {
@@ -797,6 +811,7 @@ static MapEditor *newMapEditor(void) {
     mapEditor->next             = NULL;
     mapEditor->tilesetRequester = NULL;
     mapEditor->songRequester    = NULL;
+    mapEditor->entityBrowser    = NULL;
     mapEditor->closed           = 0;
     mapEditor->selected         = -1;
 

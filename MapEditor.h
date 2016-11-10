@@ -1,6 +1,7 @@
 #ifndef MAP_EDITOR_H
 #define MAP_EDITOR_H
 
+#include "EntityBrowser.h"
 #include "SongNames.h"
 #include "TilesetRequester.h"
 #include "Map.h"
@@ -49,6 +50,7 @@ typedef struct MapEditorTag {
 
     TilesetRequester *tilesetRequester;
     SongRequester    *songRequester;
+    EntityBrowser    *entityBrowser;
 
     struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
     struct Image mapImages[MAP_TILES_ACROSS * MAP_TILES_HIGH];
@@ -74,6 +76,7 @@ void mapEditorRefreshSong(MapEditor*);
 
 void attachTilesetRequesterToMapEditor(MapEditor*, TilesetRequester*);
 void attachSongRequesterToMapEditor(MapEditor*, SongRequester*);
+void attachEntityBrowserToMapEditor(MapEditor*, EntityBrowser*);
 
 void mapEditorSetMapNum(MapEditor*, UWORD);
 void mapEditorSetTileset(MapEditor*, UWORD);

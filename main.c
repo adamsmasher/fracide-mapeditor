@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "EntityBrowser.h"
 #include "globals.h"
 #include "MapEditor.h"
 #include "MapRequester.h"
@@ -974,6 +975,27 @@ static void handleMapRight(MapEditor *mapEditor) {
     moveToMap(mapEditor, mapEditor->mapNum + 1);
 }
 
+static void handleEntitiesClicked(MapEditor *mapEditor) {
+    if(!mapEditor->entityBrowser) {
+        char title[32];
+        EntityBrowser *entityBrowser;
+
+        if(mapEditor->mapNum) {
+            sprintf(title, "Entities (Map %d)", mapEditor->mapNum - 1);
+        } else {
+            strcpy(title, "Entities");
+        }
+
+        entityBrowser = newEntityBrowser(title);
+        if(entityBrowser) {
+            attachEntityBrowserToMapEditor(mapEditor, entityBrowser);
+            addWindowToSigMask(entityBrowser->window);
+        }
+    } else {
+        WindowToFront(mapEditor->entityBrowser->window);
+    }
+}
+
 static void handleMapEditorGadgetUp
 (MapEditor *mapEditor, struct Gadget *gadget) {
     switch(gadget->GadgetID) {
@@ -1000,6 +1022,9 @@ static void handleMapEditorGadgetUp
         break;
     case MAP_DOWN_ID:
         handleMapDown(mapEditor);
+        break;
+    case ENTITIES_ID:
+        handleEntitiesClicked(mapEditor);
         break;
     }
 }
@@ -1192,11 +1217,32 @@ static void handleSongRequesterMessages(MapEditor *mapEditor, SongRequester *son
     }
 }
 
+static void handleEntityBrowserMessage(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct IntuiMessage *msg) {
+    switch(msg->Class) {
+    case IDCMP_CLOSEWINDOW:
+        entityBrowser->closed = 1;
+        break;
+    case IDCMP_REFRESHWINDOW:
+        GT_BeginRefresh(entityBrowser->window);
+        GT_EndRefresh(entityBrowser->window, TRUE);
+        break;
+    }
+}
+
+static void handleEntityBrowserMessages(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
+    struct IntuiMessage *msg = NULL;
+    while(msg = GT_GetIMsg(entityBrowser->window->UserPort)) {
+        handleEntityBrowserMessage(mapEditor, entityBrowser, msg);
+        GT_ReplyIMsg(msg);
+    }
+}
+
 static void handleAllMapEditorChildMessages(long signalSet) {
     MapEditor *i = firstMapEditor;
     while(i) {
         TilesetRequester *tilesetRequester = i->tilesetRequester;
         SongRequester *songRequester       = i->songRequester;
+        EntityBrowser *entityBrowser       = i->entityBrowser;
         if(tilesetRequester) {
             if(1L << tilesetRequester->window->UserPort->mp_SigBit & signalSet) {
                 handleTilesetRequesterMessages(i, tilesetRequester);
@@ -1205,6 +1251,11 @@ static void handleAllMapEditorChildMessages(long signalSet) {
         if(songRequester) {
             if(1L << songRequester->window->UserPort->mp_SigBit & signalSet) {
                 handleSongRequesterMessages(i, songRequester);
+            }
+        }
+        if(entityBrowser) {
+            if(1L << entityBrowser->window->UserPort->mp_SigBit & signalSet) {
+                handleEntityBrowserMessages(i, entityBrowser);
             }
         }
         i = i->next;
@@ -1223,6 +1274,11 @@ static void closeDeadMapEditorChildren(void) {
             removeWindowFromSigMask(i->songRequester->window);
             freeSongRequester(i->songRequester);
             i->songRequester = NULL;
+        }
+        if(i->entityBrowser && i->entityBrowser->closed) {
+            removeWindowFromSigMask(i->entityBrowser->window);
+            freeEntityBrowser(i->entityBrowser);
+            i->entityBrowser = NULL;
         }
         i = i->next;
     }
@@ -1274,6 +1330,7 @@ int main(void) {
     initMapRequesterScreen();
     initTilesetRequesterScreen();
     initSongNamesScreen();
+    initEntityBrowserScreen();
 
     projectNewWindow.Screen = screen;
     projectWindow = OpenWindow(&projectNewWindow);
@@ -1293,6 +1350,7 @@ int main(void) {
     initMapRequesterVi();
     initTilesetRequesterVi();
     initSongNamesVi();
+    initEntityBrowserVi();
 
     menu = CreateMenus(newMenu, GTMN_FullMenu, TRUE, TAG_END);
     if(!menu) {
