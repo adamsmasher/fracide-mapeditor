@@ -1196,7 +1196,7 @@ static void handleAllMapEditorChildMessages(long signalSet) {
     MapEditor *i = firstMapEditor;
     while(i) {
         TilesetRequester *tilesetRequester = i->tilesetRequester;
-        SongRequester *songRequester = i->songRequester;
+        SongRequester *songRequester       = i->songRequester;
         if(tilesetRequester) {
             if(1L << tilesetRequester->window->UserPort->mp_SigBit & signalSet) {
                 handleTilesetRequesterMessages(i, tilesetRequester);
