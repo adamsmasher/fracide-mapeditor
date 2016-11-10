@@ -25,7 +25,7 @@ MapRequester.o: MapRequester.c MapRequester.h MapEditor.h
 
 map.o: Map.c Map.h
 
-songnames.o: SongNames.c SongNames.h
+songnames.o: SongNames.c SongNames.h globals.h
 
 clean:
    delete main.o MapEditor.o globals.o project.o tilesetpackage.o tilesetrequester.o mapedit mapedit.lnk Map.o SongNames.o
