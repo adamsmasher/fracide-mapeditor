@@ -13,8 +13,8 @@
 
 #include "globals.h"
 
-#define ENTITY_BROWSER_WIDTH  200
-#define ENTITY_BROWSER_HEIGHT 336
+#define ENTITY_BROWSER_WIDTH  350
+#define ENTITY_BROWSER_HEIGHT 225
 
 static struct NewWindow entityBrowserNewWindow = {
     40, 40, ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
