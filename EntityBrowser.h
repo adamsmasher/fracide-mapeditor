@@ -3,6 +3,8 @@
 
 #include <proto/intuition.h>
 
+#define ENTITY_LIST_ID 0
+
 typedef struct EntityBrowser_tag {
     struct Window *window;
     struct Gadget *gadgets;

@@ -16,6 +16,11 @@
 #define ENTITY_BROWSER_WIDTH  350
 #define ENTITY_BROWSER_HEIGHT 225
 
+#define ENTITY_LIST_WIDTH  120
+#define ENTITY_LIST_HEIGHT 200
+#define ENTITY_LIST_LEFT   10
+#define ENTITY_LIST_TOP    20
+
 static struct NewWindow entityBrowserNewWindow = {
     40, 40, ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
     0xFF, 0xFF,
@@ -31,11 +36,39 @@ static struct NewWindow entityBrowserNewWindow = {
     CUSTOMSCREEN
 };
 
+static struct NewGadget entityListNewGadget = {
+    ENTITY_LIST_LEFT, ENTITY_LIST_TOP,
+    ENTITY_LIST_WIDTH, ENTITY_LIST_HEIGHT,
+    NULL,
+    &Topaz80,
+    ENTITY_LIST_ID,
+    0,
+    NULL, /* visual info filled in later */
+    NULL  /* user data */
+};
+
 void initEntityBrowserScreen(void) {
     entityBrowserNewWindow.Screen = screen;
 }
 
 void initEntityBrowserVi(void) {
+    entityListNewGadget.ng_VisualInfo = vi;
+}
+
+static void createEntityBrowserGadgets(EntityBrowser *entityBrowser) {
+    struct Gadget *gad;
+    struct Gadget *glist = NULL;
+
+    gad = CreateContext(&glist);
+
+    gad = CreateGadget(LISTVIEW_KIND, gad, &entityListNewGadget,
+        TAG_END);
+
+    if(gad) {
+        entityBrowser->gadgets = glist;
+    } else {
+        FreeGadgets(glist);
+    }
 }
 
 EntityBrowser *newEntityBrowser(char *title) {
@@ -52,17 +85,27 @@ EntityBrowser *newEntityBrowser(char *title) {
     }
     strcpy(entityBrowser->title, title);
     entityBrowserNewWindow.Title = title;
+
+    createEntityBrowserGadgets(entityBrowser);
+    if(!entityBrowser->gadgets) {
+        fprintf(stderr, "newEntityBrowser: couldn't create gadgets\n");
+        goto error_freeTitle;
+    }
+    entityBrowserNewWindow.FirstGadget = entityBrowser->gadgets;
     
     entityBrowser->window = OpenWindow(&entityBrowserNewWindow);
     if(!entityBrowser->window) {
         fprintf(stderr, "newEntityBrowser: couldn't open window\n");
-        goto error_freeTitle;
+        goto error_freeGadgets;
     }
+    GT_RefreshWindow(entityBrowser->window, NULL);
 
     entityBrowser->closed = 0;
 
     return entityBrowser;
     
+error_freeGadgets:
+    free(entityBrowser->gadgets);
 error_freeTitle:
     free(entityBrowser->title);
 error_freeBrowser:
