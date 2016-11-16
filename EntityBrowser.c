@@ -84,7 +84,7 @@ EntityBrowser *newEntityBrowser(char *title) {
         goto error_freeBrowser;
     }
     strcpy(entityBrowser->title, title);
-    entityBrowserNewWindow.Title = title;
+    entityBrowserNewWindow.Title = entityBrowser->title;
 
     createEntityBrowserGadgets(entityBrowser);
     if(!entityBrowser->gadgets) {
