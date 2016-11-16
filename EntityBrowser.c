@@ -17,9 +17,19 @@
 #define ENTITY_BROWSER_HEIGHT 225
 
 #define ENTITY_LIST_WIDTH  120
-#define ENTITY_LIST_HEIGHT 200
+#define ENTITY_LIST_HEIGHT 170
 #define ENTITY_LIST_LEFT   10
 #define ENTITY_LIST_TOP    20
+
+#define ADD_ENTITY_WIDTH   120
+#define ADD_ENTITY_HEIGHT  14
+#define ADD_ENTITY_LEFT    10
+#define ADD_ENTITY_TOP     190
+
+#define REMOVE_ENTITY_WIDTH  120
+#define REMOVE_ENTITY_HEIGHT 14
+#define REMOVE_ENTITY_LEFT   10
+#define REMOVE_ENTITY_TOP    205
 
 static struct NewWindow entityBrowserNewWindow = {
     40, 40, ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
@@ -47,12 +57,36 @@ static struct NewGadget entityListNewGadget = {
     NULL  /* user data */
 };
 
+static struct NewGadget addEntityNewGadget = {
+    ADD_ENTITY_LEFT, ADD_ENTITY_TOP,
+    ADD_ENTITY_WIDTH, ADD_ENTITY_HEIGHT,
+    "Add Entity...",
+    &Topaz80,
+    ADD_ENTITY_ID,
+    0,
+    NULL,
+    NULL
+};
+
+static struct NewGadget removeEntityNewGadget = {
+    REMOVE_ENTITY_LEFT, REMOVE_ENTITY_TOP,
+    REMOVE_ENTITY_WIDTH, REMOVE_ENTITY_HEIGHT,
+    "Remove Entity",
+    &Topaz80,
+    REMOVE_ENTITY_ID,
+    0,
+    NULL,
+    NULL
+};
+
 void initEntityBrowserScreen(void) {
     entityBrowserNewWindow.Screen = screen;
 }
 
 void initEntityBrowserVi(void) {
-    entityListNewGadget.ng_VisualInfo = vi;
+    entityListNewGadget.ng_VisualInfo   = vi;
+    addEntityNewGadget.ng_VisualInfo    = vi;
+    removeEntityNewGadget.ng_VisualInfo = vi;
 }
 
 static void createEntityBrowserGadgets(EntityBrowser *entityBrowser) {
@@ -62,6 +96,12 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser) {
     gad = CreateContext(&glist);
 
     gad = CreateGadget(LISTVIEW_KIND, gad, &entityListNewGadget,
+        TAG_END);
+
+    gad = CreateGadget(BUTTON_KIND, gad, &addEntityNewGadget, TAG_END);
+
+    gad = CreateGadget(BUTTON_KIND, gad, &removeEntityNewGadget,
+        GA_Disabled, TRUE,
         TAG_END);
 
     if(gad) {
