@@ -79,14 +79,23 @@ static struct NewGadget removeEntityNewGadget = {
     NULL
 };
 
+static struct NewGadget *allNewGadgets[] = {
+    &entityListNewGadget,
+    &addEntityNewGadget,
+    &removeEntityNewGadget,
+    NULL
+};
+
 void initEntityBrowserScreen(void) {
     entityBrowserNewWindow.Screen = screen;
 }
 
 void initEntityBrowserVi(void) {
-    entityListNewGadget.ng_VisualInfo   = vi;
-    addEntityNewGadget.ng_VisualInfo    = vi;
-    removeEntityNewGadget.ng_VisualInfo = vi;
+    struct NewGadget **i = allNewGadgets;
+    while(*i) {
+        (*i)->ng_VisualInfo = vi;
+        i++;
+    }
 }
 
 static void createEntityBrowserGadgets(EntityBrowser *entityBrowser) {
