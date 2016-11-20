@@ -31,6 +31,31 @@
 #define REMOVE_ENTITY_LEFT   10
 #define REMOVE_ENTITY_TOP    205
 
+#define THIS_ENTITY_WIDTH    102
+#define THIS_ENTITY_HEIGHT   14
+#define THIS_ENTITY_LEFT     200
+#define THIS_ENTITY_TOP      25
+
+#define CHOOSE_ENTITY_WIDTH  32
+#define CHOOSE_ENTITY_HEIGHT 14
+#define CHOOSE_ENTITY_LEFT   300
+#define CHOOSE_ENTITY_TOP    25
+
+#define ENTITY_ROW_WIDTH     32
+#define ENTITY_ROW_HEIGHT    14
+#define ENTITY_ROW_LEFT      175
+#define ENTITY_ROW_TOP       50
+
+#define ENTITY_COL_WIDTH     32
+#define ENTITY_COL_HEIGHT    14
+#define ENTITY_COL_LEFT      300
+#define ENTITY_COL_TOP       50
+
+#define VRAM_SLOT_WIDTH      48
+#define VRAM_SLOT_HEIGHT     14
+#define VRAM_SLOT_LEFT       223
+#define VRAM_SLOT_TOP        75
+
 static struct NewWindow entityBrowserNewWindow = {
     40, 40, ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
     0xFF, 0xFF,
@@ -79,10 +104,70 @@ static struct NewGadget removeEntityNewGadget = {
     NULL
 };
 
+static struct NewGadget entityRowNewGadget = {
+    ENTITY_ROW_LEFT, ENTITY_ROW_TOP,
+    ENTITY_ROW_WIDTH, ENTITY_ROW_HEIGHT,
+    "Row",
+    &Topaz80,
+    ENTITY_ROW_ID,
+    0,
+    NULL,
+    NULL
+};
+
+static struct NewGadget entityColNewGadget = {
+    ENTITY_COL_LEFT, ENTITY_COL_TOP,
+    ENTITY_COL_WIDTH, ENTITY_COL_HEIGHT,
+    "Column",
+    &Topaz80,
+    ENTITY_COL_ID,
+    0,
+    NULL,
+    NULL
+};
+
+static struct NewGadget VRAMSlotNewGadget = {
+    VRAM_SLOT_LEFT, VRAM_SLOT_TOP,
+    VRAM_SLOT_WIDTH, VRAM_SLOT_HEIGHT,
+    "VRAM Slot",
+    &Topaz80,
+    VRAM_SLOT_ID,
+    0,
+    NULL,
+    NULL
+};
+
+static struct NewGadget thisEntityNewGadget = {
+    THIS_ENTITY_LEFT, THIS_ENTITY_TOP,
+    THIS_ENTITY_WIDTH, THIS_ENTITY_HEIGHT,
+    "Entity",
+    &Topaz80,
+    THIS_ENTITY_ID,
+    0,
+    NULL,
+    NULL
+};
+
+static struct NewGadget chooseEntityNewGadget = {
+    CHOOSE_ENTITY_LEFT, CHOOSE_ENTITY_TOP,
+    CHOOSE_ENTITY_WIDTH, CHOOSE_ENTITY_HEIGHT,
+    "...",
+    &Topaz80,
+    CHOOSE_ENTITY_ID,
+    0,
+    NULL,
+    NULL
+};
+
 static struct NewGadget *allNewGadgets[] = {
     &entityListNewGadget,
     &addEntityNewGadget,
     &removeEntityNewGadget,
+    &thisEntityNewGadget,
+    &chooseEntityNewGadget,
+    &entityRowNewGadget,
+    &entityColNewGadget,
+    &VRAMSlotNewGadget,
     NULL
 };
 
@@ -111,6 +196,25 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser) {
 
     gad = CreateGadget(BUTTON_KIND, gad, &removeEntityNewGadget,
         GA_Disabled, TRUE,
+        TAG_END);
+
+    gad = CreateGadget(TEXT_KIND, gad, &thisEntityNewGadget,
+        GTTX_Text, "N/A",
+        GTTX_Border, TRUE,
+        TAG_END);
+
+    gad = CreateGadget(BUTTON_KIND, gad, &chooseEntityNewGadget, TAG_END);
+
+    gad = CreateGadget(INTEGER_KIND, gad, &entityRowNewGadget,
+        GTIN_MaxChars, 1,
+        TAG_END);
+
+    gad = CreateGadget(INTEGER_KIND, gad, &entityColNewGadget,
+        GTIN_MaxChars, 1,
+        TAG_END);
+
+    gad = CreateGadget(INTEGER_KIND, gad, &VRAMSlotNewGadget,
+        GTIN_MaxChars, 3,
         TAG_END);
 
     if(gad) {
