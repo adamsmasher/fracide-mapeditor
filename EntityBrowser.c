@@ -56,6 +56,36 @@
 #define VRAM_SLOT_LEFT       223
 #define VRAM_SLOT_TOP        75
 
+#define TAG_LIST_WIDTH       190
+#define TAG_LIST_HEIGHT      50
+#define TAG_LIST_LEFT        143
+#define TAG_LIST_TOP         100
+
+#define ADD_TAG_WIDTH        190
+#define ADD_TAG_HEIGHT       14
+#define ADD_TAG_LEFT         143
+#define ADD_TAG_TOP          150
+
+#define DELETE_TAG_WIDTH     190
+#define DELETE_TAG_HEIGHT    14
+#define DELETE_TAG_LEFT      143
+#define DELETE_TAG_TOP       165
+
+#define TAG_ALIAS_WIDTH      143
+#define TAG_ALIAS_HEIGHT     14
+#define TAG_ALIAS_LEFT       190
+#define TAG_ALIAS_TOP        185
+
+#define TAG_ID_WIDTH         48
+#define TAG_ID_HEIGHT        14
+#define TAG_ID_LEFT          165
+#define TAG_ID_TOP           205
+
+#define TAG_VALUE_WIDTH      48
+#define TAG_VALUE_HEIGHT     14
+#define TAG_VALUE_LEFT       285
+#define TAG_VALUE_TOP        205
+
 static struct NewWindow entityBrowserNewWindow = {
     40, 40, ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
     0xFF, 0xFF,
@@ -159,6 +189,72 @@ static struct NewGadget chooseEntityNewGadget = {
     NULL
 };
 
+static struct NewGadget tagListNewGadget = {
+    TAG_LIST_LEFT, TAG_LIST_TOP,
+    TAG_LIST_WIDTH, TAG_LIST_HEIGHT,
+    NULL,
+    &Topaz80,
+    TAG_LIST_ID,
+    0,
+    NULL,
+    NULL
+};
+
+static struct NewGadget addTagNewGadget = {
+    ADD_TAG_LEFT, ADD_TAG_TOP,
+    ADD_TAG_WIDTH, ADD_TAG_HEIGHT,
+    "Add Tag",
+    &Topaz80,
+    ADD_TAG_ID,
+    0,
+    NULL,
+    NULL
+};
+
+static struct NewGadget deleteTagNewGadget = {
+    DELETE_TAG_LEFT, DELETE_TAG_TOP,
+    DELETE_TAG_WIDTH, DELETE_TAG_HEIGHT,
+    "Delete Tag",
+    &Topaz80,
+    DELETE_TAG_ID,
+    0,
+    NULL,
+    NULL
+};
+
+static struct NewGadget tagAliasNewGadget = {
+    TAG_ALIAS_LEFT, TAG_ALIAS_TOP,
+    TAG_ALIAS_WIDTH, TAG_ALIAS_HEIGHT,
+    "Alias",
+    &Topaz80,
+    TAG_ALIAS_ID,
+    0,
+    NULL,
+    NULL
+};
+
+static struct NewGadget tagIdNewGadget = {
+    TAG_ID_LEFT, TAG_ID_TOP,
+    TAG_ID_WIDTH, TAG_ID_HEIGHT,
+    "ID",
+    &Topaz80,
+    TAG_ID_ID,
+    0,
+    NULL,
+    NULL
+};
+
+static struct NewGadget tagValueNewGadget = {
+    TAG_VALUE_LEFT, TAG_VALUE_TOP,
+    TAG_VALUE_WIDTH, TAG_VALUE_HEIGHT,
+    "Value",
+    &Topaz80,
+    TAG_VALUE_ID,
+    0,
+    NULL,
+    NULL
+};
+
 static struct NewGadget *allNewGadgets[] = {
     &entityListNewGadget,
     &addEntityNewGadget,
@@ -168,6 +264,12 @@ static struct NewGadget *allNewGadgets[] = {
     &entityRowNewGadget,
     &entityColNewGadget,
     &VRAMSlotNewGadget,
+    &tagListNewGadget,
+    &addTagNewGadget,
+    &deleteTagNewGadget,
+    &tagAliasNewGadget,
+    &tagIdNewGadget,
+    &tagValueNewGadget,
     NULL
 };
 
@@ -214,6 +316,23 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser) {
         TAG_END);
 
     gad = CreateGadget(INTEGER_KIND, gad, &VRAMSlotNewGadget,
+        GTIN_MaxChars, 3,
+        TAG_END);
+
+    gad = CreateGadget(LISTVIEW_KIND, gad, &tagListNewGadget,
+        TAG_END);
+
+    gad = CreateGadget(BUTTON_KIND, gad, &addTagNewGadget, TAG_END);
+
+    gad = CreateGadget(BUTTON_KIND, gad, &deleteTagNewGadget, TAG_END);
+
+    gad = CreateGadget(STRING_KIND, gad, &tagAliasNewGadget, TAG_END);
+
+    gad = CreateGadget(INTEGER_KIND, gad, &tagIdNewGadget,
+        GTIN_MaxChars, 3,
+        TAG_END);
+
+    gad = CreateGadget(INTEGER_KIND, gad, &tagValueNewGadget,
         GTIN_MaxChars, 3,
         TAG_END);
 

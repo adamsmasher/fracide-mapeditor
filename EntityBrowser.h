@@ -11,6 +11,12 @@
 #define ENTITY_ROW_ID    (CHOOSE_ENTITY_ID + 1)
 #define ENTITY_COL_ID    (ENTITY_ROW_ID    + 1)
 #define VRAM_SLOT_ID     (ENTITY_COL_ID    + 1)
+#define TAG_LIST_ID      (VRAM_SLOT_ID     + 1)
+#define TAG_ALIAS_ID     (TAG_LIST_ID      + 1)
+#define TAG_ID_ID        (TAG_ALIAS_ID     + 1)
+#define TAG_VALUE_ID     (TAG_ID_ID        + 1)
+#define ADD_TAG_ID       (TAG_VALUE_ID     + 1)
+#define DELETE_TAG_ID    (ADD_TAG_ID       + 1)
 
 typedef struct EntityBrowser_tag {
     struct Window *window;
