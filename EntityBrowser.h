@@ -31,4 +31,6 @@ void initEntityBrowserVi(void);
 EntityBrowser *newEntityBrowser(char *title);
 void freeEntityBrowser(EntityBrowser*);
 
+void entityBrowserAddEntity(EntityBrowser*);
+
 #endif

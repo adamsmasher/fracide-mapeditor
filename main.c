@@ -1217,8 +1217,21 @@ static void handleSongRequesterMessages(MapEditor *mapEditor, SongRequester *son
     }
 }
 
+static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct Gadget *gadget) {
+    switch(gadget->GadgetID) {
+    case ADD_ENTITY_ID:
+        entityBrowserAddEntity(entityBrowser);
+        break;
+    case REMOVE_ENTITY_ID:
+        break;
+    }
+}
+
 static void handleEntityBrowserMessage(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct IntuiMessage *msg) {
     switch(msg->Class) {
+    case IDCMP_GADGETUP:
+        handleEntityBrowserGadgetUp(mapEditor, entityBrowser, (struct Gadget*)msg->IAddress);
+        break;
     case IDCMP_CLOSEWINDOW:
         entityBrowser->closed = 1;
         break;

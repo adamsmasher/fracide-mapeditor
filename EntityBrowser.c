@@ -392,3 +392,7 @@ void freeEntityBrowser(EntityBrowser *entityBrowser) {
     free(entityBrowser->title);
     free(entityBrowser);
 }
+
+void entityBrowserAddEntity(EntityBrowser *entityBrowser) {
+
+}
