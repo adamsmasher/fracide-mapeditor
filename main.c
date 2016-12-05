@@ -1220,9 +1220,18 @@ static void handleSongRequesterMessages(MapEditor *mapEditor, SongRequester *son
 static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct Gadget *gadget) {
     switch(gadget->GadgetID) {
     case ADD_ENTITY_ID:
+        mapAddNewEntity(mapEditor->map);
         entityBrowserAddEntity(entityBrowser);
+        if(mapEditor->map->entityCnt >= MAX_ENTITIES_PER_MAP) {
+            GT_SetGadgetAttrs(entityBrowser->addEntityGadget, entityBrowser->window, NULL,
+                GA_Disabled, TRUE);
+        }
         break;
     case REMOVE_ENTITY_ID:
+        /* TODO:
+        mapRemoveEntity(mapEditor->map, entityBrowser->selectedEntity);
+        entityBrowserRemoveSelectedEntity(entityBrowser);
+        */
         break;
     }
 }

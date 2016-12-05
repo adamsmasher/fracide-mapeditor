@@ -23,7 +23,7 @@ Project.o: Project.c Project.h globals.h Map.h
 
 MapRequester.o: MapRequester.c MapRequester.h MapEditor.h
 
-map.o: Map.c Map.h
+map.o: Map.c Map.h Entity.h
 
 songnames.o: SongNames.c SongNames.h globals.h
 

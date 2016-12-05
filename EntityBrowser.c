@@ -295,10 +295,12 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser) {
         TAG_END);
 
     gad = CreateGadget(BUTTON_KIND, gad, &addEntityNewGadget, TAG_END);
+    entityBrowser->addEntityGadget = gad;
 
     gad = CreateGadget(BUTTON_KIND, gad, &removeEntityNewGadget,
         GA_Disabled, TRUE,
         TAG_END);
+    entityBrowser->removeEntityGadget = gad;
 
     gad = CreateGadget(TEXT_KIND, gad, &thisEntityNewGadget,
         GTTX_Text, "N/A",
@@ -339,6 +341,8 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser) {
     if(gad) {
         entityBrowser->gadgets = glist;
     } else {
+        entityBrowser->addEntityGadget = NULL;
+        entityBrowser->removeEntityGadget = NULL;
         FreeGadgets(glist);
     }
 }
