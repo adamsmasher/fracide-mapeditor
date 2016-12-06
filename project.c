@@ -190,78 +190,78 @@ freeMaps_error:
 }
 
 int loadProjectFromFile(char *file, Project *project) {
-	int ret;
-	FILE *fp = fopen(file, "rb");
+    int ret;
+    FILE *fp = fopen(file, "rb");
 
-	if(!fp) {
-		fprintf(stderr, "loadProjectFromFile: error loading %s\n", file);
-		ret = 0;
-		goto done;
-	}
+    if(!fp) {
+        fprintf(stderr, "loadProjectFromFile: error loading %s\n", file);
+        ret = 0;
+        goto done;
+    }
 
-	ret = loadProjectFromFp(fp, project);
+    ret = loadProjectFromFp(fp, project);
 
-	fclose(fp);
+    fclose(fp);
 done:
-	return ret;
+    return ret;
 }
 
 static void writeIndexToFp(FILE *fp) {
-	int i;
-	UWORD zero = 0;
-	UWORD cnt =  1;
+    int i;
+    UWORD zero = 0;
+    UWORD cnt =  1;
 
-	for(i = 0; i < 128; i++) {
-		if(project.maps[i]) {
-			fwrite(&cnt, 2, 1, fp);
-			cnt++;
-		} else {
-			fwrite(&zero, 2, 1, fp);
-		}
-	}
+    for(i = 0; i < 128; i++) {
+        if(project.maps[i]) {
+            fwrite(&cnt, 2, 1, fp);
+            cnt++;
+        } else {
+            fwrite(&zero, 2, 1, fp);
+        }
+    }
 }
 
 static void saveProjectToFp(FILE *fp) {
-	ULONG header;
-	UWORD version;
-	UWORD i;
+    ULONG header;
+    UWORD version;
+    UWORD i;
 
-	header = HEADER;
-	fwrite(&header, 4, 1, fp);
+    header = HEADER;
+    fwrite(&header, 4, 1, fp);
 
-	version = VERSION;
-	fwrite(&version, 2, 1, fp);
+    version = VERSION;
+    fwrite(&version, 2, 1, fp);
 
-	fwrite(project.tilesetPackagePath, 1, 256, fp);
+    fwrite(project.tilesetPackagePath, 1, 256, fp);
 
-	fwrite(&project.mapCnt, 2, 1, fp);
+    fwrite(&project.mapCnt, 2, 1, fp);
 
-	writeIndexToFp(fp);
+    writeIndexToFp(fp);
 
-	for(i = 0; i < project.mapCnt; i++) {
-		if(project.maps[i] != NULL) {
-			fwrite(&i, 2, 1, fp);
+    for(i = 0; i < project.mapCnt; i++) {
+        if(project.maps[i] != NULL) {
+            fwrite(&i, 2, 1, fp);
             writeMap(project.maps[i], fp);
-		}
-	}
+        }
+    }
 
     fwrite(project.songNameStrs, 80, 128, fp);
 }
 
 int saveProjectToFile(char *file) {
-	int ret;
-	FILE *fp = fopen(file, "wb");
+    int ret;
+    FILE *fp = fopen(file, "wb");
 
-	if(!fp) {
-		fprintf(stderr, "saveProjectToFile: error opening %s\n", file);
-		ret = 0;
-		goto done;
-	}
+    if(!fp) {
+        fprintf(stderr, "saveProjectToFile: error opening %s\n", file);
+        ret = 0;
+        goto done;
+    }
 
-	saveProjectToFp(fp);
-	ret = 1;
+    saveProjectToFp(fp);
+    ret = 1;
 
-	fclose(fp);
+    fclose(fp);
 done:
-	return ret;
+    return ret;
 }
