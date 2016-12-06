@@ -1226,7 +1226,7 @@ static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBr
     entityBrowserAddEntity(entityBrowser);
     if(mapEditor->map->entityCnt >= MAX_ENTITIES_PER_MAP) {
         GT_SetGadgetAttrs(entityBrowser->addEntityGadget, entityBrowser->window, NULL,
-        GA_Disabled, TRUE);
+            GA_Disabled, TRUE);
     }
 }
 
