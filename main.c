@@ -1217,15 +1217,19 @@ static void handleSongRequesterMessages(MapEditor *mapEditor, SongRequester *son
     }
 }
 
+static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
+    AddNewEntity(mapEditor->map);
+    entityBrowserAddEntity(entityBrowser);
+    if(mapEditor->map->entityCnt >= MAX_ENTITIES_PER_MAP) {
+        GT_SetGadgetAttrs(entityBrowser->addEntityGadget, entityBrowser->window, NULL,
+        GA_Disabled, TRUE);
+    }
+}
+
 static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct Gadget *gadget) {
     switch(gadget->GadgetID) {
     case ADD_ENTITY_ID:
-        mapAddNewEntity(mapEditor->map);
-        entityBrowserAddEntity(entityBrowser);
-        if(mapEditor->map->entityCnt >= MAX_ENTITIES_PER_MAP) {
-            GT_SetGadgetAttrs(entityBrowser->addEntityGadget, entityBrowser->window, NULL,
-                GA_Disabled, TRUE);
-        }
+        handleAddEntityClicked(mapEditor, entityBrowser);
         break;
     case REMOVE_ENTITY_ID:
         /* TODO:
