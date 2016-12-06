@@ -24,7 +24,7 @@ typedef struct Map_tag {
     UBYTE tiles[MAP_TILES_WIDE * MAP_TILES_HIGH];
 
     Entity entities[MAX_ENTITIES_PER_MAP];
-    int entityCnt;
+    UWORD entityCnt;
 } Map;
 
 Map *allocMap(void);
