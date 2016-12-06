@@ -3,6 +3,8 @@
 
 #include <exec/types.h>
 
+#include <stdio.h>
+
 #include "Entity.h"
 
 #define MAP_TILES_WIDE 10
@@ -28,6 +30,9 @@ typedef struct Map_tag {
 Map *allocMap(void);
 Map *copyMap(Map*);
 void overwriteMap(Map *srcMap, Map *destMap);
+
+void writeMap(Map*, FILE*);
+int readMap(Map*, FILE*);
 
 void mapAddNewEntity(Map*);
 

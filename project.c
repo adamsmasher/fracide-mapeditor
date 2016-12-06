@@ -165,7 +165,7 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
             goto freeMaps_error;
         }
 
-        if(fread(map, sizeof(Map), 1, fp) != 1) {
+        if(!readMap(map, fp)) {
             fprintf(stderr, "loadProjectFromFp: couldn't read map\n");
             free(map);
             goto freeMaps_error;
@@ -241,7 +241,7 @@ static void saveProjectToFp(FILE *fp) {
 	for(i = 0; i < project.mapCnt; i++) {
 		if(project.maps[i] != NULL) {
 			fwrite(&i, 2, 1, fp);
-			fwrite(project.maps[i], sizeof(Map), 1, fp);
+            writeMap(project.maps[i], fp);
 		}
 	}
 
