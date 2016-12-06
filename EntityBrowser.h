@@ -30,7 +30,7 @@ typedef struct EntityBrowser_tag {
 void initEntityBrowserScreen(void);
 void initEntityBrowserVi(void);
 
-EntityBrowser *newEntityBrowser(char *title);
+EntityBrowser *newEntityBrowser(char *title, struct List *labels);
 void freeEntityBrowser(EntityBrowser*);
 
 void entityBrowserAddEntity(EntityBrowser*);

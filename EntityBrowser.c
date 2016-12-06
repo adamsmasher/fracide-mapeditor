@@ -285,13 +285,14 @@ void initEntityBrowserVi(void) {
     }
 }
 
-static void createEntityBrowserGadgets(EntityBrowser *entityBrowser) {
+static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List *labels) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
 
     gad = CreateContext(&glist);
 
     gad = CreateGadget(LISTVIEW_KIND, gad, &entityListNewGadget,
+        GTCY_Labels, labels,
         TAG_END);
 
     gad = CreateGadget(BUTTON_KIND, gad, &addEntityNewGadget, TAG_END);
@@ -347,7 +348,7 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser) {
     }
 }
 
-EntityBrowser *newEntityBrowser(char *title) {
+EntityBrowser *newEntityBrowser(char *title, struct List *labels) {
     EntityBrowser *entityBrowser = malloc(sizeof(EntityBrowser));
     if(!entityBrowser) {
         fprintf(stderr, "newEntityBrowser: couldn't allocate entity browser\n");
@@ -362,7 +363,7 @@ EntityBrowser *newEntityBrowser(char *title) {
     strcpy(entityBrowser->title, title);
     entityBrowserNewWindow.Title = entityBrowser->title;
 
-    createEntityBrowserGadgets(entityBrowser);
+    createEntityBrowserGadgets(entityBrowser, labels);
     if(!entityBrowser->gadgets) {
         fprintf(stderr, "newEntityBrowser: couldn't create gadgets\n");
         goto error_freeTitle;

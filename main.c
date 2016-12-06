@@ -986,7 +986,7 @@ static void handleEntitiesClicked(MapEditor *mapEditor) {
             strcpy(title, "Entities");
         }
 
-        entityBrowser = newEntityBrowser(title);
+        entityBrowser = newEntityBrowser(title, &mapEditor->map->entityLabels);
         if(entityBrowser) {
             attachEntityBrowserToMapEditor(mapEditor, entityBrowser);
             addWindowToSigMask(entityBrowser->window);
