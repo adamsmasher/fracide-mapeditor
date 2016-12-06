@@ -2,6 +2,7 @@
 #define MAP_H
 
 #include <exec/types.h>
+#include <exec/lists.h>
 
 #include <stdio.h>
 
@@ -25,15 +26,18 @@ typedef struct Map_tag {
 
     Entity entities[MAX_ENTITIES_PER_MAP];
     UWORD entityCnt;
+
+    struct List entityLabels;
 } Map;
 
 Map *allocMap(void);
 Map *copyMap(Map*);
 void overwriteMap(Map *srcMap, Map *destMap);
+void freeMap(Map*);
 
 void writeMap(Map*, FILE*);
 int readMap(Map*, FILE*);
 
-void mapAddNewEntity(Map*);
+int mapAddNewEntity(Map*);
 
 #endif

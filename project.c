@@ -82,7 +82,10 @@ void freeProject(Project *project) {
     struct Node *node, *next;
 
     for(i = 0; i < 128; i++) {
-        free(project->maps[i]);
+        if(project->maps[i]) {
+            freeMap(project->maps[i]);
+            free(project->maps[i]);
+        }
     }
 
     node = project->mapNames.lh_Head;

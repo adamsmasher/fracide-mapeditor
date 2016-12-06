@@ -1218,7 +1218,11 @@ static void handleSongRequesterMessages(MapEditor *mapEditor, SongRequester *son
 }
 
 static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
-    AddNewEntity(mapEditor->map);
+    if(!mapAddNewEntity(mapEditor->map)) {
+        /* TODO: display an error */
+        return;
+    }
+
     entityBrowserAddEntity(entityBrowser);
     if(mapEditor->map->entityCnt >= MAX_ENTITIES_PER_MAP) {
         GT_SetGadgetAttrs(entityBrowser->addEntityGadget, entityBrowser->window, NULL,

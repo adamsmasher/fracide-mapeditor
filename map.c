@@ -1,5 +1,7 @@
 #include "Map.h"
 
+#include <proto/exec.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,7 +16,19 @@ Map *allocMap(void) {
     map->songNum = 0;
     map->entityCnt = 0;
     memset(map->tiles, 0, MAP_TILES_WIDE * MAP_TILES_HIGH);
+    NewList(&map->entityLabels);
     return map;
+}
+
+void freeMap(Map *map) {
+    struct Node *node, *next;
+
+    node = map->entityLabels.lh_Head;
+    while(next = node->ln_Succ) {
+        free(node->ln_Name);
+        free(node);
+        node = next;
+    }
 }
 
 void overwriteMap(Map *srcMap, Map *destMap) {
@@ -24,6 +38,8 @@ void overwriteMap(Map *srcMap, Map *destMap) {
     destMap->entityCnt = srcMap->entityCnt;
     memcpy(destMap->tiles, srcMap->tiles, MAP_TILES_WIDE * MAP_TILES_HIGH);
     memcpy(destMap->entities, srcMap->entities, sizeof(Entity) * srcMap->entityCnt);
+
+    /* TODO: copy list? */
 }
 
 Map *copyMap(Map *oldMap) {
@@ -36,14 +52,42 @@ Map *copyMap(Map *oldMap) {
     return newMap;
 }
 
-void mapAddNewEntity(Map *map) {
+int mapAddNewEntity(Map *map) {
     Entity *entity = &map->entities[map->entityCnt];
+    struct Node *node;
+    char *label;
+
+    node = malloc(sizeof(struct Node));
+    if(!node) {
+        fprintf(stderr, "mapAddNewEntity: couldn't allocate new node");
+        goto error;
+    }
+
+    label = malloc(16);
+    if(!label) {
+        fprintf(stderr, "mapAddNewEntity: couldn't allocate new label");
+        goto error_freeNode;
+    }
+
     map->entityCnt++;
+
+    sprintf(label, "%d: N/A", map->entityCnt);
 
     entity->entityNum = 0;
     entity->row = 0;
     entity->col = 0;
     entity->vramSlot = 0;
+
+    node->ln_Name = label;
+
+    AddTail(&map->entityLabels, node);
+
+    return 1;
+
+error_freeNode:
+    free(node);
+error:
+    return 0;
 }
 
 void writeMap(Map *map, FILE *fp) {
