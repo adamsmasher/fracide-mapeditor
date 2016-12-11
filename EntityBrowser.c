@@ -292,7 +292,7 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List
     gad = CreateContext(&glist);
 
     gad = CreateGadget(LISTVIEW_KIND, gad, &entityListNewGadget,
-        GTCY_Labels, labels,
+        GTLV_Labels, labels,
         TAG_END);
 
     gad = CreateGadget(BUTTON_KIND, gad, &addEntityNewGadget, TAG_END);
