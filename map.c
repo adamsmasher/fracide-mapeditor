@@ -147,9 +147,8 @@ Map *copyMap(Map *oldMap) {
 
 int mapAddNewEntity(Map *map) {
     Entity *entity = &map->entities[map->entityCnt];
-    struct Node *node;
+    struct Node *node = makeNumberedEntityNode(map->entityCnt + 1);
 
-    node = makeNumberedEntityNode(map->entityCnt + 1);
     if(!node) {
         fprintf(stderr, "mapAddNewEntity: couldn't create new entity\n");
         goto error;
