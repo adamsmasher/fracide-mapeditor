@@ -309,34 +309,48 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List
         GTTX_Border, TRUE,
         TAG_END);
 
-    gad = CreateGadget(BUTTON_KIND, gad, &chooseEntityNewGadget, TAG_END);
+    gad = CreateGadget(BUTTON_KIND, gad, &chooseEntityNewGadget,
+        GA_Disabled, TRUE,
+        TAG_END);
 
     gad = CreateGadget(INTEGER_KIND, gad, &entityRowNewGadget,
         GTIN_MaxChars, 1,
+        GA_Disabled, TRUE,
         TAG_END);
 
     gad = CreateGadget(INTEGER_KIND, gad, &entityColNewGadget,
         GTIN_MaxChars, 1,
+        GA_Disabled, TRUE,
         TAG_END);
 
     gad = CreateGadget(INTEGER_KIND, gad, &VRAMSlotNewGadget,
         GTIN_MaxChars, 3,
+        GA_Disabled, TRUE,
         TAG_END);
 
     gad = CreateGadget(LISTVIEW_KIND, gad, &tagListNewGadget,
+        GA_Disabled, TRUE,
         TAG_END);
 
-    gad = CreateGadget(BUTTON_KIND, gad, &addTagNewGadget, TAG_END);
+    gad = CreateGadget(BUTTON_KIND, gad, &addTagNewGadget,
+        GA_Disabled, TRUE,
+        TAG_END);
 
-    gad = CreateGadget(BUTTON_KIND, gad, &deleteTagNewGadget, TAG_END);
+    gad = CreateGadget(BUTTON_KIND, gad, &deleteTagNewGadget,
+        GA_Disabled, TRUE,
+        TAG_END);
 
-    gad = CreateGadget(STRING_KIND, gad, &tagAliasNewGadget, TAG_END);
+    gad = CreateGadget(STRING_KIND, gad, &tagAliasNewGadget,
+        GA_Disabled, TRUE,
+        TAG_END);
 
     gad = CreateGadget(INTEGER_KIND, gad, &tagIdNewGadget,
+        GA_Disabled, TRUE,
         GTIN_MaxChars, 3,
         TAG_END);
 
     gad = CreateGadget(INTEGER_KIND, gad, &tagValueNewGadget,
+        GA_Disabled, TRUE,
         GTIN_MaxChars, 3,
         TAG_END);
 
