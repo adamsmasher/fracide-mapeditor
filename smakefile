@@ -30,4 +30,4 @@ songnames.o: SongNames.c SongNames.h globals.h
 EntityBrowser.o: EntityBrowser.c EntityBrowser.h globals.h
 
 clean:
-   delete main.o MapEditor.o globals.o project.o tilesetpackage.o tilesetrequester.o mapedit mapedit.lnk Map.o SongNames.o
+    delete mapedit mapedit.lnk $(OBJS)
