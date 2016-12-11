@@ -1219,7 +1219,7 @@ static void handleSongRequesterMessages(MapEditor *mapEditor, SongRequester *son
 
 static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
     if(!mapAddNewEntity(mapEditor->map)) {
-        /* TODO: display an error */
+        fprintf(stderr, "handleAddEntityClicked: failed to add new entity to map\n");
         return;
     }
 
