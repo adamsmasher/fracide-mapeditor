@@ -285,6 +285,7 @@ void initEntityBrowserVi(void) {
     }
 }
 
+/* TODO: disable the add entity button if the list is long enough */
 static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List *labels) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
