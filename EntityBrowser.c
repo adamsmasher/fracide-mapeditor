@@ -294,6 +294,7 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List
     gad = CreateGadget(LISTVIEW_KIND, gad, &entityListNewGadget,
         GTLV_Labels, labels,
         TAG_END);
+    entityBrowser->entityListGadget = gad;
 
     gad = CreateGadget(BUTTON_KIND, gad, &addEntityNewGadget, TAG_END);
     entityBrowser->addEntityGadget = gad;
@@ -344,6 +345,7 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List
     } else {
         entityBrowser->addEntityGadget = NULL;
         entityBrowser->removeEntityGadget = NULL;
+        entityBrowser->entityListGadget = NULL;
         FreeGadgets(glist);
     }
 }

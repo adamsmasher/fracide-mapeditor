@@ -23,6 +23,7 @@ typedef struct EntityBrowser_tag {
     struct Gadget *gadgets;
     struct Gadget *addEntityGadget;
     struct Gadget *removeEntityGadget;
+    struct Gadget *entityListGadget;
     char *title;
     int closed;
 } EntityBrowser;

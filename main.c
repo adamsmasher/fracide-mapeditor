@@ -1218,10 +1218,15 @@ static void handleSongRequesterMessages(MapEditor *mapEditor, SongRequester *son
 }
 
 static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
+    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
+        GTLV_Labels, ~0);
     if(!mapAddNewEntity(mapEditor->map)) {
         fprintf(stderr, "handleAddEntityClicked: failed to add new entity to map\n");
         return;
     }
+    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
+        GTLV_Labels, &mapEditor->map->entityLabels);
+
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
 
     entityBrowserAddEntity(entityBrowser);
