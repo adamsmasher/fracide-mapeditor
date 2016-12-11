@@ -22,7 +22,48 @@ Map *allocMap(void) {
     return map;
 }
 
-void freeMap(Map *map) {
+static struct Node *makeEntityNode(char *label) {
+    struct Node *node;
+
+    node = malloc(sizeof(struct Node));
+    if(!node) {
+        fprintf(stderr, "makeEntityNode: couldn't allocate new node");
+        goto error;
+    }
+
+    node->ln_Name = label;
+
+    return node;
+error:
+    return NULL;
+
+}
+
+static struct Node *makeNumberedEntityNode(int num) {
+    struct Node *node;
+    char *label;
+
+    label = malloc(ENTITY_LABEL_LENGTH);
+    if(!label) {
+        fprintf(stderr, "makeNumberedEntityNode: couldn't allocate new label");
+        goto error;
+    }
+    sprintf(label, "%d: N/A", num);
+
+    node = makeEntityNode(label);
+    if(!node) {
+        fprintf(stderr, "makeNumeredEntityNode: couldn't make node");
+        goto error_freeLabel;
+    }
+
+    return node;
+error_freeLabel:
+    free(label);
+error:
+    return NULL;
+}
+
+static void freeEntityLabels(Map *map) {
     struct Node *node, *next;
 
     node = map->entityLabels.lh_Head;
@@ -33,15 +74,65 @@ void freeMap(Map *map) {
     }
 }
 
+static struct Node *copyEntityNode(struct Node *node) {
+    struct Node *nodeCopy;
+    char *label;
+
+    label = malloc(ENTITY_LABEL_LENGTH);
+    if(!label) {
+        fprintf(stderr, "copyEntityNode: couldn't allocate label");
+        goto error;
+    }
+    strcpy(label, node->ln_Name);
+
+    nodeCopy = makeEntityNode(label);
+    if(!nodeCopy) {
+        fprintf(stderr, "copyEntityNode: couldn't make node");
+        goto error_freeLabel;
+    }
+
+    return nodeCopy;
+error_freeLabel:
+    free(label);
+error:
+    return NULL;
+}
+
+static int copyEntityLabels(Map *srcMap, Map *destMap) {
+    struct Node *node, *next;
+
+    NewList(&destMap->entityLabels);
+    node = srcMap->entityLabels.lh_Head;
+    while(next = node->ln_Succ) {
+        node = copyEntityNode(node);
+        if(!node) {
+            fprintf(stderr, "copyEntityLabels: couldn't make entity");
+            goto error;
+        }
+        AddTail(&destMap->entityLabels, node);
+        node = next;
+    }
+
+    return 1;
+error:
+    freeEntityLabels(destMap);
+    return 0;
+}
+
+void freeMap(Map *map) {
+    freeEntityLabels(map);
+}
+
 void overwriteMap(Map *srcMap, Map *destMap) {
+    freeMap(destMap);
+
     strcpy(destMap->name, srcMap->name);
     destMap->tilesetNum = srcMap->tilesetNum;
     destMap->songNum = srcMap->songNum;
     destMap->entityCnt = srcMap->entityCnt;
     memcpy(destMap->tiles, srcMap->tiles, MAP_TILES_WIDE * MAP_TILES_HIGH);
     memcpy(destMap->entities, srcMap->entities, sizeof(Entity) * srcMap->entityCnt);
-
-    /* TODO: copy list? */
+    copyEntityLabels(srcMap, destMap);
 }
 
 Map *copyMap(Map *oldMap) {
@@ -57,36 +148,23 @@ Map *copyMap(Map *oldMap) {
 int mapAddNewEntity(Map *map) {
     Entity *entity = &map->entities[map->entityCnt];
     struct Node *node;
-    char *label;
 
-    node = malloc(sizeof(struct Node));
+    node = makeNumberedEntityNode(map->entityCnt + 1);
     if(!node) {
-        fprintf(stderr, "mapAddNewEntity: couldn't allocate new node");
+        fprintf(stderr, "mapAddNewEntity: couldn't create new entity\n");
         goto error;
     }
 
-    label = malloc(ENTITY_LABEL_LENGTH);
-    if(!label) {
-        fprintf(stderr, "mapAddNewEntity: couldn't allocate new label");
-        goto error_freeNode;
-    }
-
     map->entityCnt++;
-
-    sprintf(label, "%d: N/A", map->entityCnt);
 
     entity->entityNum = 0;
     entity->row = 0;
     entity->col = 0;
     entity->vramSlot = 0;
 
-    node->ln_Name = label;
-
     AddTail(&map->entityLabels, node);
 
     return 1;
-
-    free(node);
 error:
     return 0;
 }
