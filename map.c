@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define ENTITY_LABEL_LENGTH 16
+
 Map *allocMap(void) {
     Map *map = malloc(sizeof(Map));
     if(!map) {
@@ -63,7 +65,7 @@ int mapAddNewEntity(Map *map) {
         goto error;
     }
 
-    label = malloc(16);
+    label = malloc(ENTITY_LABEL_LENGTH);
     if(!label) {
         fprintf(stderr, "mapAddNewEntity: couldn't allocate new label");
         goto error_freeNode;
@@ -84,7 +86,6 @@ int mapAddNewEntity(Map *map) {
 
     return 1;
 
-error_freeNode:
     free(node);
 error:
     return 0;
