@@ -1222,6 +1222,7 @@ static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBr
         fprintf(stderr, "handleAddEntityClicked: failed to add new entity to map\n");
         return;
     }
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
 
     entityBrowserAddEntity(entityBrowser);
     if(mapEditor->map->entityCnt >= MAX_ENTITIES_PER_MAP) {
