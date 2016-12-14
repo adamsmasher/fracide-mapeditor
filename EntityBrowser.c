@@ -285,7 +285,18 @@ void initEntityBrowserVi(void) {
     }
 }
 
-/* TODO: disable the add entity button if the list is long enough */
+/* TODO: if we need this elsewhere maybe put it in like a utils.c */
+static int labelListLength(struct List *labels) {
+    int length = 0;
+    struct Node *node;
+
+    for(node = labels->lh_Head; node->ln_Succ; node = node->ln_Succ) {
+        length++;
+    }
+
+    return length;
+}
+
 static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List *labels) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
@@ -297,7 +308,13 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List
         TAG_END);
     entityBrowser->entityListGadget = gad;
 
-    gad = CreateGadget(BUTTON_KIND, gad, &addEntityNewGadget, TAG_END);
+    if(labelListLength(labels) < MAX_ENTITIES_PER_MAP) {
+        gad = CreateGadget(BUTTON_KIND, gad, &addEntityNewGadget, TAG_END);
+    } else {
+        gad = CreateGadget(BUTTON_KIND, gad, &addEntityNewGadget,
+            GA_Disabled, TRUE,
+            TAG_END);
+    }
     entityBrowser->addEntityGadget = gad;
 
     gad = CreateGadget(BUTTON_KIND, gad, &removeEntityNewGadget,
