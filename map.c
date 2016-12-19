@@ -209,6 +209,10 @@ int readMap(Map *map, FILE *fp) {
     }
 
     /* TODO: allocate labels */
+    if(map->entityCnt > MAX_ENTITIES_PER_MAP) {
+        fprintf(stderr, "readMap: entity count %d too large\n", map->entityCnt);
+        goto error;
+    }
 
     return 1;
 error:
