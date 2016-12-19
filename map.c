@@ -180,35 +180,37 @@ void writeMap(Map *map, FILE *fp) {
 int readMap(Map *map, FILE *fp) {
     if(fread(map->name, 1, 64, fp) != 64) {
         fprintf(stderr, "readMap: couldn't read map name\n");
-        return 0;
+        goto error;
     }
 
     if(fread(&map->tilesetNum, 2, 1, fp) != 1) {
         fprintf(stderr, "readMap: couldn't read tileset num\n");
-        return 0;
+        goto error;
     }
 
     if(fread(&map->songNum, 2, 1, fp) != 1) {
         fprintf(stderr, "readMap: couldn't read song num\n");
-        return 0;
+        goto error;
     }
 
     if(fread(map->tiles, 1, 90, fp) != 90) {
         fprintf(stderr, "readMap: couldn't read tiles\n");
-        return 0;
+        goto error;
     }
 
     if(fread(map->entities, sizeof(Entity), MAX_ENTITIES_PER_MAP, fp) != MAX_ENTITIES_PER_MAP) {
         fprintf(stderr, "readMap: couldn't read entities\n");
-        return 0;
+        goto error;
     }
 
     if(fread(&map->entityCnt, 2, 1, fp) != 1) {
         fprintf(stderr, "readMap: couldn't read entity count\n");
-        return 0;
+        goto error;
     }
 
     /* TODO: allocate labels */
 
     return 1;
+error:
+    return 0;
 }
