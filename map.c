@@ -208,13 +208,27 @@ int readMap(Map *map, FILE *fp) {
         goto error;
     }
 
-    /* TODO: allocate labels */
     if(map->entityCnt > MAX_ENTITIES_PER_MAP) {
         fprintf(stderr, "readMap: entity count %d too large\n", map->entityCnt);
         goto error;
     }
 
+    NewList(&map->entityLabels);
+    {
+        int i;
+        for(i = 0; i < map->entityCnt; i++) {
+            struct Node *node = makeNumberedEntityNode(i + 1);
+            if(!node) {
+                fprintf(stderr, "readMap: couldn't allocate entity node\n");
+                goto error_freeEntityLabels;
+            }
+            AddTail(&map->entityLabels, node);
+        }
+    }
+
     return 1;
+error_freeEntityLabels:
+    freeEntityLabels(map);
 error:
     return 0;
 }
