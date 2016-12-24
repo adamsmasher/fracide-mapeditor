@@ -39,5 +39,6 @@ void writeMap(Map*, FILE*);
 int readMap(Map*, FILE*);
 
 int mapAddNewEntity(Map*);
+void mapRemoveEntity(Map*, int entityNum);
 
 #endif

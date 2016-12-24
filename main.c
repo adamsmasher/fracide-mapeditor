@@ -1236,16 +1236,26 @@ static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBr
     }
 }
 
+static void handleRemoveEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
+    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
+        GTLV_Labels, ~0);
+    mapRemoveEntity(mapEditor->map, entityBrowser->selectedEntity - 1);
+    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
+        GTLV_Labels, &mapEditor->map->entityLabels);
+
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
+
+    /* TODO: put this in a function in EntityBrowser.c that also updates the GUI */
+    entityBrowser->selectedEntity = 0;
+}
+
 static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct Gadget *gadget) {
     switch(gadget->GadgetID) {
     case ADD_ENTITY_ID:
         handleAddEntityClicked(mapEditor, entityBrowser);
         break;
     case REMOVE_ENTITY_ID:
-        /* TODO:
-        mapRemoveEntity(mapEditor->map, entityBrowser->selectedEntity);
-        entityBrowserRemoveSelectedEntity(entityBrowser);
-        */
+        handleRemoveEntityClicked(mapEditor, entityBrowser);
         break;
     }
 }

@@ -395,6 +395,7 @@ EntityBrowser *newEntityBrowser(char *title, struct List *labels) {
     GT_RefreshWindow(entityBrowser->window, NULL);
 
     entityBrowser->closed = 0;
+    entityBrowser->selectedEntity = 0;
 
     return entityBrowser;
     

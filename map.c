@@ -168,6 +168,18 @@ error:
     return 0;
 }
 
+void mapRemoveEntity(Map *map, int entityNum) {
+    struct Node *node;
+
+    node = map->entityLabels.lh_Head;
+    while(entityNum) {
+        entityNum--;
+        node = node->ln_Succ;
+    }
+
+    Remove(node);
+}
+
 void writeMap(Map *map, FILE *fp) {
     fwrite(map->name, 1, 64, fp);
     fwrite(&map->tilesetNum, 2, 1, fp);
