@@ -192,35 +192,55 @@ void writeMap(Map *map, FILE *fp) {
 int readMap(Map *map, FILE *fp) {
     if(fread(map->name, 1, 64, fp) != 64) {
         fprintf(stderr, "readMap: couldn't read map name\n");
-        return 0;
+        goto error;
     }
 
     if(fread(&map->tilesetNum, 2, 1, fp) != 1) {
         fprintf(stderr, "readMap: couldn't read tileset num\n");
-        return 0;
+        goto error;
     }
 
     if(fread(&map->songNum, 2, 1, fp) != 1) {
         fprintf(stderr, "readMap: couldn't read song num\n");
-        return 0;
+        goto error;
     }
 
     if(fread(map->tiles, 1, 90, fp) != 90) {
         fprintf(stderr, "readMap: couldn't read tiles\n");
-        return 0;
+        goto error;
     }
 
     if(fread(map->entities, sizeof(Entity), MAX_ENTITIES_PER_MAP, fp) != MAX_ENTITIES_PER_MAP) {
         fprintf(stderr, "readMap: couldn't read entities\n");
-        return 0;
+        goto error;
     }
 
     if(fread(&map->entityCnt, 2, 1, fp) != 1) {
         fprintf(stderr, "readMap: couldn't read entity count\n");
-        return 0;
+        goto error;
     }
 
-    /* TODO: allocate labels */
+    if(map->entityCnt > MAX_ENTITIES_PER_MAP) {
+        fprintf(stderr, "readMap: entity count %d too large\n", map->entityCnt);
+        goto error;
+    }
+
+    NewList(&map->entityLabels);
+    {
+        int i;
+        for(i = 0; i < map->entityCnt; i++) {
+            struct Node *node = makeNumberedEntityNode(i + 1);
+            if(!node) {
+                fprintf(stderr, "readMap: couldn't allocate entity node\n");
+                goto error_freeEntityLabels;
+            }
+            AddTail(&map->entityLabels, node);
+        }
+    }
 
     return 1;
+error_freeEntityLabels:
+    freeEntityLabels(map);
+error:
+    return 0;
 }
