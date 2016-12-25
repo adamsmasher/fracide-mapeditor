@@ -40,6 +40,7 @@ void initEntityBrowserVi(void);
 EntityBrowser *newEntityBrowser(char *title, struct List *labels);
 void freeEntityBrowser(EntityBrowser*);
 
-void entityBrowserSelectEntity(EntityBrowser*, Entity*);
+void entityBrowserSelectEntity(EntityBrowser*, int entityNum, Entity*);
+void entityBrowserDeselectEntity(EntityBrowser*);
 
 #endif

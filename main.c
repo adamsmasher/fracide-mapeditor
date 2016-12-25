@@ -1218,6 +1218,8 @@ static void handleSongRequesterMessages(MapEditor *mapEditor, SongRequester *son
 }
 
 static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
+    int newEntityIdx = mapEditor->map->entityCnt;
+
     GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
         GTLV_Labels, ~0);
     if(!mapAddNewEntity(mapEditor->map)) {
@@ -1233,6 +1235,8 @@ static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBr
         GT_SetGadgetAttrs(entityBrowser->addEntityGadget, entityBrowser->window, NULL,
             GA_Disabled, TRUE);
     }
+
+    entityBrowserSelectEntity(entityBrowser, newEntityIdx, &mapEditor->map->entities[newEntityIdx]);
 }
 
 static void handleRemoveEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
@@ -1244,13 +1248,12 @@ static void handleRemoveEntityClicked(MapEditor *mapEditor, EntityBrowser *entit
 
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
 
-    entityBrowserSelectEntity(entityBrowser, NULL);
+    entityBrowserDeselectEntity(entityBrowser);
 }
 
 static void handleEntityClicked(EntityBrowser *entityBrowser, Map *map, int entityNum) {
     Entity *entity = &map->entities[entityNum];
-    entityBrowser->selectedEntity = entityNum + 1;
-    entityBrowserSelectEntity(entityBrowser, entity);
+    entityBrowserSelectEntity(entityBrowser, entityNum, entity);
 }
 
 static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct IntuiMessage *msg) {
