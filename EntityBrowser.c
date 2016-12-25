@@ -335,16 +335,19 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List
         GTIN_MaxChars, 1,
         GA_Disabled, TRUE,
         TAG_END);
+    entityBrowser->rowGadget = gad;
 
     gad = CreateGadget(INTEGER_KIND, gad, &entityColNewGadget,
         GTIN_MaxChars, 1,
         GA_Disabled, TRUE,
         TAG_END);
+    entityBrowser->colGadget = gad;
 
     gad = CreateGadget(INTEGER_KIND, gad, &VRAMSlotNewGadget,
         GTIN_MaxChars, 3,
         GA_Disabled, TRUE,
         TAG_END);
+    entityBrowser->VRAMSlotGadget = gad;
 
     gad = CreateGadget(LISTVIEW_KIND, gad, &tagListNewGadget,
         GA_Disabled, TRUE,
@@ -378,6 +381,9 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List
         entityBrowser->addEntityGadget = NULL;
         entityBrowser->removeEntityGadget = NULL;
         entityBrowser->entityListGadget = NULL;
+        entityBrowser->rowGadget = NULL;
+        entityBrowser->colGadget = NULL;
+        entityBrowser->VRAMSlotGadget = NULL;
         FreeGadgets(glist);
     }
 }

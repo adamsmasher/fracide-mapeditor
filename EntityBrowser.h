@@ -26,6 +26,9 @@ typedef struct EntityBrowser_tag {
     struct Gadget *addEntityGadget;
     struct Gadget *removeEntityGadget;
     struct Gadget *entityListGadget;
+    struct Gadget *rowGadget;
+    struct Gadget *colGadget;
+    struct Gadget *VRAMSlotGadget;
     char *title;
     int closed;
     int selectedEntity;
