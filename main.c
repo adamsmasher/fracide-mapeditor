@@ -1244,8 +1244,7 @@ static void handleRemoveEntityClicked(MapEditor *mapEditor, EntityBrowser *entit
 
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
 
-    /* TODO: put this in a function in EntityBrowser.c that also updates the GUI */
-    entityBrowser->selectedEntity = 0;
+    entityBrowserSelectEntity(entityBrowser, NULL);
 }
 
 static void handleEntityClicked(EntityBrowser *entityBrowser, Map *map, int entityNum) {

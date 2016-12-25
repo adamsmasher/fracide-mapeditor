@@ -434,5 +434,12 @@ void freeEntityBrowser(EntityBrowser *entityBrowser) {
 }
 
 void entityBrowserSelectEntity(EntityBrowser *entityBrowser, Entity *entity) {
-
+    if(entity) {
+        GT_SetGadgetAttrs(entityBrowser->removeEntityGadget, entityBrowser->window, NULL,
+            GA_Disabled, FALSE);
+    } else {
+        entityBrowser->selectedEntity = 0;
+        GT_SetGadgetAttrs(entityBrowser->removeEntityGadget, entityBrowser->window, NULL,
+            GA_Disabled, TRUE);
+    }
 }
