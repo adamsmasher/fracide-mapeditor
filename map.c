@@ -169,15 +169,32 @@ error:
 }
 
 void mapRemoveEntity(Map *map, int entityNum) {
-    struct Node *node;
+    int i = entityNum;
+    struct Node *node = map->entityLabels.lh_Head;
+    struct Node *next;
 
-    node = map->entityLabels.lh_Head;
-    while(entityNum) {
-        entityNum--;
+    /* find the node to remove */
+    while(i) {
+        i--;
         node = node->ln_Succ;
     }
-
+    next = node->ln_Succ;
     Remove(node);
+    free(node->ln_Name);
+    free(node);
+
+    /* relabel the remaining nodes */
+    node = next;
+    i = entityNum + 1;
+    while(next = node->ln_Succ) {
+        sprintf(node->ln_Name, "%d: N/A", i);
+        i++;
+        node = next;
+    }
+
+    /* copy the entities backwards */
+    memmove(&map->entities[entityNum], &map->entities[entityNum + 1], (MAX_ENTITIES_PER_MAP - entityNum) * sizeof(Entity));
+    map->entityCnt--;
 }
 
 void writeMap(Map *map, FILE *fp) {
