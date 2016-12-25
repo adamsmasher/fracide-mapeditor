@@ -1229,7 +1229,6 @@ static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBr
 
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
 
-    entityBrowserAddEntity(entityBrowser);
     if(mapEditor->map->entityCnt >= MAX_ENTITIES_PER_MAP) {
         GT_SetGadgetAttrs(entityBrowser->addEntityGadget, entityBrowser->window, NULL,
             GA_Disabled, TRUE);
@@ -1249,7 +1248,14 @@ static void handleRemoveEntityClicked(MapEditor *mapEditor, EntityBrowser *entit
     entityBrowser->selectedEntity = 0;
 }
 
-static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct Gadget *gadget) {
+static void handleEntityClicked(EntityBrowser *entityBrowser, Map *map, int entityNum) {
+    Entity *entity = &map->entities[entityNum];
+    entityBrowser->selectedEntity = entityNum + 1;
+    entityBrowserSelectEntity(entityBrowser, entity);
+}
+
+static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct IntuiMessage *msg) {
+    struct Gadget *gadget = (struct Gadget*)msg->IAddress;
     switch(gadget->GadgetID) {
     case ADD_ENTITY_ID:
         handleAddEntityClicked(mapEditor, entityBrowser);
@@ -1257,13 +1263,16 @@ static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *ent
     case REMOVE_ENTITY_ID:
         handleRemoveEntityClicked(mapEditor, entityBrowser);
         break;
+    case ENTITY_LIST_ID:
+        handleEntityClicked(entityBrowser, mapEditor->map, msg->Code);
+        break;
     }
 }
 
 static void handleEntityBrowserMessage(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct IntuiMessage *msg) {
     switch(msg->Class) {
     case IDCMP_GADGETUP:
-        handleEntityBrowserGadgetUp(mapEditor, entityBrowser, (struct Gadget*)msg->IAddress);
+        handleEntityBrowserGadgetUp(mapEditor, entityBrowser, msg);
         break;
     case IDCMP_CLOSEWINDOW:
         entityBrowser->closed = 1;

@@ -27,7 +27,7 @@ map.o: Map.c Map.h Entity.h
 
 songnames.o: SongNames.c SongNames.h globals.h
 
-EntityBrowser.o: EntityBrowser.c EntityBrowser.h globals.h
+EntityBrowser.o: EntityBrowser.c EntityBrowser.h globals.h Entity.h
 
 clean:
     delete mapedit mapedit.lnk $(OBJS)

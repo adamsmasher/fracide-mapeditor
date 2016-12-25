@@ -3,6 +3,8 @@
 
 #include <proto/intuition.h>
 
+#include "Entity.h"
+
 #define ENTITY_LIST_ID   0
 #define ADD_ENTITY_ID    (ENTITY_LIST_ID   + 1)
 #define REMOVE_ENTITY_ID (ADD_ENTITY_ID    + 1)
@@ -35,6 +37,6 @@ void initEntityBrowserVi(void);
 EntityBrowser *newEntityBrowser(char *title, struct List *labels);
 void freeEntityBrowser(EntityBrowser*);
 
-void entityBrowserAddEntity(EntityBrowser*);
+void entityBrowserSelectEntity(EntityBrowser*, Entity*);
 
 #endif

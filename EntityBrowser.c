@@ -416,6 +416,6 @@ void freeEntityBrowser(EntityBrowser *entityBrowser) {
     free(entityBrowser);
 }
 
-void entityBrowserAddEntity(EntityBrowser *entityBrowser) {
+void entityBrowserSelectEntity(EntityBrowser *entityBrowser, Entity *entity) {
 
 }
