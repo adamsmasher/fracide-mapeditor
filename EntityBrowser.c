@@ -459,4 +459,12 @@ void entityBrowserDeselectEntity(EntityBrowser *entityBrowser) {
     entityBrowser->selectedEntity = 0;
     GT_SetGadgetAttrs(entityBrowser->removeEntityGadget, entityBrowser->window, NULL,
         GA_Disabled, TRUE);
+    GT_SetGadgetAttrs(entityBrowser->rowGadget, entityBrowser->window, NULL,
+        GA_Disabled, TRUE);
+    GT_SetGadgetAttrs(entityBrowser->colGadget, entityBrowser->window, NULL,
+        GA_Disabled, TRUE);
+    GT_SetGadgetAttrs(entityBrowser->VRAMSlotGadget, entityBrowser->window, NULL,
+        GA_Disabled, TRUE);
+    GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window, NULL,
+        GA_Disabled, TRUE);
 }
