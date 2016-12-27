@@ -452,14 +452,17 @@ void entityBrowserSelectEntity(EntityBrowser *entityBrowser, int entityNum, Enti
 
     GT_SetGadgetAttrs(entityBrowser->rowGadget, entityBrowser->window, NULL,
         GA_Disabled, FALSE,
+        GTIN_Number, entity->row,
         TAG_END);
 
     GT_SetGadgetAttrs(entityBrowser->colGadget, entityBrowser->window, NULL,
         GA_Disabled, FALSE,
+        GTIN_Number, entity->col,
         TAG_END);
 
     GT_SetGadgetAttrs(entityBrowser->VRAMSlotGadget, entityBrowser->window, NULL,
         GA_Disabled, FALSE,
+        GTIN_Number, entity->vramSlot,
         TAG_END);
 
     GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window, NULL,

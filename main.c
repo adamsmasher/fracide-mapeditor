@@ -1256,6 +1256,23 @@ static void handleEntityClicked(EntityBrowser *entityBrowser, Map *map, int enti
     entityBrowserSelectEntity(entityBrowser, entityNum, entity);
 }
 
+static void handleEntityRowChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
+    Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
+    entity->row = ((struct StringInfo*)entityBrowser->rowGadget->SpecialInfo)->LongInt;
+/* TODO: redraw the entity on the map */
+}
+
+static void handleEntityColChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
+    Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
+    entity->col = ((struct StringInfo*)entityBrowser->colGadget->SpecialInfo)->LongInt;
+/* TODO: redraw the entity on the map */
+}
+
+static void handleEntityVRAMSlotChanged(EntityBrowser *entityBrowser, Map *map) {
+    Entity *entity = &map->entities[entityBrowser->selectedEntity - 1];
+    entity->vramSlot = ((struct StringInfo*)entityBrowser->VRAMSlotGadget->SpecialInfo)->LongInt;
+}
+
 static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct IntuiMessage *msg) {
     struct Gadget *gadget = (struct Gadget*)msg->IAddress;
     switch(gadget->GadgetID) {
@@ -1267,6 +1284,15 @@ static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *ent
         break;
     case ENTITY_LIST_ID:
         handleEntityClicked(entityBrowser, mapEditor->map, msg->Code);
+        break;
+    case ENTITY_ROW_ID:
+        handleEntityRowChanged(entityBrowser, mapEditor);
+        break;
+    case ENTITY_COL_ID:
+        handleEntityColChanged(entityBrowser, mapEditor);
+        break;
+    case VRAM_SLOT_ID:
+        handleEntityVRAMSlotChanged(entityBrowser, mapEditor->map);
         break;
     }
 }
