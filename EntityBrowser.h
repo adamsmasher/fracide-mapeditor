@@ -30,6 +30,7 @@ typedef struct EntityBrowser_tag {
     struct Gadget *colGadget;
     struct Gadget *VRAMSlotGadget;
     struct Gadget *addTagGadget;
+    struct Gadget *chooseEntityGadget;
     char *title;
     int closed;
     int selectedEntity;

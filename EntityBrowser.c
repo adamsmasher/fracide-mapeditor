@@ -330,6 +330,7 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List
     gad = CreateGadget(BUTTON_KIND, gad, &chooseEntityNewGadget,
         GA_Disabled, TRUE,
         TAG_END);
+    entityBrowser->chooseEntityGadget = gad;
 
     gad = CreateGadget(INTEGER_KIND, gad, &entityRowNewGadget,
         GTIN_MaxChars, 1,
@@ -386,6 +387,7 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List
         entityBrowser->colGadget = NULL;
         entityBrowser->VRAMSlotGadget = NULL;
         entityBrowser->addTagGadget = NULL;
+        entityBrowser->chooseEntityGadget = NULL;
         FreeGadgets(glist);
     }
 }
@@ -453,6 +455,8 @@ void entityBrowserSelectEntity(EntityBrowser *entityBrowser, int entityNum, Enti
         GA_Disabled, FALSE);
     GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window, NULL,
         GA_Disabled, FALSE);
+    GT_SetGadgetAttrs(entityBrowser->chooseEntityGadget, entityBrowser->window, NULL,
+        GA_Disabled, FALSE);
 }
 
 void entityBrowserDeselectEntity(EntityBrowser *entityBrowser) {
@@ -466,5 +470,7 @@ void entityBrowserDeselectEntity(EntityBrowser *entityBrowser) {
     GT_SetGadgetAttrs(entityBrowser->VRAMSlotGadget, entityBrowser->window, NULL,
         GA_Disabled, TRUE);
     GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window, NULL,
+        GA_Disabled, TRUE);
+    GT_SetGadgetAttrs(entityBrowser->chooseEntityGadget, entityBrowser->window, NULL,
         GA_Disabled, TRUE);
 }
