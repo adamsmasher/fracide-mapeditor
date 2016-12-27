@@ -445,32 +445,56 @@ void freeEntityBrowser(EntityBrowser *entityBrowser) {
 
 void entityBrowserSelectEntity(EntityBrowser *entityBrowser, int entityNum, Entity *entity) {
     entityBrowser->selectedEntity = entityNum + 1;
+
     GT_SetGadgetAttrs(entityBrowser->removeEntityGadget, entityBrowser->window, NULL,
-        GA_Disabled, FALSE);
+        GA_Disabled, FALSE,
+        TAG_END);
+
     GT_SetGadgetAttrs(entityBrowser->rowGadget, entityBrowser->window, NULL,
-        GA_Disabled, FALSE);
+        GA_Disabled, FALSE,
+        TAG_END);
+
     GT_SetGadgetAttrs(entityBrowser->colGadget, entityBrowser->window, NULL,
-        GA_Disabled, FALSE);
+        GA_Disabled, FALSE,
+        TAG_END);
+
     GT_SetGadgetAttrs(entityBrowser->VRAMSlotGadget, entityBrowser->window, NULL,
-        GA_Disabled, FALSE);
+        GA_Disabled, FALSE,
+        TAG_END);
+
     GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window, NULL,
-        GA_Disabled, FALSE);
+        GA_Disabled, FALSE,
+        TAG_END);
+
     GT_SetGadgetAttrs(entityBrowser->chooseEntityGadget, entityBrowser->window, NULL,
-        GA_Disabled, FALSE);
+        GA_Disabled, FALSE,
+        TAG_END);
 }
 
 void entityBrowserDeselectEntity(EntityBrowser *entityBrowser) {
     entityBrowser->selectedEntity = 0;
+
     GT_SetGadgetAttrs(entityBrowser->removeEntityGadget, entityBrowser->window, NULL,
-        GA_Disabled, TRUE);
+        GA_Disabled, TRUE,
+        TAG_END);
+
     GT_SetGadgetAttrs(entityBrowser->rowGadget, entityBrowser->window, NULL,
-        GA_Disabled, TRUE);
+        GA_Disabled, TRUE,
+        TAG_END);
+
     GT_SetGadgetAttrs(entityBrowser->colGadget, entityBrowser->window, NULL,
-        GA_Disabled, TRUE);
+        GA_Disabled, TRUE,
+        TAG_END);
+
     GT_SetGadgetAttrs(entityBrowser->VRAMSlotGadget, entityBrowser->window, NULL,
-        GA_Disabled, TRUE);
+        GA_Disabled, TRUE,
+        TAG_END);
+
     GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window, NULL,
-        GA_Disabled, TRUE);
+        GA_Disabled, TRUE,
+        TAG_END);
+
     GT_SetGadgetAttrs(entityBrowser->chooseEntityGadget, entityBrowser->window, NULL,
-        GA_Disabled, TRUE);
+        GA_Disabled, TRUE,
+        TAG_END);
 }
