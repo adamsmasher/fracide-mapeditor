@@ -160,6 +160,7 @@ int mapAddNewEntity(Map *map) {
     entity->row = 0;
     entity->col = 0;
     entity->vramSlot = 0;
+    entity->tagCnt = 0;
 
     AddTail(&map->entityLabels, node);
 

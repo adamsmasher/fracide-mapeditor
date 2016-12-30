@@ -27,6 +27,7 @@ typedef struct Map_tag {
     Entity entities[MAX_ENTITIES_PER_MAP];
     UWORD entityCnt;
 
+/* TODO: I kinda wanna get rid of this and put it in the browser */
     struct List entityLabels;
 } Map;
 
