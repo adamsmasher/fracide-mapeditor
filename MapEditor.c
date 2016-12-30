@@ -529,7 +529,6 @@ void closeMapEditor(MapEditor *mapEditor) {
     CloseWindow(mapEditor->window);
     FreeGadgets(mapEditor->gadgets);
     FreeMem(mapEditor->imageData, IMAGE_DATA_SIZE);
-    freeMap(mapEditor->map);
     free(mapEditor->map);
     free(mapEditor);
 }
@@ -848,7 +847,6 @@ MapEditor *newMapEditorNewMap(void) {
     return mapEditor;
 
 error_freeMap:
-    freeMap(map);
     free(map);
 error:
     return NULL;
@@ -892,7 +890,6 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
     return mapEditor;
 
 error_freeMap:
-    freeMap(mapCopy);
     free(mapCopy);
 error:
     return NULL;

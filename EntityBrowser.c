@@ -1,5 +1,7 @@
 #include "EntityBrowser.h"
 
+#include <proto/exec.h>
+
 #include <intuition/intuition.h>
 #include <intuition/gadgetclass.h>
 #include <proto/intuition.h>
@@ -285,30 +287,18 @@ void initEntityBrowserVi(void) {
     }
 }
 
-/* TODO: if we need this elsewhere maybe put it in like a utils.c */
-static int labelListLength(struct List *labels) {
-    int length = 0;
-    struct Node *node;
-
-    for(node = labels->lh_Head; node->ln_Succ; node = node->ln_Succ) {
-        length++;
-    }
-
-    return length;
-}
-
-static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List *labels) {
+static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, int entityCnt) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
 
     gad = CreateContext(&glist);
 
     gad = CreateGadget(LISTVIEW_KIND, gad, &entityListNewGadget,
-        GTLV_Labels, labels,
+        GTLV_Labels, &entityBrowser->entityLabels,
         TAG_END);
     entityBrowser->entityListGadget = gad;
 
-    if(labelListLength(labels) < MAX_ENTITIES_PER_MAP) {
+    if(entityCnt < MAX_ENTITIES_PER_MAP) {
         gad = CreateGadget(BUTTON_KIND, gad, &addEntityNewGadget, TAG_END);
     } else {
         gad = CreateGadget(BUTTON_KIND, gad, &addEntityNewGadget,
@@ -392,22 +382,63 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, struct List
     }
 }
 
-EntityBrowser *newEntityBrowser(char *title, struct List *labels) {
+static int createEntityLabels(EntityBrowser *entityBrowser, Entity *entities, int entityCnt) {
+    int i;
+
+    NewList(&entityBrowser->entityLabels);
+
+    if(!entityCnt) {
+        goto ok;
+    }
+
+    entityBrowser->entityNodes = malloc(sizeof(struct Node) * entityCnt);
+    if(!entityBrowser->entityNodes) {
+        fprintf(stderr, "createEntityLabels: couldn't allocate memory for %d nodes\n", entityCnt);
+        goto error;
+    }
+
+    entityBrowser->entityStrings = malloc(ENTITY_LABEL_LENGTH * entityCnt);
+    if(!entityBrowser->entityStrings) {
+        fprintf(stderr, "createEntityLabels: couldn't allocate memory for labels\n");
+        goto error_freeNodes;
+    }
+
+    for(i = 0; i < entityCnt; i++) {
+        sprintf(entityBrowser->entityStrings[i], "%d: N/A", i);
+        entityBrowser->entityNodes[i].ln_Name = entityBrowser->entityStrings[i];
+        AddTail(&entityBrowser->entityLabels, &entityBrowser->entityNodes[i]);
+    }
+
+ok:
+    return 1;
+
+error_freeNodes:
+    free(entityBrowser->entityNodes);
+error:
+    return 0;
+}
+
+EntityBrowser *newEntityBrowser(char *title, Entity *entities, int entityCnt) {
     EntityBrowser *entityBrowser = malloc(sizeof(EntityBrowser));
     if(!entityBrowser) {
         fprintf(stderr, "newEntityBrowser: couldn't allocate entity browser\n");
         goto error;
     }
 
+    if(!createEntityLabels(entityBrowser, entities, entityCnt)) {
+        fprintf(stderr, "newEntityBrowser: couldn't create labels\n");
+        goto error_freeBrowser;
+    }
+
     entityBrowser->title = malloc(strlen(title) + 1);
     if(!entityBrowser->title) {
         fprintf(stderr, "newEntityBrowser: couldn't allocate title\n");
-        goto error_freeBrowser;
+        goto error_freeLabels;
     }
     strcpy(entityBrowser->title, title);
     entityBrowserNewWindow.Title = entityBrowser->title;
 
-    createEntityBrowserGadgets(entityBrowser, labels);
+    createEntityBrowserGadgets(entityBrowser, entityCnt);
     if(!entityBrowser->gadgets) {
         fprintf(stderr, "newEntityBrowser: couldn't create gadgets\n");
         goto error_freeTitle;
@@ -430,16 +461,25 @@ error_freeGadgets:
     free(entityBrowser->gadgets);
 error_freeTitle:
     free(entityBrowser->title);
+error_freeLabels:
+    free(entityBrowser->entityNodes);
+    free(entityBrowser->entityStrings);
 error_freeBrowser:
     free(entityBrowser);
 error:
     return NULL;
 }
 
+void freeEntityLabels(EntityBrowser *entityBrowser) {
+    free(entityBrowser->entityNodes);
+    free(entityBrowser->entityStrings);
+}
+
 void freeEntityBrowser(EntityBrowser *entityBrowser) {
     CloseWindow(entityBrowser->window);
     FreeGadgets(entityBrowser->gadgets);
     free(entityBrowser->title);
+    freeEntityLabels(entityBrowser);
     free(entityBrowser);
 }
 
@@ -500,4 +540,24 @@ void entityBrowserDeselectEntity(EntityBrowser *entityBrowser) {
     GT_SetGadgetAttrs(entityBrowser->chooseEntityGadget, entityBrowser->window, NULL,
         GA_Disabled, TRUE,
         TAG_END);
+}
+
+int entityBrowserSetEntities(EntityBrowser *entityBrowser, Entity *entities, int entityCnt) {
+    if(!createEntityLabels(entityBrowser, entities, entityCnt)) {
+        fprintf(stderr, "entityBrowserSetEntities: couldn't create entity labels\n");
+    }
+
+    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
+        GTLV_Labels, &entityBrowser->entityLabels,
+        TAG_END);
+    
+    return 1;
+}
+
+void entityBrowserFreeEntityLabels(EntityBrowser *entityBrowser) {
+    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
+        GTLV_Labels, ~0,
+        TAG_END);
+
+    freeEntityLabels(entityBrowser);
 }

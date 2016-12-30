@@ -975,22 +975,32 @@ static void handleMapRight(MapEditor *mapEditor) {
     moveToMap(mapEditor, mapEditor->mapNum + 1);
 }
 
+static void openNewEntityBrowser(MapEditor *mapEditor) {
+    char title[32];
+    EntityBrowser *entityBrowser;
+
+    if(mapEditor->mapNum) {
+        sprintf(title, "Entities (Map %d)", mapEditor->mapNum - 1);
+    } else {
+        strcpy(title, "Entities");
+    }
+
+    entityBrowser = newEntityBrowser(title, mapEditor->map->entities, mapEditor->map->entityCnt);
+    if(!entityBrowser) {
+        fprintf(stderr, "openNewEntityBrowser: couldn't create new entity browser\n");
+        goto error;
+    }
+    
+    attachEntityBrowserToMapEditor(mapEditor, entityBrowser);
+    addWindowToSigMask(entityBrowser->window);
+
+    error:
+        return;
+}
+
 static void handleEntitiesClicked(MapEditor *mapEditor) {
     if(!mapEditor->entityBrowser) {
-        char title[32];
-        EntityBrowser *entityBrowser;
-
-        if(mapEditor->mapNum) {
-            sprintf(title, "Entities (Map %d)", mapEditor->mapNum - 1);
-        } else {
-            strcpy(title, "Entities");
-        }
-
-        entityBrowser = newEntityBrowser(title, &mapEditor->map->entityLabels);
-        if(entityBrowser) {
-            attachEntityBrowserToMapEditor(mapEditor, entityBrowser);
-            addWindowToSigMask(entityBrowser->window);
-        }
+        openNewEntityBrowser(mapEditor);
     } else {
         WindowToFront(mapEditor->entityBrowser->window);
     }
@@ -1220,14 +1230,9 @@ static void handleSongRequesterMessages(MapEditor *mapEditor, SongRequester *son
 static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
     int newEntityIdx = mapEditor->map->entityCnt;
 
-    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
-        GTLV_Labels, ~0);
-    if(!mapAddNewEntity(mapEditor->map)) {
-        fprintf(stderr, "handleAddEntityClicked: failed to add new entity to map\n");
-        return;
-    }
-    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
-        GTLV_Labels, &mapEditor->map->entityLabels);
+    entityBrowserFreeEntityLabels(entityBrowser);
+    mapAddNewEntity(mapEditor->map);
+    entityBrowserSetEntities(entityBrowser, mapEditor->map->entities, mapEditor->map->entityCnt);
 
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
 
@@ -1240,11 +1245,9 @@ static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBr
 }
 
 static void handleRemoveEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
-    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
-        GTLV_Labels, ~0);
+    entityBrowserFreeEntityLabels(entityBrowser);
     mapRemoveEntity(mapEditor->map, entityBrowser->selectedEntity - 1);
-    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
-        GTLV_Labels, &mapEditor->map->entityLabels);
+    entityBrowserSetEntities(entityBrowser, mapEditor->map->entities, mapEditor->map->entityCnt);
 
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
 

@@ -20,6 +20,8 @@
 #define ADD_TAG_ID       (TAG_VALUE_ID     + 1)
 #define DELETE_TAG_ID    (ADD_TAG_ID       + 1)
 
+#define ENTITY_LABEL_LENGTH 16
+
 typedef struct EntityBrowser_tag {
     struct Window *window;
     struct Gadget *gadgets;
@@ -34,15 +36,21 @@ typedef struct EntityBrowser_tag {
     char *title;
     int closed;
     int selectedEntity;
+    struct List entityLabels;
+    struct Node *entityNodes;
+    char (*entityStrings)[ENTITY_LABEL_LENGTH];
 } EntityBrowser;
 
 void initEntityBrowserScreen(void);
 void initEntityBrowserVi(void);
 
-EntityBrowser *newEntityBrowser(char *title, struct List *labels);
+EntityBrowser *newEntityBrowser(char *title, Entity *entities, int entityCnt);
 void freeEntityBrowser(EntityBrowser*);
 
 void entityBrowserSelectEntity(EntityBrowser*, int entityNum, Entity*);
 void entityBrowserDeselectEntity(EntityBrowser*);
+
+void entityBrowserFreeEntityLabels(EntityBrowser*);
+int entityBrowserSetEntities(EntityBrowser*, Entity *entities, int entityCnt);
 
 #endif

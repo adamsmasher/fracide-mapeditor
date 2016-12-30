@@ -9,7 +9,7 @@ mapedit: $(OBJS)
 $(OBJS)
 <
 
-main.o: main.c MapEditor.h globals.h TilesetPackage.h TilesetRequester.h MapRequester.h SongNames.h EntityBrowser.h
+main.o: main.c MapEditor.h globals.h TilesetPackage.h TilesetRequester.h MapRequester.h SongNames.h EntityBrowser.h Map.h
 
 MapEditor.o: MapEditor.c MapEditor.h globals.h SongNames.h tilesetRequester.h map.h EntityBrowser.h
 

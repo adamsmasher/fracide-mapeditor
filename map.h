@@ -1,10 +1,8 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <exec/types.h>
-#include <exec/lists.h>
-
 #include <stdio.h>
+#include <exec/types.h>
 
 #include "Entity.h"
 
@@ -26,20 +24,16 @@ typedef struct Map_tag {
 
     Entity entities[MAX_ENTITIES_PER_MAP];
     UWORD entityCnt;
-
-/* TODO: I kinda wanna get rid of this and put it in the browser */
-    struct List entityLabels;
 } Map;
 
 Map *allocMap(void);
 Map *copyMap(Map*);
 void overwriteMap(Map *srcMap, Map *destMap);
-void freeMap(Map*);
 
 void writeMap(Map*, FILE*);
 int readMap(Map*, FILE*);
 
-int mapAddNewEntity(Map*);
+void mapAddNewEntity(Map*);
 void mapRemoveEntity(Map*, int entityNum);
 
 #endif

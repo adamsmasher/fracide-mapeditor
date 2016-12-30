@@ -83,7 +83,6 @@ void freeProject(Project *project) {
 
     for(i = 0; i < 128; i++) {
         if(project->maps[i]) {
-            freeMap(project->maps[i]);
             free(project->maps[i]);
         }
     }
