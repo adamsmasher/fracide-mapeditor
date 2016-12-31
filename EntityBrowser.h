@@ -37,9 +37,13 @@ typedef struct EntityBrowser_tag {
     char *title;
     int closed;
     int selectedEntity;
+    int selectedTag;
     struct List entityLabels;
     struct Node *entityNodes;
     char (*entityStrings)[ENTITY_LABEL_LENGTH];
+    struct List tagLabels;
+    struct Node *tagNodes;
+    char (*tagStrings)[TAG_ALIAS_LENGTH + 4];
 } EntityBrowser;
 
 void initEntityBrowserScreen(void);
@@ -53,5 +57,10 @@ void entityBrowserDeselectEntity(EntityBrowser*);
 
 void entityBrowserFreeEntityLabels(EntityBrowser*);
 int entityBrowserSetEntities(EntityBrowser*, Entity *entities, int entityCnt);
+
+void entityBrowserSelectTag(EntityBrowser*, int tagNum, Frac_tag*);
+
+void entityBrowserFreeTagLabels(EntityBrowser*);
+int entityBrowserSetTags(EntityBrowser*, Frac_tag *tags, int tagCnt);
 
 #endif

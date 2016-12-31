@@ -22,4 +22,6 @@ typedef struct Entity_tag {
     Frac_tag tags[MAX_TAGS_PER_ENTITY];
 } Entity;
 
+void entityAddNewTag(Entity*);
+
 #endif

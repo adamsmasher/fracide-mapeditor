@@ -1276,6 +1276,24 @@ static void handleEntityVRAMSlotChanged(EntityBrowser *entityBrowser, Map *map) 
     entity->vramSlot = ((struct StringInfo*)entityBrowser->VRAMSlotGadget->SpecialInfo)->LongInt;
 }
 
+static void handleAddTagClicked(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
+    Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
+    int newTagIdx = entity->tagCnt;
+
+    entityBrowserFreeTagLabels(entityBrowser);
+    entityAddNewTag(entity);
+    entityBrowserSetTags(entityBrowser, entity->tags, entity->tagCnt);
+
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
+
+    if(entity->tagCnt >= MAX_TAGS_PER_ENTITY) {
+        GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window, NULL,
+            GA_Disabled, TRUE);
+    }
+
+    entityBrowserSelectTag(entityBrowser, newTagIdx, &entity->tags[newTagIdx]);
+}
+
 static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct IntuiMessage *msg) {
     struct Gadget *gadget = (struct Gadget*)msg->IAddress;
     switch(gadget->GadgetID) {
@@ -1296,6 +1314,9 @@ static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *ent
         break;
     case VRAM_SLOT_ID:
         handleEntityVRAMSlotChanged(entityBrowser, mapEditor->map);
+        break;
+    case ADD_TAG_ID:
+        handleAddTagClicked(entityBrowser, mapEditor);
         break;
     }
 }

@@ -384,6 +384,46 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, int entityC
     }
 }
 
+static int createTagLabels(EntityBrowser *entityBrowser, Frac_tag *tags, int tagCnt) {
+    int i;
+
+    NewList(&entityBrowser->tagLabels);
+
+    if(!tagCnt) {
+        entityBrowser->tagNodes   = NULL;
+        entityBrowser->tagStrings = NULL;
+        goto ok;
+    }
+
+    entityBrowser->tagNodes = malloc(sizeof(struct Node) * tagCnt);
+    if(!entityBrowser->tagNodes) {
+        fprintf(stderr, "createTagLabels: couldn't allocate memory for %d nodes\n", tagCnt);
+        goto error;
+    }
+
+    entityBrowser->tagStrings = malloc((TAG_ALIAS_LENGTH + 4) * tagCnt);
+    if(!entityBrowser->tagStrings) {
+        fprintf(stderr, "createTagLabels: couldn't allocate memory for labels\n");
+        goto error_freeNodes;
+    }
+
+    for(i = 0; i < tagCnt; i++) {
+        sprintf(entityBrowser->tagStrings[i], "%d: %s", i, tags[i].alias);
+        entityBrowser->tagNodes[i].ln_Name = entityBrowser->tagStrings[i];
+        AddTail(&entityBrowser->tagLabels, &entityBrowser->tagNodes[i]);
+    }
+
+ok:
+    return 1;
+
+error_freeNodes:
+    free(entityBrowser->tagNodes);
+    entityBrowser->tagNodes = NULL;
+error:
+    entityBrowser->tagStrings = NULL;
+    return 0;
+}
+
 static int createEntityLabels(EntityBrowser *entityBrowser, Entity *entities, int entityCnt) {
     int i;
 
@@ -460,6 +500,7 @@ EntityBrowser *newEntityBrowser(char *title, Entity *entities, int entityCnt) {
 
     entityBrowser->closed = 0;
     entityBrowser->selectedEntity = 0;
+    entityBrowser->selectedTag = 0;
 
     return entityBrowser;
     
@@ -481,16 +522,54 @@ static void freeEntityLabels(EntityBrowser *entityBrowser) {
     free(entityBrowser->entityStrings);
 }
 
+static void freeTagLabels(EntityBrowser *entityBrowser) {
+    free(entityBrowser->tagNodes);
+    free(entityBrowser->tagStrings);
+}
+
 void freeEntityBrowser(EntityBrowser *entityBrowser) {
     CloseWindow(entityBrowser->window);
     FreeGadgets(entityBrowser->gadgets);
     free(entityBrowser->title);
     freeEntityLabels(entityBrowser);
+    freeTagLabels(entityBrowser);
     free(entityBrowser);
+}
+
+int entityBrowserSetTags(EntityBrowser *entityBrowser, Frac_tag *tags, int tagCnt) {
+    if(!createTagLabels(entityBrowser, tags, tagCnt)) {
+        fprintf(stderr, "entityBrowserSetTags: couldn't create tag labels\n");
+        goto error;
+    }
+
+    GT_SetGadgetAttrs(entityBrowser->tagListGadget, entityBrowser->window, NULL,
+        GTLV_Labels, &entityBrowser->tagLabels,
+        TAG_END);
+
+    return 1;
+error:
+    return 0;
+}
+
+
+void entityBrowserFreeTagLabels(EntityBrowser *entityBrowser) {
+    GT_SetGadgetAttrs(entityBrowser->tagListGadget, entityBrowser->window, NULL,
+        GTLV_Labels, ~0,
+        TAG_END);
+
+    freeTagLabels(entityBrowser);
+}
+
+void entityBrowserSelectTag(EntityBrowser *entityBrowser, int tagNum, Frac_tag *tag) {
+    entityBrowser->selectedTag = tagNum + 1;
+
+    /* TODO: set up all the gadgets */
+
 }
 
 void entityBrowserSelectEntity(EntityBrowser *entityBrowser, int entityNum, Entity *entity) {
     entityBrowser->selectedEntity = entityNum + 1;
+    entityBrowser->selectedTag = 0;
 
     GT_SetGadgetAttrs(entityBrowser->removeEntityGadget, entityBrowser->window, NULL,
         GA_Disabled, FALSE,
@@ -512,16 +591,19 @@ void entityBrowserSelectEntity(EntityBrowser *entityBrowser, int entityNum, Enti
         TAG_END);
 
     GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window, NULL,
-        GA_Disabled, FALSE,
+        GA_Disabled, entity->tagCnt >= MAX_TAGS_PER_ENTITY,
         TAG_END);
 
     GT_SetGadgetAttrs(entityBrowser->chooseEntityGadget, entityBrowser->window, NULL,
         GA_Disabled, FALSE,
         TAG_END);
+
+    entityBrowserSetTags(entityBrowser, entity->tags, entity->tagCnt);
 }
 
 void entityBrowserDeselectEntity(EntityBrowser *entityBrowser) {
     entityBrowser->selectedEntity = 0;
+    entityBrowser->selectedTag = 0;
 
     GT_SetGadgetAttrs(entityBrowser->removeEntityGadget, entityBrowser->window, NULL,
         GA_Disabled, TRUE,
@@ -546,11 +628,14 @@ void entityBrowserDeselectEntity(EntityBrowser *entityBrowser) {
     GT_SetGadgetAttrs(entityBrowser->chooseEntityGadget, entityBrowser->window, NULL,
         GA_Disabled, TRUE,
         TAG_END);
+
+    entityBrowserFreeTagLabels(entityBrowser);
 }
 
 int entityBrowserSetEntities(EntityBrowser *entityBrowser, Entity *entities, int entityCnt) {
     if(!createEntityLabels(entityBrowser, entities, entityCnt)) {
         fprintf(stderr, "entityBrowserSetEntities: couldn't create entity labels\n");
+        goto error;
     }
 
     GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
@@ -558,6 +643,8 @@ int entityBrowserSetEntities(EntityBrowser *entityBrowser, Entity *entities, int
         TAG_END);
     
     return 1;
+error:
+    return 0;
 }
 
 void entityBrowserFreeEntityLabels(EntityBrowser *entityBrowser) {
