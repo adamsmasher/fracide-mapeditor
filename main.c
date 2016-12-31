@@ -1259,6 +1259,12 @@ static void handleEntityClicked(EntityBrowser *entityBrowser, Map *map, int enti
     entityBrowserSelectEntity(entityBrowser, entityNum, entity);
 }
 
+static void handleTagClicked(EntityBrowser *entityBrowser, Map *map, int tagNum) {
+    Entity *entity = &map->entities[entityBrowser->selectedEntity - 1];
+    Frac_tag *tag = &entity->tags[tagNum];
+    entityBrowserSelectTag(entityBrowser, tagNum, tag);
+}
+
 static void handleEntityRowChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
     Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
     entity->row = ((struct StringInfo*)entityBrowser->rowGadget->SpecialInfo)->LongInt;
@@ -1317,6 +1323,9 @@ static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *ent
         break;
     case ENTITY_LIST_ID:
         handleEntityClicked(entityBrowser, mapEditor->map, msg->Code);
+        break;
+    case TAG_LIST_ID:
+        handleTagClicked(entityBrowser, mapEditor->map, msg->Code);
         break;
     case ENTITY_ROW_ID:
         handleEntityRowChanged(entityBrowser, mapEditor);
