@@ -476,7 +476,7 @@ error:
     return NULL;
 }
 
-void freeEntityLabels(EntityBrowser *entityBrowser) {
+static void freeEntityLabels(EntityBrowser *entityBrowser) {
     free(entityBrowser->entityNodes);
     free(entityBrowser->entityStrings);
 }
