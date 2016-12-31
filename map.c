@@ -50,9 +50,13 @@ void mapAddNewEntity(Map *map) {
 }
 
 void mapRemoveEntity(Map *map, int entityNum) {
-    /* copy the entities backwards */
-    memmove(&map->entities[entityNum], &map->entities[entityNum + 1], (MAX_ENTITIES_PER_MAP - entityNum) * sizeof(Entity));
     map->entityCnt--;
+
+    /* copy the entities backwards */
+    memmove(
+        &map->entities[entityNum],
+        &map->entities[entityNum + 1],
+        sizeof(Entity) * (map->entityCnt - entityNum));
 }
 
 void writeMap(Map *map, FILE *fp) {
