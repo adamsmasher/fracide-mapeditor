@@ -32,8 +32,12 @@ typedef struct EntityBrowser_tag {
     struct Gadget *colGadget;
     struct Gadget *VRAMSlotGadget;
     struct Gadget *addTagGadget;
+    struct Gadget *deleteTagGadget;
     struct Gadget *chooseEntityGadget;
     struct Gadget *tagListGadget;
+    struct Gadget *tagAliasGadget;
+    struct Gadget *tagIdGadget;
+    struct Gadget *tagValueGadget;
     char *title;
     int closed;
     int selectedEntity;

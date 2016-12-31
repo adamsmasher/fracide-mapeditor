@@ -353,20 +353,24 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, int entityC
     gad = CreateGadget(BUTTON_KIND, gad, &deleteTagNewGadget,
         GA_Disabled, TRUE,
         TAG_END);
+    entityBrowser->deleteTagGadget = gad;
 
     gad = CreateGadget(STRING_KIND, gad, &tagAliasNewGadget,
         GA_Disabled, TRUE,
         TAG_END);
+    entityBrowser->tagAliasGadget = gad;
 
     gad = CreateGadget(INTEGER_KIND, gad, &tagIdNewGadget,
         GA_Disabled, TRUE,
         GTIN_MaxChars, 3,
         TAG_END);
+    entityBrowser->tagIdGadget = gad;
 
     gad = CreateGadget(INTEGER_KIND, gad, &tagValueNewGadget,
         GA_Disabled, TRUE,
         GTIN_MaxChars, 3,
         TAG_END);
+    entityBrowser->tagValueGadget = gad;
 
     if(gad) {
         entityBrowser->gadgets = glist;
@@ -380,6 +384,10 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, int entityC
         entityBrowser->addTagGadget = NULL;
         entityBrowser->chooseEntityGadget = NULL;
         entityBrowser->tagListGadget = NULL;
+        entityBrowser->tagIdGadget = NULL;
+        entityBrowser->tagValueGadget = NULL;
+        entityBrowser->tagAliasGadget = NULL;
+        entityBrowser->deleteTagGadget = NULL;
         FreeGadgets(glist);
     }
 }
