@@ -559,10 +559,9 @@ error:
     return 0;
 }
 
-
 void entityBrowserFreeTagLabels(EntityBrowser *entityBrowser) {
     GT_SetGadgetAttrs(entityBrowser->tagListGadget, entityBrowser->window, NULL,
-        GTLV_Labels, ~0,
+        GTLV_Labels, NULL,
         TAG_END);
 
     freeTagLabels(entityBrowser);
