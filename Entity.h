@@ -1,6 +1,8 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include <exec/types.h>
+
 #define MAX_TAGS_PER_ENTITY 8
 
 typedef struct Frac_tag_tag {
