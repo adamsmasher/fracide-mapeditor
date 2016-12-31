@@ -343,6 +343,7 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, int entityC
     gad = CreateGadget(LISTVIEW_KIND, gad, &tagListNewGadget,
         GA_Disabled, TRUE,
         TAG_END);
+    entityBrowser->tagListGadget = gad;
 
     gad = CreateGadget(BUTTON_KIND, gad, &addTagNewGadget,
         GA_Disabled, TRUE,
@@ -378,6 +379,7 @@ static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, int entityC
         entityBrowser->VRAMSlotGadget = NULL;
         entityBrowser->addTagGadget = NULL;
         entityBrowser->chooseEntityGadget = NULL;
+        entityBrowser->tagListGadget = NULL;
         FreeGadgets(glist);
     }
 }
