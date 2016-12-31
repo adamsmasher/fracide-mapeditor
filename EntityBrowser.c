@@ -570,8 +570,39 @@ void entityBrowserFreeTagLabels(EntityBrowser *entityBrowser) {
 void entityBrowserSelectTag(EntityBrowser *entityBrowser, int tagNum, Frac_tag *tag) {
     entityBrowser->selectedTag = tagNum + 1;
 
-    /* TODO: set up all the gadgets */
+    GT_SetGadgetAttrs(entityBrowser->deleteTagGadget, entityBrowser->window, NULL,
+        GA_Disabled, FALSE,
+        TAG_END);
 
+    GT_SetGadgetAttrs(entityBrowser->tagAliasGadget, entityBrowser->window, NULL,
+        GA_Disabled, FALSE,
+        TAG_END);
+
+    GT_SetGadgetAttrs(entityBrowser->tagIdGadget, entityBrowser->window, NULL,
+        GA_Disabled, FALSE,
+        TAG_END);
+
+    GT_SetGadgetAttrs(entityBrowser->tagValueGadget, entityBrowser->window, NULL,
+        GA_Disabled, FALSE,
+        TAG_END);
+}
+
+void entityBrowserDeselectTag(EntityBrowser *entityBrowser) {
+    GT_SetGadgetAttrs(entityBrowser->tagAliasGadget, entityBrowser->window, NULL,
+        GA_Disabled, TRUE,
+        TAG_END);
+
+    GT_SetGadgetAttrs(entityBrowser->tagIdGadget, entityBrowser->window, NULL,
+        GA_Disabled, TRUE,
+        TAG_END);
+
+    GT_SetGadgetAttrs(entityBrowser->tagValueGadget, entityBrowser->window, NULL,
+        GA_Disabled, TRUE,
+        TAG_END);
+
+    GT_SetGadgetAttrs(entityBrowser->deleteTagGadget, entityBrowser->window, NULL,
+        GA_Disabled, TRUE,
+        TAG_END);
 }
 
 void entityBrowserSelectEntity(EntityBrowser *entityBrowser, int entityNum, Entity *entity) {
@@ -636,6 +667,7 @@ void entityBrowserDeselectEntity(EntityBrowser *entityBrowser) {
         GA_Disabled, TRUE,
         TAG_END);
 
+    entityBrowserDeselectTag(entityBrowser);
     entityBrowserFreeTagLabels(entityBrowser);
 }
 
