@@ -63,6 +63,7 @@ void entityBrowserFreeEntityLabels(EntityBrowser*);
 int entityBrowserSetEntities(EntityBrowser*, Entity *entities, int entityCnt);
 
 void entityBrowserSelectTag(EntityBrowser*, int tagNum, Frac_tag*);
+void entityBrowserDeselectTag(EntityBrowser*);
 
 void entityBrowserFreeTagLabels(EntityBrowser*);
 int entityBrowserSetTags(EntityBrowser*, Frac_tag *tags, int tagCnt);

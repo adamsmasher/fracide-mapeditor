@@ -1294,6 +1294,18 @@ static void handleAddTagClicked(EntityBrowser *entityBrowser, MapEditor *mapEdit
     entityBrowserSelectTag(entityBrowser, newTagIdx, &entity->tags[newTagIdx]);
 }
 
+static void handleDeleteTagClicked(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
+    Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
+
+    entityBrowserFreeTagLabels(entityBrowser);
+    entityDeleteTag(entity, entityBrowser->selectedTag - 1);
+    entityBrowserSetTags(entityBrowser, entity->tags, entity->tagCnt);
+
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
+
+    entityBrowserDeselectTag(entityBrowser);
+}
+
 static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct IntuiMessage *msg) {
     struct Gadget *gadget = (struct Gadget*)msg->IAddress;
     switch(gadget->GadgetID) {
@@ -1317,6 +1329,9 @@ static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *ent
         break;
     case ADD_TAG_ID:
         handleAddTagClicked(entityBrowser, mapEditor);
+        break;
+    case DELETE_TAG_ID:
+        handleDeleteTagClicked(entityBrowser, mapEditor);
         break;
     }
 }

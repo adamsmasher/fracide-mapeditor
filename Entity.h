@@ -23,5 +23,6 @@ typedef struct Entity_tag {
 } Entity;
 
 void entityAddNewTag(Entity*);
+void entityDeleteTag(Entity*, int entityNum);
 
 #endif
