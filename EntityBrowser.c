@@ -390,6 +390,8 @@ static int createEntityLabels(EntityBrowser *entityBrowser, Entity *entities, in
     NewList(&entityBrowser->entityLabels);
 
     if(!entityCnt) {
+        entityBrowser->entityNodes   = NULL;
+        entityBrowser->entityStrings = NULL;
         goto ok;
     }
 
@@ -416,7 +418,9 @@ ok:
 
 error_freeNodes:
     free(entityBrowser->entityNodes);
+    entityBrowser->entityNodes = NULL;
 error:
+    entityBrowser->entityStrings = NULL;
     return 0;
 }
 
