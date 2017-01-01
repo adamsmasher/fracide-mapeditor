@@ -573,14 +573,17 @@ void entityBrowserSelectTag(EntityBrowser *entityBrowser, int tagNum, Frac_tag *
         TAG_END);
 
     GT_SetGadgetAttrs(entityBrowser->tagAliasGadget, entityBrowser->window, NULL,
+        GTST_String, tag->alias,
         GA_Disabled, FALSE,
         TAG_END);
 
     GT_SetGadgetAttrs(entityBrowser->tagIdGadget, entityBrowser->window, NULL,
+        GTIN_Number, tag->id,
         GA_Disabled, FALSE,
         TAG_END);
 
     GT_SetGadgetAttrs(entityBrowser->tagValueGadget, entityBrowser->window, NULL,
+        GTIN_Number, tag->value,
         GA_Disabled, FALSE,
         TAG_END);
 }
