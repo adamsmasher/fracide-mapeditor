@@ -638,6 +638,7 @@ void entityBrowserSelectEntity(EntityBrowser *entityBrowser, int entityNum, Enti
         TAG_END);
 
     entityBrowserSetTags(entityBrowser, entity->tags, entity->tagCnt);
+    entityBrowserDeselectTag(entityBrowser);
 }
 
 void entityBrowserDeselectEntity(EntityBrowser *entityBrowser) {
