@@ -1315,6 +1315,28 @@ static void handleDeleteTagClicked(EntityBrowser *entityBrowser, MapEditor *mapE
     entityBrowserDeselectTag(entityBrowser);
 }
 
+static void handleTagIdChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
+    Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
+    Frac_tag *tag = &entity->tags[entityBrowser->selectedTag - 1];
+    tag->id = ((struct StringInfo*)entityBrowser->tagIdGadget->SpecialInfo)->LongInt;
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
+}
+
+static void handleTagValueChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
+    Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
+    Frac_tag *tag = &entity->tags[entityBrowser->selectedTag - 1];
+    tag->value = ((struct StringInfo*)entityBrowser->tagValueGadget->SpecialInfo)->LongInt;
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
+}
+
+static void handleTagAliasChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
+    Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
+    Frac_tag *tag = &entity->tags[entityBrowser->selectedTag - 1];
+    strcpy(tag->alias, ((struct StringInfo*)entityBrowser->tagAliasGadget->SpecialInfo)->Buffer);
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
+/* TODO: update the list of entities */
+}
+
 static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct IntuiMessage *msg) {
     struct Gadget *gadget = (struct Gadget*)msg->IAddress;
     switch(gadget->GadgetID) {
@@ -1344,6 +1366,15 @@ static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *ent
         break;
     case DELETE_TAG_ID:
         handleDeleteTagClicked(entityBrowser, mapEditor);
+        break;
+    case TAG_ID_ID:
+        handleTagIdChanged(entityBrowser, mapEditor);
+        break;
+    case TAG_ALIAS_ID:
+        handleTagAliasChanged(entityBrowser, mapEditor);
+        break;
+    case TAG_VALUE_ID:
+        handleTagValueChanged(entityBrowser, mapEditor);
         break;
     }
 }
