@@ -1268,18 +1268,21 @@ static void handleTagClicked(EntityBrowser *entityBrowser, Map *map, int tagNum)
 static void handleEntityRowChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
     Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
     entity->row = ((struct StringInfo*)entityBrowser->rowGadget->SpecialInfo)->LongInt;
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
 /* TODO: redraw the entity on the map */
 }
 
 static void handleEntityColChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
     Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
     entity->col = ((struct StringInfo*)entityBrowser->colGadget->SpecialInfo)->LongInt;
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
 /* TODO: redraw the entity on the map */
 }
 
-static void handleEntityVRAMSlotChanged(EntityBrowser *entityBrowser, Map *map) {
-    Entity *entity = &map->entities[entityBrowser->selectedEntity - 1];
+static void handleEntityVRAMSlotChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
+    Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
     entity->vramSlot = ((struct StringInfo*)entityBrowser->VRAMSlotGadget->SpecialInfo)->LongInt;
+    mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
 static void handleAddTagClicked(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
@@ -1334,7 +1337,7 @@ static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *ent
         handleEntityColChanged(entityBrowser, mapEditor);
         break;
     case VRAM_SLOT_ID:
-        handleEntityVRAMSlotChanged(entityBrowser, mapEditor->map);
+        handleEntityVRAMSlotChanged(entityBrowser, mapEditor);
         break;
     case ADD_TAG_ID:
         handleAddTagClicked(entityBrowser, mapEditor);
