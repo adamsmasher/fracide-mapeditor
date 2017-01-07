@@ -1242,6 +1242,8 @@ static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBr
     }
 
     entityBrowserSelectEntity(entityBrowser, newEntityIdx, &mapEditor->map->entities[newEntityIdx]);
+
+    /* TODO: add entity to the map */
 }
 
 static void handleRemoveEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
@@ -1252,6 +1254,8 @@ static void handleRemoveEntityClicked(MapEditor *mapEditor, EntityBrowser *entit
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
 
     entityBrowserDeselectEntity(entityBrowser);
+
+    /* TODO: remove entity from the map */
 }
 
 static void handleEntityClicked(EntityBrowser *entityBrowser, Map *map, int entityNum) {

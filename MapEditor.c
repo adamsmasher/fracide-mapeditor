@@ -592,6 +592,35 @@ static void copyScaledTileset(UWORD *src, UWORD *dst) {
     }
 }
 
+/* IN A DREAM WORLD: store the IntuiTexts in the map editor and render them all at once */
+static void drawEntities(MapEditor *mapEditor) {
+    int i;
+    struct IntuiText itext;
+    Entity           *entity;
+    struct RastPort  *rport;
+    char             text[2];
+
+    text[0] = '0';
+    text[1] = '\0';
+
+    rport = mapEditor->window->RPort;
+
+    itext.DrawMode  = COMPLEMENT;
+    itext.ITextFont = NULL;
+    itext.NextText  = NULL;
+    itext.IText     = text;
+
+    entity = &mapEditor->map->entities[0];
+    for(i = 0; i < mapEditor->map->entityCnt; i++) {
+        itext.LeftEdge  = entity->col * 32;
+        itext.TopEdge   = entity->row * 32;
+        PrintIText(rport, &itext, MAP_BORDER_LEFT + 1, MAP_BORDER_TOP + 1);
+
+        text[0]++;
+        entity++;
+    }
+}
+
 static void mapEditorSetTilesetUpdateUI(MapEditor *mapEditor, UWORD tilesetNumber) {
     GT_SetGadgetAttrs(mapEditor->tilesetNameGadget, mapEditor->window, NULL,
         GTTX_Text, tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber],
@@ -608,6 +637,8 @@ static void mapEditorSetTilesetUpdateUI(MapEditor *mapEditor, UWORD tilesetNumbe
     DrawImage(mapEditor->window->RPort, mapEditor->mapImages,
         MAP_BORDER_LEFT,
         MAP_BORDER_TOP);
+
+    drawEntities(mapEditor);
 }
 
 static void mapEditorClearTilesetUI(MapEditor *mapEditor) {
@@ -715,17 +746,19 @@ static void redrawMapTile(MapEditor *mapEditor, unsigned int tile) {
         MAP_BORDER_LEFT,
         MAP_BORDER_TOP);
     image->NextImage = next;
+
+    /* TODO: determine if there was an entity here; if so, redraw it */
 }
 
 static void mapEditorSetTileTo(MapEditor *mapEditor, unsigned int tile, UBYTE to) {
     mapEditor->map->tiles[tile] = to;
     mapEditor->mapImages[tile].ImageData = mapEditor->imageData + (to << 7);
-    redrawMapTile(mapEditor, tile);
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
 void mapEditorSetTile(MapEditor *mapEditor, unsigned int tile) {
     mapEditorSetTileTo(mapEditor, tile, mapEditor->selected);
+    redrawMapTile(mapEditor, tile);
 }
 
 void mapEditorSetMapNum(MapEditor *mapEditor, UWORD mapNum) {
@@ -875,10 +908,10 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
 
     if(map->tilesetNum) {
         int i;
-        mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1);
         for(i = 0; i < MAP_TILES_WIDE * MAP_TILES_HIGH; i++) {
             mapEditorSetTileTo(mapEditor, i, map->tiles[i]);
         }
+        mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1);
     }
 
     if(map->songNum) {
