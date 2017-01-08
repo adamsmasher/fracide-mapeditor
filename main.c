@@ -1229,6 +1229,7 @@ static void handleSongRequesterMessages(MapEditor *mapEditor, SongRequester *son
 
 static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
     int newEntityIdx = mapEditor->map->entityCnt;
+    Entity *entity   = &mapEditor->map->entities[newEntityIdx];
 
     entityBrowserFreeEntityLabels(entityBrowser);
     mapAddNewEntity(mapEditor->map);
@@ -1241,9 +1242,9 @@ static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBr
             GA_Disabled, TRUE);
     }
 
-    entityBrowserSelectEntity(entityBrowser, newEntityIdx, &mapEditor->map->entities[newEntityIdx]);
+    entityBrowserSelectEntity(entityBrowser, newEntityIdx, entity);
 
-    /* TODO: add entity to the map */
+    mapEditorDrawEntity(mapEditor, entity, newEntityIdx);
 }
 
 static void handleRemoveEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
@@ -1255,7 +1256,7 @@ static void handleRemoveEntityClicked(MapEditor *mapEditor, EntityBrowser *entit
 
     entityBrowserDeselectEntity(entityBrowser);
 
-    /* TODO: remove entity from the map */
+    mapEditorRefreshTileset(mapEditor);
 }
 
 static void handleEntityClicked(EntityBrowser *entityBrowser, Map *map, int entityNum) {
@@ -1271,16 +1272,26 @@ static void handleTagClicked(EntityBrowser *entityBrowser, Map *map, int tagNum)
 
 static void handleEntityRowChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
     Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
+    int oldRow = entity->row;
+    int oldCol = entity->col;
+
     entity->row = ((struct StringInfo*)entityBrowser->rowGadget->SpecialInfo)->LongInt;
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
-/* TODO: redraw the entity on the map */
+
+    mapEditorDrawEntity(mapEditor, entity, entityBrowser->selectedEntity - 1);
+    mapEditorRedrawTile(mapEditor, oldRow, oldCol);
 }
 
 static void handleEntityColChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
     Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
+    int oldRow = entity->row;
+    int oldCol = entity->col;
+
     entity->col = ((struct StringInfo*)entityBrowser->colGadget->SpecialInfo)->LongInt;
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
-/* TODO: redraw the entity on the map */
+
+    mapEditorDrawEntity(mapEditor, entity, entityBrowser->selectedEntity - 1);
+    mapEditorRedrawTile(mapEditor, oldRow, oldCol);
 }
 
 static void handleEntityVRAMSlotChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {

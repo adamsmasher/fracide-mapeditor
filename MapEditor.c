@@ -610,6 +610,12 @@ static void drawEntity(struct RastPort *rport, Entity *entity, int entityNum) {
 
 }
 
+void mapEditorDrawEntity(MapEditor *mapEditor, Entity *entity, int entityNum) {
+    if(mapEditor->map->tilesetNum) {
+        drawEntity(mapEditor->window->RPort, entity, entityNum);
+    }
+}
+
 /* IN A DREAM WORLD: store the IntuiTexts in the map editor and render them all at once */
 static void drawEntities(MapEditor *mapEditor) {
     int i;
@@ -757,6 +763,12 @@ static void redrawMapTile(MapEditor *mapEditor, unsigned int tile) {
     if(entity_i = mapFindEntity(mapEditor->map, tile / 10, tile % 10)) {
         entity_i--;
         drawEntity(mapEditor->window->RPort, &mapEditor->map->entities[entity_i], entity_i);
+    }
+}
+
+void mapEditorRedrawTile(MapEditor *mapEditor, int row, int col) {
+    if(mapEditor->map->tilesetNum) {
+        redrawMapTile(mapEditor, row * 10 + col);
     }
 }
 
