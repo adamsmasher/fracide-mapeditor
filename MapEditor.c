@@ -592,31 +592,35 @@ static void copyScaledTileset(UWORD *src, UWORD *dst) {
     }
 }
 
-/* IN A DREAM WORLD: store the IntuiTexts in the map editor and render them all at once */
-static void drawEntities(MapEditor *mapEditor) {
-    int i;
-    struct IntuiText itext;
-    Entity           *entity;
-    struct RastPort  *rport;
+static void drawEntity(struct RastPort *rport, Entity *entity, int entityNum) {
     char             text[2];
+    struct IntuiText itext;
 
-    text[0] = '0';
+    text[0] = '0' + entityNum;
     text[1] = '\0';
-
-    rport = mapEditor->window->RPort;
 
     itext.DrawMode  = COMPLEMENT;
     itext.ITextFont = NULL;
     itext.NextText  = NULL;
     itext.IText     = text;
+    itext.LeftEdge  = entity->col * 32;
+    itext.TopEdge   = entity->row * 32;
+
+    PrintIText(rport, &itext, MAP_BORDER_LEFT + 1, MAP_BORDER_TOP + 1);
+
+}
+
+/* IN A DREAM WORLD: store the IntuiTexts in the map editor and render them all at once */
+static void drawEntities(MapEditor *mapEditor) {
+    int i;
+    Entity           *entity;
+    struct RastPort  *rport;
+
+    rport = mapEditor->window->RPort;
 
     entity = &mapEditor->map->entities[0];
     for(i = 0; i < mapEditor->map->entityCnt; i++) {
-        itext.LeftEdge  = entity->col * 32;
-        itext.TopEdge   = entity->row * 32;
-        PrintIText(rport, &itext, MAP_BORDER_LEFT + 1, MAP_BORDER_TOP + 1);
-
-        text[0]++;
+        drawEntity(rport, entity, i);
         entity++;
     }
 }
@@ -740,14 +744,20 @@ static void redrawPaletteTile(MapEditor *mapEditor, unsigned int tile) {
 }
 
 static void redrawMapTile(MapEditor *mapEditor, unsigned int tile) {
-    struct Image *image = &mapEditor->mapImages[tile];	struct Image *next = image->NextImage;
+    struct Image *image = &mapEditor->mapImages[tile];
+    struct Image *next = image->NextImage;
+    int entity_i;
+
     image->NextImage = NULL;
     DrawImage(mapEditor->window->RPort, image,
         MAP_BORDER_LEFT,
         MAP_BORDER_TOP);
     image->NextImage = next;
 
-    /* TODO: determine if there was an entity here; if so, redraw it */
+    if(entity_i = mapFindEntity(mapEditor->map, tile / 10, tile % 10)) {
+        entity_i--;
+        drawEntity(mapEditor->window->RPort, &mapEditor->map->entities[entity_i], entity_i);
+    }
 }
 
 static void mapEditorSetTileTo(MapEditor *mapEditor, unsigned int tile, UBYTE to) {
