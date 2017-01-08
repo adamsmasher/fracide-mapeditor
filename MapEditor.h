@@ -98,4 +98,7 @@ void updateMapEditorMapName(MapEditor*);
 
 void mapEditorSetSaveStatus(MapEditor*, int);
 
+void mapEditorDrawEntity(MapEditor*, Entity*, int entityNum);
+void mapEditorRedrawTile(MapEditor*, int row, int col);
+
 #endif

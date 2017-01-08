@@ -592,6 +592,45 @@ static void copyScaledTileset(UWORD *src, UWORD *dst) {
     }
 }
 
+static void drawEntity(struct RastPort *rport, Entity *entity, int entityNum) {
+    char             text[2];
+    struct IntuiText itext;
+
+    text[0] = '0' + entityNum;
+    text[1] = '\0';
+
+    itext.DrawMode  = COMPLEMENT;
+    itext.ITextFont = NULL;
+    itext.NextText  = NULL;
+    itext.IText     = text;
+    itext.LeftEdge  = entity->col * 32;
+    itext.TopEdge   = entity->row * 32;
+
+    PrintIText(rport, &itext, MAP_BORDER_LEFT + 1, MAP_BORDER_TOP + 1);
+
+}
+
+void mapEditorDrawEntity(MapEditor *mapEditor, Entity *entity, int entityNum) {
+    if(mapEditor->map->tilesetNum) {
+        drawEntity(mapEditor->window->RPort, entity, entityNum);
+    }
+}
+
+/* IN A DREAM WORLD: store the IntuiTexts in the map editor and render them all at once */
+static void drawEntities(MapEditor *mapEditor) {
+    int i;
+    Entity           *entity;
+    struct RastPort  *rport;
+
+    rport = mapEditor->window->RPort;
+
+    entity = &mapEditor->map->entities[0];
+    for(i = 0; i < mapEditor->map->entityCnt; i++) {
+        drawEntity(rport, entity, i);
+        entity++;
+    }
+}
+
 static void mapEditorSetTilesetUpdateUI(MapEditor *mapEditor, UWORD tilesetNumber) {
     GT_SetGadgetAttrs(mapEditor->tilesetNameGadget, mapEditor->window, NULL,
         GTTX_Text, tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber],
@@ -608,6 +647,8 @@ static void mapEditorSetTilesetUpdateUI(MapEditor *mapEditor, UWORD tilesetNumbe
     DrawImage(mapEditor->window->RPort, mapEditor->mapImages,
         MAP_BORDER_LEFT,
         MAP_BORDER_TOP);
+
+    drawEntities(mapEditor);
 }
 
 static void mapEditorClearTilesetUI(MapEditor *mapEditor) {
@@ -650,7 +691,7 @@ void mapEditorSetSaveStatus(MapEditor *mapEditor, int status) {
 
 void mapEditorRefreshTileset(MapEditor *mapEditor) {
     if(mapEditor->map->tilesetNum) {
-        if(mapEditor->map->tilesetNum < tilesetPackage->tilesetPackageFile.tilesetCnt) {
+        if(mapEditor->map->tilesetNum - 1 < tilesetPackage->tilesetPackageFile.tilesetCnt) {
             mapEditorSetTilesetUpdateUI(mapEditor, mapEditor->map->tilesetNum - 1);
         } else {
             mapEditorClearTilesetUI(mapEditor);
@@ -709,23 +750,37 @@ static void redrawPaletteTile(MapEditor *mapEditor, unsigned int tile) {
 }
 
 static void redrawMapTile(MapEditor *mapEditor, unsigned int tile) {
-    struct Image *image = &mapEditor->mapImages[tile];	struct Image *next = image->NextImage;
+    struct Image *image = &mapEditor->mapImages[tile];
+    struct Image *next = image->NextImage;
+    int entity_i;
+
     image->NextImage = NULL;
     DrawImage(mapEditor->window->RPort, image,
         MAP_BORDER_LEFT,
         MAP_BORDER_TOP);
     image->NextImage = next;
+
+    if(entity_i = mapFindEntity(mapEditor->map, tile / 10, tile % 10)) {
+        entity_i--;
+        drawEntity(mapEditor->window->RPort, &mapEditor->map->entities[entity_i], entity_i);
+    }
+}
+
+void mapEditorRedrawTile(MapEditor *mapEditor, int row, int col) {
+    if(mapEditor->map->tilesetNum) {
+        redrawMapTile(mapEditor, row * 10 + col);
+    }
 }
 
 static void mapEditorSetTileTo(MapEditor *mapEditor, unsigned int tile, UBYTE to) {
     mapEditor->map->tiles[tile] = to;
     mapEditor->mapImages[tile].ImageData = mapEditor->imageData + (to << 7);
-    redrawMapTile(mapEditor, tile);
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
 void mapEditorSetTile(MapEditor *mapEditor, unsigned int tile) {
     mapEditorSetTileTo(mapEditor, tile, mapEditor->selected);
+    redrawMapTile(mapEditor, tile);
 }
 
 void mapEditorSetMapNum(MapEditor *mapEditor, UWORD mapNum) {
@@ -875,10 +930,10 @@ MapEditor *newMapEditorWithMap(Map *map, int mapNum) {
 
     if(map->tilesetNum) {
         int i;
-        mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1);
         for(i = 0; i < MAP_TILES_WIDE * MAP_TILES_HIGH; i++) {
             mapEditorSetTileTo(mapEditor, i, map->tiles[i]);
         }
+        mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1);
     }
 
     if(map->songNum) {
