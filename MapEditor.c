@@ -685,7 +685,7 @@ void mapEditorSetSaveStatus(MapEditor *mapEditor, int status) {
 
 void mapEditorRefreshTileset(MapEditor *mapEditor) {
     if(mapEditor->map->tilesetNum) {
-        if(mapEditor->map->tilesetNum < tilesetPackage->tilesetPackageFile.tilesetCnt) {
+        if(mapEditor->map->tilesetNum - 1 < tilesetPackage->tilesetPackageFile.tilesetCnt) {
             mapEditorSetTilesetUpdateUI(mapEditor, mapEditor->map->tilesetNum - 1);
         } else {
             mapEditorClearTilesetUI(mapEditor);
