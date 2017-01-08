@@ -1349,7 +1349,7 @@ static void handleTagAliasChanged(EntityBrowser *entityBrowser, MapEditor *mapEd
     Frac_tag *tag = &entity->tags[entityBrowser->selectedTag - 1];
     strcpy(tag->alias, ((struct StringInfo*)entityBrowser->tagAliasGadget->SpecialInfo)->Buffer);
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
-/* TODO: update the list of entities */
+/* TODO: update the list of tags */
 }
 
 static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct IntuiMessage *msg) {
