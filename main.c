@@ -1365,7 +1365,7 @@ static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *ent
     case REMOVE_ENTITY_ID:
         handleRemoveEntityClicked(mapEditor, entityBrowser);
         break;
-    case ENTITY_LIST_ID:
+    case ENTITY_BROWSER_LIST_ID:
         handleEntityClicked(entityBrowser, mapEditor->map, msg->Code);
         break;
     case TAG_LIST_ID:

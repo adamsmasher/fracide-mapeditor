@@ -108,7 +108,7 @@ static struct NewGadget entityListNewGadget = {
     ENTITY_LIST_WIDTH, ENTITY_LIST_HEIGHT,
     NULL,
     &Topaz80,
-    ENTITY_LIST_ID,
+    ENTITY_BROWSER_LIST_ID,
     0,
     NULL, /* visual info filled in later */
     NULL  /* user data */
