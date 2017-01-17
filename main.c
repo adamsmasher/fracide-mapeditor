@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "EntityBrowser.h"
+#include "EntityEditor.h"
 #include "globals.h"
 #include "MapEditor.h"
 #include "MapRequester.h"
@@ -73,6 +74,8 @@ static struct NewMenu newMenu[] = {
     { NM_TITLE, "Maps",   0, 0, 0, 0 },
         { NM_ITEM, "New Map",     0, 0, 0, 0 },
         { NM_ITEM, "Open Map...", 0, 0, 0, 0 },
+    { NM_TITLE, "Entities",  0, 0, 0, 0 },
+        { NM_ITEM, "Entity Editor...", 0, 0, 0, 0 },
     { NM_TITLE, "Music",  0, 0, 0, 0 },
         { NM_ITEM, "Song Names...", 0, 0, 0, 0 },
     { NM_END,   NULL,      0, 0, 0, 0 }
@@ -761,6 +764,21 @@ static void handleMusicMenuPick(UWORD itemNum, UWORD subNum) {
     }
 }
 
+static void handleEntitiesMenuPick(UWORD itemNum, UWORD subNum) {
+    switch(itemNum) {
+        case 0:
+            if(entityEditor) {
+                WindowToFront(entityEditor->window);
+            } else {
+                entityEditor = newEntityEditor();
+                if(entityEditor) {
+                    addWindowToSigMask(entityEditor->window);
+                }
+            }
+            break;
+    }
+}
+
 static void handleMainMenuPick(ULONG menuNumber) {
     UWORD menuNum = MENUNUM(menuNumber);
     UWORD itemNum = ITEMNUM(menuNumber);
@@ -768,7 +786,8 @@ static void handleMainMenuPick(ULONG menuNumber) {
     switch(menuNum) {
         case 0: handleProjectMenuPick(itemNum, subNum); break;
         case 1: handleMapsMenuPick(itemNum, subNum); break;
-        case 2: handleMusicMenuPick(itemNum, subNum); break;
+        case 2: handleEntitiesMenuPick(itemNum, subNum); break;
+        case 3: handleMusicMenuPick(itemNum, subNum); break;
     }
 }
 
@@ -796,6 +815,7 @@ static void handleProjectMessages(void) {
     }
 }
 
+/* TODO: rename me */
 static int songNameStart(int selected) {
     if(selected < 10) {
         return 2;
@@ -882,6 +902,84 @@ static void closeSongNamesEditor(void) {
         removeWindowFromSigMask(songNamesEditor->window);
         freeSongRequester(songNamesEditor);
         songNamesEditor = NULL;
+    }
+}
+
+static void handleEntityEditorSelectEntity(struct IntuiMessage *msg) {
+    int selected = msg->Code;
+    int i = songNameStart(selected);
+
+    GT_SetGadgetAttrs(entityEditor->entityNameGadget, entityEditor->window, NULL,
+       GTST_String, &project.entityNameStrs[selected][i],
+       GA_Disabled, FALSE,
+       TAG_END);
+
+    entityEditor->selected = selected + 1;
+}
+
+static void refreshAllEntityBrowsers(void) {
+    MapEditor *i = firstMapEditor;
+    while(i) {
+        if(i->entityBrowser) {
+            GT_RefreshWindow(i->entityBrowser->window, NULL);
+        }
+        i = i->next;
+    }
+}
+
+static void handleEntityEditorUpdateEntity(struct IntuiMessage *msg) {
+    int selected = entityEditor->selected - 1;
+    strcpy(
+        &project.entityNameStrs[selected][songNameStart(selected)],
+        ((struct StringInfo*)entityEditor->entityNameGadget->SpecialInfo)->Buffer);
+    GT_RefreshWindow(entityEditor->window, NULL);
+    projectSaved = 0;
+    refreshAllEntityBrowsers();
+}
+
+static void handleEntityEditorGadgetUp(struct IntuiMessage *msg) {
+    struct Gadget *gadget = (struct Gadget*)msg->IAddress;
+    switch(gadget->GadgetID) {
+    case ENTITY_EDITOR_LIST_ID:
+        handleEntityEditorSelectEntity(msg);
+        break;
+    case ENTITY_NAME_ID:
+        handleEntityEditorUpdateEntity(msg);
+        break;
+    }
+}
+
+static void handleEntityEditorMessage(struct IntuiMessage* msg) {
+    switch(msg->Class) {
+    case IDCMP_CLOSEWINDOW:
+        entityEditor->closed = 1;
+        break;
+    case IDCMP_GADGETUP:
+        handleEntityEditorGadgetUp(msg);
+        break;
+    case IDCMP_REFRESHWINDOW:
+        GT_BeginRefresh(entityEditor->window);
+        GT_EndRefresh(entityEditor->window, TRUE);
+        break;
+    case IDCMP_NEWSIZE:
+        resizeEntityEditor(entityEditor);
+        break;
+    }
+}
+
+static void handleEntityEditorMessages(void) {
+    struct IntuiMessage *msg;
+    while(msg = GT_GetIMsg(entityEditor->window->UserPort)) {
+        handleEntityEditorMessage(msg);
+        GT_ReplyIMsg(msg);
+    }
+}
+
+static void closeEntityEditor(void) {
+    if(entityEditor) {
+        removeWindowFromSigMask(entityEditor->window);
+        freeEntityEditor(entityEditor);
+        entityEditor = NULL;
     }
 }
 
@@ -1483,6 +1581,14 @@ static void mainLoop(void) {
                 closeSongNamesEditor();
             }
         }
+        if(entityEditor) {
+            if(1L << entityEditor->window->UserPort->mp_SigBit & signalSet) {
+                handleEntityEditorMessages();
+            }
+            if(entityEditor->closed) {
+                closeEntityEditor();
+            }
+        }
         handleAllMapEditorMessages(signalSet);
         handleAllMapEditorChildMessages(signalSet);
         closeDeadMapEditors();
@@ -1513,6 +1619,7 @@ int main(void) {
     initMapRequesterScreen();
     initTilesetRequesterScreen();
     initSongNamesScreen();
+    initEntityEditorScreen();
     initEntityBrowserScreen();
 
     projectNewWindow.Screen = screen;
@@ -1533,6 +1640,7 @@ int main(void) {
     initMapRequesterVi();
     initTilesetRequesterVi();
     initSongNamesVi();
+    initEntityEditorVi();
     initEntityBrowserVi();
 
     menu = CreateMenus(newMenu, GTMN_FullMenu, TRUE, TAG_END);
@@ -1562,6 +1670,8 @@ int main(void) {
     mainLoop();
     
     retCode = 0;
+closeEntityEditor:
+    closeEntityEditor();
 closeSongNamesEditor:
     closeSongNamesEditor();
 closeAllMapEditors:

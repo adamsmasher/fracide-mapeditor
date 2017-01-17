@@ -2,6 +2,7 @@
 
 #include "globals.h"
 
+#include "EntityEditor.h"
 #include "TilesetPackage.h"
 #include "Project.h"
 
@@ -10,6 +11,7 @@ void            *vi              = NULL;
 TilesetPackage  *tilesetPackage  = NULL;
 struct Window   *projectWindow   = NULL;
 SongRequester   *songNamesEditor = NULL;
+EntityEditor    *entityEditor    = NULL;
 Project         project;
 int             projectSaved     = 1;
 char            projectFilename[PROJECT_FILENAME_LENGTH];
