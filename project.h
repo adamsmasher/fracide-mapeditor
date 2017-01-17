@@ -15,6 +15,8 @@ typedef struct Project_tag {
     char mapNameStrs[128][80];
     struct List songNames;
     char songNameStrs[128][80];
+    struct List entityNames;
+    char entityNameStrs[128][80];
 } Project;
 
 void initProject(Project*);

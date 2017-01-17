@@ -42,6 +42,19 @@ static void initSongNameNodes(Project *project) {
     }
 }
 
+static void initEntityNameNodes(Project *project) {
+    int i;
+    struct Node *node, *next;
+
+    node = project->entityNames.lh_Head;
+    i = 0;
+    while(next = node->ln_Succ) {
+        node->ln_Name = project->entityNameStrs[i];
+        node = next;
+        i++;
+    }
+}
+
 void initProject(Project *project) {
     int i;
     struct Node *node;
@@ -56,25 +69,30 @@ void initProject(Project *project) {
     }
 
     NewList(&project->mapNames);
-
     for(i = 0; i < 128; i++) {
         node = malloc(sizeof(struct Node));
         /* TODO: handle node creation failure */
         AddTail(&project->mapNames, node);
     }
-
     initMapNameNodes(project);
 
     NewList(&project->songNames);
-
     for(i = 0; i < 128; i++) {
         sprintf(project->songNameStrs[i], "%d:", i);
         node = malloc(sizeof(struct Node));
         /* TODO: handle node creation failure */
         AddTail(&project->songNames, node);
     }
-
     initSongNameNodes(project);
+
+    NewList(&project->entityNames);
+    for(i = 0; i < 128; i++) {
+        sprintf(project->entityNameStrs[i], "%d:", i);
+        node = malloc(sizeof(struct Node));
+        /* TODO: handle node creation failure */
+        AddTail(&project->entityNames, node);
+    }
+    initEntityNameNodes(project);
 }
 
 void freeProject(Project *project) {
@@ -98,6 +116,12 @@ void freeProject(Project *project) {
         free(node);
         node = next;
     }
+
+    node = project->entityNames.lh_Head;
+    while(next = node->ln_Succ) {
+        free(node);
+        node = next;
+    }
 }
 
 void copyProject(Project *src, Project *dest) {
@@ -105,6 +129,7 @@ void copyProject(Project *src, Project *dest) {
     /* fix up internal pointers */
     initMapNameNodes(dest);
     initSongNameNodes(dest);
+    initEntityNameNodes(dest);
 }
 
 static int loadProjectFromFp(FILE *fp, Project *project) {
@@ -182,6 +207,11 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
         goto freeMaps_error;
     }
 
+    if(fread(project->entityNameStrs, 80, 128, fp) != 128) {
+        fprintf(stderr, "loadProjectFromFp: couldn't read entity names\n");
+        goto freeMaps_error;
+    }
+
     return 1;
 
 freeMaps_error:
@@ -248,6 +278,7 @@ static void saveProjectToFp(FILE *fp) {
     }
 
     fwrite(project.songNameStrs, 80, 128, fp);
+    fwrite(project.entityNameStrs, 80, 128, fp);
 }
 
 int saveProjectToFile(char *file) {
