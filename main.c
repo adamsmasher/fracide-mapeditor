@@ -1353,7 +1353,6 @@ static void handleTagAliasChanged(EntityBrowser *entityBrowser, MapEditor *mapEd
     entityBrowserSetTags(entityBrowser, entity->tags, entity->tagCnt);
 
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
-/* TODO: update the list of tags? */
 }
 
 static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct IntuiMessage *msg) {
