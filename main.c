@@ -1359,6 +1359,11 @@ static void handleRemoveEntityClicked(MapEditor *mapEditor, EntityBrowser *entit
 
 static void handleEntityClicked(EntityBrowser *entityBrowser, Map *map, int entityNum) {
     Entity *entity = &map->entities[entityNum];
+
+    if(entityBrowser->entityRequester) {
+        /* TODO: close the entity requester here */
+    }
+
     entityBrowserSelectEntity(entityBrowser, entityNum, entity);
 }
 
@@ -1453,6 +1458,14 @@ static void handleTagAliasChanged(EntityBrowser *entityBrowser, MapEditor *mapEd
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
+static void handleChooseEntityClicked(EntityBrowser *entityBrowser, Map *map) {
+    if(entityBrowser->entityRequester) {
+        WindowToFront(entityBrowser->entityRequester->window);
+    } else {
+        /* TODO: spawn the entity requester */
+    }
+}
+
 static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *entityBrowser, struct IntuiMessage *msg) {
     struct Gadget *gadget = (struct Gadget*)msg->IAddress;
     switch(gadget->GadgetID) {
@@ -1464,6 +1477,9 @@ static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *ent
         break;
     case ENTITY_BROWSER_LIST_ID:
         handleEntityClicked(entityBrowser, mapEditor->map, msg->Code);
+        break;
+    case CHOOSE_ENTITY_ID:
+        handleChooseEntityClicked(entityBrowser, mapEditor->map);
         break;
     case TAG_LIST_ID:
         handleTagClicked(entityBrowser, mapEditor->map, msg->Code);
