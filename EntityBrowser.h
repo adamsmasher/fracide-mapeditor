@@ -4,6 +4,7 @@
 #include <proto/intuition.h>
 
 #include "Entity.h"
+#include "EntityEditor.h"
 
 #define ENTITY_BROWSER_LIST_ID   0
 #define ADD_ENTITY_ID            (ENTITY_BROWSER_LIST_ID + 1)
@@ -48,6 +49,7 @@ typedef struct EntityBrowser_tag {
     struct List tagLabels;
     struct Node *tagNodes;
     char (*tagStrings)[TAG_ALIAS_LENGTH + 4];
+    EntityEditor *entityRequester;
 } EntityBrowser;
 
 void initEntityBrowserScreen(void);

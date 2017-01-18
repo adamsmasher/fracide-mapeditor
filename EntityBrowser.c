@@ -477,6 +477,8 @@ EntityBrowser *newEntityBrowser(char *title, Entity *entities, int entityCnt) {
         goto error;
     }
 
+    entityBrowser->entityRequester = NULL;
+
     if(!createEntityLabels(entityBrowser, entities, entityCnt)) {
         fprintf(stderr, "newEntityBrowser: couldn't create labels\n");
         goto error_freeBrowser;
