@@ -70,4 +70,6 @@ void entityBrowserDeselectTag(EntityBrowser*);
 void entityBrowserFreeTagLabels(EntityBrowser*);
 int entityBrowserSetTags(EntityBrowser*, Frac_tag *tags, int tagCnt);
 
+void attachEntityRequesterToEntityBrowser(EntityBrowser*, EntityEditor*);
+
 #endif

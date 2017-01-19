@@ -1457,11 +1457,17 @@ static void handleTagAliasChanged(EntityBrowser *entityBrowser, MapEditor *mapEd
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
-static void handleChooseEntityClicked(EntityBrowser *entityBrowser, Map *map) {
-    if(entityBrowser->entityRequester) {
-        WindowToFront(entityBrowser->entityRequester->window);
+static void handleChooseEntityClicked(EntityBrowser *entityBrowser) {
+    EntityEditor *entityRequester = entityBrowser->entityRequester;
+
+    if(entityRequester) {
+        WindowToFront(entityRequester->window);
     } else {
-        /* TODO: spawn the entity requester */
+        entityRequester = newEntityRequester();
+        if(entityRequester) {
+            attachEntityRequesterToEntityBrowser(entityBrowser, entityRequester);
+            addWindowToSigMask(entityRequester->window);
+        }
     }
 }
 
@@ -1478,7 +1484,7 @@ static void handleEntityBrowserGadgetUp(MapEditor *mapEditor, EntityBrowser *ent
         handleEntityClicked(entityBrowser, mapEditor->map, msg->Code);
         break;
     case CHOOSE_ENTITY_ID:
-        handleChooseEntityClicked(entityBrowser, mapEditor->map);
+        handleChooseEntityClicked(entityBrowser);
         break;
     case TAG_LIST_ID:
         handleTagClicked(entityBrowser, mapEditor->map, msg->Code);

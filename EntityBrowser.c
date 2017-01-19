@@ -705,3 +705,7 @@ void entityBrowserFreeEntityLabels(EntityBrowser *entityBrowser) {
 
     freeEntityLabels(entityBrowser);
 }
+
+void attachEntityRequesterToEntityBrowser(EntityBrowser *entityBrowser, EntityEditor *entityRequester) {
+    entityBrowser->entityRequester = entityRequester;
+}
