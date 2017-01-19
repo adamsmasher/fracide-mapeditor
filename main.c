@@ -1228,6 +1228,7 @@ static void handleMapEditorMessages(MapEditor *mapEditor) {
     }
 }
 
+/* TODO: move child handling/closing into here */
 static void handleAllMapEditorMessages(long signalSet) {
     MapEditor *i = firstMapEditor;
     while(i) {
@@ -1531,6 +1532,8 @@ static void handleEntityBrowserMessage(MapEditor *mapEditor, EntityBrowser *enti
     }
 }
 
+/* TODO: handle EntityRequester messages */
+/* TODO: close dead EntityRequesters */
 static void handleEntityBrowserMessages(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
     struct IntuiMessage *msg = NULL;
     while(msg = GT_GetIMsg(entityBrowser->window->UserPort)) {
