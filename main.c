@@ -1249,13 +1249,22 @@ static void handleEntityBrowserMessage(MapEditor *mapEditor, EntityBrowser *enti
     }
 }
 
-/* TODO: handle EntityRequester messages */
 /* TODO: close dead EntityRequesters */
 static void handleEntityBrowserMessages(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
     struct IntuiMessage *msg = NULL;
     while(msg = GT_GetIMsg(entityBrowser->window->UserPort)) {
         handleEntityBrowserMessage(mapEditor, entityBrowser, msg);
         GT_ReplyIMsg(msg);
+    }
+}
+
+static void handleEntityBrowserChildMessages(EntityBrowser *entityBrowser, long signalSet) {
+    EntityEditor *entityRequester = entityBrowser->entityRequester;
+
+    if(entityRequester) {
+        if(1L << entityRequester->window->UserPort->mp_SigBit & signalSet) {
+            /* TODO: handle entity requester messages */
+        }
     }
 }
 
@@ -1531,6 +1540,7 @@ static void handleMapEditorChildMessages(MapEditor *mapEditor, long signalSet) {
     TilesetRequester *tilesetRequester = mapEditor->tilesetRequester;
     SongRequester *songRequester       = mapEditor->songRequester;
     EntityBrowser *entityBrowser       = mapEditor->entityBrowser;
+
     if(tilesetRequester) {
         if(1L << tilesetRequester->window->UserPort->mp_SigBit & signalSet) {
             handleTilesetRequesterMessages(mapEditor, tilesetRequester);
@@ -1545,6 +1555,7 @@ static void handleMapEditorChildMessages(MapEditor *mapEditor, long signalSet) {
         if(1L << entityBrowser->window->UserPort->mp_SigBit & signalSet) {
             handleEntityBrowserMessages(mapEditor, entityBrowser);
         }
+        handleEntityBrowserChildMessages(entityBrowser, signalSet);
     }
 }
 
