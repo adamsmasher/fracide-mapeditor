@@ -1361,7 +1361,7 @@ static void handleEntityClicked(EntityBrowser *entityBrowser, Map *map, int enti
     Entity *entity = &map->entities[entityNum];
 
     if(entityBrowser->entityRequester) {
-        /* TODO: close the entity requester here */
+        entityBrowser->entityRequester->closed = 1;
     }
 
     entityBrowserSelectEntity(entityBrowser, entityNum, entity);
