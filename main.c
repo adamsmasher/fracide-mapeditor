@@ -1259,25 +1259,25 @@ static void handleEntityBrowserMessages(MapEditor *mapEditor, EntityBrowser *ent
     }
 }
 
-static void closeDeadMapEditorChildren(void) {
-    MapEditor *i = firstMapEditor;
-    while(i) {
-        if(i->tilesetRequester && i->tilesetRequester->closed) {
-            removeWindowFromSigMask(i->tilesetRequester->window);
-            closeTilesetRequester(i->tilesetRequester);
-            i->tilesetRequester = NULL;
-        }
-        if(i->songRequester && i->songRequester->closed) {
-            removeWindowFromSigMask(i->songRequester->window);
-            freeSongRequester(i->songRequester);
-            i->songRequester = NULL;
-        }
-        if(i->entityBrowser && i->entityBrowser->closed) {
-            removeWindowFromSigMask(i->entityBrowser->window);
-            freeEntityBrowser(i->entityBrowser);
-            i->entityBrowser = NULL;
-        }
-        i = i->next;
+static void closeAnyDeadChildrenOfMapEditor(MapEditor *mapEditor) {
+    TilesetRequester *tilesetRequester = mapEditor->tilesetRequester;
+    SongRequester    *songRequester    = mapEditor->songRequester;
+    EntityBrowser    *entityBrowser    = mapEditor->entityBrowser;
+
+    if(tilesetRequester && tilesetRequester->closed) {
+        removeWindowFromSigMask(tilesetRequester->window);
+        closeTilesetRequester(tilesetRequester);
+        mapEditor->tilesetRequester = NULL;
+    }
+    if(songRequester && songRequester->closed) {
+        removeWindowFromSigMask(songRequester->window);
+        freeSongRequester(songRequester);
+        mapEditor->songRequester = NULL;
+    }
+    if(entityBrowser && entityBrowser->closed) {
+        removeWindowFromSigMask(entityBrowser->window);
+        freeEntityBrowser(entityBrowser);
+        mapEditor->entityBrowser = NULL;
     }
 }
 
@@ -1560,7 +1560,6 @@ static void handleAllMapEditorMessages(long signalSet) {
     }
 }
 
-/* TODO: move child closing into here */
 static void closeDeadMapEditors(void) {
     MapEditor *i = firstMapEditor;
     while(i) {
@@ -1582,6 +1581,8 @@ static void closeDeadMapEditors(void) {
 
             removeWindowFromSigMask(i->window);
             closeMapEditor(i);
+        } else {
+            closeAnyDeadChildrenOfMapEditor(i);
         }
         i = next;
     }
@@ -1613,7 +1614,6 @@ static void mainLoop(void) {
         }
         handleAllMapEditorMessages(signalSet);
         closeDeadMapEditors();
-        closeDeadMapEditorChildren();
     }
 }
 
