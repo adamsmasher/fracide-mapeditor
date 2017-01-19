@@ -815,8 +815,7 @@ static void handleProjectMessages(void) {
     }
 }
 
-/* TODO: rename me */
-static int songNameStart(int selected) {
+static int listItemStart(int selected) {
     if(selected < 10) {
         return 2;
     } else if(selected < 100) {
@@ -828,7 +827,7 @@ static int songNameStart(int selected) {
 
 static void handleSongNamesEditorSelectSong(struct IntuiMessage *msg) {
     int selected = msg->Code;
-    int i = songNameStart(selected);
+    int i = listItemStart(selected);
 
     GT_SetGadgetAttrs(songNamesEditor->songNameGadget, songNamesEditor->window, NULL,
        GTST_String, &project.songNameStrs[selected][i],
@@ -852,7 +851,7 @@ static void refreshAllSongDisplays(void) {
 static void handleSongNamesEditorUpdateSong(struct IntuiMessage *msg) {
     int selected = songNamesEditor->selected - 1;
     strcpy(
-        &project.songNameStrs[selected][songNameStart(selected)],
+        &project.songNameStrs[selected][listItemStart(selected)],
         ((struct StringInfo*)songNamesEditor->songNameGadget->SpecialInfo)->Buffer);
     GT_RefreshWindow(songNamesEditor->window, NULL);
     projectSaved = 0;
@@ -907,7 +906,7 @@ static void closeSongNamesEditor(void) {
 
 static void handleEntityEditorSelectEntity(struct IntuiMessage *msg) {
     int selected = msg->Code;
-    int i = songNameStart(selected);
+    int i = listItemStart(selected);
 
     GT_SetGadgetAttrs(entityEditor->entityNameGadget, entityEditor->window, NULL,
        GTST_String, &project.entityNameStrs[selected][i],
@@ -930,7 +929,7 @@ static void refreshAllEntityBrowsers(void) {
 static void handleEntityEditorUpdateEntity(struct IntuiMessage *msg) {
     int selected = entityEditor->selected - 1;
     strcpy(
-        &project.entityNameStrs[selected][songNameStart(selected)],
+        &project.entityNameStrs[selected][listItemStart(selected)],
         ((struct StringInfo*)entityEditor->entityNameGadget->SpecialInfo)->Buffer);
     GT_RefreshWindow(entityEditor->window, NULL);
     projectSaved = 0;
