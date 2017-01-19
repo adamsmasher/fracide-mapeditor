@@ -525,6 +525,13 @@ error:
     return NULL;
 }
 
+static void closeAttachedEntityRequester(EntityBrowser *entityBrowser) {
+    if(entityBrowser->entityRequester) {
+        freeEntityEditor(entityBrowser->entityRequester);
+        entityBrowser->entityRequester = NULL;
+    }
+}
+
 static void freeEntityLabels(EntityBrowser *entityBrowser) {
     free(entityBrowser->entityNodes);
     free(entityBrowser->entityStrings);
@@ -536,6 +543,7 @@ static void freeTagLabels(EntityBrowser *entityBrowser) {
 }
 
 void freeEntityBrowser(EntityBrowser *entityBrowser) {
+    closeAttachedEntityRequester(entityBrowser);
     CloseWindow(entityBrowser->window);
     FreeGadgets(entityBrowser->gadgets);
     free(entityBrowser->title);
