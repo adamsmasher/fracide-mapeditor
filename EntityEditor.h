@@ -8,7 +8,6 @@ typedef struct EntityEditor_tag {
     struct Window *window;
     struct Gadget *gadgets;
     struct Gadget *entityNameGadget;
-    char *title;
     int closed;
     int selected;
     int editable;
@@ -17,7 +16,7 @@ typedef struct EntityEditor_tag {
 void initEntityEditorScreen(void);
 void initEntityEditorVi(void);
 
-EntityEditor *newEntityRequester(char *title);
+EntityEditor *newEntityRequester(void);
 EntityEditor *newEntityEditor(void);
 
 void resizeEntityEditor(EntityEditor*);

@@ -119,18 +119,12 @@ static EntityEditor *newGenericEntityEditor(char *title, int editable) {
     entityEditor->window = NULL;
     entityEditor->editable = editable;
 
-    entityEditor->title = malloc(strlen(title) + 1);
-    if(!entityEditor->title) {
-        fprintf(stderr, "newGenericEntityEditor: couldn't allocate title\n");
-        goto error_freeRequester;
-    }
-    strcpy(entityEditor->title, title);
-    entityEditorNewWindow.Title = entityEditor->title;
+    entityEditorNewWindow.Title = title;
 
     createEntityEditorGadgets(entityEditor);
     if(!entityEditor->gadgets) {
         fprintf(stderr, "newGenericEntityEditor: couldn't create gadgets\n");
-        goto error_freeTitle;
+        goto error_freeRequester;
     }
     entityEditorNewWindow.FirstGadget = entityEditor->gadgets;
 
@@ -148,8 +142,6 @@ static EntityEditor *newGenericEntityEditor(char *title, int editable) {
 
 error_freeGadgets:
     free(entityEditor->gadgets);
-error_freeTitle:
-    free(entityEditor->title);
 error_freeRequester:
     free(entityEditor);
 error:
@@ -163,10 +155,13 @@ EntityEditor *newEntityEditor(void) {
     return newGenericEntityEditor("Entity Editor", EDITABLE);
 }
 
+EntityEditor *newEntityRequester(void) {
+    return newGenericEntityEditor("Choose Entity...", NON_EDITABLE);
+}
+
 void freeEntityEditor(EntityEditor *entityEditor) {
     CloseWindow(entityEditor->window);
     FreeGadgets(entityEditor->gadgets);
-    free(entityEditor->title);
     free(entityEditor);
 }
 
