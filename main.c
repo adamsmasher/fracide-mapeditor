@@ -25,6 +25,7 @@
 #include "globals.h"
 #include "MapEditor.h"
 #include "MapRequester.h"
+#include "menu.h"
 #include "SongNames.h"
 #include "TilesetPackage.h"
 #include "TilesetRequester.h"
@@ -58,28 +59,6 @@ static struct NewWindow projectNewWindow = {
     CUSTOMSCREEN
 };
 
-static struct NewMenu newMenu[] = {
-    { NM_TITLE, "Project", 0, 0, 0, 0 },
-        { NM_ITEM, "New",                       "N", 0,               0, 0 },
-        { NM_ITEM, NM_BARLABEL,                  0,  0,               0, 0 },
-        { NM_ITEM, "Open...",                   "O", 0,               0, 0 },
-        { NM_ITEM, NM_BARLABEL,                  0,  0,               0, 0 },
-        { NM_ITEM, "Save",                      "S", 0,               0, 0 },
-        { NM_ITEM, "Save As...",                "A", 0,               0, 0 },
-        { NM_ITEM, "Revert",                     0,  NM_ITEMDISABLED, 0, 0 },
-        { NM_ITEM, NM_BARLABEL,                  0,  0,               0, 0 },
-        { NM_ITEM, "Select Tileset Package...",  0,  0,               0, 0 },
-        { NM_ITEM, NM_BARLABEL,                  0,  0,               0, 0 },
-        { NM_ITEM, "Quit",                      "Q", 0,               0, 0 },
-    { NM_TITLE, "Maps",   0, 0, 0, 0 },
-        { NM_ITEM, "New Map",     0, 0, 0, 0 },
-        { NM_ITEM, "Open Map...", 0, 0, 0, 0 },
-    { NM_TITLE, "Entities",  0, 0, 0, 0 },
-        { NM_ITEM, "Entity Editor...", 0, 0, 0, 0 },
-    { NM_TITLE, "Music",  0, 0, 0, 0 },
-        { NM_ITEM, "Song Names...", 0, 0, 0, 0 },
-    { NM_END,   NULL,      0, 0, 0, 0 }
-};
 static struct Menu *menu = NULL;
 
 static struct EasyStruct noTilesetPackageLoadedEasyStruct = {
@@ -1675,7 +1654,7 @@ int main(void) {
     initEntityEditorVi();
     initEntityBrowserVi();
 
-    menu = CreateMenus(newMenu, GTMN_FullMenu, TRUE, TAG_END);
+    menu = createMenu();
     if(!menu) {
         retCode = -5;
         goto freeVisualInfo;
