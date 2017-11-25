@@ -246,8 +246,6 @@ static void closeAllMapEditors(void) {
     firstMapEditor = NULL;
 }
 
-#define REVERT_PROJECT_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
-
 static void setProjectFilename(char *filename) {
     if(filename) {
         strcpy(projectFilename, filename);
@@ -257,8 +255,6 @@ static void setProjectFilename(char *filename) {
         OffMenu(projectWindow, REVERT_PROJECT_MENU_ITEM);
     }
 }
-
-#define REVERT_MAP_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
 
 static void enableMapRevert(MapEditor *mapEditor) {
     OnMenu(mapEditor->window, REVERT_MAP_MENU_ITEM);
