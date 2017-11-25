@@ -26,6 +26,7 @@
 #include "MapEditor.h"
 #include "MapRequester.h"
 #include "menu.h"
+#include "palette.h"
 #include "SongNames.h"
 #include "TilesetPackage.h"
 #include "TilesetRequester.h"
@@ -1603,23 +1604,15 @@ static void mainLoop(void) {
     }
 }
 
-static void initPalette(struct ViewPort *viewport) {
-    LONG i;
-    ULONG c = 15;
-    for(i = 0; i < 4; i++, c -= 5) {
-        SetRGB4(viewport, i, c, c, c);
-    }
-}
-
 int main(void) {
     int retCode;
-    
+
     screen = OpenScreen(&newScreen);
     if(!screen) {
         retCode = -2;
         goto done;
     }
-    
+
     initPalette(&screen->ViewPort);
 
     initMapEditorScreen();
