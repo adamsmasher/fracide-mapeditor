@@ -1447,6 +1447,7 @@ static void revertMap(MapEditor *mapEditor) {
     }
 }
 
+/* TODO: This should be abstracted away! */
 static void handleMapMenuPick(MapEditor *mapEditor, UWORD itemNum, UWORD subNum) {
     switch(itemNum) {
         case 0: newMap(); break;
@@ -1615,6 +1616,7 @@ int main(void) {
 
     initPalette(&screen->ViewPort);
 
+/* TODO: just loop over a thing! Or something! This is dumb! */
     initMapEditorScreen();
     initMapRequesterScreen();
     initTilesetRequesterScreen();
