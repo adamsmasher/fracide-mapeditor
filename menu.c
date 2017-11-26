@@ -3,6 +3,20 @@
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
+#include "entitiesmenu.h"
+#include "mapmenu.h"
+#include "menubuild.h"
+#include "musicmenu.h"
+#include "projectmenu.h"
+
+static MenuSpec menus[] = {
+    { "Project",  &projectMenuSpec  },
+    { "Maps",     &mapMenuSpec      },
+    { "Entities", &entitiesMenuSpec },
+    { "Music",    &musicMenuSpec    },
+    END_MENU
+};
+
 static struct NewMenu newMenu[] = {
     { NM_TITLE, "Project", 0, 0, 0, 0 },
         { NM_ITEM, "New",                       "N", 0,               0, 0 },
