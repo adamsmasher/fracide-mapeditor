@@ -7,7 +7,7 @@ static void songNamesClicked(void) {
 }
 
 static MenuSectionSpec musicSection =
-    { { "Song Names...", 0, FALSE, songNamesClicked },
+    { { "Song Names...", NULL, FALSE, songNamesClicked },
     END_SECTION };
 
 MenuSectionSpec *musicMenuSpec[] = {

@@ -7,7 +7,7 @@ typedef void (*Handler)(void);
 
 typedef struct MenuItemSpecTag {
     char *label;
-    char shortcut;
+    char *shortcut;
     BOOL disabled;
     Handler handler;
 } MenuItemSpec;
