@@ -2,6 +2,7 @@
 #define MENUBUILD_H
 
 #include <exec/types.h>
+#include <libraries/gadtools.h>
 
 typedef void (*Handler)(void);
 
@@ -19,7 +20,10 @@ typedef struct MenuSpecTag {
     MenuSectionSpec *(*sections)[];
 } MenuSpec;
 
-#define END_SECTION 0
+struct NewMenu *buildNewMenu(MenuSpec*);
+
+#define END_SECTION { NULL, NULL, FALSE, NULL }
 #define END_MENU    NULL
+#define END_MENUS   { NULL, NULL }
 
 #endif
