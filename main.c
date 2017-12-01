@@ -1647,6 +1647,7 @@ int main(void) {
 
     menu = createMenu();
     if(!menu) {
+        fprintf(stderr, "Error creating menu\n");
         retCode = -5;
         goto freeVisualInfo;
     }
