@@ -24,8 +24,6 @@ static int newMenuCount(MenuSpec *menuSpec) {
 
     for(; !endMenuSpec(menuSpec); menuSpec++) {
         MenuSectionSpec **i;
-        fprintf(stderr, "Counting %d: %s\n", count, menuSpec->name);
-        if(count > 32) { return -1; }
 
         /* one entry for the NM_TITLE */
         count++;
@@ -68,13 +66,10 @@ static void buildSectionAt(struct NewMenu **item, MenuSectionSpec *section) {
     MenuItemSpec *i;
     for(i = *section; !endSection(i); i++) {
         buildMenuItem(*item, i);
-        *item++;
+        (*item)++;
     }
-    /* note: we DON'T move the item forward past the end of section 
-    NM_BARLABEL; we're only responsible for that if we start a new
-    section. That way, if we don't start a new section, we'll naturally
-    write over it */
     buildBarLabel(*item);
+    (*item)++;
 }
 
 static void buildMenuEnd(struct NewMenu *item) {
@@ -83,17 +78,18 @@ static void buildMenuEnd(struct NewMenu *item) {
 }
 
 static void buildMenuAt(struct NewMenu **item, MenuSpec *menuSpec) {
-    buildMenuTitle(*item, menuSpec->name);
-    *item++;
+    MenuSectionSpec **i;
 
-    for(; !endMenuSpec(menuSpec); menuSpec++) {
-        MenuSectionSpec **i;
-        for(i = *menuSpec->sections; *i != END_MENU; i++) {
-            buildSectionAt(item, *i);
-        }
+    buildMenuTitle(*item, menuSpec->name);
+    (*item)++;
+
+    for(i = *menuSpec->sections; *i != END_MENU; i++) {
+        buildSectionAt(item, *i);
     }
-    buildMenuEnd(*item);
-    *item++;
+
+    /* move the pointer back over the final NM_BARLABEL, to be replaced with
+       either the next menu's NM_TITLE or NM_END */
+    (*item)--;
 }
 
 struct NewMenu *buildNewMenu(MenuSpec *menuSpec) {
@@ -102,22 +98,17 @@ struct NewMenu *buildNewMenu(MenuSpec *menuSpec) {
 
     int count = newMenuCount(menuSpec);
     int size = count * sizeof(struct NewMenu);
-    struct NewMenu *newMenu;
-    if(count < 0) {
-        return NULL;
-    }
-    newMenu = malloc(size);
+    struct NewMenu *newMenu = malloc(size);
     if(!newMenu) {
         fprintf(stderr, "Error allocating %d bytes for new menu\n", size);
         goto error;
     }
-    fprintf(stderr, "New menu has %d entries\n", count);
-
 
     j = newMenu;
     for(i = menuSpec; !endMenuSpec(i); i++) {
         buildMenuAt(&j, i);
     }
+    buildMenuEnd(j);
 
     return newMenu;
 error:
