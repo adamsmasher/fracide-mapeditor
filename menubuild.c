@@ -3,17 +3,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static BOOL endSection(MenuItemSpec *spec) {
+BOOL endMenuSection(MenuItemSpec *spec) {
     return (BOOL)(spec->label == NULL);
 }
 
-static BOOL endMenuSpec(MenuSpec *spec) {
+BOOL endMenuSpec(MenuSpec *spec) {
     return (BOOL)(spec->name == NULL);
 }
 
 static int sectionCount(MenuItemSpec *spec) {
     int count = 0;
-    for(; !endSection(spec); spec++) {
+    for(; !endMenuSection(spec); spec++) {
         count++;
     }
     return count;
@@ -64,7 +64,7 @@ static void buildMenuItem(struct NewMenu *item, MenuItemSpec *spec) {
 
 static void buildSectionAt(struct NewMenu **item, MenuSectionSpec *section) {
     MenuItemSpec *i;
-    for(i = *section; !endSection(i); i++) {
+    for(i = *section; !endMenuSection(i); i++) {
         buildMenuItem(*item, i);
         (*item)++;
     }

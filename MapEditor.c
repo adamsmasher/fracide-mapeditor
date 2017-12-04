@@ -20,6 +20,7 @@
 
 #include "EntityBrowser.h"
 #include "map.h"
+#include "menu.h"
 #include "TilesetRequester.h"
 #include "globals.h"
 
@@ -1013,4 +1014,12 @@ void updateMapEditorMapName(MapEditor *mapEditor) {
         (struct StringInfo*)mapEditor->mapNameGadget->SpecialInfo;
     strcpy(mapEditor->map->name, stringInfo->Buffer);
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
+}
+
+void enableMapRevert(MapEditor *mapEditor) {
+    OnMenu(mapEditor->window, REVERT_MAP_MENU_ITEM);
+}
+
+void disableMapRevert(MapEditor *mapEditor) {
+    OffMenu(mapEditor->window, REVERT_MAP_MENU_ITEM);
 }

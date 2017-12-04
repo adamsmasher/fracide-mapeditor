@@ -101,4 +101,7 @@ void mapEditorSetSaveStatus(MapEditor*, int);
 void mapEditorDrawEntity(MapEditor*, Entity*, int entityNum);
 void mapEditorRedrawTile(MapEditor*, int row, int col);
 
+void enableMapRevert(MapEditor*);
+void disableMapRevert(MapEditor*);
+
 #endif

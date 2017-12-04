@@ -26,4 +26,7 @@ struct NewMenu *buildNewMenu(MenuSpec*);
 #define END_MENU    NULL
 #define END_MENUS   { NULL, NULL }
 
+BOOL endMenuSection(MenuItemSpec*);
+BOOL endMenuSpec(MenuSpec*);
+
 #endif

@@ -7,7 +7,7 @@ FRAMEWORK_OBJS= menubuild.o
 MENU_OBJS=    projectmenu.o mapmenu.o entitiesmenu.o musicmenu.o
 MENU_HEADERS= projectmenu.h mapmenu.h entitiesmenu.h musicmenu.h
 
-OTHER_OBJS= globals.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongNames.o EntityBrowser.o entity.o EntityEditor.o menu.o palette.o
+OTHER_OBJS= globals.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongNames.o EntityBrowser.o entity.o EntityEditor.o menu.o palette.o workspace.o
 
 OBJS= $(FRAMEWORK_OBJS) $(MENU_OBJS) $(OTHER_OBJS)
 
@@ -43,6 +43,14 @@ menu.o: menu.c menu.h $(MENU_HEADERS)
 palette.o: palette.c palette.h
 
 menubuild.o: menubuild.c menubuild.h
+
+projectmenu.o: projectmenu.c projectmenu.h workspace.h
+
+entitiesmenu.o: entitiesmenu.c entitiesmenu.h workspace.h
+
+musicmenu.o: musicmenu.c musicmenu.h workspace.h
+
+workspace.o: workspace.c workspace.h
 
 clean:
     delete mapedit mapedit.lnk $(OBJS)

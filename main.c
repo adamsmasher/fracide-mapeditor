@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "easystructs.h"
 #include "EntityBrowser.h"
 #include "EntityEditor.h"
 #include "globals.h"
@@ -30,6 +31,8 @@
 #include "SongNames.h"
 #include "TilesetPackage.h"
 #include "TilesetRequester.h"
+#include "windowset.h"
+#include "workspace.h"
 
 #define SCR_WIDTH  640
 #define SCR_HEIGHT 512
@@ -61,297 +64,6 @@ static struct NewWindow projectNewWindow = {
 };
 
 static struct Menu *menu = NULL;
-
-static struct EasyStruct noTilesetPackageLoadedEasyStruct = {
-    sizeof(struct EasyStruct),
-    0,
-    "No Tileset Package Loaded",
-    "Cannot choose tileset when no tileset package has been loaded.",
-    "Select Tileset Package...|Cancel"
-};
-
-static struct EasyStruct tilesetPackageLoadFailEasyStruct = {
-    sizeof(struct EasyStruct),
-    0,
-    "Error Loading Tileset Package",
-    "Could not load tileset package from\n%s.",
-    "OK"
-};
-
-static struct EasyStruct projectLoadFailEasyStruct = {
-    sizeof(struct EasyStruct),
-    0,
-    "Error Loading Project",
-    "Could not load project from\n%s.",
-    "OK"
-};
-
-static struct EasyStruct projectSaveFailEasyStruct = {
-    sizeof(struct EasyStruct),
-    0,
-    "Error Saving Project",
-    "Could not save project to \n%s.",
-    "OK"
-};
-
-static struct EasyStruct unsavedMapAlertEasyStructWithNum = {
-    sizeof(struct EasyStruct),
-    0,
-    "Unsaved Map",
-    "Save changes to map %ld, \"%s\"?",
-    "Save|Don't Save|Cancel"
-};
-
-static struct EasyStruct unsavedMapAlertEasyStructNoNum = {
-    sizeof(struct EasyStruct),
-    0,
-    "Unsaved Map",
-    "Save changes to \"%s\"?",
-    "Save|Don't Save|Cancel"
-};
-
-static struct EasyStruct saveIntoFullSlotEasyStruct = {
-    sizeof(struct EasyStruct),
-    0,
-    "Confirm Overwrite",
-    "Map slot %ld is already occupied by \"%s\".\nAre you sure you want to overwrite it?",
-    "Overwrite|Cancel"
-};
-
-static struct EasyStruct unsavedProjectAlertEasyStruct = {
-    sizeof(struct EasyStruct),
-    0,
-    "Unsaved Project",
-    "Some changes to this project haven't been committed to disk.\nSave changes to project?",
-    "Save|Don't Save|Cancel"
-};
-
-static struct EasyStruct confirmRevertProjectEasyStruct = {
-    sizeof(struct EasyStruct),
-    0,
-    "Confirm Revert",
-    "Are you sure you want to revert this project\nto the last saved version on disk?",
-    "Revert|Don't Revert"
-};
-
-static struct EasyStruct confirmRevertMapEasyStruct = {
-    sizeof(struct EasyStruct),
-    0,
-    "Confirm Revert",
-    "Are you sure you want to revert map %ld \"%s\"\nto the last version saved in the project?",
-    "Revert|Don't Revert"
-};
-
-static struct EasyStruct confirmCreateMapEasyStruct = {
-    sizeof(struct EasyStruct),
-    0,
-    "Confirm Create",
-    "Map %ld doesn't exist yet. Create it?",
-    "Create|Don't Create"
-};
-
-static int running = 0;
-static long sigMask = 0;
-static MapEditor *firstMapEditor = NULL;
-
-static void addWindowToSigMask(struct Window *window) {
-    sigMask |= 1L << window->UserPort->mp_SigBit;
-}
-
-static void removeWindowFromSigMask(struct Window *window) {
-    sigMask &= ~(1L << window->UserPort->mp_SigBit);
-}
-
-static void addToMapEditorList(MapEditor *mapEditor) {
-    mapEditor->next = firstMapEditor;
-    if(firstMapEditor) {
-        firstMapEditor->prev = mapEditor;
-    }
-    firstMapEditor = mapEditor;
-}
-
-static void removeFromMapEditorList(MapEditor *mapEditor) {
-    if(mapEditor->next) {
-        mapEditor->next->prev = mapEditor->prev;
-    }
-    if(mapEditor->prev) {
-        mapEditor->prev->next = mapEditor->next;
-    } else {
-        firstMapEditor = mapEditor->next;
-    }
-}
-
-static MapEditor *findMapEditor(int mapNum) {
-    MapEditor *mapEditor = firstMapEditor;
-    while(mapEditor) {
-        if(mapEditor->mapNum - 1 == mapNum) {
-            return mapEditor;
-        }
-        mapEditor = mapEditor->next;
-    }
-    return NULL;
-}
-
-static int loadTilesetPackageFromFile(char *file) {
-    TilesetPackage *newTilesetPackage;
-
-    newTilesetPackage = tilesetPackageLoadFromFile(file);
-    if(!newTilesetPackage) {
-        EasyRequest(projectWindow,
-            &tilesetPackageLoadFailEasyStruct,
-            NULL,
-            file);
-        goto error;
-    }
-    freeTilesetPackage(tilesetPackage);
-    tilesetPackage = newTilesetPackage;
-    strcpy(project.tilesetPackagePath, file);
-
-    return 1;
-
-error:
-    return 0;
-}
-
-static int loadTilesetPackageFromAsl(char *dir, char *file) {
-    char buffer[TILESET_PACKAGE_PATH_SIZE];
-
-    if(strlen(dir) >= sizeof(buffer)) {
-        fprintf(stderr, "loadTilesetPackageFromAsl: dir %s file %s doesn't fit in buffer\n", dir, file);
-        goto error;
-    }
-
-    strcpy(buffer, dir);
-    if(!AddPart(buffer, file, TILESET_PACKAGE_PATH_SIZE)) {
-        fprintf(stderr, "loadTilesetPackageFromAsl: dir %s file %s doesn't fit in buffer\n", dir, file);
-        goto error;
-    }
-
-    return loadTilesetPackageFromFile(buffer);
-
-error:
-    return 0;
-}
-
-static void closeAllMapEditors(void) {
-    MapEditor *i = firstMapEditor;
-    while(i) {
-        MapEditor *next = i->next;
-        removeWindowFromSigMask(i->window);
-        if(i->tilesetRequester) {
-            removeWindowFromSigMask(i->tilesetRequester->window);
-        }
-        closeMapEditor(i);
-        i = next;
-    }
-    firstMapEditor = NULL;
-}
-
-static void setProjectFilename(char *filename) {
-    if(filename) {
-        strcpy(projectFilename, filename);
-        OnMenu(projectWindow, REVERT_PROJECT_MENU_ITEM);
-    } else {
-        projectFilename[0] = '\0';
-        OffMenu(projectWindow, REVERT_PROJECT_MENU_ITEM);
-    }
-}
-
-static void enableMapRevert(MapEditor *mapEditor) {
-    OnMenu(mapEditor->window, REVERT_MAP_MENU_ITEM);
-}
-
-static void disableMapRevert(MapEditor *mapEditor) {
-    OffMenu(mapEditor->window, REVERT_MAP_MENU_ITEM);
-}
-
-static void clearProject(void) {
-    closeAllMapEditors();
-    freeTilesetPackage(tilesetPackage);
-    tilesetPackage = NULL;
-    freeProject(&project);
-    projectSaved = 1;
-}
-
-static void newProject(void) {
-    clearProject();
-    initProject(&project);
-    setProjectFilename(NULL);
-}
-
-static void openProjectFromFile(char *file) {
-    Project *myNewProject;
-
-    myNewProject = malloc(sizeof(Project));
-    if(!myNewProject) {
-        fprintf(stderr, "openProjectFromFile: failed to allocate project\n");
-        goto done;
-    }
-
-    if(!loadProjectFromFile(file, myNewProject)) {
-        EasyRequest(
-            projectWindow,
-            &projectLoadFailEasyStruct,
-            NULL,
-            file);
-        goto freeProject;
-    }
-
-    clearProject();
-    copyProject(myNewProject, &project);
-    setProjectFilename(file);
-
-    if(*project.tilesetPackagePath && !loadTilesetPackageFromFile(project.tilesetPackagePath)) {
-        EasyRequest(
-            projectWindow,
-            &tilesetPackageLoadFailEasyStruct,
-            NULL,
-            project.tilesetPackagePath);
-
-        /* because the tileset will now be empty, we've changed from the
-           saved version */
-        projectSaved = 0;
-    }
-
-freeProject:
-    free(myNewProject);
-done:
-    return;
-}
-
-static void openProjectFromAsl(char *dir, char *file) {
-    size_t bufferLen = strlen(dir) + strlen(file) + 2;
-    char *buffer = malloc(bufferLen);
-
-    if(!buffer) {
-        fprintf(
-            stderr,
-            "openProjectFromAsl: failed to allocate buffer "
-            "(dir: %s) (file: %s)\n",
-            dir  ? dir  : "NULL",
-            file ? file : "NULL");
-        goto done;
-    }
-
-    strcpy(buffer, dir);
-    if(!AddPart(buffer, file, (ULONG)bufferLen)) {
-        fprintf(
-            stderr,
-            "openProjectFromAsl: failed to add part "
-            "(buffer: %s) (file: %s) (len: %d)\n",
-            buffer ? buffer : "NULL",
-            file   ? file   : "NULL",
-            bufferLen);
-        goto freeBuffer;
-    }
-
-    openProjectFromFile(buffer);
-
-freeBuffer:
-    free(buffer);
-done:
-    return;
-}
 
 static int saveMapAs(MapEditor *mapEditor) {
     int selected = saveMapRequester(mapEditor);
@@ -430,103 +142,6 @@ static int unsavedMapEditorAlert(MapEditor *mapEditor) {
     }
 }
 
-static int ensureMapEditorsSaved(void) {
-    MapEditor *i = firstMapEditor;
-    while(i) {
-        if(!i->saved && !unsavedMapEditorAlert(i)) {
-            return 0;
-        }
-        i = i->next;
-    }
-    return 1;
-}
-
-static int saveProjectToAsl(char *dir, char *file) {
-    int result;
-    size_t bufferLen = strlen(dir) + strlen(file) + 2;
-    char *buffer = malloc(bufferLen);
-
-    if(!buffer) {
-        fprintf(
-            stderr,
-            "saveProjectToAsl: failed to allocate buffer "
-            "(dir: %s) (file: %s)\n",
-            dir  ? dir  : "NULL",
-            file ? file : "NULL");
-        result = 0;
-        goto done;
-    }
-
-    strcpy(buffer, dir);
-    if(!AddPart(buffer, file, (ULONG)bufferLen)) {
-        fprintf(
-            stderr,
-            "saveProjectToAsl: failed to add part "
-            "(buffer: %s) (file: %s) (len: %d)\n",
-            buffer ? buffer : "NULL",
-            file   ? file   : "NULL",
-            bufferLen);
-        result = 0;
-        goto freeBuffer;
-    }
-
-    if(!saveProjectToFile(buffer)) {
-        EasyRequest(projectWindow,
-            &projectSaveFailEasyStruct,
-            NULL,
-            buffer);
-        result = 0;
-        goto freeBuffer;
-    }
-    setProjectFilename(buffer);
-
-    projectSaved = 1;
-    result = 1;
-
-freeBuffer:
-    free(buffer);
-done:
-    return result;
-}
-
-static int saveProjectAs(void) {
-    BOOL result;
-    struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
-        ASL_Hail, "Save Project As",
-        ASL_Window, projectWindow,
-        ASL_FuncFlags, FILF_SAVE,
-        TAG_END);
-    if(!request) {
-        result = 0;
-        goto done;
-    }
-
-    result = AslRequest(request, NULL);
-    if(result) {
-        result = saveProjectToAsl(request->rf_Dir, request->rf_File);
-    }
-
-    FreeAslRequest(request);
-done:
-    return result;
-}
-
-static int saveProject(void) {
-    if(*projectFilename) {
-        if(!saveProjectToFile(projectFilename)) {
-            EasyRequest(
-                projectWindow,
-                &projectSaveFailEasyStruct,
-                NULL,
-                projectFilename);
-            return 0;
-        }
-        return 1;
-    } else {
-        return saveProjectAs();
-    }
-}
-
 static int unsavedProjectAlert(void) {
     int response = EasyRequest(
         projectWindow,
@@ -543,45 +158,6 @@ static int unsavedProjectAlert(void) {
     }
 }
 
-static int ensureProjectSaved(void) {
-    return projectSaved || unsavedProjectAlert();
-}
-
-static int ensureEverythingSaved(void) {
-    return ensureMapEditorsSaved() && ensureProjectSaved();
-}
-
-static void openProject(void) {
-    struct FileRequester *request;
-
-    if(!ensureEverythingSaved()) {
-        goto done;
-    }
-
-    request = AllocAslRequestTags(ASL_FileRequest,
-        ASL_Hail, "Open Project",
-        ASL_Window, projectWindow,
-        TAG_END);
-    if(!request) {
-        goto done;
-    }
-
-    if(AslRequest(request, NULL)) {
-        openProjectFromAsl(request->rf_Dir, request->rf_File);
-    }
-
-    FreeAslRequest(request);
-done:
-    return;
-}
-
-static int confirmRevertProject(void) {
-    return EasyRequest(
-        projectWindow,
-        &confirmRevertProjectEasyStruct,
-        NULL);
-}
-
 static int confirmRevertMap(MapEditor *mapEditor) {
     return EasyRequest(
         mapEditor->window,
@@ -590,196 +166,10 @@ static int confirmRevertMap(MapEditor *mapEditor) {
         mapEditor->mapNum - 1, mapEditor->map->name);
 }
 
-static void revertProject(void) {
-    if(!confirmRevertProject()) {
-        goto done;
-    }
-
-    openProjectFromFile(projectFilename);
-
-done:
-    return;
-}
-
-static void updateAllTileDisplays(void) {
-    MapEditor *i = firstMapEditor;
-    while(i) {
-        if(i->tilesetRequester) {
-            refreshTilesetRequesterList(i->tilesetRequester);
-        }
-        mapEditorRefreshTileset(i);
-        i = i->next;
-    }
-}
-
-static void selectTilesetPackage(void) {
-    struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
-        ASL_Hail, "Select Tileset Package",
-        ASL_Window, projectWindow,
-        TAG_END);
-    if(!request) {
-        fprintf(stderr, "selectTilesetPackage: failed to allocate requester\n");
-        goto done;
-    }
-
-    if(AslRequest(request, NULL)) {
-        if(loadTilesetPackageFromAsl(request->rf_Dir, request->rf_File)) {
-            projectSaved = 0;
-            updateAllTileDisplays();
-        }
-    }
-
-    FreeAslRequest(request);
-
-done:
-    return;
-}
-
-static void handleProjectMenuPick(UWORD itemNum, UWORD subNum) {
-    switch(itemNum) {
-        case 0:
-            if(ensureEverythingSaved()) {
-                newProject();
-            }
-            break;
-        case 2: openProject(); break;
-        case 4: saveProject(); break;
-        case 5: saveProjectAs(); break;
-        case 6: revertProject(); break;
-        case 8: selectTilesetPackage(); break;
-        case 10:
-            if(ensureEverythingSaved()) {
-                running = 0;
-            }
-            break;
-    }
-}
-
-static void newMap(void) {
-    MapEditor *mapEditor = newMapEditorNewMap();
-    if(!mapEditor) {
-        fprintf(stderr, "newMap: failed to create mapEditor\n");
-        return;
-    }
-    addToMapEditorList(mapEditor);
-    addWindowToSigMask(mapEditor->window);
-}
-
-static int confirmCreateMap(int mapNum) {
-    return EasyRequest(
-        projectWindow,
-        &confirmCreateMapEasyStruct,
-        NULL,
-        mapNum);
-}
-
-static int openMapNum(int mapNum) {
-    MapEditor *mapEditor;
-
-    if(!project.maps[mapNum]) {
-        if(!confirmCreateMap(mapNum)) {
-            return 0;
-        }
-
-        project.maps[mapNum] = allocMap();
-        if(!project.maps[mapNum]) {
-            fprintf(stderr, "openMapNum: failed to allocate new map\n");
-            return 0;
-        }
-        project.mapCnt++;
-        projectSaved = 0;
-    }
-
-    mapEditor = newMapEditorWithMap(project.maps[mapNum], mapNum);
-    if(!mapEditor) {
-        fprintf(stderr, "openMapNum: failed to create new map editor\n");
-        return 0;
-    }
-
-    addToMapEditorList(mapEditor);
-    addWindowToSigMask(mapEditor->window);
-    enableMapRevert(mapEditor);
-    return 1;
-}
-
-static void openMap(void) {
-    MapEditor *mapEditor;
-
-    int selected = openMapRequester();
-    if(!selected) {
-        return;
-    }
-
-    mapEditor = findMapEditor(selected - 1);
-    if(mapEditor) {
-        WindowToFront(mapEditor->window);
-    } else {
-        openMapNum(selected - 1);
-    }
-}
-
-static void handleMapsMenuPick(UWORD itemNum, UWORD subNum) {
-    switch(itemNum) {
-        case 0: newMap(); break;
-        case 1: openMap(); break;
-    }
-}
-
-static void handleMusicMenuPick(UWORD itemNum, UWORD subNum) {
-    switch(itemNum) {
-        case 0:
-            if(songNamesEditor) {
-                WindowToFront(songNamesEditor->window);
-            } else {
-                songNamesEditor = newSongNamesEditor();
-                if(songNamesEditor) {
-                    addWindowToSigMask(songNamesEditor->window);
-                }
-            }
-            break;
-    }
-}
-
-static void handleEntitiesMenuPick(UWORD itemNum, UWORD subNum) {
-    switch(itemNum) {
-        case 0:
-            if(entityEditor) {
-                WindowToFront(entityEditor->window);
-            } else {
-                entityEditor = newEntityEditor();
-                if(entityEditor) {
-                    addWindowToSigMask(entityEditor->window);
-                }
-            }
-            break;
-    }
-}
-
-static void handleMainMenuPick(ULONG menuNumber) {
-    UWORD menuNum = MENUNUM(menuNumber);
-    UWORD itemNum = ITEMNUM(menuNumber);
-    UWORD subNum  = SUBNUM(menuNumber);
-    switch(menuNum) {
-        case 0: handleProjectMenuPick(itemNum, subNum); break;
-        case 1: handleMapsMenuPick(itemNum, subNum); break;
-        case 2: handleEntitiesMenuPick(itemNum, subNum); break;
-        case 3: handleMusicMenuPick(itemNum, subNum); break;
-    }
-}
-
-static void handleMainMenuPicks(ULONG menuNumber) {
-    struct MenuItem *item = NULL;
-    while(running && menuNumber != MENUNULL) {
-        handleMainMenuPick(menuNumber);
-        item = ItemAddress(menu, menuNumber);
-        menuNumber = item->NextSelect;
-    }
-}
-
 static void handleProjectMessage(struct IntuiMessage* msg) {
     switch(msg->Class) {
         case IDCMP_MENUPICK:
-            handleMainMenuPicks((ULONG)msg->Code);
+            handleMainMenuPick(menu, msg);
     }
 }
 
@@ -811,17 +201,6 @@ static void handleSongNamesEditorSelectSong(struct IntuiMessage *msg) {
        TAG_END);
 
     songNamesEditor->selected = selected + 1;
-}
-
-static void refreshAllSongDisplays(void) {
-    MapEditor *i = firstMapEditor;
-    while(i) {
-        if(i->songRequester) {
-            GT_RefreshWindow(i->songRequester->window, NULL);
-        }
-        mapEditorRefreshSong(i);
-        i = i->next;
-    }
 }
 
 static void handleSongNamesEditorUpdateSong(struct IntuiMessage *msg) {
@@ -874,7 +253,7 @@ static void handleSongNamesEditorMessages(void) {
 
 static void closeSongNamesEditor(void) {
     if(songNamesEditor) {
-        removeWindowFromSigMask(songNamesEditor->window);
+        removeWindowFromSet(songNamesEditor->window);
         freeSongRequester(songNamesEditor);
         songNamesEditor = NULL;
     }
@@ -890,16 +269,6 @@ static void handleEntityEditorSelectEntity(struct IntuiMessage *msg) {
        TAG_END);
 
     entityEditor->selected = selected + 1;
-}
-
-static void refreshAllEntityBrowsers(void) {
-    MapEditor *i = firstMapEditor;
-    while(i) {
-        if(i->entityBrowser) {
-            GT_RefreshWindow(i->entityBrowser->window, NULL);
-        }
-        i = i->next;
-    }
 }
 
 static void handleEntityEditorUpdateEntity(struct IntuiMessage *msg) {
@@ -952,7 +321,7 @@ static void handleEntityEditorMessages(void) {
 
 static void closeEntityEditor(void) {
     if(entityEditor) {
-        removeWindowFromSigMask(entityEditor->window);
+        removeWindowFromSet(entityEditor->window);
         freeEntityEditor(entityEditor);
         entityEditor = NULL;
     }
@@ -1160,7 +529,7 @@ static void handleChooseEntityClicked(EntityBrowser *entityBrowser) {
         entityRequester = newEntityRequester();
         if(entityRequester) {
             attachEntityRequesterToEntityBrowser(entityBrowser, entityRequester);
-            addWindowToSigMask(entityRequester->window);
+            addWindowToSet(entityRequester->window);
         }
     }
 }
@@ -1250,17 +619,17 @@ static void closeAnyDeadChildrenOfMapEditor(MapEditor *mapEditor) {
     EntityBrowser    *entityBrowser    = mapEditor->entityBrowser;
 
     if(tilesetRequester && tilesetRequester->closed) {
-        removeWindowFromSigMask(tilesetRequester->window);
+        removeWindowFromSet(tilesetRequester->window);
         closeTilesetRequester(tilesetRequester);
         mapEditor->tilesetRequester = NULL;
     }
     if(songRequester && songRequester->closed) {
-        removeWindowFromSigMask(songRequester->window);
+        removeWindowFromSet(songRequester->window);
         freeSongRequester(songRequester);
         mapEditor->songRequester = NULL;
     }
     if(entityBrowser && entityBrowser->closed) {
-        removeWindowFromSigMask(entityBrowser->window);
+        removeWindowFromSet(entityBrowser->window);
         freeEntityBrowser(entityBrowser);
         mapEditor->entityBrowser = NULL;
     }
@@ -1304,7 +673,7 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
     }
 
     attachTilesetRequesterToMapEditor(mapEditor, tilesetRequester);
-    addWindowToSigMask(tilesetRequester->window);
+    addWindowToSet(tilesetRequester->window);
 }
 
 static void handleChangeSongClicked(MapEditor *mapEditor) {
@@ -1321,7 +690,7 @@ static void handleChangeSongClicked(MapEditor *mapEditor) {
         songRequester = newSongRequester(title);
         if(songRequester) {
             attachSongRequesterToMapEditor(mapEditor, songRequester);
-            addWindowToSigMask(songRequester->window);
+            addWindowToSet(songRequester->window);
         }
     } else {
         WindowToFront(mapEditor->songRequester->window);
@@ -1373,7 +742,7 @@ static void openNewEntityBrowser(MapEditor *mapEditor) {
     }
     
     attachEntityBrowserToMapEditor(mapEditor, entityBrowser);
-    addWindowToSigMask(entityBrowser->window);
+    addWindowToSet(entityBrowser->window);
 
     error:
         return;
@@ -1536,7 +905,6 @@ static void handleMapEditorChildMessages(MapEditor *mapEditor, long signalSet) {
     }
 }
 
-
 static void handleAllMapEditorMessages(long signalSet) {
     MapEditor *i = firstMapEditor;
     while(i) {
@@ -1563,11 +931,11 @@ static void closeDeadMapEditors(void) {
             }
 
             if(i->tilesetRequester) {
-                removeWindowFromSigMask(i->tilesetRequester->window);
+                removeWindowFromSet(i->tilesetRequester->window);
                 /* closeMapEditor takes care of everything else */
             }
 
-            removeWindowFromSigMask(i->window);
+            removeWindowFromSet(i->window);
             closeMapEditor(i);
         } else {
             closeAnyDeadChildrenOfMapEditor(i);
@@ -1580,7 +948,7 @@ static void mainLoop(void) {
     long signalSet = 0;
     running = 1;
     while(running) {
-        signalSet = Wait(sigMask);
+        signalSet = Wait(windowSetSigMask());
         if(1L << projectWindow->UserPort->mp_SigBit & signalSet) {
             handleProjectMessages();
         }
@@ -1630,7 +998,7 @@ int main(void) {
         retCode = -3;
         goto closeScreen;
     }
-    addWindowToSigMask(projectWindow);
+    addWindowToSet(projectWindow);
 
     vi = GetVisualInfo(screen, TAG_END);
     if(!vi) {
@@ -1645,7 +1013,7 @@ int main(void) {
     initEntityEditorVi();
     initEntityBrowserVi();
 
-    menu = createMenu();
+    menu = createMainMenu();
     if(!menu) {
         fprintf(stderr, "Error creating menu\n");
         retCode = -5;
@@ -1692,7 +1060,7 @@ freeMenu:
 freeVisualInfo:
     FreeVisualInfo(vi);
 closeWindow:
-    removeWindowFromSigMask(projectWindow);
+    removeWindowFromSet(projectWindow);
     CloseWindow(projectWindow);
 closeScreen:
     CloseScreen(screen);

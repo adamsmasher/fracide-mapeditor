@@ -6,6 +6,8 @@
 #define REVERT_PROJECT_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
 #define REVERT_MAP_MENU_ITEM     (SHIFTMENU(0) | SHIFTITEM(6))
 
-struct Menu *createMenu(void);
+struct Menu *createMainMenu(void);
+
+void handleMainMenuPick(struct Menu*, struct IntuiMessage*);
 
 #endif

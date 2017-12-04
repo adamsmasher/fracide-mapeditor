@@ -12,6 +12,7 @@ TilesetPackage  *tilesetPackage  = NULL;
 struct Window   *projectWindow   = NULL;
 SongRequester   *songNamesEditor = NULL;
 EntityEditor    *entityEditor    = NULL;
+int             running          = NULL;
 Project         project;
 int             projectSaved     = 1;
 char            projectFilename[PROJECT_FILENAME_LENGTH];

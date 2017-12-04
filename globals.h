@@ -16,6 +16,7 @@ extern TilesetPackage  *tilesetPackage;
 extern struct Window   *projectWindow;
 extern SongRequester   *songNamesEditor;
 extern EntityEditor    *entityEditor;
+extern int             running;
 extern Project         project;
 extern int             projectSaved;
 extern char            projectFilename[PROJECT_FILENAME_LENGTH];

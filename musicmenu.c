@@ -1,9 +1,10 @@
 #include "musicmenu.h"
 
 #include "menubuild.h"
+#include "workspace.h"
 
-/* TODO */
 static void songNamesClicked(void) {
+    showSongNamesEditor();
 }
 
 static MenuSectionSpec musicSection =

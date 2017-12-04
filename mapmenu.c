@@ -2,11 +2,12 @@
 
 #include "menubuild.h"
 
-/* TODO */
 static void mapNewClicked(void) {
+    newMap();
 }
 
 static void mapOpenClicked(void) {
+    openMap();
 }
 
 /* TODO: add a constant/enum for NO_SHORTKEY, ENABLED */

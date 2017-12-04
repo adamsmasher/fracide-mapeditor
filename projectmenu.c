@@ -1,27 +1,34 @@
 #include "projectmenu.h"
 
 #include "menubuild.h"
+#include "workspace.h"
 
-/* TODO */
 static void projectNewClicked(void) {
+    newProject();
 }
 
 static void projectOpenClicked(void) {
+    openProject();
 }
 
 static void projectSaveClicked(void) {
+    saveProject();
 }
 
 static void projectSaveAsClicked(void) {
+    saveProjectAs();
 }
 
 static void projectRevertClicked(void) {
+    revertProject();
 }
 
 static void projectSelectTilesetPackageClicked(void) {
+    selectTilesetPackage();
 }
 
 static void projectQuitClicked(void) {
+    quit();
 }
 
 static MenuSectionSpec newSection = 
