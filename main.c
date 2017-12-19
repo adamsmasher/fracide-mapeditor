@@ -142,22 +142,6 @@ static int unsavedMapEditorAlert(MapEditor *mapEditor) {
     }
 }
 
-static int unsavedProjectAlert(void) {
-    int response = EasyRequest(
-        projectWindow,
-        &unsavedProjectAlertEasyStruct,
-        NULL);
-
-    switch(response) {
-        case 0: return 0;
-        case 1: return saveProject();
-        case 2: return 1;
-        default:
-            fprintf(stderr, "unsavedProjectAlert: unknown response %d\n", response);
-            return 0;
-    }
-}
-
 static int confirmRevertMap(MapEditor *mapEditor) {
     return EasyRequest(
         mapEditor->window,

@@ -11,4 +11,7 @@ MapEditor *findMapEditor(int mapNum);
 
 int ensureMapEditorsSaved(void);
 
+void closeAllMapEditors(void);
+
+
 #endif

@@ -1,5 +1,6 @@
 #include "projectmenu.h"
 
+#include "currentproject.h"
 #include "menubuild.h"
 #include "workspace.h"
 

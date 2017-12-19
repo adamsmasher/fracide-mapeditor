@@ -3,10 +3,9 @@
 
 #include "MapEditor.h"
 
+/* TODO: move all these project things into currentproject.h */
 void newProject(void);
 void openProject(void);
-int saveProject(void);
-int saveProjectAs(void);
 void revertProject(void);
 void selectTilesetPackage(void);
 void quit(void);
@@ -20,7 +19,6 @@ void refreshAllSongDisplays(void);
 void newMap(void);
 void openMap(void);
 int openMapNum(int);
-void closeAllMapEditors(void);
 
 /* TODO: no. */
 extern MapEditor *firstMapEditor;

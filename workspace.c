@@ -109,44 +109,6 @@ done:
     return;
 }
 
-int saveProjectAs(void) {
-    BOOL result;
-    struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
-        ASL_Hail, "Save Project As",
-        ASL_Window, projectWindow,
-        ASL_FuncFlags, FILF_SAVE,
-        TAG_END);
-    if(!request) {
-        result = 0;
-        goto done;
-    }
-
-    result = AslRequest(request, NULL);
-    if(result) {
-        result = saveProjectToAsl(request->rf_Dir, request->rf_File);
-    }
-
-    FreeAslRequest(request);
-done:
-    return result;
-}
-
-int saveProject(void) {
-    if(*projectFilename) {
-        if(!saveProjectToFile(projectFilename)) {
-            EasyRequest(
-                projectWindow,
-                &projectSaveFailEasyStruct,
-                NULL,
-                projectFilename);
-            return 0;
-        }
-        return 1;
-    } else {
-        return saveProjectAs();
-    }
-}
-
 void selectTilesetPackage(void) {
     struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
         ASL_Hail, "Select Tileset Package",

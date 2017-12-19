@@ -1,4 +1,4 @@
-static int loadTilesetPackageFromFile(char *file) {
+int loadTilesetPackageFromFile(char *file) {
     TilesetPackage *newTilesetPackage;
 
     newTilesetPackage = tilesetPackageLoadFromFile(file);
@@ -19,7 +19,7 @@ error:
     return 0;
 }
 
-static int loadTilesetPackageFromAsl(char *dir, char *file) {
+int loadTilesetPackageFromAsl(char *dir, char *file) {
     char buffer[TILESET_PACKAGE_PATH_SIZE];
 
     if(strlen(dir) >= sizeof(buffer)) {

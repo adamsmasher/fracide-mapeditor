@@ -1,7 +1,124 @@
 #include "currentproject.h"
 
+#include <libraries/asl.h>
+#include <proto/asl.h>
+
+#include <libraries/dos.h>
+#include <proto/dos.h>
+
+#include <stdlib.h>
+#include <string.h>
+
+#include "currenttiles.h"
+#include "easystructs.h"
+#include "globals.h"
+#include "mapeditorset.h"
+#include "menu.h"
+
+static int saveProjectToAsl(char *dir, char *file) {
+    int result;
+    size_t bufferLen = strlen(dir) + strlen(file) + 2;
+    char *buffer = malloc(bufferLen);
+
+    if(!buffer) {
+        fprintf(
+            stderr,
+            "saveProjectToAsl: failed to allocate buffer "
+            "(dir: %s) (file: %s)\n",
+            dir  ? dir  : "NULL",
+            file ? file : "NULL");
+        result = 0;
+        goto done;
+    }
+
+    strcpy(buffer, dir);
+    if(!AddPart(buffer, file, (ULONG)bufferLen)) {
+        fprintf(
+            stderr,
+            "saveProjectToAsl: failed to add part "
+            "(buffer: %s) (file: %s) (len: %d)\n",
+            buffer ? buffer : "NULL",
+            file   ? file   : "NULL",
+            bufferLen);
+        result = 0;
+        goto freeBuffer;
+    }
+
+    if(!saveProjectToFile(buffer)) {
+        EasyRequest(projectWindow,
+            &projectSaveFailEasyStruct,
+            NULL,
+            buffer);
+        result = 0;
+        goto freeBuffer;
+    }
+    setProjectFilename(buffer);
+
+    projectSaved = 1;
+    result = 1;
+
+freeBuffer:
+    free(buffer);
+done:
+    return result;
+}
+
+int saveProjectAs(void) {
+    BOOL result;
+    struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
+        ASL_Hail, "Save Project As",
+        ASL_Window, projectWindow,
+        ASL_FuncFlags, FILF_SAVE,
+        TAG_END);
+    if(!request) {
+        result = 0;
+        goto done;
+    }
+
+    result = AslRequest(request, NULL);
+    if(result) {
+        result = saveProjectToAsl(request->rf_Dir, request->rf_File);
+    }
+
+    FreeAslRequest(request);
+done:
+    return result;
+}
+
+int saveProject(void) {
+    if(*projectFilename) {
+        if(!saveProjectToFile(projectFilename)) {
+            EasyRequest(
+                projectWindow,
+                &projectSaveFailEasyStruct,
+                NULL,
+                projectFilename);
+            return 0;
+        }
+        return 1;
+    } else {
+        return saveProjectAs();
+    }
+}
+
+static int unsavedProjectAlert(void) {
+    int response = EasyRequest(
+        projectWindow,
+        &unsavedProjectAlertEasyStruct,
+        NULL);
+
+    switch(response) {
+        case 0: return 0;
+        case 1: return saveProject();
+        case 2: return 1;
+        default:
+            fprintf(stderr, "unsavedProjectAlert: unknown response %d\n", response);
+            return 0;
+    }
+}
+
 BOOL ensureProjectSaved(void) {
-    return projectSaved || unsavedProjectAlert();
+    return (BOOL)(projectSaved || unsavedProjectAlert());
 }
 
 void clearProject(void) {
@@ -22,7 +139,7 @@ void setProjectFilename(char *filename) {
     }
 }
 
-static void openProjectFromFile(char *file) {
+void openProjectFromFile(char *file) {
     Project *myNewProject;
 
     myNewProject = malloc(sizeof(Project));
@@ -94,52 +211,4 @@ freeBuffer:
     free(buffer);
 done:
     return;
-}
-
-int saveProjectToAsl(char *dir, char *file) {
-    int result;
-    size_t bufferLen = strlen(dir) + strlen(file) + 2;
-    char *buffer = malloc(bufferLen);
-
-    if(!buffer) {
-        fprintf(
-            stderr,
-            "saveProjectToAsl: failed to allocate buffer "
-            "(dir: %s) (file: %s)\n",
-            dir  ? dir  : "NULL",
-            file ? file : "NULL");
-        result = 0;
-        goto done;
-    }
-
-    strcpy(buffer, dir);
-    if(!AddPart(buffer, file, (ULONG)bufferLen)) {
-        fprintf(
-            stderr,
-            "saveProjectToAsl: failed to add part "
-            "(buffer: %s) (file: %s) (len: %d)\n",
-            buffer ? buffer : "NULL",
-            file   ? file   : "NULL",
-            bufferLen);
-        result = 0;
-        goto freeBuffer;
-    }
-
-    if(!saveProjectToFile(buffer)) {
-        EasyRequest(projectWindow,
-            &projectSaveFailEasyStruct,
-            NULL,
-            buffer);
-        result = 0;
-        goto freeBuffer;
-    }
-    setProjectFilename(buffer);
-
-    projectSaved = 1;
-    result = 1;
-
-freeBuffer:
-    free(buffer);
-done:
-    return result;
 }
