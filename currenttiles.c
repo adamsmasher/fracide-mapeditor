@@ -1,3 +1,18 @@
+#include "currenttiles.h"
+
+#include <stdio.h>
+#include <strings.h>
+
+#include <dos/dos.h>
+#include <proto/dos.h>
+
+#include <intuition/intuition.h>
+#include <proto/intuition.h>
+
+#include "easystructs.h"
+#include "globals.h"
+#include "TilesetPackage.h"
+
 int loadTilesetPackageFromFile(char *file) {
     TilesetPackage *newTilesetPackage;
 
