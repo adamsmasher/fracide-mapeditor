@@ -25,6 +25,7 @@
 #include "EntityEditor.h"
 #include "globals.h"
 #include "MapEditor.h"
+#include "mapeditorset.h"
 #include "MapRequester.h"
 #include "menu.h"
 #include "palette.h"

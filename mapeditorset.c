@@ -2,6 +2,7 @@
 
 #include "MapEditor.h"
 #include "windowset.h"
+#include "workspace.h"
 
 MapEditor *firstMapEditor = NULL;
 
