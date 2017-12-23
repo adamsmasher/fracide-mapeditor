@@ -1,3 +1,5 @@
+#include "windowset.h"
+
 static long sigMask = 0;
 
 void addWindowToSet(struct Window *window) {
