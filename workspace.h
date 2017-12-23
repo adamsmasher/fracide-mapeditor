@@ -16,11 +16,16 @@ void refreshAllEntityBrowsers(void);
 void showSongNamesEditor(void);
 void refreshAllSongDisplays(void);
 
+/* TODO: put me...somewhere, too, maybe */
 void newMap(void);
 void openMap(void);
 int openMapNum(int);
+int saveMap(MapEditor*);
+int saveMapAs(MapEditor*);
 
-/* TODO: no. */
+int unsavedMapEditorAlert(MapEditor*);
+
+/* TODO: no. put me in mapeditor set if anywhere. */
 extern MapEditor *firstMapEditor;
 
 #endif

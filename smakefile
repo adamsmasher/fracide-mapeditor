@@ -10,7 +10,7 @@ MENU_HEADERS= projectmenu.h mapmenu.h entitiesmenu.h musicmenu.h
 DATA_OBJS=    easystructs.o
 DATA_HEADERS= easystructs.h
 
-OTHER_OBJS= globals.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongNames.o EntityBrowser.o entity.o EntityEditor.o menu.o palette.o workspace.o currentproject.o currenttiles.o
+OTHER_OBJS= globals.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongNames.o EntityBrowser.o entity.o EntityEditor.o menu.o palette.o workspace.o currentproject.o currenttiles.o mapeditorset.o
 
 OBJS= $(FRAMEWORK_OBJS) $(MENU_OBJS) $(DATA_OBJS) $(OTHER_OBJS)
 
@@ -60,6 +60,8 @@ currentproject.o: currentproject.c currentproject.h
 currenttiles.o: currenttiles.c currenttiles.h
 
 easystructs.o: easystructs.c easystructs.h
+
+mapeditorset.o: mapeditorset.c mapeditorset.h
 
 clean:
     delete mapedit mapedit.lnk $(OBJS)

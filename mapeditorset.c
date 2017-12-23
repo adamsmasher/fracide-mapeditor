@@ -1,3 +1,8 @@
+#include "mapeditorset.h"
+
+#include "MapEditor.h"
+#include "windowset.h"
+
 static MapEditor *firstMapEditor = NULL;
 
 MapEditor *mapEditorSetFirst(void) {
