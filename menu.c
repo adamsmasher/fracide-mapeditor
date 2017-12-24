@@ -41,14 +41,14 @@ error:
 }
 
 Handler getMenuItemHandler(MenuSpec *menuSpec, UWORD itemNum) {
-    MenuSectionSpec **sectionSpec = menuSpec->sections;
-    MenuItemSpec *itemSpec = *sectionSpec;
+    MenuSectionSpec **sectionSpec = &(*menuSpec->sections)[0];
+    MenuItemSpec *itemSpec = &(**sectionSpec)[0];
 
     while(itemNum) {
         itemSpec++;
         if(endMenuSection(itemSpec)) {
             sectionSpec++;
-            itemSpec = *sectionSpec;
+            itemSpec = &(**sectionSpec)[0];
             /* skip past the end of section marker */
             itemNum--;
         }
