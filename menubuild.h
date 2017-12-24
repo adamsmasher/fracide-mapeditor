@@ -17,6 +17,7 @@ typedef MenuItemSpec MenuSectionSpec[];
 
 typedef struct MenuSpecTag {
     char *name;
+    /* pointer to an array of pointers to MenuSectionSpecs */
     MenuSectionSpec *(*sections)[];
 } MenuSpec;
 
