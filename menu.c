@@ -80,7 +80,7 @@ void handleMainMenuPick(struct Menu *menu, struct IntuiMessage *msg) {
     ULONG menuNumber = msg->Code;
 
     while(menuNumber != MENUNULL) {
-        invokeMenuCallback(menuNumber);
+        invokeMenuHandler(menuNumber);
         item = ItemAddress(menu, menuNumber);
         menuNumber = item->NextSelect;
     }
