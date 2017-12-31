@@ -33,25 +33,25 @@ static void projectQuitClicked(void) {
 }
 
 static MenuSectionSpec newSection = 
-    { { "New",  "N", FALSE, projectNewClicked },
+    { { "New",  "N", MENU_ITEM_ENABLED, projectNewClicked },
     END_SECTION };
 
 static MenuSectionSpec openSection =
-    { { "Open", "O", FALSE, projectOpenClicked },
+    { { "Open", "O", MENU_ITEM_ENABLED, projectOpenClicked },
     END_SECTION };
 
 static MenuSectionSpec saveSection =
-    { { "Save",       "S",  FALSE, projectSaveClicked   },
-      { "Save As...", "A",  FALSE, projectSaveAsClicked },
-      { "Revert",     NULL, TRUE,  projectRevertClicked },
+    { { "Save",       "S",         MENU_ITEM_ENABLED,  projectSaveClicked   },
+      { "Save As...", "A",         MENU_ITEM_ENABLED,  projectSaveAsClicked },
+      { "Revert",     NO_SHORTKEY, MENU_ITEM_DISABLED, projectRevertClicked },
     END_SECTION };
 
 static MenuSectionSpec tilesetSection =
-    { { "Select Tileset Package...", NULL, FALSE, projectSelectTilesetPackageClicked },
+    { { "Select Tileset Package...", NO_SHORTKEY, MENU_ITEM_ENABLED, projectSelectTilesetPackageClicked },
     END_SECTION };
 
 static MenuSectionSpec quitSection =
-    { { "Quit", "Q", FALSE, projectQuitClicked },
+    { { "Quit", "Q", MENU_ITEM_ENABLED, projectQuitClicked },
     END_SECTION };
 
 MenuSectionSpec *projectMenuSpec[] = {

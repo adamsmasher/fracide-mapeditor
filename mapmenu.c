@@ -11,10 +11,9 @@ static void mapOpenClicked(void) {
     openMap();
 }
 
-/* TODO: add a constant/enum for NO_SHORTKEY, ENABLED */
 static MenuSectionSpec mapSection =
-    { { "New Map",     NULL, FALSE, mapNewClicked  },
-      { "Open Map...", NULL, FALSE, mapOpenClicked },
+    { { "New Map",     NO_SHORTKEY, MENU_ITEM_ENABLED, mapNewClicked  },
+      { "Open Map...", NO_SHORTKEY, MENU_ITEM_ENABLED, mapOpenClicked },
     END_SECTION };
 
 MenuSectionSpec *mapMenuSpec[] = {

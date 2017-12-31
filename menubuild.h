@@ -6,10 +6,18 @@
 
 typedef void (*Handler)(void);
 
+#define NO_SHORTKEY NULL
+
+typedef enum MenuItemState_tag {
+    MENU_ITEM_DISABLED,
+    MENU_ITEM_ENABLED
+} MenuItemState;
+
+
 typedef struct MenuItemSpecTag {
     char *label;
     char *shortcut;
-    BOOL disabled;
+    MenuItemState state;
     Handler handler;
 } MenuItemSpec;
 

@@ -8,7 +8,7 @@ static void songNamesClicked(void) {
 }
 
 static MenuSectionSpec musicSection =
-    { { "Song Names...", NULL, FALSE, songNamesClicked },
+    { { "Song Names...", NO_SHORTKEY, MENU_ITEM_ENABLED, songNamesClicked },
     END_SECTION };
 
 MenuSectionSpec *musicMenuSpec[] = {

@@ -58,7 +58,7 @@ static void buildMenuItem(struct NewMenu *item, MenuItemSpec *spec) {
     struct NewMenu newItem = { NM_ITEM, NULL, NULL, 0, 0, 0 };
     newItem.nm_Label   = spec->label;
     newItem.nm_CommKey = spec->shortcut;
-    newItem.nm_Flags   = spec->disabled ? NM_ITEMDISABLED : 0;
+    newItem.nm_Flags   = spec->state == MENU_ITEM_DISABLED ? NM_ITEMDISABLED : 0;
     *item = newItem;
 }
 
