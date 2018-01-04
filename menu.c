@@ -9,9 +9,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "framework/menubuild.h"
+
 #include "entitiesmenu.h"
 #include "mapmenu.h"
-#include "menubuild.h"
 #include "musicmenu.h"
 #include "projectmenu.h"
 

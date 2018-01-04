@@ -1,7 +1,7 @@
 #ifndef ENTITYMENU_H
 #define ENTITYMENU_H
 
-#include "menubuild.h"
+#include "framework/menubuild.h"
 
 extern MenuSectionSpec *entitiesMenuSpec[];
 

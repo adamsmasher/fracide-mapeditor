@@ -4,7 +4,7 @@
 
 # TODO: update dependencies
 
-FRAMEWORK_OBJS= menubuild.o
+FRAMEWORK_OBJS= framework/menubuild.o
 
 MENU_OBJS=    projectmenu.o mapmenu.o entitiesmenu.o musicmenu.o
 MENU_HEADERS= projectmenu.h mapmenu.h entitiesmenu.h musicmenu.h

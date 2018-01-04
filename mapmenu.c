@@ -1,6 +1,6 @@
 #include "mapmenu.h"
 
-#include "menubuild.h"
+#include "framework/menubuild.h"
 #include "workspace.h"
 
 static void mapNewClicked(void) {

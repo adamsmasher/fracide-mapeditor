@@ -1,8 +1,7 @@
 #ifndef MUSICMENU_H
 #define MUSICMENU_H
 
-#include "menubuild.h"
-
+#include "framework/menubuild.h"
 
 extern MenuSectionSpec *musicMenuSpec[];
 

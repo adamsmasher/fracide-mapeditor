@@ -1,7 +1,8 @@
 #include "projectmenu.h"
 
+#include "framework/menubuild.h"
+
 #include "currentproject.h"
-#include "menubuild.h"
 #include "workspace.h"
 
 static void projectNewClicked(void) {

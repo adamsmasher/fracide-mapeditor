@@ -1,6 +1,6 @@
 #include "musicmenu.h"
 
-#include "menubuild.h"
+#include "framework/menubuild.h"
 #include "workspace.h"
 
 static void songNamesClicked(void) {

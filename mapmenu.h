@@ -1,7 +1,7 @@
 #ifndef MAPMENU_H
 #define MAPMENU_H
 
-#include "menubuild.h"
+#include "framework/menubuild.h"
 
 extern MenuSectionSpec *mapMenuSpec[];
 
