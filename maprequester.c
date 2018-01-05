@@ -15,6 +15,7 @@
 #include <proto/graphics.h>
 
 #include "globals.h"
+#include "ProjectWindow.h"
 
 #define MAP_REQUESTER_WIDTH      240
 #define MAP_REQUESTER_HEIGHT     336
@@ -259,7 +260,7 @@ error:
 }
 
 int openMapRequester(void) {
-    return spawnRequester(projectWindow, "Open Map");
+    return spawnRequester(getProjectWindow(), "Open Map");
 }
 
 int saveMapRequester(MapEditor *mapEditor) {

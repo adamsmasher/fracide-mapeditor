@@ -29,6 +29,7 @@
 #include "MapRequester.h"
 #include "menu.h"
 #include "palette.h"
+#include "ProjectWindow.h"
 #include "SongNames.h"
 #include "TilesetPackage.h"
 #include "TilesetRequester.h"
@@ -49,44 +50,12 @@ static struct NewScreen newScreen = {
     NULL
 };
 
-static struct NewWindow projectNewWindow = {
-    0,0,SCR_WIDTH,SCR_HEIGHT,
-    0xFF,0xFF,
-    MENUPICK,
-    BORDERLESS|BACKDROP,
-    NULL,
-    NULL,
-    "Project",
-    NULL,
-    NULL,
-    SCR_WIDTH,SCR_WIDTH,
-    0xFFFF,0xFFFF,
-    CUSTOMSCREEN
-};
-
-static struct Menu *menu = NULL;
-
 static int confirmRevertMap(MapEditor *mapEditor) {
     return EasyRequest(
         mapEditor->window,
         &confirmRevertMapEasyStruct,
         NULL,
         mapEditor->mapNum - 1, mapEditor->map->name);
-}
-
-static void handleProjectMessage(struct IntuiMessage* msg) {
-    switch(msg->Class) {
-        case IDCMP_MENUPICK:
-            handleMainMenuPick(menu, msg);
-    }
-}
-
-static void handleProjectMessages(void) {
-    struct IntuiMessage *msg;
-    while(msg = (struct IntuiMessage*)GetMsg(projectWindow->UserPort)) {
-        handleProjectMessage(msg);
-        ReplyMsg((struct Message*)msg);
-    }
 }
 
 static int listItemStart(int selected) {
@@ -753,7 +722,8 @@ static void handleMapEditorMenuPicks(MapEditor *mapEditor, ULONG menuNumber) {
     struct MenuItem *item = NULL;
     while(!mapEditor->closed && menuNumber != MENUNULL) {
         handleMapEditorMenuPick(mapEditor, menuNumber);
-        item = ItemAddress(menu, menuNumber);
+        /* TODO: was this ever correct? */
+        /*item = ItemAddress(menu, menuNumber);*/
         menuNumber = item->NextSelect;
     }
 }
@@ -857,9 +827,7 @@ static void mainLoop(void) {
     running = 1;
     while(running) {
         signalSet = Wait(windowSetSigMask());
-        if(1L << projectWindow->UserPort->mp_SigBit & signalSet) {
-            handleProjectMessages();
-        }
+        handleProjectMessages(signalSet);
         if(songNamesEditor) {
             if(1L << songNamesEditor->window->UserPort->mp_SigBit & signalSet) {
                 handleSongNamesEditorMessages();
@@ -900,18 +868,10 @@ int main(void) {
     initEntityEditorScreen();
     initEntityBrowserScreen();
 
-    projectNewWindow.Screen = screen;
-    projectWindow = OpenWindow(&projectNewWindow);
-    if(!projectWindow) {
-        retCode = -3;
-        goto closeScreen;
-    }
-    addWindowToSet(projectWindow);
-
     vi = GetVisualInfo(screen, TAG_END);
     if(!vi) {
-        retCode = -4;
-        goto closeWindow;
+        retCode = -3;
+        goto closeScreen;
     }
 
     initMapEditorVi();
@@ -921,28 +881,15 @@ int main(void) {
     initEntityEditorVi();
     initEntityBrowserVi();
 
-    menu = createMainMenu();
-    if(!menu) {
-        fprintf(stderr, "Error creating menu\n");
-        retCode = -5;
+    if(!openProjectWindow(screen)) {
+        retCode = -4;
         goto freeVisualInfo;
-    }
-
-    if(!LayoutMenus(menu, vi, TAG_END)) {
-        retCode = -6;
-        goto freeMenu;
-
     }
 
     if(!initMapEditorMenu()) {
         retCode = -7;
-        goto freeMenu;
+        goto closeWindow;
     }
-
-
-    SetMenuStrip(projectWindow, menu);
-
-    ActivateWindow(projectWindow);
     
     initProject(&project);
 
@@ -959,17 +906,12 @@ freeTilesetPackage:
     freeTilesetPackage(tilesetPackage);
 freeProject:
     freeProject(&project);
-clearMenu:
-    ClearMenuStrip(projectWindow);
 freeMapEditorMenu:
     freeMapEditorMenu();
-freeMenu:
-    FreeMenus(menu);
+closeWindow:
+    closeProjectWindow();
 freeVisualInfo:
     FreeVisualInfo(vi);
-closeWindow:
-    removeWindowFromSet(projectWindow);
-    CloseWindow(projectWindow);
 closeScreen:
     CloseScreen(screen);
 done:

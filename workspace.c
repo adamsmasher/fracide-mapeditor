@@ -21,6 +21,7 @@
 #include "MapEditor.h"
 #include "mapeditorset.h"
 #include "MapRequester.h"
+#include "ProjectWindow.h"
 #include "windowset.h"
 
 static int ensureEverythingSaved(void) {
@@ -68,7 +69,7 @@ void openProject(void) {
 
     request = AllocAslRequestTags(ASL_FileRequest,
         ASL_Hail, "Open Project",
-        ASL_Window, projectWindow,
+        ASL_Window, getProjectWindow(),
         TAG_END);
     if(!request) {
         goto done;
@@ -93,7 +94,7 @@ void newProject(void) {
 
 static int confirmRevertProject(void) {
     return EasyRequest(
-        projectWindow,
+        getProjectWindow(),
         &confirmRevertProjectEasyStruct,
         NULL);
 }
@@ -112,7 +113,7 @@ done:
 void selectTilesetPackage(void) {
     struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
         ASL_Hail, "Select Tileset Package",
-        ASL_Window, projectWindow,
+        ASL_Window, getProjectWindow(),
         TAG_END);
     if(!request) {
         fprintf(stderr, "selectTilesetPackage: failed to allocate requester\n");
@@ -172,7 +173,7 @@ void newMap(void) {
 
 static int confirmCreateMap(int mapNum) {
     return EasyRequest(
-        projectWindow,
+        getProjectWindow(),
         &confirmCreateMapEasyStruct,
         NULL,
         mapNum);

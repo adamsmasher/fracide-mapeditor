@@ -9,7 +9,6 @@
 struct Screen   *screen          = NULL;
 void            *vi              = NULL;
 TilesetPackage  *tilesetPackage  = NULL;
-struct Window   *projectWindow   = NULL;
 SongRequester   *songNamesEditor = NULL;
 EntityEditor    *entityEditor    = NULL;
 int             running          = NULL;

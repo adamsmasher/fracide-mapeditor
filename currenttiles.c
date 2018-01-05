@@ -11,6 +11,7 @@
 
 #include "easystructs.h"
 #include "globals.h"
+#include "ProjectWindow.h"
 #include "TilesetPackage.h"
 
 int loadTilesetPackageFromFile(char *file) {
@@ -18,7 +19,8 @@ int loadTilesetPackageFromFile(char *file) {
 
     newTilesetPackage = tilesetPackageLoadFromFile(file);
     if(!newTilesetPackage) {
-        EasyRequest(projectWindow,
+        EasyRequest(
+            getProjectWindow(),
             &tilesetPackageLoadFailEasyStruct,
             NULL,
             file);

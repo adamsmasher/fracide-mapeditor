@@ -14,6 +14,7 @@
 #include "globals.h"
 #include "mapeditorset.h"
 #include "menu.h"
+#include "ProjectWindow.h"
 
 static int saveProjectToAsl(char *dir, char *file) {
     int result;
@@ -45,7 +46,8 @@ static int saveProjectToAsl(char *dir, char *file) {
     }
 
     if(!saveProjectToFile(buffer)) {
-        EasyRequest(projectWindow,
+        EasyRequest(
+            getProjectWindow(),
             &projectSaveFailEasyStruct,
             NULL,
             buffer);
@@ -67,7 +69,7 @@ int saveProjectAs(void) {
     BOOL result;
     struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
         ASL_Hail, "Save Project As",
-        ASL_Window, projectWindow,
+        ASL_Window, getProjectWindow(),
         ASL_FuncFlags, FILF_SAVE,
         TAG_END);
     if(!request) {
@@ -89,7 +91,7 @@ int saveProject(void) {
     if(*projectFilename) {
         if(!saveProjectToFile(projectFilename)) {
             EasyRequest(
-                projectWindow,
+                getProjectWindow(),
                 &projectSaveFailEasyStruct,
                 NULL,
                 projectFilename);
@@ -103,7 +105,7 @@ int saveProject(void) {
 
 static int unsavedProjectAlert(void) {
     int response = EasyRequest(
-        projectWindow,
+        getProjectWindow(),
         &unsavedProjectAlertEasyStruct,
         NULL);
 
@@ -130,12 +132,13 @@ void clearProject(void) {
 }
 
 void setProjectFilename(char *filename) {
+    /* TODO: honestly these OnMenu/OffMenu things could probably be made into functions elsewhere */
     if(filename) {
         strcpy(projectFilename, filename);
-        OnMenu(projectWindow, REVERT_PROJECT_MENU_ITEM);
+        OnMenu(getProjectWindow(), REVERT_PROJECT_MENU_ITEM);
     } else {
         projectFilename[0] = '\0';
-        OffMenu(projectWindow, REVERT_PROJECT_MENU_ITEM);
+        OffMenu(getProjectWindow(), REVERT_PROJECT_MENU_ITEM);
     }
 }
 
@@ -150,7 +153,7 @@ void openProjectFromFile(char *file) {
 
     if(!loadProjectFromFile(file, myNewProject)) {
         EasyRequest(
-            projectWindow,
+            getProjectWindow(),
             &projectLoadFailEasyStruct,
             NULL,
             file);
@@ -163,7 +166,7 @@ void openProjectFromFile(char *file) {
 
     if(*project.tilesetPackagePath && !loadTilesetPackageFromFile(project.tilesetPackagePath)) {
         EasyRequest(
-            projectWindow,
+            getProjectWindow(),
             &tilesetPackageLoadFailEasyStruct,
             NULL,
             project.tilesetPackagePath);
