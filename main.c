@@ -120,19 +120,24 @@ static void handleSongNamesEditorMessage(struct IntuiMessage* msg) {
     }
 }
 
-static void handleSongNamesEditorMessages(void) {
-    struct IntuiMessage *msg;
-    while(msg = GT_GetIMsg(songNamesEditor->window->UserPort)) {
-        handleSongNamesEditorMessage(msg);
-        GT_ReplyIMsg(msg);
-    }
-}
-
 static void closeSongNamesEditor(void) {
     if(songNamesEditor) {
         removeWindowFromSet(songNamesEditor->window);
         freeSongRequester(songNamesEditor);
         songNamesEditor = NULL;
+    }
+}
+
+static void handleSongNamesEditorMessages(long signalSet) {
+    struct IntuiMessage *msg;
+    if(1L << songNamesEditor->window->UserPort->mp_SigBit & signalSet) {
+        while(msg = GT_GetIMsg(songNamesEditor->window->UserPort)) {
+            handleSongNamesEditorMessage(msg);
+            GT_ReplyIMsg(msg);
+        }
+        if(songNamesEditor->closed) {
+            closeSongNamesEditor();
+        }
     }
 }
 
@@ -827,14 +832,10 @@ static void mainLoop(void) {
     running = 1;
     while(running) {
         signalSet = Wait(windowSetSigMask());
+        /* TODO: you should just loop through a thing or something */
         handleProjectMessages(signalSet);
         if(songNamesEditor) {
-            if(1L << songNamesEditor->window->UserPort->mp_SigBit & signalSet) {
-                handleSongNamesEditorMessages();
-            }
-            if(songNamesEditor->closed) {
-                closeSongNamesEditor();
-            }
+            handleSongNamesEditorMessages(signalSet);
         }
         if(entityEditor) {
             if(1L << entityEditor->window->UserPort->mp_SigBit & signalSet) {
