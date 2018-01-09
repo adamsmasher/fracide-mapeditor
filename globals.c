@@ -10,8 +10,6 @@ struct Screen   *screen          = NULL;
 void            *vi              = NULL;
 TilesetPackage  *tilesetPackage  = NULL;
 
-/* TODO: create a separate SongNamesEditor.c module to handle me */
-SongRequester   *songNamesEditor = NULL;
 EntityEditor    *entityEditor    = NULL;
 int             running          = NULL;
 Project         project;

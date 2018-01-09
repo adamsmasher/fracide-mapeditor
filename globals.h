@@ -13,7 +13,6 @@
 extern struct Screen   *screen;
 extern void            *vi;
 extern TilesetPackage  *tilesetPackage;
-extern SongRequester   *songNamesEditor;
 extern EntityEditor    *entityEditor;
 extern int             running;
 extern Project         project;

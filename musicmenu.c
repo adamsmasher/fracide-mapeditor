@@ -1,7 +1,7 @@
 #include "musicmenu.h"
 
 #include "framework/menubuild.h"
-#include "workspace.h"
+#include "SongNamesEditor.h"
 
 static void songNamesClicked(void) {
     showSongNamesEditor();

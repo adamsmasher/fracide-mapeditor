@@ -13,7 +13,6 @@ void quit(void);
 void showEntityEditor(void);
 void refreshAllEntityBrowsers(void);
 
-void showSongNamesEditor(void);
 void refreshAllSongDisplays(void);
 
 /* TODO: put me...somewhere, too, maybe */

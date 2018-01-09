@@ -14,7 +14,7 @@ DATA_HEADERS= easystructs.h
 
 OTHER_OBJS= globals.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongNames.o EntityBrowser.o entity.o EntityEditor.o menu.o palette.o workspace.o currentproject.o currenttiles.o mapeditorset.o windowset.o
 
-WINDOW_OBJS= ProjectWindow.o
+WINDOW_OBJS= ProjectWindow.o SongNamesEditor.o
 
 OBJS= $(FRAMEWORK_OBJS) $(MENU_OBJS) $(DATA_OBJS) $(OTHER_OBJS) $(WINDOW_OBJS)
 
@@ -70,6 +70,8 @@ mapeditorset.o: mapeditorset.c mapeditorset.h
 windowset.o: windowset.c windowset.h
 
 ProjectWindow.o: ProjectWindow.c ProjectWindow.h
+
+SongNamesEditor.o: SongNamesEditor.c SongNamesEditor.h
 
 clean:
     delete mapedit mapedit.lnk $(OBJS)

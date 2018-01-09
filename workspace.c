@@ -150,17 +150,6 @@ void showEntityEditor(void) {
     }
 }
 
-void showSongNamesEditor(void) {
-    if(songNamesEditor) {
-        WindowToFront(songNamesEditor->window);
-    } else {
-        songNamesEditor = newSongNamesEditor();
-        if(songNamesEditor) {
-            addWindowToSet(songNamesEditor->window);
-        }
-     }
-}
-
 void newMap(void) {
     MapEditor *mapEditor = newMapEditorNewMap();
     if(!mapEditor) {

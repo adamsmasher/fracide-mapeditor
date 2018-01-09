@@ -31,6 +31,7 @@
 #include "palette.h"
 #include "ProjectWindow.h"
 #include "SongNames.h"
+#include "SongNamesEditor.h"
 #include "TilesetPackage.h"
 #include "TilesetRequester.h"
 #include "windowset.h"
@@ -58,6 +59,7 @@ static int confirmRevertMap(MapEditor *mapEditor) {
         mapEditor->mapNum - 1, mapEditor->map->name);
 }
 
+/* TODO: move me somewhere, remove duplicate code from SongNamesEditor */
 static int listItemStart(int selected) {
     if(selected < 10) {
         return 2;
@@ -65,79 +67,6 @@ static int listItemStart(int selected) {
         return 3;
     } else {
         return 4;
-    }
-}
-
-static void handleSongNamesEditorSelectSong(struct IntuiMessage *msg) {
-    int selected = msg->Code;
-    int i = listItemStart(selected);
-
-    GT_SetGadgetAttrs(songNamesEditor->songNameGadget, songNamesEditor->window, NULL,
-       GTST_String, &project.songNameStrs[selected][i],
-       GA_Disabled, FALSE,
-       TAG_END);
-
-    songNamesEditor->selected = selected + 1;
-}
-
-static void handleSongNamesEditorUpdateSong(struct IntuiMessage *msg) {
-    int selected = songNamesEditor->selected - 1;
-    strcpy(
-        &project.songNameStrs[selected][listItemStart(selected)],
-        ((struct StringInfo*)songNamesEditor->songNameGadget->SpecialInfo)->Buffer);
-    GT_RefreshWindow(songNamesEditor->window, NULL);
-    projectSaved = 0;
-    refreshAllSongDisplays();
-}
-
-static void handleSongNamesEditorGadgetUp(struct IntuiMessage *msg) {
-    struct Gadget *gadget = (struct Gadget*)msg->IAddress;
-    switch(gadget->GadgetID) {
-    case SONG_LIST_ID:
-        handleSongNamesEditorSelectSong(msg);
-        break;
-    case SONG_NAME_ID:
-        handleSongNamesEditorUpdateSong(msg);
-        break;
-    }
-}
-
-static void handleSongNamesEditorMessage(struct IntuiMessage* msg) {
-    switch(msg->Class) {
-    case IDCMP_CLOSEWINDOW:
-        songNamesEditor->closed = 1;
-        break;
-    case IDCMP_GADGETUP:
-        handleSongNamesEditorGadgetUp(msg);
-        break;
-    case IDCMP_REFRESHWINDOW:
-        GT_BeginRefresh(songNamesEditor->window);
-        GT_EndRefresh(songNamesEditor->window, TRUE);
-        break;
-    case IDCMP_NEWSIZE:
-        resizeSongRequester(songNamesEditor);
-        break;
-    }
-}
-
-static void closeSongNamesEditor(void) {
-    if(songNamesEditor) {
-        removeWindowFromSet(songNamesEditor->window);
-        freeSongRequester(songNamesEditor);
-        songNamesEditor = NULL;
-    }
-}
-
-static void handleSongNamesEditorMessages(long signalSet) {
-    struct IntuiMessage *msg;
-    if(1L << songNamesEditor->window->UserPort->mp_SigBit & signalSet) {
-        while(msg = GT_GetIMsg(songNamesEditor->window->UserPort)) {
-            handleSongNamesEditorMessage(msg);
-            GT_ReplyIMsg(msg);
-        }
-        if(songNamesEditor->closed) {
-            closeSongNamesEditor();
-        }
     }
 }
 
@@ -834,9 +763,7 @@ static void mainLoop(void) {
         signalSet = Wait(windowSetSigMask());
         /* TODO: you should just loop through a thing or something */
         handleProjectMessages(signalSet);
-        if(songNamesEditor) {
-            handleSongNamesEditorMessages(signalSet);
-        }
+        handleSongNamesEditorMessages(signalSet);
         if(entityEditor) {
             if(1L << entityEditor->window->UserPort->mp_SigBit & signalSet) {
                 handleEntityEditorMessages();
