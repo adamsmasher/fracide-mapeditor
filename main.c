@@ -792,7 +792,7 @@ int main(void) {
     initMapEditorScreen();
     initMapRequesterScreen();
     initTilesetRequesterScreen();
-    initSongNamesScreen();
+    initSongRequesterScreen();
     initEntityEditorScreen();
     initEntityBrowserScreen();
 
@@ -805,7 +805,7 @@ int main(void) {
     initMapEditorVi();
     initMapRequesterVi();
     initTilesetRequesterVi();
-    initSongNamesVi();
+    initSongRequesterVi();
     initEntityEditorVi();
     initEntityBrowserVi();
 

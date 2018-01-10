@@ -16,9 +16,9 @@
 
 #include "globals.h"
 
-#define SONG_NAMES_WIDTH      200
-#define SONG_NAMES_HEIGHT     336
-#define SONG_NAMES_MIN_HEIGHT 48
+#define SONG_REQUESTER_WIDTH      200
+#define SONG_REQUESTER_HEIGHT     336
+#define SONG_REQUESTER_MIN_HEIGHT 48
 
 #define SONG_LIST_WIDTH_DELTA  35
 #define SONG_LIST_HEIGHT_DELTA 26
@@ -30,8 +30,8 @@
 #define SONG_NAME_BOTTOM_OFFSET 26
 #define SONG_NAME_LEFT          SONG_LIST_LEFT
 
-static struct NewWindow songNamesNewWindow = {
-    40, 40, SONG_NAMES_WIDTH, SONG_NAMES_HEIGHT,
+static struct NewWindow songRequesterNewWindow = {
+    40, 40, SONG_REQUESTER_WIDTH, SONG_REQUESTER_HEIGHT,
     0xFF, 0xFF,
     CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP|NEWSIZE,
     WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|WINDOWSIZING|ACTIVATE,
@@ -40,15 +40,15 @@ static struct NewWindow songNamesNewWindow = {
     "Edit Song Names",
     NULL,
     NULL,
-    SONG_NAMES_WIDTH, SONG_NAMES_MIN_HEIGHT,
+    SONG_REQUESTER_WIDTH, SONG_REQUESTER_MIN_HEIGHT,
     0xFFFF, 0xFFFF,
     CUSTOMSCREEN
 };
 
 static struct NewGadget songListNewGadget = {
     SONG_LIST_LEFT,  SONG_LIST_TOP,
-    SONG_NAMES_WIDTH - SONG_LIST_WIDTH_DELTA,
-    SONG_NAMES_HEIGHT - SONG_LIST_HEIGHT_DELTA,
+    SONG_REQUESTER_WIDTH - SONG_LIST_WIDTH_DELTA,
+    SONG_REQUESTER_HEIGHT - SONG_LIST_HEIGHT_DELTA,
     NULL,
     &Topaz80,
     SONG_LIST_ID,
@@ -58,8 +58,8 @@ static struct NewGadget songListNewGadget = {
 };
 
 static struct NewGadget songNameNewGadget = {
-    SONG_NAME_LEFT,  SONG_NAMES_HEIGHT - SONG_NAME_BOTTOM_OFFSET,
-    SONG_NAMES_WIDTH - SONG_NAME_WIDTH_DELTA, SONG_NAME_HEIGHT,
+    SONG_NAME_LEFT,  SONG_REQUESTER_HEIGHT - SONG_NAME_BOTTOM_OFFSET,
+    SONG_REQUESTER_WIDTH - SONG_NAME_WIDTH_DELTA, SONG_NAME_HEIGHT,
     NULL,
     &Topaz80,
     SONG_NAME_ID,
@@ -68,11 +68,11 @@ static struct NewGadget songNameNewGadget = {
     NULL  /* user data */
 };
 
-void initSongNamesScreen(void) {
-    songNamesNewWindow.Screen = screen;
+void initSongRequesterScreen(void) {
+    songRequesterNewWindow.Screen = screen;
 }
 
-void initSongNamesVi(void) {
+void initSongRequesterVi(void) {
     songListNewGadget.ng_VisualInfo = vi;
     songNameNewGadget.ng_VisualInfo = vi;
 }
@@ -80,8 +80,8 @@ void initSongNamesVi(void) {
 static void createSongRequesterGadgets(SongRequester *songRequester) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
-    int height = songRequester->window ? songRequester->window->Height : SONG_NAMES_HEIGHT;
-    int width  = songRequester->window ? songRequester->window->Width  : SONG_NAMES_WIDTH;
+    int height = songRequester->window ? songRequester->window->Height : SONG_REQUESTER_HEIGHT;
+    int width  = songRequester->window ? songRequester->window->Width  : SONG_REQUESTER_WIDTH;
 
     gad = CreateContext(&glist);
 
@@ -126,16 +126,16 @@ static SongRequester *newGenericSongRequester(char *title, int editable) {
         goto error_freeRequester;
     }
     strcpy(songRequester->title, title);
-    songNamesNewWindow.Title = songRequester->title;
+    songRequesterNewWindow.Title = songRequester->title;
 
     createSongRequesterGadgets(songRequester);
     if(!songRequester->gadgets) {
         fprintf(stderr, "newGenericSongRequester: couldn't create gadgets\n");
         goto error_freeTitle;
     }
-    songNamesNewWindow.FirstGadget = songRequester->gadgets;
+    songRequesterNewWindow.FirstGadget = songRequester->gadgets;
 
-    songRequester->window = OpenWindow(&songNamesNewWindow);
+    songRequester->window = OpenWindow(&songRequesterNewWindow);
     if(!songRequester->window) {
         fprintf(stderr, "newGenericSongRequester: couldn't open window\n");
         goto error_freeGadgets;
