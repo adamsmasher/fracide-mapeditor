@@ -10,7 +10,7 @@ struct Screen   *screen          = NULL;
 void            *vi              = NULL;
 TilesetPackage  *tilesetPackage  = NULL;
 
-EntityEditor    *entityEditor    = NULL;
+EntityRequester *entityEditor    = NULL;
 int             running          = NULL;
 Project         project;
 int             projectSaved     = 1;

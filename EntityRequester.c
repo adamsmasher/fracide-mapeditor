@@ -15,9 +15,9 @@
 
 #include "globals.h"
 
-#define ENTITY_EDITOR_WIDTH      200
-#define ENTITY_EDITOR_HEIGHT     336
-#define ENTITY_EDITOR_MIN_HEIGHT 48
+#define ENTITY_REQUESTER_WIDTH      200
+#define ENTITY_REQUESTER_HEIGHT     336
+#define ENTITY_REQUESTER_MIN_HEIGHT 48
 
 #define ENTITY_LIST_WIDTH_DELTA  35
 #define ENTITY_LIST_HEIGHT_DELTA 26
@@ -29,8 +29,8 @@
 #define ENTITY_NAME_BOTTOM_OFFSET 26
 #define ENTITY_NAME_LEFT          ENTITY_LIST_LEFT
 
-static struct NewWindow entityEditorNewWindow = {
-    40, 40, ENTITY_EDITOR_WIDTH, ENTITY_EDITOR_HEIGHT,
+static struct NewWindow entityRequesterNewWindow = {
+    40, 40, ENTITY_REQUESTER_WIDTH, ENTITY_REQUESTER_HEIGHT,
     0xFF, 0xFF,
     CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP|NEWSIZE,
     WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|WINDOWSIZING|ACTIVATE,
@@ -39,26 +39,26 @@ static struct NewWindow entityEditorNewWindow = {
     "Entity Editor",
     NULL,
     NULL,
-    ENTITY_EDITOR_WIDTH, ENTITY_EDITOR_MIN_HEIGHT,
+    ENTITY_REQUESTER_WIDTH, ENTITY_REQUESTER_MIN_HEIGHT,
     0xFFFF, 0xFFFF,
     CUSTOMSCREEN
 };
 
 static struct NewGadget entityListNewGadget = {
     ENTITY_LIST_LEFT,  ENTITY_LIST_TOP,
-    ENTITY_EDITOR_WIDTH - ENTITY_LIST_WIDTH_DELTA,
-    ENTITY_EDITOR_HEIGHT - ENTITY_LIST_HEIGHT_DELTA,
+    ENTITY_REQUESTER_WIDTH - ENTITY_LIST_WIDTH_DELTA,
+    ENTITY_REQUESTER_HEIGHT - ENTITY_LIST_HEIGHT_DELTA,
     NULL,
     &Topaz80,
-    ENTITY_EDITOR_LIST_ID,
+    ENTITY_REQUESTER_LIST_ID,
     0,
     NULL, /* visual info filled in later */
     NULL  /* user data */
 };
 
 static struct NewGadget entityNameNewGadget = {
-    ENTITY_NAME_LEFT,  ENTITY_EDITOR_HEIGHT - ENTITY_NAME_BOTTOM_OFFSET,
-    ENTITY_EDITOR_WIDTH - ENTITY_NAME_WIDTH_DELTA, ENTITY_NAME_HEIGHT,
+    ENTITY_NAME_LEFT,  ENTITY_REQUESTER_HEIGHT - ENTITY_NAME_BOTTOM_OFFSET,
+    ENTITY_REQUESTER_WIDTH - ENTITY_NAME_WIDTH_DELTA, ENTITY_NAME_HEIGHT,
     NULL,
     &Topaz80,
     ENTITY_NAME_ID,
@@ -67,83 +67,83 @@ static struct NewGadget entityNameNewGadget = {
     NULL  /* user data */
 };
 
-void initEntityEditorScreen(void) {
-    entityEditorNewWindow.Screen = screen;
+void initEntityRequesterScreen(void) {
+    entityRequesterNewWindow.Screen = screen;
 }
 
-void initEntityEditorVi(void) {
+void initEntityRequesterVi(void) {
     entityListNewGadget.ng_VisualInfo = vi;
     entityNameNewGadget.ng_VisualInfo = vi;
 }
 
-static void createEntityEditorGadgets(EntityEditor *entityEditor) {
+static void createEntityRequesterGadgets(EntityRequester *entityRequester) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
-    int height = entityEditor->window ? entityEditor->window->Height : ENTITY_EDITOR_HEIGHT;
-    int width  = entityEditor->window ? entityEditor->window->Width  : ENTITY_EDITOR_WIDTH;
+    int height = entityRequester->window ? entityRequester->window->Height : ENTITY_REQUESTER_HEIGHT;
+    int width  = entityRequester->window ? entityRequester->window->Width  : ENTITY_REQUESTER_WIDTH;
 
     gad = CreateContext(&glist);
 
-    if(entityEditor->editable) {
+    if(entityRequester->editable) {
         entityNameNewGadget.ng_TopEdge = height - ENTITY_NAME_BOTTOM_OFFSET;
         entityNameNewGadget.ng_Width   = width  - ENTITY_NAME_WIDTH_DELTA;
         gad = CreateGadget(STRING_KIND, gad, &entityNameNewGadget,
             GTST_MaxChars, 64,
             GA_Disabled, TRUE);
-        entityEditor->entityNameGadget = gad;
+        entityRequester->entityNameGadget = gad;
     } else {
-        entityEditor->entityNameGadget = NULL;
+        entityRequester->entityNameGadget = NULL;
     }
 
     entityListNewGadget.ng_Height = height - ENTITY_LIST_HEIGHT_DELTA;
     entityListNewGadget.ng_Width  = width  - ENTITY_LIST_WIDTH_DELTA;
     gad = CreateGadget(LISTVIEW_KIND, gad, &entityListNewGadget,
-        GTLV_ShowSelected, entityEditor->entityNameGadget,
+        GTLV_ShowSelected, entityRequester->entityNameGadget,
         GTLV_Labels, &project.entityNames,
         TAG_END);
 
     if(gad) {
-        entityEditor->gadgets = glist;
+        entityRequester->gadgets = glist;
     } else {
-        entityEditor->entityNameGadget = NULL;
+        entityRequester->entityNameGadget = NULL;
         FreeGadgets(glist);
     }
 }
 
-static EntityEditor *newGenericEntityEditor(char *title, int editable) {
-    EntityEditor *entityEditor = malloc(sizeof(EntityEditor));
-    if(!entityEditor) {
-        fprintf(stderr, "newGenericEntityEditor: couldn't allocate requester\n");
+static EntityRequester *newGenericEntityRequester(char *title, int editable) {
+    EntityRequester *entityRequester = malloc(sizeof(EntityRequester));
+    if(!entityRequester) {
+        fprintf(stderr, "newGenericEntityRequester: couldn't allocate requester\n");
         goto error;
     }
-    entityEditor->window = NULL;
-    entityEditor->editable = editable;
+    entityRequester->window = NULL;
+    entityRequester->editable = editable;
 
-    entityEditorNewWindow.Title = title;
+    entityRequesterNewWindow.Title = title;
 
-    createEntityEditorGadgets(entityEditor);
-    if(!entityEditor->gadgets) {
-        fprintf(stderr, "newGenericEntityEditor: couldn't create gadgets\n");
+    createEntityRequesterGadgets(entityRequester);
+    if(!entityRequester->gadgets) {
+        fprintf(stderr, "newGenericEntityRequester: couldn't create gadgets\n");
         goto error_freeRequester;
     }
-    entityEditorNewWindow.FirstGadget = entityEditor->gadgets;
+    entityRequesterNewWindow.FirstGadget = entityRequester->gadgets;
 
-    entityEditor->window = OpenWindow(&entityEditorNewWindow);
-    if(!entityEditor->window) {
-        fprintf(stderr, "newGenericEntityEditor: couldn't open window\n");
+    entityRequester->window = OpenWindow(&entityRequesterNewWindow);
+    if(!entityRequester->window) {
+        fprintf(stderr, "newGenericEntityRequester: couldn't open window\n");
         goto error_freeGadgets;
     }
-    GT_RefreshWindow(entityEditor->window, NULL);
+    GT_RefreshWindow(entityRequester->window, NULL);
 
-    entityEditor->closed = 0;
-    entityEditor->selected = 0;
+    entityRequester->closed = 0;
+    entityRequester->selected = 0;
 
-    return entityEditor;
+    return entityRequester;
 
 error_freeGadgets:
-    free(entityEditor->gadgets);
+    free(entityRequester->gadgets);
 error_freeRequester:
-    free(entityEditor);
+    free(entityRequester);
 error:
     return NULL;
 }
@@ -151,31 +151,31 @@ error:
 #define EDITABLE 1
 #define NON_EDITABLE 0
 
-EntityEditor *newEntityEditor(void) {
-    return newGenericEntityEditor("Entity Editor", EDITABLE);
+EntityRequester *newEntityEditor(void) {
+    return newGenericEntityRequester("Entity Editor", EDITABLE);
 }
 
-EntityEditor *newEntityRequester(void) {
-    return newGenericEntityEditor("Choose Entity...", NON_EDITABLE);
+EntityRequester *newEntityRequester(void) {
+    return newGenericEntityRequester("Choose Entity...", NON_EDITABLE);
 }
 
-void freeEntityEditor(EntityEditor *entityEditor) {
-    CloseWindow(entityEditor->window);
-    FreeGadgets(entityEditor->gadgets);
-    free(entityEditor);
+void freeEntityRequester(EntityRequester *entityRequester) {
+    CloseWindow(entityRequester->window);
+    FreeGadgets(entityRequester->gadgets);
+    free(entityRequester);
 }
 
-void resizeEntityEditor(EntityEditor *entityEditor) {
-    RemoveGList(entityEditor->window, entityEditor->gadgets, -1);
-    FreeGadgets(entityEditor->gadgets);
-    SetRast(entityEditor->window->RPort, 0);
-    createEntityEditorGadgets(entityEditor);
-    if(!entityEditor->gadgets) {
-        fprintf(stderr, "resizeEntityEditor: couldn't make gadgets");
+void resizeEntityRequester(EntityRequester *entityRequester) {
+    RemoveGList(entityRequester->window, entityRequester->gadgets, -1);
+    FreeGadgets(entityRequester->gadgets);
+    SetRast(entityRequester->window->RPort, 0);
+    createEntityRequesterGadgets(entityRequester);
+    if(!entityRequester->gadgets) {
+        fprintf(stderr, "resizeEntityRequester: couldn't make gadgets");
         return;
     }
-    AddGList(entityEditor->window, entityEditor->gadgets, (UWORD)~0, -1, NULL);
-    RefreshWindowFrame(entityEditor->window);
-    RefreshGList(entityEditor->gadgets, entityEditor->window, NULL, -1);
-    GT_RefreshWindow(entityEditor->window, NULL);
+    AddGList(entityRequester->window, entityRequester->gadgets, (UWORD)~0, -1, NULL);
+    RefreshWindowFrame(entityRequester->window);
+    RefreshGList(entityRequester->gadgets, entityRequester->window, NULL, -1);
+    GT_RefreshWindow(entityRequester->window, NULL);
 }

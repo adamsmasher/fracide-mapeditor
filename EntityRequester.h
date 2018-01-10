@@ -1,26 +1,26 @@
-#ifndef ENTITY_EDITOR_H
-#define ENTITY_EDITOR_H
+#ifndef ENTITY_REQUESTER_H
+#define ENTITY_REQUESTER_H
 
-#define ENTITY_EDITOR_LIST_ID (0)
-#define ENTITY_NAME_ID (ENTITY_EDITOR_LIST_ID + 1)
+#define ENTITY_REQUESTER_LIST_ID (0)
+#define ENTITY_NAME_ID (ENTITY_REQUESTER_LIST_ID + 1)
 
-typedef struct EntityEditor_tag {
+typedef struct EntityRequester_tag {
     struct Window *window;
     struct Gadget *gadgets;
     struct Gadget *entityNameGadget;
     int closed;
     int selected;
     int editable;
-} EntityEditor;
+} EntityRequester;
 
-void initEntityEditorScreen(void);
-void initEntityEditorVi(void);
+void initEntityRequesterScreen(void);
+void initEntityRequesterVi(void);
 
-EntityEditor *newEntityRequester(void);
-EntityEditor *newEntityEditor(void);
+EntityRequester *newEntityRequester(void);
+EntityRequester *newEntityEditor(void);
 
-void resizeEntityEditor(EntityEditor*);
+void resizeEntityRequester(EntityRequester*);
 
-void freeEntityEditor(EntityEditor*);
+void freeEntityRequester(EntityRequester*);
 
 #endif

@@ -527,7 +527,7 @@ error:
 
 static void closeAttachedEntityRequester(EntityBrowser *entityBrowser) {
     if(entityBrowser->entityRequester) {
-        freeEntityEditor(entityBrowser->entityRequester);
+        freeEntityRequester(entityBrowser->entityRequester);
         entityBrowser->entityRequester = NULL;
     }
 }
@@ -706,6 +706,6 @@ void entityBrowserFreeEntityLabels(EntityBrowser *entityBrowser) {
     freeEntityLabels(entityBrowser);
 }
 
-void attachEntityRequesterToEntityBrowser(EntityBrowser *entityBrowser, EntityEditor *entityRequester) {
+void attachEntityRequesterToEntityBrowser(EntityBrowser *entityBrowser, EntityRequester *entityRequester) {
     entityBrowser->entityRequester = entityRequester;
 }

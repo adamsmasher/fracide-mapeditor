@@ -95,7 +95,7 @@ static void handleEntityEditorUpdateEntity(struct IntuiMessage *msg) {
 static void handleEntityEditorGadgetUp(struct IntuiMessage *msg) {
     struct Gadget *gadget = (struct Gadget*)msg->IAddress;
     switch(gadget->GadgetID) {
-    case ENTITY_EDITOR_LIST_ID:
+    case ENTITY_REQUESTER_LIST_ID:
         handleEntityEditorSelectEntity(msg);
         break;
     case ENTITY_NAME_ID:
@@ -117,7 +117,7 @@ static void handleEntityEditorMessage(struct IntuiMessage* msg) {
         GT_EndRefresh(entityEditor->window, TRUE);
         break;
     case IDCMP_NEWSIZE:
-        resizeEntityEditor(entityEditor);
+        resizeEntityRequester(entityEditor);
         break;
     }
 }
@@ -133,7 +133,7 @@ static void handleEntityEditorMessages(void) {
 static void closeEntityEditor(void) {
     if(entityEditor) {
         removeWindowFromSet(entityEditor->window);
-        freeEntityEditor(entityEditor);
+        freeEntityRequester(entityEditor);
         entityEditor = NULL;
     }
 }
@@ -332,7 +332,7 @@ static void handleTagAliasChanged(EntityBrowser *entityBrowser, MapEditor *mapEd
 }
 
 static void handleChooseEntityClicked(EntityBrowser *entityBrowser) {
-    EntityEditor *entityRequester = entityBrowser->entityRequester;
+    EntityRequester *entityRequester = entityBrowser->entityRequester;
 
     if(entityRequester) {
         WindowToFront(entityRequester->window);
@@ -415,7 +415,7 @@ static void handleEntityBrowserMessages(MapEditor *mapEditor, EntityBrowser *ent
 }
 
 static void handleEntityBrowserChildMessages(EntityBrowser *entityBrowser, long signalSet) {
-    EntityEditor *entityRequester = entityBrowser->entityRequester;
+    EntityRequester *entityRequester = entityBrowser->entityRequester;
 
     if(entityRequester) {
         if(1L << entityRequester->window->UserPort->mp_SigBit & signalSet) {
@@ -793,7 +793,7 @@ int main(void) {
     initMapRequesterScreen();
     initTilesetRequesterScreen();
     initSongRequesterScreen();
-    initEntityEditorScreen();
+    initEntityRequesterScreen();
     initEntityBrowserScreen();
 
     vi = GetVisualInfo(screen, TAG_END);
@@ -806,7 +806,7 @@ int main(void) {
     initMapRequesterVi();
     initTilesetRequesterVi();
     initSongRequesterVi();
-    initEntityEditorVi();
+    initEntityRequesterVi();
     initEntityBrowserVi();
 
     if(!openProjectWindow(screen)) {
