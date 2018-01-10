@@ -1,5 +1,5 @@
-#ifndef SONG_NAMES_H
-#define SONG_NAMES_H
+#ifndef SONG_REQUESTER_H
+#define SONG_REQUESTER_H
 
 #include <proto/intuition.h>
 
