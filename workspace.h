@@ -10,7 +10,6 @@ void revertProject(void);
 void selectTilesetPackage(void);
 void quit(void);
 
-void showEntityEditor(void);
 void refreshAllEntityBrowsers(void);
 
 void refreshAllSongDisplays(void);

@@ -22,6 +22,7 @@
 
 #include "easystructs.h"
 #include "EntityBrowser.h"
+#include "EntityNamesEditor.h"
 #include "EntityRequester.h"
 #include "globals.h"
 #include "MapEditor.h"
@@ -59,7 +60,7 @@ static int confirmRevertMap(MapEditor *mapEditor) {
         mapEditor->mapNum - 1, mapEditor->map->name);
 }
 
-/* TODO: move me somewhere, remove duplicate code from SongNamesEditor */
+/* TODO: move me somewhere, remove duplicate code from SongNamesEditor, EntityNamesEditor... */
 static int listItemStart(int selected) {
     if(selected < 10) {
         return 2;
@@ -67,74 +68,6 @@ static int listItemStart(int selected) {
         return 3;
     } else {
         return 4;
-    }
-}
-
-static void handleEntityEditorSelectEntity(struct IntuiMessage *msg) {
-    int selected = msg->Code;
-    int i = listItemStart(selected);
-
-    GT_SetGadgetAttrs(entityEditor->entityNameGadget, entityEditor->window, NULL,
-       GTST_String, &project.entityNameStrs[selected][i],
-       GA_Disabled, FALSE,
-       TAG_END);
-
-    entityEditor->selected = selected + 1;
-}
-
-static void handleEntityEditorUpdateEntity(struct IntuiMessage *msg) {
-    int selected = entityEditor->selected - 1;
-    strcpy(
-        &project.entityNameStrs[selected][listItemStart(selected)],
-        ((struct StringInfo*)entityEditor->entityNameGadget->SpecialInfo)->Buffer);
-    GT_RefreshWindow(entityEditor->window, NULL);
-    projectSaved = 0;
-    refreshAllEntityBrowsers();
-}
-
-static void handleEntityEditorGadgetUp(struct IntuiMessage *msg) {
-    struct Gadget *gadget = (struct Gadget*)msg->IAddress;
-    switch(gadget->GadgetID) {
-    case ENTITY_REQUESTER_LIST_ID:
-        handleEntityEditorSelectEntity(msg);
-        break;
-    case ENTITY_NAME_ID:
-        handleEntityEditorUpdateEntity(msg);
-        break;
-    }
-}
-
-static void handleEntityEditorMessage(struct IntuiMessage* msg) {
-    switch(msg->Class) {
-    case IDCMP_CLOSEWINDOW:
-        entityEditor->closed = 1;
-        break;
-    case IDCMP_GADGETUP:
-        handleEntityEditorGadgetUp(msg);
-        break;
-    case IDCMP_REFRESHWINDOW:
-        GT_BeginRefresh(entityEditor->window);
-        GT_EndRefresh(entityEditor->window, TRUE);
-        break;
-    case IDCMP_NEWSIZE:
-        resizeEntityRequester(entityEditor);
-        break;
-    }
-}
-
-static void handleEntityEditorMessages(void) {
-    struct IntuiMessage *msg;
-    while(msg = GT_GetIMsg(entityEditor->window->UserPort)) {
-        handleEntityEditorMessage(msg);
-        GT_ReplyIMsg(msg);
-    }
-}
-
-static void closeEntityEditor(void) {
-    if(entityEditor) {
-        removeWindowFromSet(entityEditor->window);
-        freeEntityRequester(entityEditor);
-        entityEditor = NULL;
     }
 }
 
@@ -764,14 +697,7 @@ static void mainLoop(void) {
         /* TODO: you should just loop through a thing or something */
         handleProjectMessages(signalSet);
         handleSongNamesEditorMessages(signalSet);
-        if(entityEditor) {
-            if(1L << entityEditor->window->UserPort->mp_SigBit & signalSet) {
-                handleEntityEditorMessages();
-            }
-            if(entityEditor->closed) {
-                closeEntityEditor();
-            }
-        }
+        handleEntityNamesEditorMessages(signalSet);
         handleAllMapEditorMessages(signalSet);
         closeDeadMapEditors();
     }
@@ -825,7 +751,7 @@ int main(void) {
     
     retCode = 0;
 closeEntityEditor:
-    closeEntityEditor();
+    closeEntityNamesEditor();
 closeSongNamesEditor:
     closeSongNamesEditor();
 closeAllMapEditors:

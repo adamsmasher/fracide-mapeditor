@@ -1,10 +1,10 @@
 #include "entitiesmenu.h"
 
 #include "framework/menubuild.h"
-#include "workspace.h"
+#include "EntityNamesEditor.h"
 
 static void entityEditorClicked(void) {
-    showEntityEditor();
+    showEntityNamesEditor();
 }
 
 static MenuSectionSpec entitySection =

@@ -3,7 +3,6 @@
 
 #include <intuition/intuition.h>
 
-#include "EntityRequester.h"
 #include "Project.h"
 #include "TilesetPackage.h"
 
@@ -12,9 +11,6 @@
 extern struct Screen   *screen;
 extern void            *vi;
 extern TilesetPackage  *tilesetPackage;
-/* TODO: move me into a file */
-/* TODO: rename me to entityNamesEditor */
-extern EntityRequester *entityEditor;
 extern int             running;
 /* TODO: move the next three into current project */
 extern Project         project;

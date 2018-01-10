@@ -152,8 +152,8 @@ error:
 #define EDITABLE 1
 #define NON_EDITABLE 0
 
-EntityRequester *newEntityEditor(void) {
-    return newGenericEntityRequester("Entity Editor", EDITABLE);
+EntityRequester *newEntityNamesEditor(void) {
+    return newGenericEntityRequester("Entity Names Editor", EDITABLE);
 }
 
 EntityRequester *newEntityRequester(void) {

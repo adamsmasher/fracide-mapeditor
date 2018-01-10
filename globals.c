@@ -2,7 +2,6 @@
 
 #include "globals.h"
 
-#include "EntityRequester.h"
 #include "TilesetPackage.h"
 #include "Project.h"
 
@@ -10,7 +9,6 @@ struct Screen   *screen          = NULL;
 void            *vi              = NULL;
 TilesetPackage  *tilesetPackage  = NULL;
 
-EntityRequester *entityEditor    = NULL;
 int             running          = NULL;
 Project         project;
 int             projectSaved     = 1;

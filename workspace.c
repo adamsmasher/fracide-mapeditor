@@ -139,17 +139,6 @@ void quit(void) {
     }
 }
 
-void showEntityEditor(void) {
-    if(entityEditor) {
-        WindowToFront(entityEditor->window);
-    } else {
-        entityEditor = newEntityEditor();
-        if(entityEditor) {
-            addWindowToSet(entityEditor->window);
-        }
-    }
-}
-
 void newMap(void) {
     MapEditor *mapEditor = newMapEditorNewMap();
     if(!mapEditor) {

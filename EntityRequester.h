@@ -17,7 +17,7 @@ void initEntityRequesterScreen(void);
 void initEntityRequesterVi(void);
 
 EntityRequester *newEntityRequester(void);
-EntityRequester *newEntityEditor(void);
+EntityRequester *newEntityNamesEditor(void);
 
 void resizeEntityRequester(EntityRequester*);
 
