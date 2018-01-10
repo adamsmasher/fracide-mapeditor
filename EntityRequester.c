@@ -1,4 +1,4 @@
-#include "EntityEditor.h"
+#include "EntityRequester.h"
 
 #include <intuition/intuition.h>
 #include <intuition/gadgetclass.h>

@@ -2,7 +2,7 @@
 
 #include "globals.h"
 
-#include "EntityEditor.h"
+#include "EntityRequester.h"
 #include "TilesetPackage.h"
 #include "Project.h"
 

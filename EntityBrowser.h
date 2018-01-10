@@ -4,7 +4,7 @@
 #include <proto/intuition.h>
 
 #include "Entity.h"
-#include "EntityEditor.h"
+#include "EntityRequester.h"
 
 #define ENTITY_BROWSER_LIST_ID   0
 #define ADD_ENTITY_ID            (ENTITY_BROWSER_LIST_ID + 1)

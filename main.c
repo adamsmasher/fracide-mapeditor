@@ -22,7 +22,7 @@
 
 #include "easystructs.h"
 #include "EntityBrowser.h"
-#include "EntityEditor.h"
+#include "EntityRequester.h"
 #include "globals.h"
 #include "MapEditor.h"
 #include "mapeditorset.h"

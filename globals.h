@@ -3,7 +3,7 @@
 
 #include <intuition/intuition.h>
 
-#include "EntityEditor.h"
+#include "EntityRequester.h"
 #include "Project.h"
 #include "TilesetPackage.h"
 

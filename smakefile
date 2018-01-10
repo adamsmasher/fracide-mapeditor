@@ -12,7 +12,7 @@ MENU_HEADERS= projectmenu.h mapmenu.h entitiesmenu.h musicmenu.h
 DATA_OBJS=    easystructs.o
 DATA_HEADERS= easystructs.h
 
-OTHER_OBJS= globals.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityEditor.o menu.o palette.o workspace.o currentproject.o currenttiles.o mapeditorset.o windowset.o
+OTHER_OBJS= globals.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o menu.o palette.o workspace.o currentproject.o currenttiles.o mapeditorset.o windowset.o
 
 WINDOW_OBJS= ProjectWindow.o SongNamesEditor.o
 
@@ -23,11 +23,11 @@ mapedit: $(OBJS)
 $(OBJS)
 <
 
-main.o: main.c MapEditor.h globals.h TilesetPackage.h TilesetRequester.h MapRequester.h SongRequester.h EntityBrowser.h Map.h Entity.h EntityEditor.h menu.h palette.h
+main.o: main.c MapEditor.h globals.h TilesetPackage.h TilesetRequester.h MapRequester.h SongRequester.h EntityBrowser.h Map.h Entity.h EntityRequester.h menu.h palette.h
 
 MapEditor.o: MapEditor.c MapEditor.h globals.h SongRequester.h tilesetRequester.h map.h EntityBrowser.h
 
-globals.o: globals.c Project.h SongRequester.h TilesetPackage.h EntityEditor.h
+globals.o: globals.c Project.h SongRequester.h TilesetPackage.h EntityRequester.h
 
 TilesetPackage.o: TilesetPackage.c
 
