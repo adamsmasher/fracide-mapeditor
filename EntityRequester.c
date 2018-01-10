@@ -2,6 +2,7 @@
 
 #include <intuition/intuition.h>
 #include <intuition/gadgetclass.h>
+#include <proto/intuition.h>
 
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
