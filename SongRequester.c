@@ -1,4 +1,4 @@
-#include "SongNames.h"
+#include "SongRequester.h"
 
 #include <intuition/intuition.h>
 #include <intuition/gadgetclass.h>

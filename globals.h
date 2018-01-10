@@ -5,7 +5,6 @@
 
 #include "EntityEditor.h"
 #include "Project.h"
-#include "SongNames.h"
 #include "TilesetPackage.h"
 
 #define PROJECT_FILENAME_LENGTH 256

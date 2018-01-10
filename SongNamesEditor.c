@@ -7,8 +7,7 @@
 #include <string.h>
 
 #include "globals.h"
-/* TODO: rename me */
-#include "SongNames.h"
+#include "SongRequester.h"
 #include "windowset.h"
 #include "workspace.h"
 

@@ -2,7 +2,7 @@
 #define MAP_EDITOR_H
 
 #include "EntityBrowser.h"
-#include "SongNames.h"
+#include "SongRequester.h"
 #include "TilesetRequester.h"
 #include "Map.h"
 
