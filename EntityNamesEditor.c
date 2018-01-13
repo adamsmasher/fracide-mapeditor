@@ -40,11 +40,11 @@ static void handleEntityNamesEditorSelectEntity(struct IntuiMessage *msg) {
 
 static void handleEntityNamesEditorUpdateEntity(struct IntuiMessage *msg) {
     int selected = entityNamesEditor->selected - 1;
-    strcpy(
-        &project.entityNameStrs[selected][listItemStart(selected)],
-        ((struct StringInfo*)entityNamesEditor->entityNameGadget->SpecialInfo)->Buffer);
+    char *name = ((struct StringInfo*)entityNamesEditor->entityNameGadget->SpecialInfo)->Buffer;
+
+    updateCurrentProjectEntityName(selected, name);
+
     GT_RefreshWindow(entityNamesEditor->window, NULL);
-    projectSaved = 0;
     refreshAllEntityBrowsers();
 }
 

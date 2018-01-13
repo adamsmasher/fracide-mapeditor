@@ -61,17 +61,6 @@ static int confirmRevertMap(MapEditor *mapEditor) {
         mapEditor->mapNum - 1, mapEditor->map->name);
 }
 
-/* TODO: move me somewhere, remove duplicate code from SongNamesEditor, EntityNamesEditor... */
-static int listItemStart(int selected) {
-    if(selected < 10) {
-        return 2;
-    } else if(selected < 100) {
-        return 3;
-    } else {
-        return 4;
-    }
-}
-
 static void handleTilesetRequesterGadgetUp(MapEditor *mapEditor, TilesetRequester *tilesetRequester, struct IntuiMessage *msg) {
     mapEditorSetTileset(mapEditor, msg->Code);
 }

@@ -122,7 +122,6 @@ void selectTilesetPackage(void) {
 
     if(AslRequest(request, NULL)) {
         if(loadTilesetPackageFromAsl(request->rf_Dir, request->rf_File)) {
-            projectSaved = 0;
             updateAllTileDisplays();
         }
     }
@@ -165,13 +164,10 @@ int openMapNum(int mapNum) {
             return 0;
         }
 
-        project.maps[mapNum] = allocMap();
-        if(!project.maps[mapNum]) {
-            fprintf(stderr, "openMapNum: failed to allocate new map\n");
+        if(!currentProjectCreateMap(mapNum)) {
+            fprintf(stderr, "openMapNum: failed to create map\n");
             return 0;
         }
-        project.mapCnt++;
-        projectSaved = 0;
     }
 
     mapEditor = newMapEditorWithMap(project.maps[mapNum], mapNum);
@@ -235,7 +231,7 @@ int saveMapAs(MapEditor *mapEditor) {
     mapEditorSetSaveStatus(mapEditor, SAVED);
 
     updateProjectMapName(&project, selected - 1, mapEditor->map);
-    projectSaved = 0;
+    updateCurrentProjectMapName(selected - 1, mapEditor->map);
 
     return 1;
 }
@@ -245,9 +241,9 @@ int saveMap(MapEditor *mapEditor) {
         return saveMapAs(mapEditor);
     } else {
         overwriteMap(mapEditor->map, project.maps[mapEditor->mapNum - 1]);
-        updateProjectMapName(&project, mapEditor->mapNum - 1, mapEditor->map);
+        /* TODO: this is what sets the saved status, but that feels fragile */
+        updateCurrentProjectMapName(mapEditor->mapNum - 1, mapEditor->map);
         mapEditorSetSaveStatus(mapEditor, SAVED);
-        projectSaved = 0;
         return 1;
     }
 }

@@ -19,7 +19,8 @@
 #define PROJECT_FILENAME_LENGTH 256
 
 Project project;
-int     projectSaved = 1;
+/* TODO: make me a BOOL */
+static int  projectSaved = 1;
 static char projectFilename[PROJECT_FILENAME_LENGTH];
 
 static int saveProjectToAsl(char *dir, char *file) {
@@ -224,4 +225,45 @@ freeBuffer:
     free(buffer);
 done:
     return;
+}
+
+void projectSetTilesetPackagePath(char *file) {
+    strcpy(project.tilesetPackagePath, file);
+    projectSaved = 0;
+}
+
+BOOL currentProjectCreateMap(int mapNum) {
+  project.maps[mapNum] = allocMap();
+  if(!project.maps[mapNum]) {
+    fprintf(stderr, "openMapNum: failed to allocate new map\n");
+    return FALSE;
+  }
+  project.mapCnt++;
+  projectSaved = 0;
+  return TRUE;
+}
+
+/* TODO: move me somewhere, remove duplicate code from SongNamesEditor, EntityNamesEditor... */
+static int listItemStart(int selected) {
+    if(selected < 10) {
+        return 2;
+    } else if(selected < 100) {
+        return 3;
+    } else {
+        return 4;
+    }
+}
+
+void updateCurrentProjectMapName(int mapNum, Map *map) {
+  updateProjectMapName(&project, mapNum, map);
+}
+
+void updateCurrentProjectSongName(int songNum, char *name) {
+  strcpy(&project.songNameStrs[songNum][listItemStart(songNum)], name);
+  projectSaved = 1;
+}
+
+void updateCurrentProjectEntityName(int entityNum, char *name) {
+  strcpy(&project.entityNameStrs[entityNum][listItemStart(entityNum)], name);
+  projectSaved = 1;
 }

@@ -38,13 +38,11 @@ static void songNamesEditorSelectSong(int songNum) {
 static void songNamesEditorUpdateSelectedSong(void) {
   int selected = songNamesEditor->selected - 1;
 
-  strcpy(
-    &project.songNameStrs[selected][listItemStart(selected)],
-    ((struct StringInfo*)songNamesEditor->songNameGadget->SpecialInfo)->Buffer);
+  char *name = ((struct StringInfo*)songNamesEditor->songNameGadget->SpecialInfo)->Buffer;
+  updateCurrentProjectSongName(selected, name);
 
   GT_RefreshWindow(songNamesEditor->window, NULL);
 
-  projectSaved = 0;
   refreshAllSongDisplays();
 }
 
