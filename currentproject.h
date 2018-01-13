@@ -28,7 +28,7 @@ void updateCurrentProjectMapName(int mapNum, Map*);
 void updateCurrentProjectSongName(int songNum, char*);
 void updateCurrentProjectEntityName(int entityNum, char*);
 
-/* TODO: don't expose us */
+/* TODO: don't expose me */
 extern Project project;
 
 #endif
