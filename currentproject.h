@@ -13,7 +13,7 @@ void clearProject(void);
 void setProjectFilename(char*);
 char *getProjectFilename(void);
 
-void setTilesetPackagePath(char*);
+void currentProjectSetTilesetPackagePath(char*);
 
 void openProjectFromAsl(char *dir, char *file);
 void openProjectFromFile(char*);

@@ -227,7 +227,7 @@ done:
     return;
 }
 
-void projectSetTilesetPackagePath(char *file) {
+void currentProjectSetTilesetPackagePath(char *file) {
     strcpy(project.tilesetPackagePath, file);
     projectSaved = 0;
 }

@@ -29,7 +29,7 @@ int loadTilesetPackageFromFile(char *file) {
     }
     freeTilesetPackage(tilesetPackage);
     tilesetPackage = newTilesetPackage;
-    projectSetTilesetPackagePath(file);
+    currentProjectSetTilesetPackagePath(file);
 
     return 1;
 
