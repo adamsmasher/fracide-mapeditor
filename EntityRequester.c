@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "currentproject.h"
 #include "globals.h"
 
 #define ENTITY_REQUESTER_WIDTH      200

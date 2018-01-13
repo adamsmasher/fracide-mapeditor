@@ -2,6 +2,7 @@
 
 #include <proto/exec.h>
 
+#include "currentproject.h"
 #include "globals.h"
 #include "map.h"
 

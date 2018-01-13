@@ -16,6 +16,10 @@
 #include "menu.h"
 #include "ProjectWindow.h"
 
+Project project;
+int     projectSaved = 1;
+char    projectFilename[PROJECT_FILENAME_LENGTH];
+
 static int saveProjectToAsl(char *dir, char *file) {
     int result;
     size_t bufferLen = strlen(dir) + strlen(file) + 2;

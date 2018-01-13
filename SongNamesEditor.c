@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include "currentproject.h"
 #include "globals.h"
 #include "SongRequester.h"
 #include "windowset.h"

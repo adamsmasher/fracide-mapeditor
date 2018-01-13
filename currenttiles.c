@@ -9,6 +9,7 @@
 #include <intuition/intuition.h>
 #include <proto/intuition.h>
 
+#include "currentproject.h"
 #include "easystructs.h"
 #include "globals.h"
 #include "ProjectWindow.h"

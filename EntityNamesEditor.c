@@ -8,6 +8,7 @@
 
 #include <string.h>
 
+#include "currentproject.h"
 #include "EntityRequester.h"
 #include "globals.h"
 #include "windowset.h"

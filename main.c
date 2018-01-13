@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "currentproject.h"
 #include "easystructs.h"
 #include "EntityBrowser.h"
 #include "EntityNamesEditor.h"
