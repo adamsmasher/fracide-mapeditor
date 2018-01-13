@@ -16,9 +16,11 @@
 #include "menu.h"
 #include "ProjectWindow.h"
 
+#define PROJECT_FILENAME_LENGTH 256
+
 Project project;
 int     projectSaved = 1;
-char    projectFilename[PROJECT_FILENAME_LENGTH];
+static char projectFilename[PROJECT_FILENAME_LENGTH];
 
 static int saveProjectToAsl(char *dir, char *file) {
     int result;
@@ -144,6 +146,10 @@ void setProjectFilename(char *filename) {
         projectFilename[0] = '\0';
         OffMenu(getProjectWindow(), REVERT_PROJECT_MENU_ITEM);
     }
+}
+
+char *getProjectFilename(void) {
+    return projectFilename;
 }
 
 void openProjectFromFile(char *file) {

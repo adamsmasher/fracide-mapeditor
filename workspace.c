@@ -104,7 +104,7 @@ void revertProject(void) {
         goto done;
     }
 
-    openProjectFromFile(projectFilename);
+    openProjectFromFile(getProjectFilename());
 
 done:
     return;
