@@ -14,21 +14,9 @@
 
 SongRequester *songNamesEditor = NULL;
 
-static int listItemStart(int selected) {
-    if(selected < 10) {
-        return 2;
-    } else if(selected < 100) {
-        return 3;
-    } else {
-        return 4;
-    }
-}
-
 static void songNamesEditorSelectSong(int songNum) {
-  int i = listItemStart(songNum);
-
   GT_SetGadgetAttrs(songNamesEditor->songNameGadget, songNamesEditor->window, NULL,
-    GTST_String, &project.songNameStrs[songNum][i],
+    GTST_String, currentProjectGetSongName(songNum),
     GA_Disabled, FALSE,
     TAG_END);
 

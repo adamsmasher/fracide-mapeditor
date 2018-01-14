@@ -101,7 +101,7 @@ static void createEntityRequesterGadgets(EntityRequester *entityRequester) {
     entityListNewGadget.ng_Width  = width  - ENTITY_LIST_WIDTH_DELTA;
     gad = CreateGadget(LISTVIEW_KIND, gad, &entityListNewGadget,
         GTLV_ShowSelected, entityRequester->entityNameGadget,
-        GTLV_Labels, &project.entityNames,
+        GTLV_Labels, currentProjectGetEntityNames(),
         TAG_END);
 
     if(gad) {

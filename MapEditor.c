@@ -713,7 +713,7 @@ void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
 
 static void mapEditorSetSongUpdateUI(MapEditor *mapEditor, UWORD songNumber) {
     GT_SetGadgetAttrs(mapEditor->songNameGadget, mapEditor->window, NULL,
-        GTTX_Text, project.songNameStrs[songNumber],
+        GTTX_Text, currentProjectGetSongName(songNumber),
         TAG_END);
 }
 

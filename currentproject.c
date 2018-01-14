@@ -18,10 +18,18 @@
 
 #define PROJECT_FILENAME_LENGTH 256
 
-Project project;
+static Project project;
 /* TODO: make me a BOOL */
 static int  projectSaved = 1;
 static char projectFilename[PROJECT_FILENAME_LENGTH];
+
+void initCurrentProject(void) {
+  initProject(&project);
+}
+
+void freeCurrentProject(void) {
+  freeProject(&project);
+}
 
 static int saveProjectToAsl(char *dir, char *file) {
     int result;
@@ -52,7 +60,7 @@ static int saveProjectToAsl(char *dir, char *file) {
         goto freeBuffer;
     }
 
-    if(!saveProjectToFile(buffer)) {
+    if(!saveProjectToFile(&project, buffer)) {
         EasyRequest(
             getProjectWindow(),
             &projectSaveFailEasyStruct,
@@ -96,7 +104,7 @@ done:
 
 int saveProject(void) {
     if(*projectFilename) {
-        if(!saveProjectToFile(projectFilename)) {
+        if(!saveProjectToFile(&project, projectFilename)) {
             EasyRequest(
                 getProjectWindow(),
                 &projectSaveFailEasyStruct,
@@ -243,6 +251,30 @@ BOOL currentProjectCreateMap(int mapNum) {
   return TRUE;
 }
 
+/* TODO: this is weird */
+BOOL currentProjectSaveNewMap(Map *map, int mapNum) {
+  Map *mapCopy = copyMap(map);
+  if(!mapCopy) {
+    fprintf(stderr, "currentProjectSaveMap: couldn't allocate map copy\n");
+    return FALSE;
+  }
+  project.mapCnt++;
+  project.maps[mapNum] = mapCopy;
+  return TRUE;
+}
+
+void currentProjectOverwriteMap(Map *map, int mapNum) {
+  overwriteMap(map, project.maps[mapNum]);
+}
+
+BOOL currentProjectHasMap(int mapNum) {
+  return (BOOL)(project.maps[mapNum] ? TRUE : FALSE);
+}
+
+Map *currentProjectMap(int mapNum) {
+  return project.maps[mapNum];
+}
+
 /* TODO: move me somewhere, remove duplicate code from SongNamesEditor, EntityNamesEditor... */
 static int listItemStart(int selected) {
     if(selected < 10) {
@@ -266,4 +298,32 @@ void updateCurrentProjectSongName(int songNum, char *name) {
 void updateCurrentProjectEntityName(int entityNum, char *name) {
   strcpy(&project.entityNameStrs[entityNum][listItemStart(entityNum)], name);
   projectSaved = 1;
+}
+
+char *currentProjectGetMapName(int mapNum) {
+  Map *map = project.maps[mapNum];
+  if(!map) {
+    return NULL;
+  }
+  return map->name;
+}
+
+char *currentProjectGetSongName(int songNum) {
+  return project.songNameStrs[songNum];
+}
+
+char *currentProjectGetEntityName(int entityNum) {
+  return project.entityNameStrs[entityNum];
+}
+
+struct List *currentProjectGetMapNames(void) {
+  return &project.mapNames;
+}
+
+struct List *currentProjectGetSongNames(void) {
+  return &project.songNames;
+}
+
+struct List *currentProjectGetEntityNames(void) {
+  return &project.entityNames;
 }

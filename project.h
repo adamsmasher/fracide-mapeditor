@@ -24,7 +24,7 @@ void freeProject(Project*);
 void copyProject(Project *src, Project *dest);
 
 int loadProjectFromFile(char *file, Project*);
-int saveProjectToFile(char *file);
+int saveProjectToFile(Project*, char *file);
 
 void updateProjectMapName(Project*, int mapNum, Map*);
 

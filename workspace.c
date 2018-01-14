@@ -87,7 +87,7 @@ done:
 void newProject(void) {
     if(ensureEverythingSaved()) {
         clearProject();
-        initProject(&project);
+        initCurrentProject();
         setProjectFilename(NULL);
     }
 }
@@ -159,7 +159,7 @@ static int confirmCreateMap(int mapNum) {
 int openMapNum(int mapNum) {
     MapEditor *mapEditor;
 
-    if(!project.maps[mapNum]) {
+    if(!currentProjectHasMap(mapNum)) {
         if(!confirmCreateMap(mapNum)) {
             return 0;
         }
@@ -170,7 +170,7 @@ int openMapNum(int mapNum) {
         }
     }
 
-    mapEditor = newMapEditorWithMap(project.maps[mapNum], mapNum);
+    mapEditor = newMapEditorWithMap(currentProjectMap(mapNum), mapNum);
     if(!mapEditor) {
         fprintf(stderr, "openMapNum: failed to create new map editor\n");
         return 0;
@@ -204,22 +204,19 @@ int saveMapAs(MapEditor *mapEditor) {
         return 0;
     }
 
-    if(!project.maps[selected - 1]) {
-        Map *map = copyMap(mapEditor->map);
-        if(!map) {
-            fprintf(stderr, "saveMapAs: failed to allocate map copy\n");
+    if(!currentProjectHasMap(selected - 1)) {
+        if(!currentProjectSaveNewMap(mapEditor->map, selected - 1)) {
+            fprintf(stderr, "saveMapAs: failed to save map\n");
             return 0;
         }
-        project.mapCnt++;
-        project.maps[selected - 1] = map;
     } else {
         int response = EasyRequest(
             mapEditor->window,
             &saveIntoFullSlotEasyStruct,
             NULL,
-            selected - 1, project.maps[selected - 1]->name);
+            selected - 1, currentProjectGetMapName(selected - 1));
         if(response) {
-            overwriteMap(mapEditor->map, project.maps[selected - 1]);
+            currentProjectOverwriteMap(mapEditor->map, selected - 1);
         } else {
             return 0;
         }
@@ -230,7 +227,6 @@ int saveMapAs(MapEditor *mapEditor) {
 
     mapEditorSetSaveStatus(mapEditor, SAVED);
 
-    updateProjectMapName(&project, selected - 1, mapEditor->map);
     updateCurrentProjectMapName(selected - 1, mapEditor->map);
 
     return 1;
@@ -240,7 +236,7 @@ int saveMap(MapEditor *mapEditor) {
     if(!mapEditor->mapNum) {
         return saveMapAs(mapEditor);
     } else {
-        overwriteMap(mapEditor->map, project.maps[mapEditor->mapNum - 1]);
+        currentProjectOverwriteMap(mapEditor->map, mapEditor->mapNum - 1);
         /* TODO: this is what sets the saved status, but that feels fragile */
         updateCurrentProjectMapName(mapEditor->mapNum - 1, mapEditor->map);
         mapEditorSetSaveStatus(mapEditor, SAVED);

@@ -101,7 +101,7 @@ static void createSongRequesterGadgets(SongRequester *songRequester) {
     songListNewGadget.ng_Width  = width  - SONG_LIST_WIDTH_DELTA;
     gad = CreateGadget(LISTVIEW_KIND, gad, &songListNewGadget,
         GTLV_ShowSelected, songRequester->songNameGadget,
-        GTLV_Labels, &project.songNames,
+        GTLV_Labels, currentProjectGetSongNames(),
         TAG_END);
 
     if(gad) {

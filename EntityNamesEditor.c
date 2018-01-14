@@ -28,10 +28,9 @@ static EntityRequester *entityNamesEditor = NULL;
 
 static void handleEntityNamesEditorSelectEntity(struct IntuiMessage *msg) {
     int selected = msg->Code;
-    int i = listItemStart(selected);
 
     GT_SetGadgetAttrs(entityNamesEditor->entityNameGadget, entityNamesEditor->window, NULL,
-       GTST_String, &project.entityNameStrs[selected][i],
+       GTST_String, currentProjectGetEntityName(selected),
        GA_Disabled, FALSE,
        TAG_END);
 

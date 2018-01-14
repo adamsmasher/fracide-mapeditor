@@ -2,7 +2,6 @@
 
 #include <proto/exec.h>
 
-#include "currentproject.h"
 #include "globals.h"
 #include "map.h"
 
@@ -239,13 +238,13 @@ done:
     return ret;
 }
 
-static void writeIndexToFp(FILE *fp) {
+static void writeIndexToFp(Project *project, FILE *fp) {
     int i;
     UWORD zero = 0;
     UWORD cnt =  1;
 
     for(i = 0; i < 128; i++) {
-        if(project.maps[i]) {
+        if(project->maps[i]) {
             fwrite(&cnt, 2, 1, fp);
             cnt++;
         } else {
@@ -254,7 +253,7 @@ static void writeIndexToFp(FILE *fp) {
     }
 }
 
-static void saveProjectToFp(FILE *fp) {
+static void saveProjectToFp(Project *project, FILE *fp) {
     ULONG header;
     UWORD version;
     UWORD i;
@@ -265,24 +264,24 @@ static void saveProjectToFp(FILE *fp) {
     version = VERSION;
     fwrite(&version, 2, 1, fp);
 
-    fwrite(project.tilesetPackagePath, 1, 256, fp);
+    fwrite(project->tilesetPackagePath, 1, 256, fp);
 
-    fwrite(&project.mapCnt, 2, 1, fp);
+    fwrite(&project->mapCnt, 2, 1, fp);
 
-    writeIndexToFp(fp);
+    writeIndexToFp(project, fp);
 
-    for(i = 0; i < project.mapCnt; i++) {
-        if(project.maps[i] != NULL) {
+    for(i = 0; i < project->mapCnt; i++) {
+        if(project->maps[i] != NULL) {
             fwrite(&i, 2, 1, fp);
-            writeMap(project.maps[i], fp);
+            writeMap(project->maps[i], fp);
         }
     }
 
-    fwrite(project.songNameStrs, 80, 128, fp);
-    fwrite(project.entityNameStrs, 80, 128, fp);
+    fwrite(project->songNameStrs, 80, 128, fp);
+    fwrite(project->entityNameStrs, 80, 128, fp);
 }
 
-int saveProjectToFile(char *file) {
+int saveProjectToFile(Project *project, char *file) {
     int ret;
     FILE *fp = fopen(file, "wb");
 
@@ -292,7 +291,7 @@ int saveProjectToFile(char *file) {
         goto done;
     }
 
-    saveProjectToFp(fp);
+    saveProjectToFp(project, fp);
     ret = 1;
 
     fclose(fp);

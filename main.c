@@ -735,7 +735,7 @@ int main(void) {
         goto closeWindow;
     }
     
-    initProject(&project);
+    initCurrentProject();
 
     mainLoop();
     
@@ -749,7 +749,7 @@ closeAllMapEditors:
 freeTilesetPackage:
     freeTilesetPackage(tilesetPackage);
 freeProject:
-    freeProject(&project);
+    freeCurrentProject();
 freeMapEditorMenu:
     freeMapEditorMenu();
 closeWindow:

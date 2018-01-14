@@ -122,7 +122,7 @@ static void createMapRequesterGadgets(MapRequester *mapRequester) {
     mapListNewGadget.ng_Width  = width  - MAP_LIST_WIDTH_DELTA;
     mapListNewGadget.ng_Height = height - MAP_LIST_HEIGHT_DELTA;
     gad = CreateGadget(LISTVIEW_KIND, gad, &mapListNewGadget,
-        GTLV_Labels, &project.mapNames,
+        GTLV_Labels, currentProjectGetMapNames(),
         GTLV_ShowSelected, NULL,
         TAG_END);
 
