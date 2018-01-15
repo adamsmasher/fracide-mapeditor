@@ -3,11 +3,8 @@
 
 #include <intuition/intuition.h>
 
-#include "TilesetPackage.h"
-
 extern struct Screen   *screen;
 extern void            *vi;
-extern TilesetPackage  *tilesetPackage;
 extern struct TextAttr Topaz80;
 
 #endif

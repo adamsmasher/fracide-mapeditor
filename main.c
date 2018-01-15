@@ -23,6 +23,7 @@
 #include "framework/runstate.h"
 
 #include "currentproject.h"
+#include "currenttiles.h"
 #include "easystructs.h"
 #include "EntityBrowser.h"
 #include "EntityNamesEditor.h"

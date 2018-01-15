@@ -19,6 +19,7 @@
 #include <string.h>
 
 #include "currentproject.h"
+#include "currenttiles.h"
 #include "EntityBrowser.h"
 #include "map.h"
 #include "menu.h"

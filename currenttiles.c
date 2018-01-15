@@ -15,6 +15,8 @@
 #include "ProjectWindow.h"
 #include "TilesetPackage.h"
 
+TilesetPackage *tilesetPackage = NULL;
+
 int loadTilesetPackageFromFile(char *file) {
     TilesetPackage *newTilesetPackage;
 
