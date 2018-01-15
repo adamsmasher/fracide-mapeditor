@@ -103,10 +103,6 @@ typedef struct MapRequester_tag {
     struct Gadget *gadgets;
 } MapRequester;
 
-void initMapRequesterScreen(void) {
-    mapRequesterNewWindow.Screen = screen;
-}
-
 void initMapRequesterVi(void) {
     mapListNewGadget.ng_VisualInfo      = vi;
     okButtonNewGadget.ng_VisualInfo     = vi;
@@ -236,7 +232,7 @@ static int spawnRequester(struct Window *window, char *title) {
 
     mapRequesterNewWindow.Title = title;
 
-    mapRequester.window = OpenWindow(&mapRequesterNewWindow);
+    mapRequester.window = openWindowOnScreen(&mapRequesterNewWindow);
     if(!mapRequester.window) {
         fprintf(stderr, "spawnRequester: couldn't open window\n");
         goto error_FreeGadgets;

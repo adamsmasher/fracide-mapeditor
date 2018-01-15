@@ -5,7 +5,7 @@
 
 struct Window *getProjectWindow(void);
 
-BOOL openProjectWindow(struct Screen*);
+BOOL openProjectWindow(void);
 void closeProjectWindow(void);
 
 void handleProjectMessages(long signalSet);

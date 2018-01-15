@@ -54,10 +54,6 @@ static struct NewGadget tilesetListNewGadget = {
     NULL  /* user data */
 };
 
-void initTilesetRequesterScreen(void) {
-    tilesetRequesterNewWindow.Screen = screen;
-}
-
 void initTilesetRequesterVi(void) {
     tilesetListNewGadget.ng_VisualInfo = vi;
 }
@@ -107,7 +103,7 @@ TilesetRequester *newTilesetRequester(char *title) {
     tilesetRequesterNewWindow.FirstGadget = tilesetRequester->gadgets;
 
     tilesetRequesterNewWindow.Title = tilesetRequester->title;
-    tilesetRequester->window = OpenWindow(&tilesetRequesterNewWindow);
+    tilesetRequester->window = openWindowOnScreen(&tilesetRequesterNewWindow);
     if(!tilesetRequester) {
         goto error_freeGadgets;
     }

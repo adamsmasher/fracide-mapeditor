@@ -34,16 +34,15 @@ struct Window *getProjectWindow(void) {
     return projectWindow;
 }
 
-BOOL openProjectWindow(struct Screen *screen) {
+BOOL openProjectWindow(void) {
     if(projectWindow) {
         fprintf(stderr, "openProjectWindow: cannot be called when project window already exists\n");
         goto error;
     }
 
-    projectNewWindow.Screen    = screen;
-    projectNewWindow.MinWidth  = projectNewWindow.Width  = screen->Width;
-    projectNewWindow.MinHeight = projectNewWindow.Height = screen->Height;
-    projectWindow = OpenWindow(&projectNewWindow);
+    projectNewWindow.MinWidth  = projectNewWindow.Width  = getScreenWidth();
+    projectNewWindow.MinHeight = projectNewWindow.Height = getScreenHeight();
+    projectWindow = openWindowOnScreen(&projectNewWindow);
     if(!projectWindow) {
         fprintf(stderr, "openProjectWindow: failed to open window!\n");
         goto error;

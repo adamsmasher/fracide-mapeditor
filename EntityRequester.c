@@ -71,10 +71,6 @@ static struct NewGadget entityNameNewGadget = {
     NULL  /* user data */
 };
 
-void initEntityRequesterScreen(void) {
-    entityRequesterNewWindow.Screen = screen;
-}
-
 void initEntityRequesterVi(void) {
     entityListNewGadget.ng_VisualInfo = vi;
     entityNameNewGadget.ng_VisualInfo = vi;
@@ -132,7 +128,7 @@ static EntityRequester *newGenericEntityRequester(char *title, int editable) {
     }
     entityRequesterNewWindow.FirstGadget = entityRequester->gadgets;
 
-    entityRequester->window = OpenWindow(&entityRequesterNewWindow);
+    entityRequester->window = openWindowOnScreen(&entityRequesterNewWindow);
     if(!entityRequester->window) {
         fprintf(stderr, "newGenericEntityRequester: couldn't open window\n");
         goto error_freeGadgets;

@@ -3,7 +3,6 @@
 
 #include "MapEditor.h"
 
-void initMapRequesterScreen(void);
 void initMapRequesterVi(void);
 
 int openMapRequester(void);

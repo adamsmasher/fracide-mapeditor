@@ -700,27 +700,12 @@ static void mainLoop(void) {
 int main(void) {
     int retCode;
 
-    screen = OpenScreen(&newScreen);
-    if(!screen) {
+    if(!initGlobalScreen(&newScreen)) {
         retCode = -2;
         goto done;
     }
 
-    initPalette(&screen->ViewPort);
-
-/* TODO: just loop over a thing! Or something! This is dumb! */
-    initMapEditorScreen();
-    initMapRequesterScreen();
-    initTilesetRequesterScreen();
-    initSongRequesterScreen();
-    initEntityRequesterScreen();
-    initEntityBrowserScreen();
-
-    vi = GetVisualInfo(screen, TAG_END);
-    if(!vi) {
-        retCode = -3;
-        goto closeScreen;
-    }
+    initPalette(getGlobalViewPort());
 
     initMapEditorVi();
     initMapRequesterVi();
@@ -729,13 +714,13 @@ int main(void) {
     initEntityRequesterVi();
     initEntityBrowserVi();
 
-    if(!openProjectWindow(screen)) {
-        retCode = -4;
-        goto freeVisualInfo;
+    if(!openProjectWindow()) {
+        retCode = -3;
+        goto closeScreen;
     }
 
     if(!initMapEditorMenu()) {
-        retCode = -7;
+        retCode = -4;
         goto closeWindow;
     }
     
@@ -758,10 +743,8 @@ freeMapEditorMenu:
     freeMapEditorMenu();
 closeWindow:
     closeProjectWindow();
-freeVisualInfo:
-    FreeVisualInfo(vi);
 closeScreen:
-    CloseScreen(screen);
+    closeGlobalScreen();
 done:
     return retCode;
 }

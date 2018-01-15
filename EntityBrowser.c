@@ -278,10 +278,6 @@ static struct NewGadget *allNewGadgets[] = {
     NULL
 };
 
-void initEntityBrowserScreen(void) {
-    entityBrowserNewWindow.Screen = screen;
-}
-
 void initEntityBrowserVi(void) {
     struct NewGadget **i = allNewGadgets;
     while(*i) {
@@ -502,7 +498,7 @@ EntityBrowser *newEntityBrowser(char *title, Entity *entities, int entityCnt) {
     }
     entityBrowserNewWindow.FirstGadget = entityBrowser->gadgets;
     
-    entityBrowser->window = OpenWindow(&entityBrowserNewWindow);
+    entityBrowser->window = openWindowOnScreen(&entityBrowserNewWindow);
     if(!entityBrowser->window) {
         fprintf(stderr, "newEntityBrowser: couldn't open window\n");
         goto error_freeGadgets;

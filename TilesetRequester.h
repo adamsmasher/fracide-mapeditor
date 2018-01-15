@@ -13,7 +13,6 @@ typedef struct TilesetRequesterTag {
     char          *title;
 } TilesetRequester;
 
-void initTilesetRequesterScreen(void);
 void initTilesetRequesterVi(void);
 
 TilesetRequester *newTilesetRequester(char *title);

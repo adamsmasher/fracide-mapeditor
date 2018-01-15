@@ -19,6 +19,7 @@
 #include <string.h>
 
 #include "framework/screen.h"
+
 #include "currentproject.h"
 #include "currenttiles.h"
 #include "EntityBrowser.h"
@@ -336,10 +337,6 @@ static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
     "This map had tileset %ld, which does not exist\nin the new package.\nThe tileset has been removed from this map.",
     "OK"
 };
-
-void initMapEditorScreen(void) {
-  mapEditorNewWindow.Screen = screen;
-}
 
 void initMapEditorVi(void) {
     struct NewGadget **i = allNewGadgets;
@@ -855,7 +852,7 @@ static MapEditor *newMapEditor(void) {
     initMapEditorPaletteImages(mapEditor);
     initMapEditorMapImages(mapEditor);
 
-    mapEditor->window = OpenWindow(&mapEditorNewWindow);
+    mapEditor->window = openWindowOnScreen(&mapEditorNewWindow);
     if(!mapEditor->window) {
         fprintf(stderr, "newMapEditor: failed to open window\n");
         goto error_freeImageData;

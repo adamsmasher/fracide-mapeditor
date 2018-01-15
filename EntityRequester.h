@@ -13,7 +13,6 @@ typedef struct EntityRequester_tag {
     int editable;
 } EntityRequester;
 
-void initEntityRequesterScreen(void);
 void initEntityRequesterVi(void);
 
 EntityRequester *newEntityRequester(void);

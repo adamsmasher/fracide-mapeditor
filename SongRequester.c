@@ -71,10 +71,6 @@ static struct NewGadget songNameNewGadget = {
     NULL  /* user data */
 };
 
-void initSongRequesterScreen(void) {
-    songRequesterNewWindow.Screen = screen;
-}
-
 void initSongRequesterVi(void) {
     songListNewGadget.ng_VisualInfo = vi;
     songNameNewGadget.ng_VisualInfo = vi;
@@ -138,7 +134,7 @@ static SongRequester *newGenericSongRequester(char *title, int editable) {
     }
     songRequesterNewWindow.FirstGadget = songRequester->gadgets;
 
-    songRequester->window = OpenWindow(&songRequesterNewWindow);
+    songRequester->window = openWindowOnScreen(&songRequesterNewWindow);
     if(!songRequester->window) {
         fprintf(stderr, "newGenericSongRequester: couldn't open window\n");
         goto error_freeGadgets;
