@@ -43,6 +43,6 @@ struct List *currentProjectGetEntityNames(void);
 
 char *currentProjectGetMapName(int mapNum);
 char *currentProjectGetSongName(int songNum);
-char *currentProjectGetENtityName(int entityNum);
+char *currentProjectGetEntityName(int entityNum);
 
 #endif
