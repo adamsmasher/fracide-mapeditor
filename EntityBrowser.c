@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "globals.h"
+#include "map.h"
 
 #define ENTITY_BROWSER_WIDTH  350
 #define ENTITY_BROWSER_HEIGHT 225

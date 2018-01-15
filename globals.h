@@ -3,7 +3,6 @@
 
 #include <intuition/intuition.h>
 
-#include "Project.h"
 #include "TilesetPackage.h"
 
 extern struct Screen   *screen;

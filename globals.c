@@ -3,7 +3,6 @@
 #include "globals.h"
 
 #include "TilesetPackage.h"
-#include "Project.h"
 
 struct Screen   *screen          = NULL;
 void            *vi              = NULL;
