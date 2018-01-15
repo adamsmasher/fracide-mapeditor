@@ -71,9 +71,14 @@ static struct NewGadget songNameNewGadget = {
     NULL  /* user data */
 };
 
-void initSongRequesterVi(void) {
-    songListNewGadget.ng_VisualInfo = vi;
-    songNameNewGadget.ng_VisualInfo = vi;
+static void initSongRequesterVi(void) {
+  void *vi = getGlobalVi();
+  if(!vi) {
+    fprintf(stderr, "initSongRequesterVi: failed to get global vi\n");
+  }
+
+  songListNewGadget.ng_VisualInfo = vi;
+  songNameNewGadget.ng_VisualInfo = vi;
 }
 
 static void createSongRequesterGadgets(SongRequester *songRequester) {
@@ -127,6 +132,7 @@ static SongRequester *newGenericSongRequester(char *title, int editable) {
     strcpy(songRequester->title, title);
     songRequesterNewWindow.Title = songRequester->title;
 
+    initSongRequesterVi();
     createSongRequesterGadgets(songRequester);
     if(!songRequester->gadgets) {
         fprintf(stderr, "newGenericSongRequester: couldn't create gadgets\n");

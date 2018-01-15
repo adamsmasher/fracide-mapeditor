@@ -338,21 +338,14 @@ static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
     "OK"
 };
 
-void initMapEditorVi(void) {
-    struct NewGadget **i = allNewGadgets;
-    while(*i) {
-        (*i)->ng_VisualInfo = vi;
-        i++;
-    }
-}
-
 struct Menu *initMapEditorMenu(void) {
+    /* TODO: use the menu builder! */
     menu = CreateMenus(newMenu, GTMN_FullMenu, TRUE, TAG_END);
     if(!menu) {
         goto error;
     }
 
-    if(!LayoutMenus(menu, vi, TAG_END)) {
+    if(!LayoutMenus(menu, getGlobalVi(), TAG_END)) {
         goto error_freeMenu;
     }
 
@@ -828,6 +821,19 @@ void mapEditorSetMapNum(MapEditor *mapEditor, UWORD mapNum) {
     }
 
     updateMapEditorTitle(mapEditor);
+}
+
+static void initMapEditorVi(void) {
+  struct NewGadget **i = allNewGadgets;
+  void *vi = getGlobalVi();
+  if(!vi) {
+    fprintf(stderr, "initMapEditorVi: failed to get global vi\n");
+  }
+
+  while(*i) {
+    (*i)->ng_VisualInfo = vi;
+    i++;
+  }
 }
 
 static MapEditor *newMapEditor(void) {

@@ -54,7 +54,8 @@ BOOL openProjectWindow(void) {
         goto error_freeWindow;
     }
 
-    if(!LayoutMenus(menu, vi, TAG_END)) {
+    /* TODO: this is unacceptable */
+    if(!LayoutMenus(menu, getGlobalVi(), TAG_END)) {
         fprintf(stderr, "openProjectWindow: Error laying out menu\n");
         goto error_freeMenu;
     }

@@ -707,13 +707,6 @@ int main(void) {
 
     initPalette(getGlobalViewPort());
 
-    initMapEditorVi();
-    initMapRequesterVi();
-    initTilesetRequesterVi();
-    initSongRequesterVi();
-    initEntityRequesterVi();
-    initEntityBrowserVi();
-
     if(!openProjectWindow()) {
         retCode = -3;
         goto closeScreen;

@@ -71,9 +71,14 @@ static struct NewGadget entityNameNewGadget = {
     NULL  /* user data */
 };
 
-void initEntityRequesterVi(void) {
-    entityListNewGadget.ng_VisualInfo = vi;
-    entityNameNewGadget.ng_VisualInfo = vi;
+static void initEntityRequesterVi(void) {
+  void *vi = getGlobalVi();
+  if(!vi) {
+    fprintf(stderr, "initEntityRequesterVi: failed to get visual info\n");
+  }
+
+  entityListNewGadget.ng_VisualInfo = vi;
+  entityNameNewGadget.ng_VisualInfo = vi;
 }
 
 static void createEntityRequesterGadgets(EntityRequester *entityRequester) {
@@ -121,6 +126,7 @@ static EntityRequester *newGenericEntityRequester(char *title, int editable) {
 
     entityRequesterNewWindow.Title = title;
 
+    initEntityRequesterVi();
     createEntityRequesterGadgets(entityRequester);
     if(!entityRequester->gadgets) {
         fprintf(stderr, "newGenericEntityRequester: couldn't create gadgets\n");

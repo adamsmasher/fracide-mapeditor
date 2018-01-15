@@ -52,8 +52,6 @@ typedef struct EntityBrowser_tag {
     EntityRequester *entityRequester;
 } EntityBrowser;
 
-void initEntityBrowserVi(void);
-
 EntityBrowser *newEntityBrowser(char *title, Entity *entities, int entityCnt);
 void freeEntityBrowser(EntityBrowser*);
 

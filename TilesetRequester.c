@@ -54,8 +54,13 @@ static struct NewGadget tilesetListNewGadget = {
     NULL  /* user data */
 };
 
-void initTilesetRequesterVi(void) {
-    tilesetListNewGadget.ng_VisualInfo = vi;
+static void initTilesetRequesterVi(void) {
+  void *vi = getGlobalVi();
+  if(!vi) {
+    fprintf(stderr, "initTilesetRequesterVi: failed to get global VI");
+  }
+
+  tilesetListNewGadget.ng_VisualInfo = vi;
 }
 
 static void createTilesetRequesterGadgets(TilesetRequester *tilesetRequester) {
@@ -96,6 +101,7 @@ TilesetRequester *newTilesetRequester(char *title) {
     }
     strcpy(tilesetRequester->title, title);
 
+    initTilesetRequesterVi();
     createTilesetRequesterGadgets(tilesetRequester);
     if(!tilesetRequester->gadgets) {
         goto error_freeTitle;

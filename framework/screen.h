@@ -12,10 +12,7 @@ WORD getScreenHeight(void);
 /* TODO: call me OnGlobalScreen? */
 struct Window *openWindowOnScreen(struct NewWindow*);
 
-/* TODO: eh */
 struct ViewPort *getGlobalViewPort(void);
-
-/* TODO: don't expose me */
-extern void *vi;
+void            *getGlobalVi(void);
 
 #endif

@@ -61,8 +61,6 @@ typedef struct MapEditorTag {
     char title[16];
 } MapEditor;
 
-void initMapEditorVi(void);
-
 struct Menu *initMapEditorMenu(void);
 void freeMapEditorMenu(void);
 

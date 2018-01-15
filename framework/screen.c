@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Screen *screen = NULL;
-void          *vi     = NULL;
+static struct Screen *screen = NULL;
+static void          *vi     = NULL;
 
 BOOL initGlobalScreen(struct NewScreen *newScreen) {
   screen = OpenScreen(newScreen);
@@ -67,4 +67,12 @@ struct ViewPort *getGlobalViewPort(void) {
     return NULL;
   }
   return &screen->ViewPort;
+}
+
+void *getGlobalVi(void) {
+  if(!screen) {
+    fprintf(stderr, "getGlobalVi: screen not yet initialized\n");
+    return NULL;
+  }
+  return vi;
 }

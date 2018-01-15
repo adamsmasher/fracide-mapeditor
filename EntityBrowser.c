@@ -278,14 +278,6 @@ static struct NewGadget *allNewGadgets[] = {
     NULL
 };
 
-void initEntityBrowserVi(void) {
-    struct NewGadget **i = allNewGadgets;
-    while(*i) {
-        (*i)->ng_VisualInfo = vi;
-        i++;
-    }
-}
-
 static void createEntityBrowserGadgets(EntityBrowser *entityBrowser, int entityCnt) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
@@ -469,6 +461,20 @@ error:
     return 0;
 }
 
+static void initEntityBrowserVi(void) {
+  struct NewGadget **i = allNewGadgets;
+  void *vi = getGlobalVi();
+
+  if(!vi) {
+    fprintf(stderr, "initEntityBrowserVi: failed to get global vi\n");
+  }  
+
+  while(*i) {
+    (*i)->ng_VisualInfo = vi;
+    i++;
+  }
+}
+
 EntityBrowser *newEntityBrowser(char *title, Entity *entities, int entityCnt) {
     EntityBrowser *entityBrowser = malloc(sizeof(EntityBrowser));
     if(!entityBrowser) {
@@ -491,6 +497,7 @@ EntityBrowser *newEntityBrowser(char *title, Entity *entities, int entityCnt) {
     strcpy(entityBrowser->title, title);
     entityBrowserNewWindow.Title = entityBrowser->title;
 
+    initEntityBrowserVi();
     createEntityBrowserGadgets(entityBrowser, entityCnt);
     if(!entityBrowser->gadgets) {
         fprintf(stderr, "newEntityBrowser: couldn't create gadgets\n");

@@ -16,8 +16,6 @@ typedef struct SongRequester_tag {
     int editable;
 } SongRequester;
 
-void initSongRequesterVi(void);
-
 SongRequester *newSongRequester(char *title);
 SongRequester *newSongNamesEditor(void);
 

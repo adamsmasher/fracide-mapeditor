@@ -103,12 +103,6 @@ typedef struct MapRequester_tag {
     struct Gadget *gadgets;
 } MapRequester;
 
-void initMapRequesterVi(void) {
-    mapListNewGadget.ng_VisualInfo      = vi;
-    okButtonNewGadget.ng_VisualInfo     = vi;
-    cancelButtonNewGadget.ng_VisualInfo = vi;
-}
-
 static void createMapRequesterGadgets(MapRequester *mapRequester) {
     struct Gadget *gad;
     int height = mapRequester->window ? mapRequester->window->Height : MAP_REQUESTER_HEIGHT;
@@ -214,6 +208,17 @@ static void requesterLoop(MapRequester *mapRequester) {
     }
 }
 
+static void initMapRequesterVi(void) {
+  void *vi = getGlobalVi();
+  if(!vi) {
+    fprintf(stderr, "initMapRequesterVi: failed to get global VI\n");
+  }
+
+  mapListNewGadget.ng_VisualInfo      = vi;
+  okButtonNewGadget.ng_VisualInfo     = vi;
+  cancelButtonNewGadget.ng_VisualInfo = vi;
+}
+
 static int spawnRequester(struct Window *window, char *title) {
     MapRequester mapRequester;
     mapRequester.window = NULL;
@@ -223,6 +228,7 @@ static int spawnRequester(struct Window *window, char *title) {
         goto error;
     }
 
+    initMapRequesterVi();
     createMapRequesterGadgets(&mapRequester);
     if(!mapRequester.gadgets) {
         fprintf(stderr, "spawnRequester: couldn't create gadgets\n");
