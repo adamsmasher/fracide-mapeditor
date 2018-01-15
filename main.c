@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "framework/runstate.h"
+
 #include "currentproject.h"
 #include "easystructs.h"
 #include "EntityBrowser.h"
@@ -681,8 +683,8 @@ static void closeDeadMapEditors(void) {
 
 static void mainLoop(void) {
     long signalSet = 0;
-    running = 1;
-    while(running) {
+    /* TODO: we used to set running here, and that was kind of nice... */
+    while(isRunning()) {
         signalSet = Wait(windowSetSigMask());
         /* TODO: you should just loop through a thing or something */
         handleProjectMessages(signalSet);

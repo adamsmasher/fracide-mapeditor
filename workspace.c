@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "framework/runstate.h"
+
 #include "currentproject.h"
 #include "currenttiles.h"
 #include "easystructs.h"
@@ -134,7 +136,7 @@ done:
 
 void quit(void) {
     if(ensureEverythingSaved()) {
-        running = 0;
+        stopRunning();
     }
 }
 

@@ -8,7 +8,6 @@
 extern struct Screen   *screen;
 extern void            *vi;
 extern TilesetPackage  *tilesetPackage;
-extern int             running;
 extern struct TextAttr Topaz80;
 
 #endif
