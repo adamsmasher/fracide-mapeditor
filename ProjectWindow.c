@@ -6,6 +6,8 @@
 
 #include <stdio.h>
 
+#include "framework/screen.h"
+
 #include "globals.h"
 #include "menu.h"
 #include "windowset.h"

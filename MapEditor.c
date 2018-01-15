@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "framework/screen.h"
 #include "currentproject.h"
 #include "currenttiles.h"
 #include "EntityBrowser.h"

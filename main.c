@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "framework/runstate.h"
+#include "framework/screen.h"
 
 #include "currentproject.h"
 #include "currenttiles.h"

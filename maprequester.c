@@ -14,6 +14,8 @@
 #include <graphics/gfx.h>
 #include <proto/graphics.h>
 
+#include "framework/screen.h"
+
 #include "currentproject.h"
 #include "globals.h"
 #include "ProjectWindow.h"

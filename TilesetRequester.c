@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "framework/screen.h"
+
 #include "currenttiles.h"
 #include "globals.h"
 
