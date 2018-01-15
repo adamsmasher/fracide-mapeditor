@@ -19,8 +19,7 @@
 #define PROJECT_FILENAME_LENGTH 256
 
 static Project project;
-/* TODO: make me a BOOL */
-static int  projectSaved = 1;
+static BOOL projectSaved = 1;
 static char projectFilename[PROJECT_FILENAME_LENGTH];
 
 void initCurrentProject(void) {
