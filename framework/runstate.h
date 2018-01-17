@@ -3,7 +3,9 @@
 
 #include <exec/types.h>
 
-BOOL isRunning(void);
+typedef void (*RunProc)(long signalSet);
+
+void run(RunProc);
 
 void stopRunning(void);
 

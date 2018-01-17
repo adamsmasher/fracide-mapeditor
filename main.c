@@ -683,18 +683,13 @@ static void closeDeadMapEditors(void) {
     }
 }
 
-static void mainLoop(void) {
-    long signalSet = 0;
-    /* TODO: we used to set running here, and that was kind of nice... */
-    while(isRunning()) {
-        signalSet = Wait(windowSetSigMask());
-        /* TODO: you should just loop through a thing or something */
-        handleProjectMessages(signalSet);
-        handleSongNamesEditorMessages(signalSet);
-        handleEntityNamesEditorMessages(signalSet);
-        handleAllMapEditorMessages(signalSet);
-        closeDeadMapEditors();
-    }
+static void runProc(long signalSet) {
+  /* TODO: you should just loop through a thing or something */
+  handleProjectMessages(signalSet);
+  handleSongNamesEditorMessages(signalSet);
+  handleEntityNamesEditorMessages(signalSet);
+  handleAllMapEditorMessages(signalSet);
+  closeDeadMapEditors();
 }
 
 int main(void) {
@@ -719,7 +714,7 @@ int main(void) {
     
     initCurrentProject();
 
-    mainLoop();
+    run(runProc);
     
     retCode = 0;
 closeEntityEditor:

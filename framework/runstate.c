@@ -1,9 +1,17 @@
 #include "runstate.h"
 
+#include <proto/exec.h>
+
+#include "windowset.h"
+
 static BOOL running = TRUE;
 
-BOOL isRunning(void) {
-  return running;
+void run(RunProc runProc) {
+  running = TRUE;
+  while(running) {
+    long signalSet = Wait(windowSetSigMask());
+    runProc(signalSet);
+  }
 }
 
 void stopRunning(void) {
