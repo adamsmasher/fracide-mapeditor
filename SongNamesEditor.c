@@ -6,10 +6,11 @@
 
 #include <string.h>
 
+#include "framework/windowset.h"
+
 #include "currentproject.h"
 #include "globals.h"
 #include "SongRequester.h"
-#include "windowset.h"
 #include "workspace.h"
 
 SongRequester *songNamesEditor = NULL;

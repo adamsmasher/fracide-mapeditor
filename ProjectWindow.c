@@ -7,10 +7,10 @@
 #include <stdio.h>
 
 #include "framework/screen.h"
+#include "framework/windowset.h"
 
 #include "globals.h"
 #include "menu.h"
-#include "windowset.h"
 
 static struct Window *projectWindow = NULL;
 static struct Menu   *menu          = NULL;

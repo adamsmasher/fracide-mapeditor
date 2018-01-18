@@ -8,10 +8,11 @@
 
 #include <string.h>
 
+#include "framework/windowset.h"
+
 #include "currentproject.h"
 #include "EntityRequester.h"
 #include "globals.h"
-#include "windowset.h"
 #include "workspace.h"
 
 static int listItemStart(int selected) {

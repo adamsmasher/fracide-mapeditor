@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "framework/runstate.h"
+#include "framework/windowset.h"
 
 #include "currentproject.h"
 #include "currenttiles.h"
@@ -24,7 +25,6 @@
 #include "mapeditorset.h"
 #include "MapRequester.h"
 #include "ProjectWindow.h"
-#include "windowset.h"
 
 static int ensureEverythingSaved(void) {
     return ensureMapEditorsSaved() && ensureProjectSaved();

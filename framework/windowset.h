@@ -1,11 +1,14 @@
-#ifndef FRAC_WINDOWSET_H
-#define FRAC_WINDOWSET_H
+#ifndef FRAMEWORK_WINDOWSET_H
+#define FRAMEWORK_WINDOWSET_H
 
-#include <intuition/intuition.h>
+#include "Window.h"
 
-void addWindowToSet(struct Window*);
-void removeWindowFromSet(struct Window*);
+void addWindowToSet(FrameworkWindow*);
+void removeWindowFromSet(FrameworkWindow*);
 
+FrameworkWindow *windowSetFirstWindow(void);
+
+/* TODO: I wonder if we don't need to expose this now... */
 long windowSetSigMask(void);
 
 #endif

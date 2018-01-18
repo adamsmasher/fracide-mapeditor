@@ -22,6 +22,7 @@
 
 #include "framework/runstate.h"
 #include "framework/screen.h"
+#include "framework/windowset.h"
 
 #include "currentproject.h"
 #include "currenttiles.h"
@@ -40,7 +41,6 @@
 #include "SongRequester.h"
 #include "TilesetPackage.h"
 #include "TilesetRequester.h"
-#include "windowset.h"
 #include "workspace.h"
 
 #define SCR_WIDTH  640
@@ -683,15 +683,6 @@ static void closeDeadMapEditors(void) {
     }
 }
 
-static void runProc(long signalSet) {
-  /* TODO: you should just loop through a thing or something */
-  handleProjectMessages(signalSet);
-  handleSongNamesEditorMessages(signalSet);
-  handleEntityNamesEditorMessages(signalSet);
-  handleAllMapEditorMessages(signalSet);
-  closeDeadMapEditors();
-}
-
 int main(void) {
     int retCode;
 
@@ -714,7 +705,7 @@ int main(void) {
     
     initCurrentProject();
 
-    run(runProc);
+    runMainLoop();
     
     retCode = 0;
 closeEntityEditor:

@@ -1,16 +1,21 @@
 #include "runstate.h"
 
+#include <exec/types.h>
+
 #include <proto/exec.h>
 
 #include "windowset.h"
 
 static BOOL running = TRUE;
 
-void run(RunProc runProc) {
+void runMainLoop(void) {
   running = TRUE;
   while(running) {
+    FrameworkWindow *i;
     long signalSet = Wait(windowSetSigMask());
-    runProc(signalSet);
+    for(i = windowSetFirstWindow(); i != NULL; i = i->next) {
+      i->kind->handleEvents(i, signalSet);
+    }
   }
 }
 

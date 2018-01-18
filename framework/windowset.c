@@ -1,15 +1,26 @@
 #include "windowset.h"
 
 static long sigMask = 0;
+static FrameworkWindow *firstWindow = NULL;
 
-void addWindowToSet(struct Window *window) {
-    sigMask |= 1L << window->UserPort->mp_SigBit;
+FrameworkWindow *windowSetFirstWindow(void) {
+  return firstWindow;
 }
 
-void removeWindowFromSet(struct Window *window) {
-    sigMask &= ~(1L << window->UserPort->mp_SigBit);
+void addWindowToSet(FrameworkWindow *window) {
+  FrameworkWindow **i = &firstWindow;
+  while(*i) {
+    i = &(*i)->next;
+  }
+  *i = window;
+
+  sigMask |= 1L << window->intuitionWindow->UserPort->mp_SigBit;
+}
+
+void removeWindowFromSet(FrameworkWindow *window) {
+  sigMask &= ~(1L << window->intuitionWindow->UserPort->mp_SigBit);
 }
 
 long windowSetSigMask(void) {
-    return sigMask;
+  return sigMask;
 }
