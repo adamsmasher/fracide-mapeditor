@@ -16,6 +16,7 @@ typedef struct WindowKind_tag {
 typedef struct FrameworkWindow_tag {
   WindowKind *kind;
   struct Window *intuitionWindow;
+  struct FrameworkWindow_tag *children;
   struct FrameworkWindow_tag *next;
 } FrameworkWindow;
 
