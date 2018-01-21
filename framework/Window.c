@@ -4,6 +4,20 @@
 
 #include "windowset.h"
 
+static void handleWindowChildEvents(FrameworkWindow *window, long signalSet) {
+  FrameworkWindow *i = window->children;
+  while(i) {
+    FrameworkWindow *next = i->next;
+    handleWindowEvents(i, signalSet);
+    i = next;
+  }
+}
+
+void handleWindowEvents(FrameworkWindow *window, long signalSet) {
+  window->kind->handleEvents(window, signalSet);
+  handleWindowChildEvents(window, signalSet);
+}
+
 static void closeChildren(FrameworkWindow *window) {
   FrameworkWindow *i = window->children;
   while(i) {

@@ -20,6 +20,8 @@ typedef struct FrameworkWindow_tag {
   struct FrameworkWindow_tag *next;
 } FrameworkWindow;
 
+void handleWindowEvents(FrameworkWindow*, long signalSet);
+
 void closeWindow(FrameworkWindow*);
 
 #endif
