@@ -4,7 +4,7 @@
 
 # TODO: update dependencies
 
-FRAMEWORK_OBJS= framework/menubuild.o framework/runstate.o framework/screen.o framework/windowset.o
+FRAMEWORK_OBJS= framework/menubuild.o framework/runstate.o framework/screen.o framework/window.o framework/windowset.o
 
 MENU_OBJS=    projectmenu.o mapmenu.o entitiesmenu.o musicmenu.o
 MENU_HEADERS= projectmenu.h mapmenu.h entitiesmenu.h musicmenu.h

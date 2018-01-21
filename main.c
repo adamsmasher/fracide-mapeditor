@@ -693,14 +693,14 @@ int main(void) {
 
     initPalette(getGlobalViewPort());
 
-    if(!openProjectWindow()) {
+    if(!initMapEditorMenu()) {
         retCode = -3;
         goto closeScreen;
     }
 
-    if(!initMapEditorMenu()) {
+    if(!openProjectWindow()) {
         retCode = -4;
-        goto closeWindow;
+        goto freeMapEditorMenu;
     }
     
     initCurrentProject();
@@ -708,20 +708,13 @@ int main(void) {
     runMainLoop();
     
     retCode = 0;
-closeEntityEditor:
-    closeEntityNamesEditor();
-closeSongNamesEditor:
-    closeSongNamesEditor();
-closeAllMapEditors:
-    closeAllMapEditors();
+    closeAllWindows();
 freeTilesetPackage:
     freeTilesetPackage(tilesetPackage);
 freeProject:
     freeCurrentProject();
 freeMapEditorMenu:
     freeMapEditorMenu();
-closeWindow:
-    closeProjectWindow();
 closeScreen:
     closeGlobalScreen();
 done:

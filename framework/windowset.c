@@ -7,6 +7,7 @@ FrameworkWindow *windowSetFirstWindow(void) {
   return firstWindow;
 }
 
+/* TODO: write an openWindow function that automatically does this */
 void addWindowToSet(FrameworkWindow *window) {
   FrameworkWindow **i = &firstWindow;
   while(*i) {
@@ -19,6 +20,16 @@ void addWindowToSet(FrameworkWindow *window) {
 
 void removeWindowFromSet(FrameworkWindow *window) {
   sigMask &= ~(1L << window->intuitionWindow->UserPort->mp_SigBit);
+}
+
+void closeAllWindows(void) {
+  FrameworkWindow *i = firstWindow;
+  while(i) {
+    FrameworkWindow *next = i->next;
+    closeWindow(i);
+    i = next;
+  }
+  firstWindow = NULL;
 }
 
 long windowSetSigMask(void) {

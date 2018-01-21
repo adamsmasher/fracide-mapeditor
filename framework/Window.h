@@ -6,9 +6,11 @@
 struct FrameworkWindow_tag;
 
 typedef void (*EventHandler)(struct FrameworkWindow_tag*, long signalSet);
+typedef void (*CloseFunction)(struct FrameworkWindow_tag*);
 
 typedef struct WindowKind_tag {
-  EventHandler handleEvents;
+  EventHandler  handleEvents;
+  CloseFunction closeWindow;
 } WindowKind;
 
 typedef struct FrameworkWindow_tag {
@@ -16,5 +18,7 @@ typedef struct FrameworkWindow_tag {
   struct Window *intuitionWindow;
   struct FrameworkWindow_tag *next;
 } FrameworkWindow;
+
+void closeWindow(FrameworkWindow*);
 
 #endif
