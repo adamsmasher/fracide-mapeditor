@@ -96,7 +96,8 @@ void handleEntityNamesEditorMessages(long signalSet) {
 
 void closeEntityNamesEditor(void) {
     if(entityNamesEditor) {
-        removeWindowFromSet(entityNamesEditor->window);
+        /* TODO: fix me */
+        /* removeWindowFromSet(entityNamesEditor->window); */
         freeEntityRequester(entityNamesEditor);
         entityNamesEditor = NULL;
     }
@@ -108,7 +109,8 @@ void showEntityNamesEditor(void) {
     } else {
         entityNamesEditor = newEntityNamesEditor();
         if(entityNamesEditor) {
-            addWindowToSet(entityNamesEditor->window);
+            /* TODO: fix me */
+            /* addWindowToSet(entityNamesEditor->window); */
         }
     }
 }

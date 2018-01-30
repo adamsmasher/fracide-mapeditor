@@ -12,8 +12,8 @@
 #include "globals.h"
 #include "menu.h"
 
-static struct Window *projectWindow = NULL;
-static struct Menu   *menu          = NULL;
+static FrameworkWindow *projectWindow = NULL;
+static struct Menu     *menu          = NULL;
 
 static struct NewWindow projectNewWindow = {
     0,0, -1, -1,
@@ -30,52 +30,74 @@ static struct NewWindow projectNewWindow = {
     CUSTOMSCREEN
 };
 
-struct Window *getProjectWindow(void) {
-    return projectWindow;
+static void handleProjectMessage(struct IntuiMessage* msg) {
+  switch(msg->Class) {
+    case IDCMP_MENUPICK:
+      handleMainMenuPick(menu, msg);
+  }
+}
+
+static void handleProjectMessages(FrameworkWindow *window, long signalSet) {
+  struct IntuiMessage *msg;
+  struct Window *iwindow = window->intuitionWindow;
+
+  if(1L << iwindow->UserPort->mp_SigBit & signalSet) {
+    while(msg = (struct IntuiMessage*)GetMsg(iwindow->UserPort)) {
+      handleProjectMessage(msg);
+      ReplyMsg((struct Message*)msg);
+    }
+  }
+}
+
+/* TODO: fix me */
+static WindowKind projectWindowKind = {
+  handleProjectMessages,
+  NULL
+};
+
+FrameworkWindow *getProjectWindow(void) {
+  return projectWindow;
 }
 
 BOOL openProjectWindow(void) {
-    if(projectWindow) {
-        fprintf(stderr, "openProjectWindow: cannot be called when project window already exists\n");
-        goto error;
-    }
+  /* TODO: plan of attack
 
-    projectNewWindow.MinWidth  = projectNewWindow.Width  = getScreenWidth();
-    projectNewWindow.MinHeight = projectNewWindow.Height = getScreenHeight();
-    projectWindow = openWindowOnScreen(&projectNewWindow);
-    if(!projectWindow) {
-        fprintf(stderr, "openProjectWindow: failed to open window!\n");
-        goto error;
-    }
+  project window is a framework window rather than a window
 
-    menu = createMainMenu();
-    if(!menu) {
-        fprintf(stderr, "openProjectWindow: Error creating menu\n");
-        goto error_freeWindow;
-    }
+  create a means to attach a menu to a framework window */
+  if(projectWindow) {
+    fprintf(stderr, "openProjectWindow: cannot be called when project window already exists\n");
+    goto error;
+  }
 
-    /* TODO: this is unacceptable */
-    if(!LayoutMenus(menu, getGlobalVi(), TAG_END)) {
-        fprintf(stderr, "openProjectWindow: Error laying out menu\n");
-        goto error_freeMenu;
-    }
+  projectNewWindow.MinWidth  = projectNewWindow.Width  = getScreenWidth();
+  projectNewWindow.MinHeight = projectNewWindow.Height = getScreenHeight();
+  projectWindow = openWindowOnGlobalScreen(&projectWindowKind, &projectNewWindow);
+  if(!projectWindow) {
+    fprintf(stderr, "openProjectWindow: failed to open window!\n");
+    goto error;
+  }
 
-    SetMenuStrip(projectWindow, menu);
+  menu = createMainMenu();
+  if(!menu) {
+    fprintf(stderr, "openProjectWindow: Error creating menu\n");
+    goto error_freeWindow;
+  }
 
-    addWindowToSet(projectWindow);
+  SetMenuStrip(projectWindow, menu);
 
-    ActivateWindow(projectWindow);
+  ActivateWindow(projectWindow->intuitionWindow);
 
-    return TRUE;
+  return TRUE;
 
 error_freeMenu:
-    FreeMenus(menu);
-    menu = NULL;
+  FreeMenus(menu);
+  menu = NULL;
 error_freeWindow:
-    CloseWindow(projectWindow);
-    projectWindow = NULL;
+  CloseWindow(projectWindow);
+  projectWindow = NULL;
 error:
-    return FALSE;
+  return FALSE;
 }
 
 void closeProjectWindow(void) {
@@ -88,31 +110,9 @@ void closeProjectWindow(void) {
     FreeMenus(menu);
     menu = NULL;
 
-    removeWindowFromSet(projectWindow);
+    /* TODO: fix me */
+    /* removeWindowFromSet(projectWindow); */
     CloseWindow(projectWindow);
 
     projectWindow = NULL;
-}
-
-static void handleProjectMessage(struct IntuiMessage* msg) {
-    switch(msg->Class) {
-        case IDCMP_MENUPICK:
-            handleMainMenuPick(menu, msg);
-    }
-}
-
-void handleProjectMessages(long signalSet) {
-    struct IntuiMessage *msg;
-
-    if(!projectWindow) {
-        fprintf(stderr, "handleProjectMessages: called before projectWindow was created\n");
-        return;
-    }
-
-    if(1L << projectWindow->UserPort->mp_SigBit & signalSet) {
-        while(msg = (struct IntuiMessage*)GetMsg(projectWindow->UserPort)) {
-            handleProjectMessage(msg);
-            ReplyMsg((struct Message*)msg);
-        }
-    }
 }

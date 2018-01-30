@@ -14,6 +14,7 @@ static void handleWindowChildEvents(FrameworkWindow *window, long signalSet) {
 }
 
 void handleWindowEvents(FrameworkWindow *window, long signalSet) {
+  /* TODO: do menu stuff */
   window->kind->handleEvents(window, signalSet);
   handleWindowChildEvents(window, signalSet);
 }

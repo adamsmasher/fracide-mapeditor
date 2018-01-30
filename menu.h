@@ -8,6 +8,4 @@
 
 struct Menu *createMainMenu(void);
 
-void handleMainMenuPick(struct Menu*, struct IntuiMessage*);
-
 #endif

@@ -3,11 +3,11 @@
 #include "framework/menubuild.h"
 #include "workspace.h"
 
-static void mapNewClicked(void) {
+static void mapNewClicked(FrameworkWindow *window) {
     newMap();
 }
 
-static void mapOpenClicked(void) {
+static void mapOpenClicked(FrameworkWindow *window) {
     openMap();
 }
 

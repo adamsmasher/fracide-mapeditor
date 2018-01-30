@@ -67,7 +67,8 @@ static void handleSongNamesEditorMessage(struct IntuiMessage* msg) {
 
 void closeSongNamesEditor(void) {
   if(songNamesEditor) {
-    removeWindowFromSet(songNamesEditor->window);
+    /* TODO: fix me */
+    /* removeWindowFromSet(songNamesEditor->window); */
     freeSongRequester(songNamesEditor);
     songNamesEditor = NULL;
   }
@@ -94,7 +95,8 @@ void showSongNamesEditor(void) {
   } else {
     songNamesEditor = newSongNamesEditor();
     if(songNamesEditor) {
-      addWindowToSet(songNamesEditor->window);
+      /* TODO: fix me */
+      /* addWindowToSet(songNamesEditor->window); */
     }
   }
 }

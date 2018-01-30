@@ -3,14 +3,15 @@
 
 #include <intuition/intuition.h>
 
+#include "Window.h"
+
 BOOL initGlobalScreen(struct NewScreen*);
 void closeGlobalScreen(void);
 
 WORD getScreenWidth(void);
 WORD getScreenHeight(void);
 
-/* TODO: call me OnGlobalScreen? */
-struct Window *openWindowOnScreen(struct NewWindow*);
+FrameworkWindow *openWindowOnGlobalScreen(WindowKind*, struct NewWindow*);
 
 struct ViewPort *getGlobalViewPort(void);
 void            *getGlobalVi(void);

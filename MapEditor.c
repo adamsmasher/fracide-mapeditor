@@ -18,32 +18,99 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "framework/menubuild.h"
 #include "framework/screen.h"
 
 #include "currentproject.h"
 #include "currenttiles.h"
+#include "easystructs.h"
 #include "EntityBrowser.h"
 #include "map.h"
 #include "menu.h"
+#include "workspace.h"
 #include "TilesetRequester.h"
 #include "globals.h"
 
 #define MAP_EDITOR_WIDTH  536
 #define MAP_EDITOR_HEIGHT 384
 
-static struct NewMenu newMenu[] = {
-  { NM_TITLE, "Map", 0, 0, 0, 0 },
-    { NM_ITEM, "New",        "N", 0,               0, 0 },
-    { NM_ITEM, NM_BARLABEL,  0,   0,               0, 0 },
-    { NM_ITEM, "Open...",    "O", 0,               0, 0 },
-    { NM_ITEM, NM_BARLABEL,  0,   0,               0, 0 },
-    { NM_ITEM, "Save",       "S", 0,               0, 0 },
-    { NM_ITEM, "Save As...", "A", 0,               0, 0 },
-    { NM_ITEM, "Revert",     0,   NM_ITEMDISABLED, 0, 0 },
-    { NM_ITEM, NM_BARLABEL,  0,   0,               0, 0 },
-    { NM_ITEM, "Close",      "Q", 0,               0, 0 },
-  { NM_END,   NULL,   0, 0, 0, 0 }
+static void newMapMenuItemClicked(FrameworkWindow *window) {
+  newMap();
+}
+
+static void openMapMenuItemClicked(FrameworkWindow *window) {
+  openMap();
+}
+
+static void saveMapMenuItemClicked(FrameworkWindow *window) {
+  MapEditor *mapEditor = window->data;
+  saveMap(mapEditor);
+}
+
+static void saveMapAsMenuItemClicked(FrameworkWindow *window) {
+  MapEditor *mapEditor = window->data;
+  saveMapAs(mapEditor);
+}
+
+static int confirmRevertMap(MapEditor *mapEditor) {
+  return EasyRequest(
+    mapEditor->window,
+    &confirmRevertMapEasyStruct,
+    NULL,
+    mapEditor->mapNum - 1,
+    mapEditor->map->name);
+}
+
+static void revertMap(MapEditor *mapEditor) {
+  if(confirmRevertMap(mapEditor)) {
+    mapEditor->closed = 1;
+    openMapNum(mapEditor->mapNum - 1);
+  }
+}
+
+static void revertMenuItemClicked(FrameworkWindow *window) {
+  MapEditor *mapEditor = window->data;
+  revertMap(mapEditor);
+}
+
+static void closeMenuItemClicked(FrameworkWindow *window) {
+  MapEditor *mapEditor = window->data;
+  if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
+    mapEditor->closed = 1;
+  }
+}
+
+static MenuSectionSpec newSection =
+  { { "New", "N", MENU_ITEM_ENABLED, newMapMenuItemClicked },
+    END_SECTION };
+
+static MenuSectionSpec openSection =
+  { { "New", "N", MENU_ITEM_ENABLED, openMapMenuItemClicked },
+    END_SECTION };
+
+static MenuSectionSpec saveSection =
+  { { "Save",       "S",         MENU_ITEM_ENABLED,  saveMapMenuItemClicked   },
+    { "Save As...", "A",         MENU_ITEM_ENABLED,  saveMapAsMenuItemClicked },
+    { "Revert",     NO_SHORTKEY, MENU_ITEM_DISABLED, revertMenuItemClicked    },
+  END_SECTION };
+
+static MenuSectionSpec closeSection =
+  { { "Close", "Q", MENU_ITEM_ENABLED, closeMenuItemClicked },
+    END_SECTION }; 
+
+static MenuSectionSpec *mapMenuSpec[] = {
+  &newSection,
+  &openSection,
+  &saveSection,
+  &closeSection,
+  END_MENU
 };
+
+static MenuSpec mapEditorMenuSpec[] = {
+  { "Map", &mapMenuSpec },
+  END_MENUS
+};
+
 static struct Menu *menu = NULL;
 
 static struct NewWindow mapEditorNewWindow = {
@@ -339,26 +406,19 @@ static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
 };
 
 struct Menu *initMapEditorMenu(void) {
-    /* TODO: use the menu builder! */
-    menu = CreateMenus(newMenu, GTMN_FullMenu, TRUE, TAG_END);
-    if(!menu) {
-        goto error;
-    }
+  menu = createAndLayoutMenuFromSpec(mapEditorMenuSpec);
+  if(!menu) {
+    fprintf(stderr, "initMapEditorMenu: failed to create menu\n");
+    goto error;
+  }
 
-    if(!LayoutMenus(menu, getGlobalVi(), TAG_END)) {
-        goto error_freeMenu;
-    }
-
-    return menu;
-	
-error_freeMenu:
-    FreeMenus(menu);
+  return menu;
 error:
-    return NULL;
+  return NULL;
 }
 
 void freeMapEditorMenu(void) {
-    FreeMenus(menu);
+  FreeMenus(menu);
 }
 
 static void createMapEditorGadgets(MapEditor *mapEditor) {

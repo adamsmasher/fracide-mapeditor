@@ -1,7 +1,11 @@
 #include "menubuild.h"
 
+#include <proto/gadtools.h>
+
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "screen.h"
 
 BOOL endMenuSection(MenuItemSpec *spec) {
     return (BOOL)(spec->label == NULL);
@@ -113,4 +117,63 @@ struct NewMenu *buildNewMenu(MenuSpec *menuSpec) {
     return newMenu;
 error:
     return NULL;
+}
+
+struct Menu *createMenu(struct NewMenu* newMenu) {
+  struct Menu *menu = CreateMenus(newMenu, GTMN_FullMenu, TRUE, TAG_END);
+  if(!menu) {
+    fprintf(stderr, "createMenu: failed to create menu\n");
+    goto error;
+  }
+
+  return menu;
+error:
+  return NULL;
+}
+
+BOOL layoutMenu(struct Menu *menu) {
+  void *vi = getGlobalVi();
+  if(!vi) {
+    fprintf(stderr, "layoutMenu: failed to get global vi\n");
+    goto error;
+  }
+
+  if(!LayoutMenus(menu, vi, TAG_END)) {
+    fprintf(stderr, "layoutMenu: failed to layout menu\n");
+    goto error;
+  }
+
+  return TRUE;
+error:
+  return FALSE;
+}
+
+struct Menu *createAndLayoutMenuFromSpec(MenuSpec *menusSpec) {
+  struct Menu *menu;
+
+  struct NewMenu *newMenu = buildNewMenu(menusSpec);
+  if(!newMenu) {
+    fprintf(stderr, "createAndLayoutMenuFromSpec: Error creating NewMenu\n");
+    goto error;
+  }
+
+  menu = createMenu(newMenu);
+  free(newMenu);
+
+  if(!menu) {
+    fprintf(stderr, "createAndLayoutMenuFromSpec: Error creating Menu\n");
+    goto error;
+  }
+
+  if(!layoutMenu(menu)) {
+    fprintf(stderr, "createAndLayoutMenuFromSpec: failed to layout menu\n");
+    goto error_freeMenu;
+  }
+
+  return menu;
+	
+error_freeMenu:
+  FreeMenus(menu);
+error:
+  return NULL;
 }

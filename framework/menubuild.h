@@ -4,7 +4,9 @@
 #include <exec/types.h>
 #include <libraries/gadtools.h>
 
-typedef void (*Handler)(void);
+#include "window.h"
+
+typedef void (*Handler)(FrameworkWindow*);
 
 #define NO_SHORTKEY NULL
 
@@ -12,7 +14,6 @@ typedef enum MenuItemState_tag {
     MENU_ITEM_DISABLED,
     MENU_ITEM_ENABLED
 } MenuItemState;
-
 
 typedef struct MenuItemSpecTag {
     char *label;
@@ -30,6 +31,10 @@ typedef struct MenuSpecTag {
 } MenuSpec;
 
 struct NewMenu *buildNewMenu(MenuSpec*);
+struct Menu *createMenu(struct NewMenu*);
+BOOL layoutMenu(struct Menu*);
+
+struct Menu *createAndLayoutMenuFromSpec(MenuSpec*);
 
 #define END_SECTION { NULL, NULL, FALSE, NULL }
 #define END_MENU    NULL

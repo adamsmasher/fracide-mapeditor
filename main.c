@@ -57,14 +57,6 @@ static struct NewScreen newScreen = {
     NULL
 };
 
-static int confirmRevertMap(MapEditor *mapEditor) {
-    return EasyRequest(
-        mapEditor->window,
-        &confirmRevertMapEasyStruct,
-        NULL,
-        mapEditor->mapNum - 1, mapEditor->map->name);
-}
-
 static void handleTilesetRequesterGadgetUp(MapEditor *mapEditor, TilesetRequester *tilesetRequester, struct IntuiMessage *msg) {
     mapEditorSetTileset(mapEditor, msg->Code);
 }
@@ -267,7 +259,8 @@ static void handleChooseEntityClicked(EntityBrowser *entityBrowser) {
         entityRequester = newEntityRequester();
         if(entityRequester) {
             attachEntityRequesterToEntityBrowser(entityBrowser, entityRequester);
-            addWindowToSet(entityRequester->window);
+            /* TODO: fix me */
+            /* addWindowToSet(entityRequester->window); */
         }
     }
 }
@@ -357,17 +350,20 @@ static void closeAnyDeadChildrenOfMapEditor(MapEditor *mapEditor) {
     EntityBrowser    *entityBrowser    = mapEditor->entityBrowser;
 
     if(tilesetRequester && tilesetRequester->closed) {
-        removeWindowFromSet(tilesetRequester->window);
+        /* TODO: fix me */
+        /* removeWindowFromSet(tilesetRequester->window); */
         closeTilesetRequester(tilesetRequester);
         mapEditor->tilesetRequester = NULL;
     }
     if(songRequester && songRequester->closed) {
-        removeWindowFromSet(songRequester->window);
+        /* TODO: fix me */
+        /* removeWindowFromSet(songRequester->window); */
         freeSongRequester(songRequester);
         mapEditor->songRequester = NULL;
     }
     if(entityBrowser && entityBrowser->closed) {
-        removeWindowFromSet(entityBrowser->window);
+        /* TODO: fix me */
+        /* removeWindowFromSet(entityBrowser->window); */
         freeEntityBrowser(entityBrowser);
         mapEditor->entityBrowser = NULL;
     }
@@ -411,7 +407,8 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
     }
 
     attachTilesetRequesterToMapEditor(mapEditor, tilesetRequester);
-    addWindowToSet(tilesetRequester->window);
+    /* TODO: fix me */
+    /* addWindowToSet(tilesetRequester->window); */
 }
 
 static void handleChangeSongClicked(MapEditor *mapEditor) {
@@ -428,7 +425,8 @@ static void handleChangeSongClicked(MapEditor *mapEditor) {
         songRequester = newSongRequester(title);
         if(songRequester) {
             attachSongRequesterToMapEditor(mapEditor, songRequester);
-            addWindowToSet(songRequester->window);
+            /* TODO: fix me */
+            /* addWindowToSet(songRequester->window); */
         }
     } else {
         WindowToFront(mapEditor->songRequester->window);
@@ -480,7 +478,8 @@ static void openNewEntityBrowser(MapEditor *mapEditor) {
     }
     
     attachEntityBrowserToMapEditor(mapEditor, entityBrowser);
-    addWindowToSet(entityBrowser->window);
+    /* TODO: fix me */
+    /* addWindowToSet(entityBrowser->window); */
 
     error:
         return;
@@ -544,48 +543,6 @@ static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {
         } else if(mapEditorClickInMap(x, y)) {
             handleMapEditorMapClick(mapEditor, x, y);
         }
-    }
-}
-
-static void revertMap(MapEditor *mapEditor) {
-    if(confirmRevertMap(mapEditor)) {
-        mapEditor->closed = 1;
-        openMapNum(mapEditor->mapNum - 1);
-    }
-}
-
-/* TODO: This should be abstracted away! */
-static void handleMapMenuPick(MapEditor *mapEditor, UWORD itemNum, UWORD subNum) {
-    switch(itemNum) {
-        case 0: newMap(); break;
-        case 2: openMap(); break;
-        case 4: saveMap(mapEditor); break;
-        case 5: saveMapAs(mapEditor); break;
-        case 6: revertMap(mapEditor); break;
-        case 8:
-            if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
-                mapEditor->closed = 1;
-            };
-            break;
-    }
-}
-
-static void handleMapEditorMenuPick(MapEditor *mapEditor, ULONG menuNumber) {
-    UWORD menuNum = MENUNUM(menuNumber);
-    UWORD itemNum = ITEMNUM(menuNumber);
-    UWORD subNum  = SUBNUM(menuNumber);
-    switch(menuNum) {
-        case 0: handleMapMenuPick(mapEditor, itemNum, subNum); break;
-    }
-}
-
-static void handleMapEditorMenuPicks(MapEditor *mapEditor, ULONG menuNumber) {
-    struct MenuItem *item = NULL;
-    while(!mapEditor->closed && menuNumber != MENUNULL) {
-        handleMapEditorMenuPick(mapEditor, menuNumber);
-        /* TODO: was this ever correct? */
-        /*item = ItemAddress(menu, menuNumber);*/
-        menuNumber = item->NextSelect;
     }
 }
 
@@ -670,11 +627,13 @@ static void closeDeadMapEditors(void) {
             }
 
             if(i->tilesetRequester) {
-                removeWindowFromSet(i->tilesetRequester->window);
+                /* TODO: fix me */
+                /* removeWindowFromSet(i->tilesetRequester->window); */
                 /* closeMapEditor takes care of everything else */
             }
 
-            removeWindowFromSet(i->window);
+            /* TODO: fix me */
+            /* removeWindowFromSet(i->window); */
             closeMapEditor(i);
         } else {
             closeAnyDeadChildrenOfMapEditor(i);

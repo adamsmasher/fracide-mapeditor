@@ -3,11 +3,11 @@
 
 #include <intuition/intuition.h>
 
-struct Window *getProjectWindow(void);
+#include "framework/Window.h"
+
+FrameworkWindow *getProjectWindow(void);
 
 BOOL openProjectWindow(void);
 void closeProjectWindow(void);
-
-void handleProjectMessages(long signalSet);
 
 #endif

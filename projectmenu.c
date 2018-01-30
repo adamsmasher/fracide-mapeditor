@@ -5,31 +5,31 @@
 #include "currentproject.h"
 #include "workspace.h"
 
-static void projectNewClicked(void) {
+static void projectNewClicked(FrameworkWindow *window) {
     newProject();
 }
 
-static void projectOpenClicked(void) {
+static void projectOpenClicked(FrameworkWindow *window) {
     openProject();
 }
 
-static void projectSaveClicked(void) {
+static void projectSaveClicked(FrameworkWindow *window) {
     saveProject();
 }
 
-static void projectSaveAsClicked(void) {
+static void projectSaveAsClicked(FrameworkWindow *window) {
     saveProjectAs();
 }
 
-static void projectRevertClicked(void) {
+static void projectRevertClicked(FrameworkWindow *window) {
     revertProject();
 }
 
-static void projectSelectTilesetPackageClicked(void) {
+static void projectSelectTilesetPackageClicked(FrameworkWindow *window) {
     selectTilesetPackage();
 }
 
-static void projectQuitClicked(void) {
+static void projectQuitClicked(FrameworkWindow *window) {
     quit();
 }
 

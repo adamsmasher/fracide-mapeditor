@@ -56,9 +56,11 @@ void closeAllMapEditors(void) {
     MapEditor *i = firstMapEditor;
     while(i) {
         MapEditor *next = i->next;
-        removeWindowFromSet(i->window);
+        /* TODO: fix me */
+        /* removeWindowFromSet(i->window); */
         if(i->tilesetRequester) {
-            removeWindowFromSet(i->tilesetRequester->window);
+            /* TODO: fix me */
+            /* removeWindowFromSet(i->tilesetRequester->window); */
         }
         closeMapEditor(i);
         i = next;

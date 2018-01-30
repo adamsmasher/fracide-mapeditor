@@ -147,7 +147,8 @@ void newMap(void) {
         return;
     }
     addToMapEditorSet(mapEditor);
-    addWindowToSet(mapEditor->window);
+    /* TODO: fix me */
+    /*addWindowToSet(mapEditor->window);*/
 }
 
 static int confirmCreateMap(int mapNum) {
@@ -179,7 +180,8 @@ int openMapNum(int mapNum) {
     }
 
     addToMapEditorSet(mapEditor);
-    addWindowToSet(mapEditor->window);
+    /* TODO: fix me */
+    /* addWindowToSet(mapEditor->window); */
     enableMapRevert(mapEditor);
     return 1;
 }
