@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "menubuild.h"
+
 static struct Screen *screen = NULL;
 static void          *vi     = NULL;
 
@@ -35,14 +37,42 @@ void closeGlobalScreen(void) {
   CloseScreen(screen);
 }
 
-struct Window *openWindowOnScreen(struct NewWindow *newWindow) {
+FrameworkWindow *openWindowOnGlobalScreen(WindowKind *windowKind) {
+  FrameworkWindow *window;
+
   if(!screen) {
     fprintf(stderr, "openWindowOnScreen: screen not yet initialized\n");
     return NULL;
   }
+  windowKind->newWindow.Screen = screen;
 
-  newWindow->Screen = screen;
-  return OpenWindow(newWindow);
+  window = malloc(sizeof(FrameworkWindow));
+  if(!window) {
+    fprintf(stderr, "openWindowOnGlobalScreen: failed to allocate window\n");
+    goto error;
+  }
+
+  window->intuitionWindow = OpenWindow(&windowKind->newWindow);
+  if(!window->intuitionWindow) {
+    fprintf(stderr, "openWindowOnGlobalScreen: failed to open window\n");
+    goto error_freeWindow;
+  }
+
+  window->menu = createAndLayoutMenuFromSpec(windowKind->menuSpec);
+  if(!window->menu) {
+    fprintf(stderr, "openWindowOnGlobalScreen: failed to create menu\n");
+    goto error_closeWindow;
+  }
+
+  SetMenuStrip(window->intuitionWindow, window->menu);
+
+  return window;
+error_closeWindow:
+  CloseWindow(window->intuitionWindow);
+error_freeWindow:
+  free(window);
+error:
+  return NULL;
 }
 
 WORD getScreenWidth(void) {

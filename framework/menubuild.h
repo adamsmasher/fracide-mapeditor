@@ -15,7 +15,7 @@ typedef enum MenuItemState_tag {
     MENU_ITEM_ENABLED
 } MenuItemState;
 
-typedef struct MenuItemSpecTag {
+typedef struct MenuItemSpec_tag {
     char *label;
     char *shortcut;
     MenuItemState state;
@@ -24,7 +24,7 @@ typedef struct MenuItemSpecTag {
 
 typedef MenuItemSpec MenuSectionSpec[];
 
-typedef struct MenuSpecTag {
+typedef struct MenuSpec_tag {
     char *name;
     /* pointer to an array of pointers to MenuSectionSpecs */
     MenuSectionSpec *(*sections)[];

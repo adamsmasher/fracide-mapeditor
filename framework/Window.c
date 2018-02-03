@@ -1,6 +1,9 @@
 #include "window.h"
 
 #include <proto/intuition.h>
+#include <proto/gadtools.h>
+
+#include <stdlib.h>
 
 #include "windowset.h"
 
@@ -30,9 +33,13 @@ static void closeChildren(FrameworkWindow *window) {
 
 void closeWindow(FrameworkWindow *window) {
   closeChildren(window);
-  removeWindowFromSet(window);
   window->kind->closeWindow(window);
+
+  ClearMenuStrip(window->intuitionWindow);
+  FreeMenus(window->menu);
+
+  removeWindowFromSet(window);
   CloseWindow(window->intuitionWindow);
-  /* TODO: handle menu stuff */
-  /* TODO: free memory */
+
+  free(window);
 }

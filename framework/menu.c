@@ -1,6 +1,7 @@
 #include "menu.h"
 
 #include "menubuild.h"
+#include "window.h"
 
 Handler getMenuItemHandler(MenuSpec *menuSpec, UWORD itemNum) {
     MenuSectionSpec **sectionSpec = &(*menuSpec->sections)[0];
@@ -26,11 +27,11 @@ Handler getMenuHandler(MenuSpec *menusSpec, UWORD menuNum, UWORD itemNum) {
     return getMenuItemHandler(menuSpec, itemNum);
 }
 
-/* TODO: not sure about these arguments - maybe have the window store the menu store the spec? */
-void invokeMenuHandler(FrameworkWindow *window, MenuSpec *menusSpec, ULONG menuNumber) {
+void invokeMenuHandler(FrameworkWindow *window, ULONG menuNumber) {
+  MenuSpec *menuSpec = window->kind->menuSpec;
   UWORD menuNum = MENUNUM(menuNumber);
   UWORD itemNum = ITEMNUM(menuNumber);
 
-  Handler handler = getMenuHandler(menusSpec, menuNum, itemNum);
+  Handler handler = getMenuHandler(menuSpec, menuNum, itemNum);
   handler(window);
 }

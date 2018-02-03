@@ -17,7 +17,7 @@
 #include "musicmenu.h"
 #include "projectmenu.h"
 
-static MenuSpec mainMenuSpec[] = {
+static MenuSpec mainMenuSpecData[] = {
     { "Project",  &projectMenuSpec  },
     { "Maps",     &mapMenuSpec      },
     { "Entities", &entitiesMenuSpec },
@@ -25,9 +25,7 @@ static MenuSpec mainMenuSpec[] = {
     END_MENUS
 };
 
-struct Menu *createMainMenu(void) {
-  return createAndLayoutMenuFromSpec(mainMenuSpec);
-}
+MenuSpec *mainMenuSpec = mainMenuSpecData;
 
 /* TODO: awkward how we need to pass in the menu... */
 /*void handleMainMenuPick(struct Menu *menu, struct IntuiMessage *msg) {

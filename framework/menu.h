@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_MENU_H
 #define FRAMEWORK_MENU_H
 
-#include "menubuild.h"
+#include "window.h"
 
-void invokeMenuHandler(FrameworkWindow*, MenuSpec*, ULONG menuNumber);
+void invokeMenuHandler(FrameworkWindow*, ULONG menuNumber);
 
 #endif

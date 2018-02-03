@@ -3,9 +3,11 @@
 
 #include <libraries/gadtools.h>
 
+#include "framework/menubuild.h"
+
 #define REVERT_PROJECT_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
 #define REVERT_MAP_MENU_ITEM     (SHIFTMENU(0) | SHIFTITEM(6))
 
-struct Menu *createMainMenu(void);
+extern MenuSpec *mainMenuSpec;
 
 #endif
