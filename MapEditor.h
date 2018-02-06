@@ -1,12 +1,14 @@
 #ifndef MAP_EDITOR_H
 #define MAP_EDITOR_H
 
+#include <intuition/intuition.h>
+
+#include "framework/Window.h"
+
 #include "EntityBrowser.h"
 #include "SongRequester.h"
 #include "TilesetRequester.h"
 #include "Map.h"
-
-#include <intuition/intuition.h>
 
 #define CURRENT_TILESET_ID (0)
 #define CHOOSE_TILESET_ID  (CURRENT_TILESET_ID + 1)
@@ -31,7 +33,7 @@ typedef struct MapEditorTag {
     struct MapEditorTag *next;
     struct MapEditorTag *prev;
 
-    struct Window *window;
+    FrameworkWindow *window;
     struct Gadget *gadgets;
 
     Map *map;
