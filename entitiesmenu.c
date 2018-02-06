@@ -3,7 +3,7 @@
 #include "framework/menubuild.h"
 #include "EntityNamesEditor.h"
 
-static void entityEditorClicked(void) {
+static void entityEditorClicked(FrameworkWindow *window) {
     showEntityNamesEditor();
 }
 

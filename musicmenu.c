@@ -3,7 +3,7 @@
 #include "framework/menubuild.h"
 #include "SongNamesEditor.h"
 
-static void songNamesClicked(void) {
+static void songNamesClicked(FrameworkWindow *window) {
     showSongNamesEditor();
 }
 
