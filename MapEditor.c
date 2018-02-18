@@ -1095,3 +1095,309 @@ void enableMapRevert(MapEditor *mapEditor) {
 void disableMapRevert(MapEditor *mapEditor) {
     OffMenu(mapEditor->window->intuitionWindow, REVERT_MAP_MENU_ITEM);
 }
+
+static void openNewEntityBrowser(MapEditor *mapEditor) {
+  char title[32];
+  EntityBrowser *entityBrowser;
+
+  if(mapEditor->mapNum) {
+    sprintf(title, "Entities (Map %d)", mapEditor->mapNum - 1);
+  } else {
+    strcpy(title, "Entities");
+  }
+
+  entityBrowser = newEntityBrowser(title, mapEditor->map->entities, mapEditor->map->entityCnt);
+  if(!entityBrowser) {
+    fprintf(stderr, "openNewEntityBrowser: couldn't create new entity browser\n");
+    goto error;
+  }
+  
+  attachEntityBrowserToMapEditor(mapEditor, entityBrowser);
+  /* TODO: fix me */
+  /* addWindowToSet(entityBrowser->window); */
+
+  done:
+    return;
+
+  error:
+    return;
+}
+
+static void handleChooseTilesetClicked(MapEditor *mapEditor) {
+  TilesetRequester *tilesetRequester;
+  char title[32];
+
+  if(mapEditor->tilesetRequester) {
+    WindowToFront(mapEditor->tilesetRequester->window);
+    goto done;
+  }
+
+  if(!tilesetPackage) {
+    int choice = EasyRequest(
+      mapEditor->window->intuitionWindow,
+      &noTilesetPackageLoadedEasyStruct,
+      NULL);
+
+    if(choice) {
+      selectTilesetPackage();
+    }
+  }
+
+  /* even after giving the user the opportunity to set the tileset
+     package, we need to be sure they did so... */
+  if(!tilesetPackage) {
+    goto done;
+  }
+
+  if(mapEditor->mapNum) {
+    sprintf(title, "Choose Tileset For Map %d", mapEditor->mapNum - 1);
+  } else {
+    strcpy(title, "Choose Tileset");
+  }
+
+  tilesetRequester = newTilesetRequester(title);
+  if(!tilesetRequester) {
+    fprintf(stderr, "handleChooseTilesetClicked: couldn't make requester\n");
+    goto error;
+  }
+
+  attachTilesetRequesterToMapEditor(mapEditor, tilesetRequester);
+  /* TODO: fix me */
+  /* addWindowToSet(tilesetRequester->window); */
+done:
+  return;
+error:
+  return;
+}
+
+static void handleClearSongClicked(MapEditor *mapEditor) {
+  mapEditorClearSong(mapEditor);
+}
+
+static void handleChangeSongClicked(MapEditor *mapEditor) {
+  if(!mapEditor->songRequester) {
+    char title[32];
+    SongRequester *songRequester;
+
+    if(mapEditor->mapNum) {
+      sprintf(title, "Change Soundtrack For Map %d", mapEditor->mapNum - 1);
+    } else {
+      strcpy(title, "Change Soundtrack");
+    }
+
+    songRequester = newSongRequester(title);
+    if(songRequester) {
+      attachSongRequesterToMapEditor(mapEditor, songRequester);
+      /* TODO: fix me */
+      /* addWindowToSet(songRequester->window); */
+    }
+  } else {
+    WindowToFront(mapEditor->songRequester->window);
+  }
+}
+
+static void moveToMap(MapEditor *mapEditor, int mapNum) {
+  if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
+    if(openMapNum(mapNum - 1)) {
+      mapEditor->closed = 1;
+    }
+  }
+}
+
+static void handleMapUp(MapEditor *mapEditor) {
+  moveToMap(mapEditor, mapEditor->mapNum - 16);
+}
+
+static void handleMapDown(MapEditor *mapEditor) {
+  moveToMap(mapEditor, mapEditor->mapNum + 16);
+}
+
+static void handleMapLeft(MapEditor *mapEditor) {
+  moveToMap(mapEditor, mapEditor->mapNum - 1);
+}
+
+static void handleMapRight(MapEditor *mapEditor) {
+  moveToMap(mapEditor, mapEditor->mapNum + 1);
+}
+
+static void handleEntitiesClicked(MapEditor *mapEditor) {
+  if(!mapEditor->entityBrowser) {
+    openNewEntityBrowser(mapEditor);
+  } else {
+    WindowToFront(mapEditor->entityBrowser->window);
+  }
+}
+
+static void handleMapEditorGadgetUp
+(MapEditor *mapEditor, struct Gadget *gadget) {
+  switch(gadget->GadgetID) {
+    case CHOOSE_TILESET_ID:
+      handleChooseTilesetClicked(mapEditor);
+      break;
+    case MAP_NAME_ID:
+      updateMapEditorMapName(mapEditor);
+      break;
+    case SONG_CHANGE_ID:
+      handleChangeSongClicked(mapEditor);
+      break;
+    case SONG_CLEAR_ID:
+      handleClearSongClicked(mapEditor);
+      break;
+    case MAP_LEFT_ID:
+      handleMapLeft(mapEditor);
+      break;
+    case MAP_RIGHT_ID:
+      handleMapRight(mapEditor);
+      break;
+    case MAP_UP_ID:
+      handleMapUp(mapEditor);
+      break;
+    case MAP_DOWN_ID:
+      handleMapDown(mapEditor);
+      break;
+    case ENTITIES_ID:
+      handleEntitiesClicked(mapEditor);
+      break;
+    }
+}
+
+static void closeAnyDeadChildrenOfMapEditor(MapEditor *mapEditor) {
+    TilesetRequester *tilesetRequester = mapEditor->tilesetRequester;
+    SongRequester    *songRequester    = mapEditor->songRequester;
+    EntityBrowser    *entityBrowser    = mapEditor->entityBrowser;
+
+    if(tilesetRequester && tilesetRequester->closed) {
+        /* TODO: fix me */
+        /* removeWindowFromSet(tilesetRequester->window); */
+        closeTilesetRequester(tilesetRequester);
+        mapEditor->tilesetRequester = NULL;
+    }
+    if(songRequester && songRequester->closed) {
+        /* TODO: fix me */
+        /* removeWindowFromSet(songRequester->window); */
+        freeSongRequester(songRequester);
+        mapEditor->songRequester = NULL;
+    }
+    if(entityBrowser && entityBrowser->closed) {
+        /* TODO: fix me */
+        /* removeWindowFromSet(entityBrowser->window); */
+        freeEntityBrowser(entityBrowser);
+        mapEditor->entityBrowser = NULL;
+    }
+}
+
+static void handleMapEditorPaletteClick(MapEditor *mapEditor, WORD x, WORD y) {
+    int tile = mapEditorGetPaletteTileClicked(x, y);
+    mapEditorSetSelected(mapEditor, tile);
+}
+
+static void handleMapEditorMapClick(MapEditor *mapEditor, WORD x, WORD y) {
+    unsigned int tile = mapEditorGetMapTileClicked(x, y);
+    mapEditorSetTile(mapEditor, tile);
+}
+
+static void handleMapEditorClick(MapEditor *mapEditor, WORD x, WORD y) {
+    if(mapEditor->map->tilesetNum) {
+        if(mapEditorClickInPalette(x, y)) {
+            handleMapEditorPaletteClick(mapEditor, x, y);
+        } else if(mapEditorClickInMap(x, y)) {
+            handleMapEditorMapClick(mapEditor, x, y);
+        }
+    }
+}
+
+static void handleMapEditorMessage(MapEditor *mapEditor, struct IntuiMessage *msg) {
+    switch(msg->Class) {
+    case IDCMP_CLOSEWINDOW:
+        if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {
+            mapEditor->closed = 1;
+        }
+        break;
+    case IDCMP_REFRESHWINDOW:
+        GT_BeginRefresh(mapEditor->window->intuitionWindow);
+        refreshMapEditor(mapEditor);
+        GT_EndRefresh(mapEditor->window->intuitionWindow, TRUE);
+        break;
+    case IDCMP_GADGETUP:
+        handleMapEditorGadgetUp(mapEditor, (struct Gadget*)msg->IAddress);
+        break;
+    case IDCMP_MOUSEBUTTONS:
+        handleMapEditorClick(mapEditor, msg->MouseX, msg->MouseY);
+        break;
+    case IDCMP_MENUPICK:
+        handleMapEditorMenuPick(mapEditor, (ULONG)msg->Code);
+        break;
+    }
+}
+
+static void handleMapEditorMessages(MapEditor *mapEditor) {
+    struct IntuiMessage *msg = NULL;
+    while(msg = GT_GetIMsg(mapEditor->window->intuitionWindow->UserPort)) {
+        handleMapEditorMessage(mapEditor, msg);
+        GT_ReplyIMsg(msg);
+    }
+}
+
+static void handleMapEditorChildMessages(MapEditor *mapEditor, long signalSet) {
+    TilesetRequester *tilesetRequester = mapEditor->tilesetRequester;
+    SongRequester *songRequester       = mapEditor->songRequester;
+    EntityBrowser *entityBrowser       = mapEditor->entityBrowser;
+
+    if(tilesetRequester) {
+        if(1L << tilesetRequester->window->UserPort->mp_SigBit & signalSet) {
+            handleTilesetRequesterMessages(mapEditor, tilesetRequester);
+        }
+    }
+    if(songRequester) {
+        if(1L << songRequester->window->UserPort->mp_SigBit & signalSet) {
+            handleSongRequesterMessages(mapEditor, songRequester);
+        }
+    }
+    if(entityBrowser) {
+        if(1L << entityBrowser->window->UserPort->mp_SigBit & signalSet) {
+            handleEntityBrowserMessages(mapEditor, entityBrowser);
+        }
+        handleEntityBrowserChildMessages(entityBrowser, signalSet);
+    }
+}
+
+static void handleAllMapEditorMessages(long signalSet) {
+    MapEditor *i = firstMapEditor;
+    while(i) {
+        if(1L << i->window->intuitionWindow->UserPort->mp_SigBit & signalSet) {
+            handleMapEditorMessages(i);
+        }
+        handleMapEditorChildMessages(i, signalSet);
+        i = i->next;
+    }
+}
+
+static void closeDeadMapEditors(void) {
+    MapEditor *i = firstMapEditor;
+    while(i) {
+        MapEditor *next = i->next;
+        if(i->closed) {
+            if(i->next) {
+                i->next->prev = i->prev;
+            }
+            if(i->prev) {
+                i->prev->next = i->next;
+            } else {
+                firstMapEditor = next;
+            }
+
+            if(i->tilesetRequester) {
+                /* TODO: fix me */
+                /* removeWindowFromSet(i->tilesetRequester->window); */
+                /* closeMapEditor takes care of everything else */
+            }
+
+            /* TODO: fix me */
+            /* removeWindowFromSet(i->window); */
+            closeMapEditor(i);
+        } else {
+            closeAnyDeadChildrenOfMapEditor(i);
+        }
+        i = next;
+    }
+}
