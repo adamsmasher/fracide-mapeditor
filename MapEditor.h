@@ -63,31 +63,9 @@ typedef struct MapEditorTag {
   char title[16];
 } MapEditor;
 
-MapEditor *newMapEditorNewMap(void);
-MapEditor *newMapEditorWithMap(Map*, int mapNum);
-void closeMapEditor(MapEditor*);
-
-void refreshMapEditor(MapEditor*);
-void mapEditorRefreshSong(MapEditor*);
-
-void attachTilesetRequesterToMapEditor(MapEditor*, TilesetRequester*);
-void attachSongRequesterToMapEditor(MapEditor*, SongRequester*);
-void attachEntityBrowserToMapEditor(MapEditor*, EntityBrowser*);
-
-void mapEditorSetMapNum(MapEditor*, UWORD);
 void mapEditorSetTileset(MapEditor*, UWORD);
 void mapEditorRefreshTileset(MapEditor*);
 void mapEditorSetSong(MapEditor*, UWORD);
-void mapEditorClearSong(MapEditor*);
-
-int mapEditorClickInPalette(WORD x, WORD y);
-unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y);
-void mapEditorSetSelected(MapEditor*, unsigned int);
-
-int mapEditorClickInMap(WORD x, WORD y);
-unsigned int mapEditorGetMapTileClicked(WORD x, WORD y);
-void mapEditorSetTile(MapEditor*, unsigned int);
-void updateMapEditorMapName(MapEditor*);
 
 #define UNSAVED 0
 #define SAVED   1

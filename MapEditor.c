@@ -484,7 +484,7 @@ static void drawBorders(struct RastPort *rport) {
     TILESET_BORDER_LEFT, TILESET_BORDER_TOP);
 }
 
-void refreshMapEditor(MapEditor *mapEditor) {
+static void refreshMapEditor(MapEditor *mapEditor) {
   drawBorders(mapEditor->window->intuitionWindow->RPort);
 }
 
@@ -564,7 +564,7 @@ static void closeAttachedEntityBrowser(MapEditor *mapEditor) {
   }
 }
 
-void closeMapEditor(MapEditor *mapEditor) {
+static void closeMapEditor(MapEditor *mapEditor) {
   /* TODO: these should all be taken care of by the framework
   closeAttachedTilesetRequester(mapEditor);
   closeAttachedSongRequester(mapEditor);
@@ -577,17 +577,17 @@ void closeMapEditor(MapEditor *mapEditor) {
   free(mapEditor);
 }
 
-void attachTilesetRequesterToMapEditor
+static void attachTilesetRequesterToMapEditor
 (MapEditor *mapEditor, TilesetRequester *tilesetRequester) {
   mapEditor->tilesetRequester = tilesetRequester;
 }
 
-void attachSongRequesterToMapEditor
+static void attachSongRequesterToMapEditor
 (MapEditor *mapEditor, SongRequester *songRequester) {
   mapEditor->songRequester = songRequester;
 }
 
-void attachEntityBrowserToMapEditor
+static void attachEntityBrowserToMapEditor
 (MapEditor *mapEditor, EntityBrowser *entityBrowser) {
   mapEditor->entityBrowser = entityBrowser;
 }
@@ -675,7 +675,7 @@ static void drawEntities(MapEditor *mapEditor) {
   }
 }
 
-static void mapEditorSetTilesetUpdateUI(MapEditor *mapEditor, UWORD tilesetNumber) {
+void mapEditorSetTilesetUpdateUI(MapEditor *mapEditor, UWORD tilesetNumber) {
   GT_SetGadgetAttrs(mapEditor->tilesetNameGadget, mapEditor->window->intuitionWindow, NULL,
     GTTX_Text, tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber],
     TAG_END);
@@ -771,13 +771,13 @@ void mapEditorSetSong(MapEditor *mapEditor, UWORD songNumber) {
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
-void mapEditorRefreshSong(MapEditor *mapEditor) {
+static void mapEditorRefreshSong(MapEditor *mapEditor) {
   if(mapEditor->map->songNum) {
      mapEditorSetSongUpdateUI(mapEditor, mapEditor->map->songNum - 1);
   }
 }
 
-void mapEditorClearSong(MapEditor *mapEditor) {
+static void mapEditorClearSong(MapEditor *mapEditor) {
   mapEditor->map->songNum = 0;
   mapEditorClearSongUpdateUI(mapEditor);
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
@@ -822,12 +822,12 @@ static void mapEditorSetTileTo(MapEditor *mapEditor, unsigned int tile, UBYTE to
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
-void mapEditorSetTile(MapEditor *mapEditor, unsigned int tile) {
+static void mapEditorSetTile(MapEditor *mapEditor, unsigned int tile) {
   mapEditorSetTileTo(mapEditor, tile, mapEditor->selected);
   redrawMapTile(mapEditor, tile);
 }
 
-void mapEditorSetMapNum(MapEditor *mapEditor, UWORD mapNum) {
+static void mapEditorSetMapNum(MapEditor *mapEditor, UWORD mapNum) {
   mapEditor->mapNum = mapNum + 1;
 
   if(mapNum < 16) {
@@ -1007,21 +1007,21 @@ error:
   return NULL;
 }
 
-int mapEditorClickInPalette(WORD x, WORD y) {
+static int mapEditorClickInPalette(WORD x, WORD y) {
   return ((x > TILESET_BORDER_LEFT                        ) &&
           (x < TILESET_BORDER_LEFT + TILESET_BORDER_WIDTH ) &&
           (y > TILESET_BORDER_TOP                         ) &&
           (y < TILESET_BORDER_TOP  + TILESET_BORDER_HEIGHT));
 }
 
-int mapEditorClickInMap(WORD x, WORD y) {
+static int mapEditorClickInMap(WORD x, WORD y) {
   return ((x > MAP_BORDER_LEFT                    ) &&
           (x < MAP_BORDER_LEFT + MAP_BORDER_WIDTH ) &&
           (y > MAP_BORDER_TOP                     ) &&
           (y < MAP_BORDER_TOP  + MAP_BORDER_HEIGHT));
 }
 
-unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y) {
+static unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y) {
   unsigned int row = y;
   unsigned int col = x;
 
@@ -1034,7 +1034,7 @@ unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y) {
   return (row << 2) + col;
 }
 
-unsigned int mapEditorGetMapTileClicked(WORD x, WORD y) {
+static unsigned int mapEditorGetMapTileClicked(WORD x, WORD y) {
   unsigned int row = y;
   unsigned int col = x;
 
@@ -1047,7 +1047,7 @@ unsigned int mapEditorGetMapTileClicked(WORD x, WORD y) {
   return (row * 10) + col;
 }
 
-void mapEditorSetSelected(MapEditor *mapEditor, unsigned int selected) {
+static void mapEditorSetSelected(MapEditor *mapEditor, unsigned int selected) {
   long row;
   long col;
 
@@ -1065,7 +1065,7 @@ void mapEditorSetSelected(MapEditor *mapEditor, unsigned int selected) {
     TILESET_BORDER_TOP  + (row * 32));
 }
 
-void updateMapEditorMapName(MapEditor *mapEditor) {
+static void updateMapEditorMapName(MapEditor *mapEditor) {
   struct StringInfo *stringInfo =
     (struct StringInfo*)mapEditor->mapNameGadget->SpecialInfo;
   strcpy(mapEditor->map->name, stringInfo->Buffer);
