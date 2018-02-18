@@ -30,37 +30,37 @@
 #define MAP_TILES_HIGH    9
 
 typedef struct MapEditorTag {
-    struct MapEditorTag *next;
-    struct MapEditorTag *prev;
+  struct MapEditorTag *next;
+  struct MapEditorTag *prev;
 
-    FrameworkWindow *window;
-    struct Gadget *gadgets;
+  FrameworkWindow *window;
+  struct Gadget *gadgets;
 
-    Map *map;
-    int mapNum;
+  Map *map;
+  int mapNum;
 
-    struct Gadget *tilesetNameGadget;
-    struct Gadget *mapNameGadget;
-    struct Gadget *songNameGadget;
-    struct Gadget *leftGadget;
-    struct Gadget *rightGadget;
-    struct Gadget *upGadget;
-    struct Gadget *downGadget;
+  struct Gadget *tilesetNameGadget;
+  struct Gadget *mapNameGadget;
+  struct Gadget *songNameGadget;
+  struct Gadget *leftGadget;
+  struct Gadget *rightGadget;
+  struct Gadget *upGadget;
+  struct Gadget *downGadget;
 
-    int closed;
-    int saved;
+  int closed;
+  int saved;
 
-    TilesetRequester *tilesetRequester;
-    SongRequester    *songRequester;
-    EntityBrowser    *entityBrowser;
+  TilesetRequester *tilesetRequester;
+  SongRequester    *songRequester;
+  EntityBrowser    *entityBrowser;
 
-    struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
-    struct Image mapImages[MAP_TILES_ACROSS * MAP_TILES_HIGH];
-    UWORD *imageData;
+  struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
+  struct Image mapImages[MAP_TILES_ACROSS * MAP_TILES_HIGH];
+  UWORD *imageData;
 
-    int selected;
+  int selected;
 
-    char title[16];
+  char title[16];
 } MapEditor;
 
 struct Menu *initMapEditorMenu(void);

@@ -47,18 +47,18 @@
 #define SCR_HEIGHT 512
 
 static struct NewScreen newScreen = {
-    0,0,SCR_WIDTH,SCR_HEIGHT,2,
-    0,3,
-    HIRES|LACE,
-    CUSTOMSCREEN,
-    NULL,
-    "FracIDE Map Editor",
-    NULL,
-    NULL
+  0,0,SCR_WIDTH,SCR_HEIGHT,2,
+  0,3,
+  HIRES|LACE,
+  CUSTOMSCREEN,
+  NULL,
+  "FracIDE Map Editor",
+  NULL,
+  NULL
 };
 
 static void handleTilesetRequesterGadgetUp(MapEditor *mapEditor, TilesetRequester *tilesetRequester, struct IntuiMessage *msg) {
-    mapEditorSetTileset(mapEditor, msg->Code);
+  mapEditorSetTileset(mapEditor, msg->Code);
 }
 
 static void handleTilesetRequesterMessage(MapEditor *mapEditor, TilesetRequester *tilesetRequester, struct IntuiMessage *msg) {
@@ -80,15 +80,15 @@ static void handleTilesetRequesterMessage(MapEditor *mapEditor, TilesetRequester
 }
 
 static void handleTilesetRequesterMessages(MapEditor *mapEditor, TilesetRequester *tilesetRequester) {
-    struct IntuiMessage *msg = NULL;
-    while(msg = GT_GetIMsg(tilesetRequester->window->UserPort)) {
-        handleTilesetRequesterMessage(mapEditor, tilesetRequester, msg);
-        GT_ReplyIMsg(msg);
-    }
+  struct IntuiMessage *msg = NULL;
+  while(msg = GT_GetIMsg(tilesetRequester->window->UserPort)) {
+    handleTilesetRequesterMessage(mapEditor, tilesetRequester, msg);
+    GT_ReplyIMsg(msg);
+  }
 }
 
 static void handleSongRequesterGadgetUp(MapEditor *mapEditor, SongRequester *songRequester, struct IntuiMessage *msg) {
-    mapEditorSetSong(mapEditor, msg->Code);
+  mapEditorSetSong(mapEditor, msg->Code);
 }
 
 static void handleSongRequesterMessage(MapEditor *mapEditor, SongRequester *songRequester, struct IntuiMessage *msg) {
@@ -138,15 +138,15 @@ static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBr
 }
 
 static void handleRemoveEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
-    entityBrowserFreeEntityLabels(entityBrowser);
-    mapRemoveEntity(mapEditor->map, entityBrowser->selectedEntity - 1);
-    entityBrowserSetEntities(entityBrowser, mapEditor->map->entities, mapEditor->map->entityCnt);
+  entityBrowserFreeEntityLabels(entityBrowser);
+  mapRemoveEntity(mapEditor->map, entityBrowser->selectedEntity - 1);
+  entityBrowserSetEntities(entityBrowser, mapEditor->map->entities, mapEditor->map->entityCnt);
 
-    mapEditorSetSaveStatus(mapEditor, UNSAVED);
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
 
-    entityBrowserDeselectEntity(entityBrowser);
+  entityBrowserDeselectEntity(entityBrowser);
 
-    mapEditorRefreshTileset(mapEditor);
+  mapEditorRefreshTileset(mapEditor);
 }
 
 static void handleEntityClicked(EntityBrowser *entityBrowser, Map *map, int entityNum) {
@@ -166,15 +166,15 @@ static void handleTagClicked(EntityBrowser *entityBrowser, Map *map, int tagNum)
 }
 
 static void handleEntityRowChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
-    Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
-    int oldRow = entity->row;
-    int oldCol = entity->col;
+  Entity *entity = &mapEditor->map->entities[entityBrowser->selectedEntity - 1];
+  int oldRow = entity->row;
+  int oldCol = entity->col;
 
-    entity->row = ((struct StringInfo*)entityBrowser->rowGadget->SpecialInfo)->LongInt;
-    mapEditorSetSaveStatus(mapEditor, UNSAVED);
+  entity->row = ((struct StringInfo*)entityBrowser->rowGadget->SpecialInfo)->LongInt;
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
 
-    mapEditorDrawEntity(mapEditor, entity, entityBrowser->selectedEntity - 1);
-    mapEditorRedrawTile(mapEditor, oldRow, oldCol);
+  mapEditorDrawEntity(mapEditor, entity, entityBrowser->selectedEntity - 1);
+  mapEditorRedrawTile(mapEditor, oldRow, oldCol);
 }
 
 static void handleEntityColChanged(EntityBrowser *entityBrowser, MapEditor *mapEditor) {
