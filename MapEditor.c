@@ -410,22 +410,6 @@ static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
   "OK"
 };
 
-struct Menu *initMapEditorMenu(void) {
-  menu = createAndLayoutMenuFromSpec(mapEditorMenuSpec);
-  if(!menu) {
-    fprintf(stderr, "initMapEditorMenu: failed to create menu\n");
-    goto error;
-  }
-
-  return menu;
-error:
-  return NULL;
-}
-
-void freeMapEditorMenu(void) {
-  FreeMenus(menu);
-}
-
 static void createMapEditorGadgets(MapEditor *mapEditor) {
   struct Gadget *gad;
   struct Gadget *glist = NULL;

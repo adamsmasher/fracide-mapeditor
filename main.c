@@ -348,20 +348,15 @@ int main(void) {
     int retCode;
 
     if(!initGlobalScreen(&newScreen)) {
-        retCode = -2;
+        retCode = -1;
         goto done;
     }
 
     initPalette(getGlobalViewPort());
 
-    if(!initMapEditorMenu()) {
-        retCode = -3;
-        goto closeScreen;
-    }
-
     if(!openProjectWindow()) {
-        retCode = -4;
-        goto freeMapEditorMenu;
+        retCode = -2;
+        goto closeScreen;
     }
     
     initCurrentProject();
@@ -374,8 +369,6 @@ freeTilesetPackage:
     freeTilesetPackage(tilesetPackage);
 freeProject:
     freeCurrentProject();
-freeMapEditorMenu:
-    freeMapEditorMenu();
 closeScreen:
     closeGlobalScreen();
 done:
