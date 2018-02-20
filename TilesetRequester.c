@@ -27,7 +27,8 @@
 #define TILESET_LIST_TOP          20
 #define TILESET_LIST_LEFT         10
 
-static struct NewWindow tilesetRequesterNewWindow = {
+static WindowKind tilesetRequesterWindowKind = {
+  {
     40, 40, TILESET_REQUESTER_WIDTH, TILESET_REQUESTER_HEIGHT,
     0xFF, 0xFF,
     CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP|NEWSIZE,
@@ -40,6 +41,8 @@ static struct NewWindow tilesetRequesterNewWindow = {
     TILESET_REQUESTER_WIDTH, TILESET_REQUESTER_MIN_HEIGHT,
     0xFFFF, 0xFFFF,
     CUSTOMSCREEN
+  },
+  NULL
 };
 
 static struct NewGadget tilesetListNewGadget = {
@@ -66,8 +69,8 @@ static void initTilesetRequesterVi(void) {
 static void createTilesetRequesterGadgets(TilesetRequester *tilesetRequester) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
-    int height = tilesetRequester->window ? tilesetRequester->window->Height : TILESET_REQUESTER_HEIGHT;
-    int width  = tilesetRequester->window ? tilesetRequester->window->Width  : TILESET_REQUESTER_WIDTH;
+    int height = tilesetRequester->window ? tilesetRequester->window->intuitionWindow->Height : TILESET_REQUESTER_HEIGHT;
+    int width  = tilesetRequester->window ? tilesetRequester->window->intuitionWindow->Width  : TILESET_REQUESTER_WIDTH;
 
     gad = CreateContext(&glist);
 
@@ -106,14 +109,14 @@ TilesetRequester *newTilesetRequester(char *title) {
     if(!tilesetRequester->gadgets) {
         goto error_freeTitle;
     }
-    tilesetRequesterNewWindow.FirstGadget = tilesetRequester->gadgets;
+    tilesetRequesterWindowKind.newWindow.FirstGadget = tilesetRequester->gadgets;
 
-    tilesetRequesterNewWindow.Title = tilesetRequester->title;
-    tilesetRequester->window = openWindowOnScreen(&tilesetRequesterNewWindow);
+    tilesetRequesterWindowKind.newWindow.Title = tilesetRequester->title;
+    tilesetRequester->window = openWindowOnGlobalScreen(&tilesetRequesterWindowKind);
     if(!tilesetRequester) {
         goto error_freeGadgets;
     }
-    GT_RefreshWindow(tilesetRequester->window, NULL);
+    GT_RefreshWindow(tilesetRequester->window->intuitionWindow, NULL);
 
     tilesetRequester->closed = 0;
 
@@ -129,29 +132,30 @@ error:
 }
 
 void closeTilesetRequester(TilesetRequester *tilesetRequester) {
-    CloseWindow(tilesetRequester->window);
+  /* TODO: the framework should free the window and gadgets */
+    CloseWindow(tilesetRequester->window->intuitionWindow);
     FreeGadgets(tilesetRequester->gadgets);
     free(tilesetRequester->title);
     free(tilesetRequester);
 }
 
 void refreshTilesetRequesterList(TilesetRequester *tilesetRequester) {
-    GT_SetGadgetAttrs(tilesetRequester->tilesetList, tilesetRequester->window, NULL,
+    GT_SetGadgetAttrs(tilesetRequester->tilesetList, tilesetRequester->window->intuitionWindow, NULL,
         GTLV_Labels, &tilesetPackage->tilesetNames,
         TAG_END);
 }
 
 void resizeTilesetRequester(TilesetRequester *tilesetRequester) {
-    RemoveGList(tilesetRequester->window, tilesetRequester->gadgets, -1);
+    RemoveGList(tilesetRequester->window->intuitionWindow, tilesetRequester->gadgets, -1);
     FreeGadgets(tilesetRequester->gadgets);
-    SetRast(tilesetRequester->window->RPort, 0);
+    SetRast(tilesetRequester->window->intuitionWindow->RPort, 0);
     createTilesetRequesterGadgets(tilesetRequester);
     if(!tilesetRequester->gadgets) {
         fprintf(stderr, "resizeTilesetRequester: couldn't make gadgets");
         return;
     }
-    AddGList(tilesetRequester->window, tilesetRequester->gadgets, (UWORD)~0, -1, NULL);
-    RefreshWindowFrame(tilesetRequester->window);
-    RefreshGList(tilesetRequester->gadgets, tilesetRequester->window, NULL, -1);
-    GT_RefreshWindow(tilesetRequester->window, NULL);
+    AddGList(tilesetRequester->window->intuitionWindow, tilesetRequester->gadgets, (UWORD)~0, -1, NULL);
+    RefreshWindowFrame(tilesetRequester->window->intuitionWindow);
+    RefreshGList(tilesetRequester->gadgets, tilesetRequester->window->intuitionWindow, NULL, -1);
+    GT_RefreshWindow(tilesetRequester->window->intuitionWindow, NULL);
 }

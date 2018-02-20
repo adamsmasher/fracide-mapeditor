@@ -6,6 +6,8 @@
 #include <libraries/dos.h>
 #include <proto/dos.h>
 
+#include <proto/intuition.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -22,6 +24,8 @@ static Project project;
 static BOOL projectSaved = 1;
 static char projectFilename[PROJECT_FILENAME_LENGTH];
 
+/* TODO: many of these should be projectwindow methods */
+
 void initCurrentProject(void) {
   initProject(&project);
 }
@@ -30,111 +34,142 @@ void freeCurrentProject(void) {
   freeProject(&project);
 }
 
-static int saveProjectToAsl(char *dir, char *file) {
-    int result;
-    size_t bufferLen = strlen(dir) + strlen(file) + 2;
-    char *buffer = malloc(bufferLen);
+static BOOL saveProjectToAsl(FrameworkWindow *projectWindow, char *dir, char *file) {
+  size_t bufferLen = strlen(dir) + strlen(file) + 2;
+  char *buffer = malloc(bufferLen);
 
-    if(!buffer) {
-        fprintf(
-            stderr,
-            "saveProjectToAsl: failed to allocate buffer "
-            "(dir: %s) (file: %s)\n",
-            dir  ? dir  : "NULL",
-            file ? file : "NULL");
-        result = 0;
-        goto done;
-    }
+  if(!buffer) {
+    fprintf(
+      stderr,
+      "saveProjectToAsl: failed to allocate buffer "
+      "(dir: %s) (file: %s)\n",
+      dir  ? dir  : "NULL",
+      file ? file : "NULL");
+    goto error;
+  }
 
-    strcpy(buffer, dir);
-    if(!AddPart(buffer, file, (ULONG)bufferLen)) {
-        fprintf(
-            stderr,
-            "saveProjectToAsl: failed to add part "
-            "(buffer: %s) (file: %s) (len: %d)\n",
-            buffer ? buffer : "NULL",
-            file   ? file   : "NULL",
-            bufferLen);
-        result = 0;
-        goto freeBuffer;
-    }
+  strcpy(buffer, dir);
+  if(!AddPart(buffer, file, (ULONG)bufferLen)) {
+    fprintf(
+      stderr,
+      "saveProjectToAsl: failed to add part "
+      "(buffer: %s) (file: %s) (len: %d)\n",
+      buffer ? buffer : "NULL",
+      file   ? file   : "NULL",
+      bufferLen);
+    goto error_freeBuffer;
+  }
 
-    if(!saveProjectToFile(&project, buffer)) {
-        EasyRequest(
-            getProjectWindow(),
-            &projectSaveFailEasyStruct,
-            NULL,
-            buffer);
-        result = 0;
-        goto freeBuffer;
-    }
-    setProjectFilename(buffer);
+  if(!saveProjectToFile(&project, buffer)) {
+    EasyRequest(
+      projectWindow->intuitionWindow,
+      &projectSaveFailEasyStruct,
+      NULL,
+      buffer);
+    goto error_freeBuffer;
+  }
+  setProjectFilename(buffer);
 
-    projectSaved = 1;
-    result = 1;
+  projectSaved = TRUE;
 
 freeBuffer:
-    free(buffer);
+  free(buffer);
 done:
-    return result;
+  return TRUE;
+
+error_freeBuffer:
+  free(buffer);
+error:
+  return FALSE;
 }
 
-int saveProjectAs(void) {
-    BOOL result;
-    struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
-        ASL_Hail, "Save Project As",
-        ASL_Window, getProjectWindow(),
-        ASL_FuncFlags, FILF_SAVE,
-        TAG_END);
-    if(!request) {
-        result = 0;
-        goto done;
-    }
+BOOL saveProjectAs(void) {
+  BOOL result;
+  struct FileRequester *request; 
 
-    result = AslRequest(request, NULL);
-    if(result) {
-        result = saveProjectToAsl(request->rf_Dir, request->rf_File);
-    }
+  FrameworkWindow *window = getProjectWindow();
+  if(!window) {
+    fprintf(stderr, "saveProjectAs: couldn't get project window\n");
+    goto error;
+  }
 
-    FreeAslRequest(request);
+  request = AllocAslRequestTags(ASL_FileRequest,
+    ASL_Hail, "Save Project As",
+    ASL_Window, window->intuitionWindow,
+    ASL_FuncFlags, FILF_SAVE,
+    TAG_END);
+  if(!request) {
+    fprintf(stderr, "saveProjectAs: couldn't allocate asl request tags\n");
+    goto error;
+  }
+
+  result = AslRequest(request, NULL);
+  if(result) {
+    result = saveProjectToAsl(window, request->rf_Dir, request->rf_File);
+  }
+
+  FreeAslRequest(request);
 done:
-    return result;
+  return result;
+error:
+  return FALSE;
 }
 
-int saveProject(void) {
-    if(*projectFilename) {
-        if(!saveProjectToFile(&project, projectFilename)) {
-            EasyRequest(
-                getProjectWindow(),
-                &projectSaveFailEasyStruct,
-                NULL,
-                projectFilename);
-            return 0;
-        }
-        return 1;
+BOOL saveProject(void) {
+  FrameworkWindow *window = getProjectWindow();
+  if(!window) {
+    fprintf(stderr, "saveProject: couldn't get project window\n");
+    goto error;
+  }
+
+  if(*projectFilename) {
+    if(!saveProjectToFile(&project, projectFilename)) {
+      EasyRequest(
+        window->intuitionWindow,
+        &projectSaveFailEasyStruct,
+        NULL,
+        projectFilename);
+      goto error;
     } else {
-        return saveProjectAs();
+      return TRUE;
     }
+  } else {
+    return saveProjectAs();
+  }
+
+error:
+  return FALSE;
 }
 
-static int unsavedProjectAlert(void) {
-    int response = EasyRequest(
-        getProjectWindow(),
-        &unsavedProjectAlertEasyStruct,
-        NULL);
+static BOOL unsavedProjectAlert(void) {
+  int response;
 
-    switch(response) {
-        case 0: return 0;
-        case 1: return saveProject();
-        case 2: return 1;
-        default:
-            fprintf(stderr, "unsavedProjectAlert: unknown response %d\n", response);
-            return 0;
-    }
+  FrameworkWindow *window = getProjectWindow();
+  if(!window) {
+    fprintf(stderr, "unsavedProjectAlert: couldn't get project window\n");
+    goto error;
+  }
+
+  response = EasyRequest(
+    window->intuitionWindow,
+    &unsavedProjectAlertEasyStruct,
+    NULL);
+
+  switch(response) {
+    case 0: return FALSE;
+    case 1: return saveProject();
+    case 2: return TRUE;
+    default:
+      fprintf(stderr, "unsavedProjectAlert: unknown response %d\n", response);
+      goto error;
+  }
+  
+error:
+  return FALSE;
 }
 
 BOOL ensureProjectSaved(void) {
-    return (BOOL)(projectSaved || unsavedProjectAlert());
+  return (BOOL)(projectSaved || unsavedProjectAlert());
 }
 
 void clearProject(void) {
@@ -146,57 +181,80 @@ void clearProject(void) {
 }
 
 void setProjectFilename(char *filename) {
-    /* TODO: honestly these OnMenu/OffMenu things could probably be made into functions elsewhere */
-    if(filename) {
-        strcpy(projectFilename, filename);
-        OnMenu(getProjectWindow(), REVERT_PROJECT_MENU_ITEM);
-    } else {
-        projectFilename[0] = '\0';
-        OffMenu(getProjectWindow(), REVERT_PROJECT_MENU_ITEM);
-    }
+  FrameworkWindow *window = getProjectWindow();
+  if(!window) {
+    fprintf(stderr, "setProjectFilename: couldn't get project window");
+    goto error;
+  }
+
+  /* TODO: honestly these OnMenu/OffMenu things could probably be made into functions elsewhere */
+  if(filename) {
+    strcpy(projectFilename, filename);
+    OnMenu(window->intuitionWindow, REVERT_PROJECT_MENU_ITEM);
+  } else {
+    projectFilename[0] = '\0';
+    OffMenu(window->intuitionWindow, REVERT_PROJECT_MENU_ITEM);
+  }
+done:
+  return;
+
+error:
+  return;
 }
 
 char *getProjectFilename(void) {
-    return projectFilename;
+  return projectFilename;
 }
 
 void openProjectFromFile(char *file) {
-    Project *myNewProject;
+  Project *myNewProject;
 
-    myNewProject = malloc(sizeof(Project));
-    if(!myNewProject) {
-        fprintf(stderr, "openProjectFromFile: failed to allocate project\n");
-        goto done;
-    }
+  FrameworkWindow *window = getProjectWindow();
+  if(!window) {
+    fprintf(stderr, "openProjectFromFile: couldn't get project window\n");
+    goto error;
+  }
 
-    if(!loadProjectFromFile(file, myNewProject)) {
-        EasyRequest(
-            getProjectWindow(),
-            &projectLoadFailEasyStruct,
-            NULL,
-            file);
-        goto freeProject;
-    }
+  myNewProject = malloc(sizeof(Project));
+  if(!myNewProject) {
+    fprintf(stderr, "openProjectFromFile: failed to allocate project\n");
+    goto error;
+  }
 
-    clearProject();
-    copyProject(myNewProject, &project);
-    setProjectFilename(file);
+  if(!loadProjectFromFile(file, myNewProject)) {
+    EasyRequest(
+      window->intuitionWindow,
+      &projectLoadFailEasyStruct,
+      NULL,
+      file);
+    goto freeProject;
+  }
 
-    if(*project.tilesetPackagePath && !loadTilesetPackageFromFile(project.tilesetPackagePath)) {
-        EasyRequest(
-            getProjectWindow(),
-            &tilesetPackageLoadFailEasyStruct,
-            NULL,
-            project.tilesetPackagePath);
+  clearProject();
+  copyProject(myNewProject, &project);
+  setProjectFilename(file);
 
-        /* because the tileset will now be empty, we've changed from the
-           saved version */
-        projectSaved = 0;
+  if(*project.tilesetPackagePath && !loadTilesetPackageFromFile(project.tilesetPackagePath)) {
+    EasyRequest(
+      window->intuitionWindow,
+      &tilesetPackageLoadFailEasyStruct,
+      NULL,
+      project.tilesetPackagePath);
+
+      /* because the tileset will now be empty, we've changed from the
+         saved version */
+      projectSaved = FALSE;
+      goto error_freeProject;
     }
 
 freeProject:
     free(myNewProject);
 done:
+    return;
+
+error_freeProject:
+    free(myNewProject);
+error:
     return;
 }
 

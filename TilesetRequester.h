@@ -3,10 +3,12 @@
 
 #include <intuition/intuition.h>
 
+#include "framework/Window.h"
+
 #define TILESET_LIST_ID 0
 
 typedef struct TilesetRequesterTag {
-    struct Window *window;
+    FrameworkWindow *window;
     struct Gadget *gadgets;
     struct Gadget *tilesetList;
     int           closed;

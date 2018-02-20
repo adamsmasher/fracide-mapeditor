@@ -45,7 +45,7 @@ void refreshAllSongDisplays(void) {
     MapEditor *i = mapEditorSetFirst();
     while(i) {
         if(i->songRequester) {
-            GT_RefreshWindow(i->songRequester->window, NULL);
+            GT_RefreshWindow(i->songRequester->window->intuitionWindow, NULL);
         }
         mapEditorRefreshSong(i);
         i = i->next;
@@ -56,34 +56,43 @@ void refreshAllEntityBrowsers(void) {
     MapEditor *i = mapEditorSetFirst();
     while(i) {
         if(i->entityBrowser) {
-            GT_RefreshWindow(i->entityBrowser->window, NULL);
+            GT_RefreshWindow(i->entityBrowser->window->intuitionWindow, NULL);
         }
         i = i->next;
     }
 }
 
 void openProject(void) {
-    struct FileRequester *request;
+  struct FileRequester *request;
+  FrameworkWindow *window;
 
-    if(!ensureEverythingSaved()) {
-        goto done;
-    }
+  if(!ensureEverythingSaved()) {
+    goto done;
+  }
 
-    request = AllocAslRequestTags(ASL_FileRequest,
-        ASL_Hail, "Open Project",
-        ASL_Window, getProjectWindow(),
-        TAG_END);
-    if(!request) {
-        goto done;
-    }
+  window = getProjectWindow();
+  if(!window) {
+    fprintf(stderr, "openProject: couldn't get project window\n");
+    goto error;
+  }
 
-    if(AslRequest(request, NULL)) {
-        openProjectFromAsl(request->rf_Dir, request->rf_File);
-    }
+  request = AllocAslRequestTags(ASL_FileRequest,
+    ASL_Hail, "Open Project",
+    ASL_Window, window->intuitionWindow,
+    TAG_END);
+  if(!request) {
+    goto done;
+  }
 
-    FreeAslRequest(request);
+  if(AslRequest(request, NULL)) {
+    openProjectFromAsl(request->rf_Dir, request->rf_File);
+  }
+
+  FreeAslRequest(request);
 done:
-    return;
+  return;
+error:
+  return;
 }
 
 void newProject(void) {
@@ -95,43 +104,63 @@ void newProject(void) {
 }
 
 static int confirmRevertProject(void) {
-    return EasyRequest(
-        getProjectWindow(),
-        &confirmRevertProjectEasyStruct,
-        NULL);
+  FrameworkWindow *window;
+
+  window = getProjectWindow();
+  if(!window) {
+    fprintf(stderr, "confirmRevertProject: couldn't get project window\n");
+    goto error;
+  }
+
+  return EasyRequest(
+    window->intuitionWindow,
+    &confirmRevertProjectEasyStruct,
+    NULL);
+
+  error:
+    return 0;
 }
 
 void revertProject(void) {
-    if(!confirmRevertProject()) {
-        goto done;
-    }
+  if(!confirmRevertProject()) {
+    goto done;
+  }
 
-    openProjectFromFile(getProjectFilename());
+  openProjectFromFile(getProjectFilename());
 
 done:
-    return;
+  return;
 }
 
 void selectTilesetPackage(void) {
-    struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
-        ASL_Hail, "Select Tileset Package",
-        ASL_Window, getProjectWindow(),
-        TAG_END);
-    if(!request) {
-        fprintf(stderr, "selectTilesetPackage: failed to allocate requester\n");
-        goto done;
-    }
+  struct FileRequester *request;
+  FrameworkWindow *window = getProjectWindow();
+  if(!window) {
+    fprintf(stderr, "selectTilesetPackage: couldn't get project window\n");
+    goto error;
+  }
 
-    if(AslRequest(request, NULL)) {
-        if(loadTilesetPackageFromAsl(request->rf_Dir, request->rf_File)) {
-            updateAllTileDisplays();
-        }
-    }
+  request = AllocAslRequestTags(ASL_FileRequest,
+    ASL_Hail, "Select Tileset Package",
+    ASL_Window, getProjectWindow(),
+    TAG_END);
+  if(!request) {
+    fprintf(stderr, "selectTilesetPackage: failed to allocate requester\n");
+    goto error;
+  }
 
-    FreeAslRequest(request);
+  if(AslRequest(request, NULL)) {
+    if(loadTilesetPackageFromAsl(request->rf_Dir, request->rf_File)) {
+      updateAllTileDisplays();
+    }
+  }
+
+  FreeAslRequest(request);
 
 done:
-    return;
+  return;
+error:
+  return;
 }
 
 void quit(void) {
@@ -152,11 +181,19 @@ void newMap(void) {
 }
 
 static int confirmCreateMap(int mapNum) {
-    return EasyRequest(
-        getProjectWindow(),
-        &confirmCreateMapEasyStruct,
-        NULL,
-        mapNum);
+  FrameworkWindow *window = getProjectWindow();
+  if(!window) {
+    fprintf(stderr, "confirmCreateMap: couldn't get project window\n");
+    goto error;
+  }
+
+  return EasyRequest(
+    window->intuitionWindow,
+    &confirmCreateMapEasyStruct,
+    NULL,
+    mapNum);
+error:
+  return 0;
 }
 
 int openMapNum(int mapNum) {
@@ -196,7 +233,7 @@ void openMap(void) {
 
     mapEditor = findMapEditor(selected - 1);
     if(mapEditor) {
-        WindowToFront(mapEditor->window);
+        WindowToFront(mapEditor->window->intuitionWindow);
     } else {
         openMapNum(selected - 1);
     }
@@ -215,7 +252,7 @@ int saveMapAs(MapEditor *mapEditor) {
         }
     } else {
         int response = EasyRequest(
-            mapEditor->window,
+            mapEditor->window->intuitionWindow,
             &saveIntoFullSlotEasyStruct,
             NULL,
             selected - 1, currentProjectGetMapName(selected - 1));
@@ -253,13 +290,13 @@ int unsavedMapEditorAlert(MapEditor *mapEditor) {
 
     if(mapEditor->mapNum) {
         response = EasyRequest(
-            mapEditor->window,
+            mapEditor->window->intuitionWindow,
             &unsavedMapAlertEasyStructWithNum,
             NULL,
             mapEditor->mapNum - 1, mapEditor->map->name);
     } else {
         response = EasyRequest(
-            mapEditor->window,
+            mapEditor->window->intuitionWindow,
             &unsavedMapAlertEasyStructNoNum,
             NULL,
             mapEditor->map->name);

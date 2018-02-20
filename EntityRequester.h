@@ -1,11 +1,15 @@
 #ifndef ENTITY_REQUESTER_H
 #define ENTITY_REQUESTER_H
 
+#include <intuition/intuition.h>
+
+#include "framework/Window.h"
+
 #define ENTITY_REQUESTER_LIST_ID (0)
 #define ENTITY_NAME_ID (ENTITY_REQUESTER_LIST_ID + 1)
 
 typedef struct EntityRequester_tag {
-    struct Window *window;
+    FrameworkWindow *window;
     struct Gadget *gadgets;
     struct Gadget *entityNameGadget;
     int closed;

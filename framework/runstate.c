@@ -16,6 +16,7 @@ void runMainLoop(void) {
     for(i = windowSetFirstWindow(); i != NULL; i = i->next) {
       handleWindowEvents(i, signalSet);
     }
+    /* TODO: clean up any dead windows */
   }
 }
 

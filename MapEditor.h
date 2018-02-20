@@ -63,9 +63,18 @@ typedef struct MapEditorTag {
   char title[16];
 } MapEditor;
 
+MapEditor *newMapEditorNewMap(void);
+MapEditor *newMapEditorWithMap(Map*, int mapNum);
+
+void closeMapEditor(MapEditor*);
+
+void mapEditorSetMapNum(MapEditor*, UWORD);
+
 void mapEditorSetTileset(MapEditor*, UWORD);
 void mapEditorRefreshTileset(MapEditor*);
+
 void mapEditorSetSong(MapEditor*, UWORD);
+void mapEditorRefreshSong(MapEditor*);
 
 #define UNSAVED 0
 #define SAVED   1

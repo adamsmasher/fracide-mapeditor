@@ -43,7 +43,8 @@
 #define OK_BUTTON_ID     (MAP_LIST_ID  + 1)
 #define CANCEL_BUTTON_ID (OK_BUTTON_ID + 1)
 
-static struct NewWindow mapRequesterNewWindow = {
+static WindowKind mapRequesterWindowKind = {
+  {
     40, 40, MAP_REQUESTER_WIDTH, MAP_REQUESTER_HEIGHT,
     0xFF, 0xFF,
     CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP|NEWSIZE,
@@ -56,6 +57,8 @@ static struct NewWindow mapRequesterNewWindow = {
     MAP_REQUESTER_WIDTH, MAP_REQUESTER_MIN_HEIGHT,
     0xFFFF, 0xFFFF,
     CUSTOMSCREEN
+  },
+  NULL
 };
 
 static struct NewGadget mapListNewGadget = {
@@ -96,7 +99,7 @@ static struct NewGadget cancelButtonNewGadget = {
 static struct Requester requester;
 
 typedef struct MapRequester_tag {
-    struct Window *window;
+    FrameworkWindow *window;
     int selected;
     int highlighted;
     struct Gadget *okButton;
@@ -105,8 +108,8 @@ typedef struct MapRequester_tag {
 
 static void createMapRequesterGadgets(MapRequester *mapRequester) {
     struct Gadget *gad;
-    int height = mapRequester->window ? mapRequester->window->Height : MAP_REQUESTER_HEIGHT;
-    int width  = mapRequester->window ? mapRequester->window->Width  : MAP_REQUESTER_WIDTH;
+    int height = mapRequester->window ? mapRequester->window->intuitionWindow->Height : MAP_REQUESTER_HEIGHT;
+    int width  = mapRequester->window ? mapRequester->window->intuitionWindow->Width  : MAP_REQUESTER_WIDTH;
     mapRequester->gadgets = NULL;
 
     gad = CreateContext(&mapRequester->gadgets);
@@ -148,7 +151,7 @@ static void handleRequesterGadgetUp(MapRequester *mapRequester, struct Gadget *g
         break;
     case MAP_LIST_ID:
         mapRequester->highlighted = code;
-        GT_SetGadgetAttrs(mapRequester->okButton, mapRequester->window, NULL,
+        GT_SetGadgetAttrs(mapRequester->okButton, mapRequester->window->intuitionWindow, NULL,
             GA_Disabled, FALSE,
             TAG_END);
         break;
@@ -156,18 +159,18 @@ static void handleRequesterGadgetUp(MapRequester *mapRequester, struct Gadget *g
 }
 
 static void resizeMapRequester(MapRequester *mapRequester) {
-    RemoveGList(mapRequester->window, mapRequester->gadgets, -1);
+    RemoveGList(mapRequester->window->intuitionWindow, mapRequester->gadgets, -1);
     FreeGadgets(mapRequester->gadgets);
-    SetRast(mapRequester->window->RPort, 0);
+    SetRast(mapRequester->window->intuitionWindow->RPort, 0);
     createMapRequesterGadgets(mapRequester);
     if(!mapRequester->gadgets) {
         fprintf(stderr, "resizeMapRequester: couldn't make gadgets");
         return;
     }
-    AddGList(mapRequester->window, mapRequester->gadgets, (UWORD)~0, -1, NULL);
-    RefreshWindowFrame(mapRequester->window);
-    RefreshGList(mapRequester->gadgets, mapRequester->window, NULL, -1);
-    GT_RefreshWindow(mapRequester->window, NULL);
+    AddGList(mapRequester->window->intuitionWindow, mapRequester->gadgets, (UWORD)~0, -1, NULL);
+    RefreshWindowFrame(mapRequester->window->intuitionWindow);
+    RefreshGList(mapRequester->gadgets, mapRequester->window->intuitionWindow, NULL, -1);
+    GT_RefreshWindow(mapRequester->window->intuitionWindow, NULL);
 }
 
 static void handleRequesterMessage(MapRequester *mapRequester, struct IntuiMessage *msg) {
@@ -179,8 +182,8 @@ static void handleRequesterMessage(MapRequester *mapRequester, struct IntuiMessa
         handleRequesterGadgetUp(mapRequester, (struct Gadget*)msg->IAddress, msg->Code);
         break;
     case IDCMP_REFRESHWINDOW:
-        GT_BeginRefresh(mapRequester->window);
-        GT_EndRefresh(mapRequester->window, TRUE);
+        GT_BeginRefresh(mapRequester->window->intuitionWindow);
+        GT_EndRefresh(mapRequester->window->intuitionWindow, TRUE);
         break;
     case IDCMP_NEWSIZE:
         resizeMapRequester(mapRequester);
@@ -190,14 +193,14 @@ static void handleRequesterMessage(MapRequester *mapRequester, struct IntuiMessa
 
 static void handleRequesterMessages(MapRequester *mapRequester) {
     struct IntuiMessage *msg = NULL;
-    while(msg = GT_GetIMsg(mapRequester->window->UserPort)) {
+    while(msg = GT_GetIMsg(mapRequester->window->intuitionWindow->UserPort)) {
         handleRequesterMessage(mapRequester, msg);
         GT_ReplyIMsg(msg);
     }
 }
 
 static void requesterLoop(MapRequester *mapRequester) {
-    long signal = 1L << mapRequester->window->UserPort->mp_SigBit;
+    long signal = 1L << mapRequester->window->intuitionWindow->UserPort->mp_SigBit;
     mapRequester->selected = 0;
     while(!mapRequester->selected) {
         Wait(signal);
@@ -234,21 +237,21 @@ static int spawnRequester(struct Window *window, char *title) {
         fprintf(stderr, "spawnRequester: couldn't create gadgets\n");
         goto error_EndRequest;
     }
-    mapRequesterNewWindow.FirstGadget = mapRequester.gadgets;
+    mapRequesterWindowKind.newWindow.FirstGadget = mapRequester.gadgets;
 
-    mapRequesterNewWindow.Title = title;
+    mapRequesterWindowKind.newWindow.Title = title;
 
-    mapRequester.window = openWindowOnScreen(&mapRequesterNewWindow);
+    mapRequester.window = openWindowOnGlobalScreen(&mapRequesterWindowKind);
     if(!mapRequester.window) {
         fprintf(stderr, "spawnRequester: couldn't open window\n");
         goto error_FreeGadgets;
     }
 
-    GT_RefreshWindow(mapRequester.window, NULL);
+    GT_RefreshWindow(mapRequester.window->intuitionWindow, NULL);
 
     requesterLoop(&mapRequester);
 
-    CloseWindow(mapRequester.window);
+    CloseWindow(mapRequester.window->intuitionWindow);
 
     FreeGadgets(mapRequester.gadgets);
 
@@ -265,11 +268,19 @@ error:
 }
 
 int openMapRequester(void) {
-    return spawnRequester(getProjectWindow(), "Open Map");
+  FrameworkWindow *window = getProjectWindow();
+  if(!window) {
+    fprintf(stderr, "openMapRequester: couldn't get project window\n");
+    goto error;
+  }
+
+  return spawnRequester(window->intuitionWindow, "Open Map");
+error:
+  return 0;
 }
 
 int saveMapRequester(MapEditor *mapEditor) {
     char title[96];
     sprintf(title, "Save Map %s", mapEditor->map->name);
-    return spawnRequester(mapEditor->window, title);
+    return spawnRequester(mapEditor->window->intuitionWindow, title);
 }

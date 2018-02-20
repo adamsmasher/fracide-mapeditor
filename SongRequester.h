@@ -1,13 +1,15 @@
 #ifndef SONG_REQUESTER_H
 #define SONG_REQUESTER_H
 
-#include <proto/intuition.h>
+#include <intuition/intuition.h>
+
+#include "framework/Window.h"
 
 #define SONG_LIST_ID (0)
 #define SONG_NAME_ID (SONG_LIST_ID + 1)
 
 typedef struct SongRequester_tag {
-    struct Window *window;
+    FrameworkWindow *window;
     struct Gadget *gadgets;
     struct Gadget *songNameGadget;
     char *title;

@@ -66,9 +66,10 @@ static void handleTilesetRequesterMessage(MapEditor *mapEditor, TilesetRequester
     case IDCMP_CLOSEWINDOW:
         tilesetRequester->closed = 1;
         break;
+    /* TODO: the framework should handle this! */
     case IDCMP_REFRESHWINDOW:
-        GT_BeginRefresh(tilesetRequester->window);
-        GT_EndRefresh(tilesetRequester->window, TRUE);
+        GT_BeginRefresh(tilesetRequester->window->intuitionWindow);
+        GT_EndRefresh(tilesetRequester->window->intuitionWindow, TRUE);
         break;
     case IDCMP_GADGETUP:
         handleTilesetRequesterGadgetUp(mapEditor, tilesetRequester, msg);
@@ -81,7 +82,7 @@ static void handleTilesetRequesterMessage(MapEditor *mapEditor, TilesetRequester
 
 static void handleTilesetRequesterMessages(MapEditor *mapEditor, TilesetRequester *tilesetRequester) {
   struct IntuiMessage *msg = NULL;
-  while(msg = GT_GetIMsg(tilesetRequester->window->UserPort)) {
+  while(msg = GT_GetIMsg(tilesetRequester->window->intuitionWindow->UserPort)) {
     handleTilesetRequesterMessage(mapEditor, tilesetRequester, msg);
     GT_ReplyIMsg(msg);
   }
@@ -97,8 +98,8 @@ static void handleSongRequesterMessage(MapEditor *mapEditor, SongRequester *song
         songRequester->closed = 1;
         break;
     case IDCMP_REFRESHWINDOW:
-        GT_BeginRefresh(songRequester->window);
-        GT_EndRefresh(songRequester->window, TRUE);
+        GT_BeginRefresh(songRequester->window->intuitionWindow);
+        GT_EndRefresh(songRequester->window->intuitionWindow, TRUE);
         break;
     case IDCMP_GADGETUP:
         handleSongRequesterGadgetUp(mapEditor, songRequester, msg);
@@ -111,7 +112,7 @@ static void handleSongRequesterMessage(MapEditor *mapEditor, SongRequester *song
 
 static void handleSongRequesterMessages(MapEditor *mapEditor, SongRequester *songRequester) {
     struct IntuiMessage *msg = NULL;
-    while(msg = GT_GetIMsg(songRequester->window->UserPort)) {
+    while(msg = GT_GetIMsg(songRequester->window->intuitionWindow->UserPort)) {
         handleSongRequesterMessage(mapEditor, songRequester, msg);
         GT_ReplyIMsg(msg);
     }
@@ -128,7 +129,7 @@ static void handleAddEntityClicked(MapEditor *mapEditor, EntityBrowser *entityBr
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
 
     if(mapEditor->map->entityCnt >= MAX_ENTITIES_PER_MAP) {
-        GT_SetGadgetAttrs(entityBrowser->addEntityGadget, entityBrowser->window, NULL,
+        GT_SetGadgetAttrs(entityBrowser->addEntityGadget, entityBrowser->window->intuitionWindow, NULL,
             GA_Disabled, TRUE);
     }
 
@@ -206,7 +207,7 @@ static void handleAddTagClicked(EntityBrowser *entityBrowser, MapEditor *mapEdit
     mapEditorSetSaveStatus(mapEditor, UNSAVED);
 
     if(entity->tagCnt >= MAX_TAGS_PER_ENTITY) {
-        GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window, NULL,
+        GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window->intuitionWindow, NULL,
             GA_Disabled, TRUE);
     }
 
@@ -254,7 +255,7 @@ static void handleChooseEntityClicked(EntityBrowser *entityBrowser) {
     EntityRequester *entityRequester = entityBrowser->entityRequester;
 
     if(entityRequester) {
-        WindowToFront(entityRequester->window);
+        WindowToFront(entityRequester->window->intuitionWindow);
     } else {
         entityRequester = newEntityRequester();
         if(entityRequester) {
@@ -319,8 +320,9 @@ static void handleEntityBrowserMessage(MapEditor *mapEditor, EntityBrowser *enti
         entityBrowser->closed = 1;
         break;
     case IDCMP_REFRESHWINDOW:
-        GT_BeginRefresh(entityBrowser->window);
-        GT_EndRefresh(entityBrowser->window, TRUE);
+        /* TODO: the framework should handle this */
+        GT_BeginRefresh(entityBrowser->window->intuitionWindow);
+        GT_EndRefresh(entityBrowser->window->intuitionWindow, TRUE);
         break;
     }
 }
@@ -328,7 +330,7 @@ static void handleEntityBrowserMessage(MapEditor *mapEditor, EntityBrowser *enti
 /* TODO: close dead EntityRequesters */
 static void handleEntityBrowserMessages(MapEditor *mapEditor, EntityBrowser *entityBrowser) {
     struct IntuiMessage *msg = NULL;
-    while(msg = GT_GetIMsg(entityBrowser->window->UserPort)) {
+    while(msg = GT_GetIMsg(entityBrowser->window->intuitionWindow->UserPort)) {
         handleEntityBrowserMessage(mapEditor, entityBrowser, msg);
         GT_ReplyIMsg(msg);
     }
@@ -338,7 +340,7 @@ static void handleEntityBrowserChildMessages(EntityBrowser *entityBrowser, long 
     EntityRequester *entityRequester = entityBrowser->entityRequester;
 
     if(entityRequester) {
-        if(1L << entityRequester->window->UserPort->mp_SigBit & signalSet) {
+        if(1L << entityRequester->window->intuitionWindow->UserPort->mp_SigBit & signalSet) {
             /* TODO: handle entity requester messages */
         }
     }

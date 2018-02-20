@@ -1,6 +1,8 @@
 #include "SongNamesEditor.h"
 
 #include <intuition/gadgetclass.h>
+#include <proto/intuition.h>
+
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
@@ -16,7 +18,7 @@
 SongRequester *songNamesEditor = NULL;
 
 static void songNamesEditorSelectSong(int songNum) {
-  GT_SetGadgetAttrs(songNamesEditor->songNameGadget, songNamesEditor->window, NULL,
+  GT_SetGadgetAttrs(songNamesEditor->songNameGadget, songNamesEditor->window->intuitionWindow, NULL,
     GTST_String, currentProjectGetSongName(songNum),
     GA_Disabled, FALSE,
     TAG_END);
@@ -30,7 +32,7 @@ static void songNamesEditorUpdateSelectedSong(void) {
   char *name = ((struct StringInfo*)songNamesEditor->songNameGadget->SpecialInfo)->Buffer;
   updateCurrentProjectSongName(selected, name);
 
-  GT_RefreshWindow(songNamesEditor->window, NULL);
+  GT_RefreshWindow(songNamesEditor->window->intuitionWindow, NULL);
 
   refreshAllSongDisplays();
 }
@@ -56,8 +58,8 @@ static void handleSongNamesEditorMessage(struct IntuiMessage* msg) {
     handleSongNamesEditorGadgetUp(msg);
     break;
   case IDCMP_REFRESHWINDOW:
-    GT_BeginRefresh(songNamesEditor->window);
-    GT_EndRefresh(songNamesEditor->window, TRUE);
+    GT_BeginRefresh(songNamesEditor->window->intuitionWindow);
+    GT_EndRefresh(songNamesEditor->window->intuitionWindow, TRUE);
     break;
   case IDCMP_NEWSIZE:
     resizeSongRequester(songNamesEditor);
@@ -77,8 +79,8 @@ void closeSongNamesEditor(void) {
 void handleSongNamesEditorMessages(long signalSet) {
   struct IntuiMessage *msg;
   if(songNamesEditor) {
-    if(1L << songNamesEditor->window->UserPort->mp_SigBit & signalSet) {
-      while(msg = GT_GetIMsg(songNamesEditor->window->UserPort)) {
+    if(1L << songNamesEditor->window->intuitionWindow->UserPort->mp_SigBit & signalSet) {
+      while(msg = GT_GetIMsg(songNamesEditor->window->intuitionWindow->UserPort)) {
         handleSongNamesEditorMessage(msg);
         GT_ReplyIMsg(msg);
       }
@@ -91,7 +93,7 @@ void handleSongNamesEditorMessages(long signalSet) {
 
 void showSongNamesEditor(void) {
   if(songNamesEditor) {
-    WindowToFront(songNamesEditor->window);
+    WindowToFront(songNamesEditor->window->intuitionWindow);
   } else {
     songNamesEditor = newSongNamesEditor();
     if(songNamesEditor) {

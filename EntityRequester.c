@@ -33,7 +33,8 @@
 #define ENTITY_NAME_BOTTOM_OFFSET 26
 #define ENTITY_NAME_LEFT          ENTITY_LIST_LEFT
 
-static struct NewWindow entityRequesterNewWindow = {
+static WindowKind entityRequesterWindowKind = {
+  {
     40, 40, ENTITY_REQUESTER_WIDTH, ENTITY_REQUESTER_HEIGHT,
     0xFF, 0xFF,
     CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP|NEWSIZE,
@@ -46,6 +47,8 @@ static struct NewWindow entityRequesterNewWindow = {
     ENTITY_REQUESTER_WIDTH, ENTITY_REQUESTER_MIN_HEIGHT,
     0xFFFF, 0xFFFF,
     CUSTOMSCREEN
+  },
+  NULL
 };
 
 static struct NewGadget entityListNewGadget = {
@@ -124,7 +127,7 @@ static EntityRequester *newGenericEntityRequester(char *title, int editable) {
     entityRequester->window = NULL;
     entityRequester->editable = editable;
 
-    entityRequesterNewWindow.Title = title;
+    entityRequesterWindowKind.newWindow.Title = title;
 
     initEntityRequesterVi();
     createEntityRequesterGadgets(entityRequester);
@@ -132,9 +135,9 @@ static EntityRequester *newGenericEntityRequester(char *title, int editable) {
         fprintf(stderr, "newGenericEntityRequester: couldn't create gadgets\n");
         goto error_freeRequester;
     }
-    entityRequesterNewWindow.FirstGadget = entityRequester->gadgets;
+    entityRequesterWindowKind.newWindow.FirstGadget = entityRequester->gadgets;
 
-    entityRequester->window = openWindowOnScreen(&entityRequesterNewWindow);
+    entityRequester->window = openWindowOnGlobalScreen(&entityRequesterWindowKind);
     if(!entityRequester->window) {
         fprintf(stderr, "newGenericEntityRequester: couldn't open window\n");
         goto error_freeGadgets;

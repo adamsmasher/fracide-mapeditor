@@ -91,7 +91,8 @@
 #define TAG_VALUE_LEFT       285
 #define TAG_VALUE_TOP        205
 
-static struct NewWindow entityBrowserNewWindow = {
+static WindowKind entityBrowserWindowKind = {
+  {
     40, 40, ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
     0xFF, 0xFF,
     CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP,
@@ -104,6 +105,8 @@ static struct NewWindow entityBrowserNewWindow = {
     ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
     ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
     CUSTOMSCREEN
+  },
+  NULL
 };
 
 static struct NewGadget entityListNewGadget = {
@@ -495,7 +498,7 @@ EntityBrowser *newEntityBrowser(char *title, Entity *entities, int entityCnt) {
         goto error_freeLabels;
     }
     strcpy(entityBrowser->title, title);
-    entityBrowserNewWindow.Title = entityBrowser->title;
+    entityBrowserWindowKind.newWindow.Title = entityBrowser->title;
 
     initEntityBrowserVi();
     createEntityBrowserGadgets(entityBrowser, entityCnt);
@@ -503,14 +506,14 @@ EntityBrowser *newEntityBrowser(char *title, Entity *entities, int entityCnt) {
         fprintf(stderr, "newEntityBrowser: couldn't create gadgets\n");
         goto error_freeTitle;
     }
-    entityBrowserNewWindow.FirstGadget = entityBrowser->gadgets;
+    entityBrowserWindowKind.newWindow.FirstGadget = entityBrowser->gadgets;
     
-    entityBrowser->window = openWindowOnScreen(&entityBrowserNewWindow);
+    entityBrowser->window = openWindowOnGlobalScreen(&entityBrowserWindowKind);
     if(!entityBrowser->window) {
         fprintf(stderr, "newEntityBrowser: couldn't open window\n");
         goto error_freeGadgets;
     }
-    GT_RefreshWindow(entityBrowser->window, NULL);
+    GT_RefreshWindow(entityBrowser->window->intuitionWindow, NULL);
 
     entityBrowser->closed = 0;
     entityBrowser->selectedEntity = 0;
@@ -531,13 +534,6 @@ error:
     return NULL;
 }
 
-static void closeAttachedEntityRequester(EntityBrowser *entityBrowser) {
-    if(entityBrowser->entityRequester) {
-        freeEntityRequester(entityBrowser->entityRequester);
-        entityBrowser->entityRequester = NULL;
-    }
-}
-
 static void freeEntityLabels(EntityBrowser *entityBrowser) {
     free(entityBrowser->entityNodes);
     free(entityBrowser->entityStrings);
@@ -549,13 +545,11 @@ static void freeTagLabels(EntityBrowser *entityBrowser) {
 }
 
 void freeEntityBrowser(EntityBrowser *entityBrowser) {
-    closeAttachedEntityRequester(entityBrowser);
-    CloseWindow(entityBrowser->window);
-    FreeGadgets(entityBrowser->gadgets);
-    free(entityBrowser->title);
-    freeEntityLabels(entityBrowser);
-    freeTagLabels(entityBrowser);
-    free(entityBrowser);
+  /* TODO: the framework should close this window, free gadgets, close child */
+  free(entityBrowser->title);
+  freeEntityLabels(entityBrowser);
+  freeTagLabels(entityBrowser);
+  free(entityBrowser);
 }
 
 int entityBrowserSetTags(EntityBrowser *entityBrowser, Frac_tag *tags, int tagCnt) {
@@ -564,7 +558,7 @@ int entityBrowserSetTags(EntityBrowser *entityBrowser, Frac_tag *tags, int tagCn
         goto error;
     }
 
-    GT_SetGadgetAttrs(entityBrowser->tagListGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->tagListGadget, entityBrowser->window->intuitionWindow, NULL,
         GTLV_Labels, &entityBrowser->tagLabels,
         TAG_END);
 
@@ -574,7 +568,7 @@ error:
 }
 
 void entityBrowserFreeTagLabels(EntityBrowser *entityBrowser) {
-    GT_SetGadgetAttrs(entityBrowser->tagListGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->tagListGadget, entityBrowser->window->intuitionWindow, NULL,
         GTLV_Labels, NULL,
         TAG_END);
 
@@ -584,40 +578,40 @@ void entityBrowserFreeTagLabels(EntityBrowser *entityBrowser) {
 void entityBrowserSelectTag(EntityBrowser *entityBrowser, int tagNum, Frac_tag *tag) {
     entityBrowser->selectedTag = tagNum + 1;
 
-    GT_SetGadgetAttrs(entityBrowser->deleteTagGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->deleteTagGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, FALSE,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->tagAliasGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->tagAliasGadget, entityBrowser->window->intuitionWindow, NULL,
         GTST_String, tag->alias,
         GA_Disabled, FALSE,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->tagIdGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->tagIdGadget, entityBrowser->window->intuitionWindow, NULL,
         GTIN_Number, tag->id,
         GA_Disabled, FALSE,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->tagValueGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->tagValueGadget, entityBrowser->window->intuitionWindow, NULL,
         GTIN_Number, tag->value,
         GA_Disabled, FALSE,
         TAG_END);
 }
 
 void entityBrowserDeselectTag(EntityBrowser *entityBrowser) {
-    GT_SetGadgetAttrs(entityBrowser->tagAliasGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->tagAliasGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, TRUE,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->tagIdGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->tagIdGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, TRUE,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->tagValueGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->tagValueGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, TRUE,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->deleteTagGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->deleteTagGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, TRUE,
         TAG_END);
 }
@@ -626,30 +620,30 @@ void entityBrowserSelectEntity(EntityBrowser *entityBrowser, int entityNum, Enti
     entityBrowser->selectedEntity = entityNum + 1;
     entityBrowser->selectedTag = 0;
 
-    GT_SetGadgetAttrs(entityBrowser->removeEntityGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->removeEntityGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, FALSE,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->rowGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->rowGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, FALSE,
         GTIN_Number, entity->row,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->colGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->colGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, FALSE,
         GTIN_Number, entity->col,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->VRAMSlotGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->VRAMSlotGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, FALSE,
         GTIN_Number, entity->vramSlot,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, entity->tagCnt >= MAX_TAGS_PER_ENTITY,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->chooseEntityGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->chooseEntityGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, FALSE,
         TAG_END);
 
@@ -661,27 +655,27 @@ void entityBrowserDeselectEntity(EntityBrowser *entityBrowser) {
     entityBrowser->selectedEntity = 0;
     entityBrowser->selectedTag = 0;
 
-    GT_SetGadgetAttrs(entityBrowser->removeEntityGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->removeEntityGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, TRUE,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->rowGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->rowGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, TRUE,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->colGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->colGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, TRUE,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->VRAMSlotGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->VRAMSlotGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, TRUE,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->addTagGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, TRUE,
         TAG_END);
 
-    GT_SetGadgetAttrs(entityBrowser->chooseEntityGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->chooseEntityGadget, entityBrowser->window->intuitionWindow, NULL,
         GA_Disabled, TRUE,
         TAG_END);
 
@@ -695,7 +689,7 @@ int entityBrowserSetEntities(EntityBrowser *entityBrowser, Entity *entities, int
         goto error;
     }
 
-    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window->intuitionWindow, NULL,
         GTLV_Labels, &entityBrowser->entityLabels,
         TAG_END);
     
@@ -705,7 +699,7 @@ error:
 }
 
 void entityBrowserFreeEntityLabels(EntityBrowser *entityBrowser) {
-    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window, NULL,
+    GT_SetGadgetAttrs(entityBrowser->entityListGadget, entityBrowser->window->intuitionWindow, NULL,
         GTLV_Labels, ~0,
         TAG_END);
 

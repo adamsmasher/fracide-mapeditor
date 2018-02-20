@@ -30,7 +30,7 @@ static EntityRequester *entityNamesEditor = NULL;
 static void handleEntityNamesEditorSelectEntity(struct IntuiMessage *msg) {
     int selected = msg->Code;
 
-    GT_SetGadgetAttrs(entityNamesEditor->entityNameGadget, entityNamesEditor->window, NULL,
+    GT_SetGadgetAttrs(entityNamesEditor->entityNameGadget, entityNamesEditor->window->intuitionWindow, NULL,
        GTST_String, currentProjectGetEntityName(selected),
        GA_Disabled, FALSE,
        TAG_END);
@@ -44,7 +44,7 @@ static void handleEntityNamesEditorUpdateEntity(struct IntuiMessage *msg) {
 
     updateCurrentProjectEntityName(selected, name);
 
-    GT_RefreshWindow(entityNamesEditor->window, NULL);
+    GT_RefreshWindow(entityNamesEditor->window->intuitionWindow, NULL);
     refreshAllEntityBrowsers();
 }
 
@@ -69,8 +69,8 @@ static void handleEntityNamesEditorMessage(struct IntuiMessage* msg) {
         handleEntityNamesEditorGadgetUp(msg);
         break;
     case IDCMP_REFRESHWINDOW:
-        GT_BeginRefresh(entityNamesEditor->window);
-        GT_EndRefresh(entityNamesEditor->window, TRUE);
+        GT_BeginRefresh(entityNamesEditor->window->intuitionWindow);
+        GT_EndRefresh(entityNamesEditor->window->intuitionWindow, TRUE);
         break;
     case IDCMP_NEWSIZE:
         resizeEntityRequester(entityNamesEditor);
@@ -81,8 +81,8 @@ static void handleEntityNamesEditorMessage(struct IntuiMessage* msg) {
 void handleEntityNamesEditorMessages(long signalSet) {
     struct IntuiMessage *msg;
     if(entityNamesEditor) {
-        if(1L << entityNamesEditor->window->UserPort->mp_SigBit & signalSet) {
-            while(msg = GT_GetIMsg(entityNamesEditor->window->UserPort)) {
+        if(1L << entityNamesEditor->window->intuitionWindow->UserPort->mp_SigBit & signalSet) {
+            while(msg = GT_GetIMsg(entityNamesEditor->window->intuitionWindow->UserPort)) {
                 handleEntityNamesEditorMessage(msg);
                 GT_ReplyIMsg(msg);
             }
@@ -105,7 +105,7 @@ void closeEntityNamesEditor(void) {
 
 void showEntityNamesEditor(void) {
     if(entityNamesEditor) {
-        WindowToFront(entityNamesEditor->window);
+        WindowToFront(entityNamesEditor->window->intuitionWindow);
     } else {
         entityNamesEditor = newEntityNamesEditor();
         if(entityNamesEditor) {

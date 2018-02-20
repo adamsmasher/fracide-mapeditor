@@ -1,7 +1,9 @@
 #ifndef ENTITY_BROWSER_H
 #define ENTITY_BROWSER_H
 
-#include <proto/intuition.h>
+#include <intuition/intuition.h>
+
+#include "framework/Window.h"
 
 #include "Entity.h"
 #include "EntityRequester.h"
@@ -24,7 +26,7 @@
 #define ENTITY_LABEL_LENGTH 16
 
 typedef struct EntityBrowser_tag {
-    struct Window *window;
+    FrameworkWindow *window;
     struct Gadget *gadgets;
     struct Gadget *addEntityGadget;
     struct Gadget *removeEntityGadget;

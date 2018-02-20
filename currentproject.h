@@ -22,8 +22,8 @@ void currentProjectSetTilesetPackagePath(char*);
 void openProjectFromAsl(char *dir, char *file);
 void openProjectFromFile(char*);
 
-int saveProject(void);
-int saveProjectAs(void);
+BOOL saveProject(void);
+BOOL saveProjectAs(void);
 
 BOOL currentProjectCreateMap(int mapNum);
 BOOL currentProjectHasMap(int mapNum);

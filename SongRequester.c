@@ -33,7 +33,8 @@
 #define SONG_NAME_BOTTOM_OFFSET 26
 #define SONG_NAME_LEFT          SONG_LIST_LEFT
 
-static struct NewWindow songRequesterNewWindow = {
+static WindowKind songRequesterWindowKind = {
+  {
     40, 40, SONG_REQUESTER_WIDTH, SONG_REQUESTER_HEIGHT,
     0xFF, 0xFF,
     CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP|NEWSIZE,
@@ -46,6 +47,8 @@ static struct NewWindow songRequesterNewWindow = {
     SONG_REQUESTER_WIDTH, SONG_REQUESTER_MIN_HEIGHT,
     0xFFFF, 0xFFFF,
     CUSTOMSCREEN
+  },
+  NULL
 };
 
 static struct NewGadget songListNewGadget = {
@@ -84,8 +87,8 @@ static void initSongRequesterVi(void) {
 static void createSongRequesterGadgets(SongRequester *songRequester) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
-    int height = songRequester->window ? songRequester->window->Height : SONG_REQUESTER_HEIGHT;
-    int width  = songRequester->window ? songRequester->window->Width  : SONG_REQUESTER_WIDTH;
+    int height = songRequester->window ? songRequester->window->intuitionWindow->Height : SONG_REQUESTER_HEIGHT;
+    int width  = songRequester->window ? songRequester->window->intuitionWindow->Width  : SONG_REQUESTER_WIDTH;
 
     gad = CreateContext(&glist);
 
@@ -130,7 +133,7 @@ static SongRequester *newGenericSongRequester(char *title, int editable) {
         goto error_freeRequester;
     }
     strcpy(songRequester->title, title);
-    songRequesterNewWindow.Title = songRequester->title;
+    songRequesterWindowKind.newWindow.Title = songRequester->title;
 
     initSongRequesterVi();
     createSongRequesterGadgets(songRequester);
@@ -138,14 +141,14 @@ static SongRequester *newGenericSongRequester(char *title, int editable) {
         fprintf(stderr, "newGenericSongRequester: couldn't create gadgets\n");
         goto error_freeTitle;
     }
-    songRequesterNewWindow.FirstGadget = songRequester->gadgets;
+    songRequesterWindowKind.newWindow.FirstGadget = songRequester->gadgets;
 
-    songRequester->window = openWindowOnScreen(&songRequesterNewWindow);
+    songRequester->window = openWindowOnGlobalScreen(&songRequesterWindowKind);
     if(!songRequester->window) {
         fprintf(stderr, "newGenericSongRequester: couldn't open window\n");
         goto error_freeGadgets;
     }
-    GT_RefreshWindow(songRequester->window, NULL);
+    GT_RefreshWindow(songRequester->window->intuitionWindow, NULL);
 
     songRequester->closed = 0;
     songRequester->selected = 0;
@@ -174,23 +177,23 @@ SongRequester *newSongNamesEditor(void) {
 }
 
 void freeSongRequester(SongRequester *songRequester) {
-    CloseWindow(songRequester->window);
-    FreeGadgets(songRequester->gadgets);
-    free(songRequester->title);
-    free(songRequester);
+  /* TODO: the framework should close the window and free the gadgets */
+  free(songRequester->title);
+  free(songRequester);
 }
 
 void resizeSongRequester(SongRequester *songRequester) {
-    RemoveGList(songRequester->window, songRequester->gadgets, -1);
+    /* TODO: this should be done by the framework! */
+    RemoveGList(songRequester->window->intuitionWindow, songRequester->gadgets, -1);
     FreeGadgets(songRequester->gadgets);
-    SetRast(songRequester->window->RPort, 0);
+    SetRast(songRequester->window->intuitionWindow->RPort, 0);
     createSongRequesterGadgets(songRequester);
     if(!songRequester->gadgets) {
         fprintf(stderr, "resizeSongRequester: couldn't make gadgets");
         return;
     }
-    AddGList(songRequester->window, songRequester->gadgets, (UWORD)~0, -1, NULL);
-    RefreshWindowFrame(songRequester->window);
-    RefreshGList(songRequester->gadgets, songRequester->window, NULL, -1);
-    GT_RefreshWindow(songRequester->window, NULL);
+    AddGList(songRequester->window->intuitionWindow, songRequester->gadgets, (UWORD)~0, -1, NULL);
+    RefreshWindowFrame(songRequester->window->intuitionWindow);
+    RefreshGList(songRequester->gadgets, songRequester->window->intuitionWindow, NULL, -1);
+    GT_RefreshWindow(songRequester->window->intuitionWindow, NULL);
 }
