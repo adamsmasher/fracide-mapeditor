@@ -26,15 +26,3 @@ static MenuSpec mainMenuSpecData[] = {
 };
 
 MenuSpec *mainMenuSpec = mainMenuSpecData;
-
-/* TODO: awkward how we need to pass in the menu... */
-/*void handleMainMenuPick(struct Menu *menu, struct IntuiMessage *msg) {
-    struct MenuItem *item = NULL;
-    ULONG menuNumber = msg->Code;
-
-    while(menuNumber != MENUNULL) {
-        invokeMenuHandler(menuNumber);
-        item = ItemAddress(menu, menuNumber);
-        menuNumber = item->NextSelect;
-    }
-}*/

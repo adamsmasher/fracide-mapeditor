@@ -1,6 +1,9 @@
 #include "window.h"
 
+#include <proto/exec.h>
 #include <proto/intuition.h>
+
+#include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
 #include <stdlib.h>
@@ -16,9 +19,25 @@ static void handleWindowChildEvents(FrameworkWindow *window, long signalSet) {
   }
 }
 
+static void dispatchMessage(FrameworkWindow *window, struct IntuiMessage *msg) {
+  switch(msg->Class) {
+    case IDCMP_MENUPICK:
+      invokeMenuHandler(window, msg->Code);
+      break;
+  }
+}
+
 void handleWindowEvents(FrameworkWindow *window, long signalSet) {
-  /* TODO: do menu stuff */
-  window->kind->handleEvents(window, signalSet);
+  struct IntuiMessage *msg;
+  struct Window *iwindow = window->intuitionWindow;
+
+  if(1L << iwindow->UserPort->mp_SigBit & signalSet) {
+    while(msg = (struct IntuiMessage*)GetMsg(iwindow->UserPort)) {
+      dispatchMessage(window, msg);
+      ReplyMsg((struct Message*)msg);
+    }
+  }
+
   handleWindowChildEvents(window, signalSet);
 }
 

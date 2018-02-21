@@ -15,25 +15,6 @@
 static FrameworkWindow *projectWindow = NULL;
 static struct Menu     *menu          = NULL;
 
-static void handleProjectMessage(struct IntuiMessage* msg) {
-  switch(msg->Class) {
-    case IDCMP_MENUPICK:
-      handleMainMenuPick(menu, msg);
-  }
-}
-
-static void handleProjectMessages(FrameworkWindow *window, long signalSet) {
-  struct IntuiMessage *msg;
-  struct Window *iwindow = window->intuitionWindow;
-
-  if(1L << iwindow->UserPort->mp_SigBit & signalSet) {
-    while(msg = (struct IntuiMessage*)GetMsg(iwindow->UserPort)) {
-      handleProjectMessage(msg);
-      ReplyMsg((struct Message*)msg);
-    }
-  }
-}
-
 static WindowKind projectWindowKind = {
   {
     0,0, -1, -1,
@@ -50,8 +31,8 @@ static WindowKind projectWindowKind = {
     CUSTOMSCREEN
   },
   NULL, /* menu spec; set me later */
-  handleProjectMessages,
   /* TODO: fix me */
+  NULL,
   NULL
 };
 
