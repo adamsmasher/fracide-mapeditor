@@ -54,7 +54,10 @@ static void closeChildren(FrameworkWindow *window) {
 
 void closeWindow(FrameworkWindow *window) {
   closeChildren(window);
-  window->kind->closeWindow(window);
+
+  if(window->kind->closeWindow) {
+    window->kind->closeWindow(window);
+  }
 
   ClearMenuStrip(window->intuitionWindow);
   FreeMenus(window->menu);
