@@ -55,6 +55,9 @@ FrameworkWindow *openWindowOnGlobalScreen(WindowKind *windowKind) {
     goto error;
   }
 
+  window->kind = windowKind;
+  window->children = NULL;
+
   window->intuitionWindow = OpenWindow(&windowKind->newWindow);
   if(!window->intuitionWindow) {
     fprintf(stderr, "openWindowOnGlobalScreen: failed to open window\n");
