@@ -57,10 +57,6 @@ static void handleSongNamesEditorMessage(struct IntuiMessage* msg) {
   case IDCMP_GADGETUP:
     handleSongNamesEditorGadgetUp(msg);
     break;
-  case IDCMP_REFRESHWINDOW:
-    GT_BeginRefresh(songNamesEditor->window->intuitionWindow);
-    GT_EndRefresh(songNamesEditor->window->intuitionWindow, TRUE);
-    break;
   case IDCMP_NEWSIZE:
     resizeSongRequester(songNamesEditor);
     break;

@@ -68,10 +68,6 @@ static void handleEntityNamesEditorMessage(struct IntuiMessage* msg) {
     case IDCMP_GADGETUP:
         handleEntityNamesEditorGadgetUp(msg);
         break;
-    case IDCMP_REFRESHWINDOW:
-        GT_BeginRefresh(entityNamesEditor->window->intuitionWindow);
-        GT_EndRefresh(entityNamesEditor->window->intuitionWindow, TRUE);
-        break;
     case IDCMP_NEWSIZE:
         resizeEntityRequester(entityNamesEditor);
         break;

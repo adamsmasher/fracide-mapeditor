@@ -66,11 +66,6 @@ static void handleTilesetRequesterMessage(MapEditor *mapEditor, TilesetRequester
     case IDCMP_CLOSEWINDOW:
         tilesetRequester->closed = 1;
         break;
-    /* TODO: the framework should handle this! */
-    case IDCMP_REFRESHWINDOW:
-        GT_BeginRefresh(tilesetRequester->window->intuitionWindow);
-        GT_EndRefresh(tilesetRequester->window->intuitionWindow, TRUE);
-        break;
     case IDCMP_GADGETUP:
         handleTilesetRequesterGadgetUp(mapEditor, tilesetRequester, msg);
         break;
@@ -96,10 +91,6 @@ static void handleSongRequesterMessage(MapEditor *mapEditor, SongRequester *song
     switch(msg->Class) {
     case IDCMP_CLOSEWINDOW:
         songRequester->closed = 1;
-        break;
-    case IDCMP_REFRESHWINDOW:
-        GT_BeginRefresh(songRequester->window->intuitionWindow);
-        GT_EndRefresh(songRequester->window->intuitionWindow, TRUE);
         break;
     case IDCMP_GADGETUP:
         handleSongRequesterGadgetUp(mapEditor, songRequester, msg);
@@ -318,11 +309,6 @@ static void handleEntityBrowserMessage(MapEditor *mapEditor, EntityBrowser *enti
         break;
     case IDCMP_CLOSEWINDOW:
         entityBrowser->closed = 1;
-        break;
-    case IDCMP_REFRESHWINDOW:
-        /* TODO: the framework should handle this */
-        GT_BeginRefresh(entityBrowser->window->intuitionWindow);
-        GT_EndRefresh(entityBrowser->window->intuitionWindow, TRUE);
         break;
     }
 }

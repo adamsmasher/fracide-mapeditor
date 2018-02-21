@@ -181,10 +181,6 @@ static void handleRequesterMessage(MapRequester *mapRequester, struct IntuiMessa
     case IDCMP_GADGETUP:
         handleRequesterGadgetUp(mapRequester, (struct Gadget*)msg->IAddress, msg->Code);
         break;
-    case IDCMP_REFRESHWINDOW:
-        GT_BeginRefresh(mapRequester->window->intuitionWindow);
-        GT_EndRefresh(mapRequester->window->intuitionWindow, TRUE);
-        break;
     case IDCMP_NEWSIZE:
         resizeMapRequester(mapRequester);
         break;

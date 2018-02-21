@@ -61,10 +61,20 @@ static void handleWindowChildEvents(FrameworkWindow *window, long signalSet) {
   }
 }
 
+static void refreshWindow(FrameworkWindow *window) {
+  struct Window *iwindow = window->intuitionWindow;
+  GT_BeginRefresh(iwindow);
+  /* TODO: add an optional callback here */
+  GT_EndRefresh(iwindow, TRUE);
+}
+
 static void dispatchMessage(FrameworkWindow *window, struct IntuiMessage *msg) {
   switch(msg->Class) {
     case IDCMP_MENUPICK:
       invokeMenuHandler(window, msg->Code);
+      break;
+    case IDCMP_REFRESHWINDOW:
+      refreshWindow(window);
       break;
   }
 }
