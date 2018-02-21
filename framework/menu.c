@@ -3,6 +3,8 @@
 #include "menubuild.h"
 #include "window.h"
 
+#include <stdio.h>
+
 Handler getMenuItemHandler(MenuSpec *menuSpec, UWORD itemNum) {
     MenuSectionSpec **sectionSpec = &(*menuSpec->sections)[0];
     MenuItemSpec *itemSpec = &(**sectionSpec)[0];
@@ -28,10 +30,22 @@ Handler getMenuHandler(MenuSpec *menusSpec, UWORD menuNum, UWORD itemNum) {
 }
 
 void invokeMenuHandler(FrameworkWindow *window, ULONG menuNumber) {
+  Handler handler;
   MenuSpec *menuSpec = window->kind->menuSpec;
   UWORD menuNum = MENUNUM(menuNumber);
   UWORD itemNum = ITEMNUM(menuNumber);
 
-  Handler handler = getMenuHandler(menuSpec, menuNum, itemNum);
+  if(!menuSpec) {
+    fprintf(stderr, "invokeMenuHandler: attempted to invoke a menu handler on a window with no menu\n");
+    goto error;
+  }
+
+  handler = getMenuHandler(menuSpec, menuNum, itemNum);
+
   handler(window);
+done:
+  return;
+
+error:
+  return;
 }
