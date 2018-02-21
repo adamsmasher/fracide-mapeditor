@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "menubuild.h"
+#include "window.h"
 #include "windowset.h"
 
 static struct Screen *screen = NULL;
@@ -39,45 +39,13 @@ void closeGlobalScreen(void) {
 }
 
 FrameworkWindow *openWindowOnGlobalScreen(WindowKind *windowKind) {
-  FrameworkWindow *window;
-
   if(!screen) {
     fprintf(stderr, "openWindowOnScreen: screen not yet initialized\n");
-    return NULL;
-  }
-
-  /* TODO: move much of the rest into window.c */
-  windowKind->newWindow.Screen = screen;
-
-  window = malloc(sizeof(FrameworkWindow));
-  if(!window) {
-    fprintf(stderr, "openWindowOnGlobalScreen: failed to allocate window\n");
     goto error;
   }
 
-  window->kind = windowKind;
-  window->children = NULL;
+  return openWindowOnScreen(windowKind, screen);
 
-  window->intuitionWindow = OpenWindow(&windowKind->newWindow);
-  if(!window->intuitionWindow) {
-    fprintf(stderr, "openWindowOnGlobalScreen: failed to open window\n");
-    goto error_freeWindow;
-  }
-
-  window->menu = createAndLayoutMenuFromSpec(windowKind->menuSpec);
-  if(!window->menu) {
-    fprintf(stderr, "openWindowOnGlobalScreen: failed to create menu\n");
-    goto error_closeWindow;
-  }
-
-  SetMenuStrip(window->intuitionWindow, window->menu);
-  addWindowToSet(window);
-
-  return window;
-error_closeWindow:
-  CloseWindow(window->intuitionWindow);
-error_freeWindow:
-  free(window);
 error:
   return NULL;
 }

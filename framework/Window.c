@@ -6,11 +6,51 @@
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 
 /* TODO: get rid of the menu.h in the main program */
 #include "framework/menu.h"
+#include "menubuild.h"
 #include "windowset.h"
+
+FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *screen) {
+  FrameworkWindow *window;
+
+  windowKind->newWindow.Screen = screen;
+
+  window = malloc(sizeof(FrameworkWindow));
+  if(!window) {
+    fprintf(stderr, "openWindowOnGlobalScreen: failed to allocate window\n");
+    goto error;
+  }
+
+  window->kind = windowKind;
+  window->children = NULL;
+
+  window->intuitionWindow = OpenWindow(&windowKind->newWindow);
+  if(!window->intuitionWindow) {
+    fprintf(stderr, "openWindowOnGlobalScreen: failed to open window\n");
+    goto error_freeWindow;
+  }
+
+  window->menu = createAndLayoutMenuFromSpec(windowKind->menuSpec);
+  if(!window->menu) {
+    fprintf(stderr, "openWindowOnGlobalScreen: failed to create menu\n");
+    goto error_closeWindow;
+  }
+
+  SetMenuStrip(window->intuitionWindow, window->menu);
+  addWindowToSet(window);
+
+  return window;
+error_closeWindow:
+  CloseWindow(window->intuitionWindow);
+error_freeWindow:
+  free(window);
+error:
+  return NULL;
+}
 
 static void handleWindowChildEvents(FrameworkWindow *window, long signalSet) {
   FrameworkWindow *i = window->children;
