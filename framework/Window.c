@@ -8,6 +8,8 @@
 
 #include <stdlib.h>
 
+/* TODO: get rid of the menu.h in the main program */
+#include "framework/menu.h"
 #include "windowset.h"
 
 static void handleWindowChildEvents(FrameworkWindow *window, long signalSet) {
