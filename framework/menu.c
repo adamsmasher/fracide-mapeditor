@@ -6,27 +6,27 @@
 #include <stdio.h>
 
 Handler getMenuItemHandler(MenuSpec *menuSpec, UWORD itemNum) {
-    MenuSectionSpec **sectionSpec = &(*menuSpec->sections)[0];
-    MenuItemSpec *itemSpec = &(**sectionSpec)[0];
+  MenuSectionSpec **sectionSpec = &(*menuSpec->sections)[0];
+  MenuItemSpec *itemSpec = &(**sectionSpec)[0];
 
-    while(itemNum) {
-        itemSpec++;
-        if(endMenuSection(itemSpec)) {
-            sectionSpec++;
-            itemSpec = &(**sectionSpec)[0];
-            /* skip past the end of section marker */
-            itemNum--;
-        }
-
-        itemNum--;
+  while(itemNum) {
+    itemSpec++;
+    if(endMenuSection(itemSpec)) {
+      sectionSpec++;
+      itemSpec = &(**sectionSpec)[0];
+      /* skip past the end of section marker */
+      itemNum--;
     }
 
-    return itemSpec->handler;
+    itemNum--;
+  }
+
+  return itemSpec->handler;
 }
 
 Handler getMenuHandler(MenuSpec *menusSpec, UWORD menuNum, UWORD itemNum) {
-    MenuSpec *menuSpec = &menusSpec[menuNum];
-    return getMenuItemHandler(menuSpec, itemNum);
+  MenuSpec *menuSpec = &menusSpec[menuNum];
+  return getMenuItemHandler(menuSpec, itemNum);
 }
 
 void invokeMenuHandler(FrameworkWindow *window, ULONG menuNumber) {
