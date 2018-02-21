@@ -347,32 +347,34 @@ static void handleEntityBrowserChildMessages(EntityBrowser *entityBrowser, long 
 }
 
 int main(void) {
-    int retCode;
+  int retCode;
 
-    if(!initGlobalScreen(&newScreen)) {
-        retCode = -1;
-        goto done;
-    }
+  if(!initGlobalScreen(&newScreen)) {
+    retCode = -1;
+    goto done;
+  }
 
-    initPalette(getGlobalViewPort());
+  initPalette(getGlobalViewPort());
 
-    if(!openProjectWindow()) {
-        retCode = -2;
-        goto closeScreen;
-    }
+  if(!openProjectWindow()) {
+    retCode = -2;
+    goto closeScreen;
+  }
     
-    initCurrentProject();
+  initCurrentProject();
 
-    runMainLoop();
+  runMainLoop();
     
-    retCode = 0;
-    closeAllWindows();
+  retCode = 0;
+
+  /* TODO: maybe this should happen automatically? */
+  closeAllWindows();
 freeTilesetPackage:
-    freeTilesetPackage(tilesetPackage);
+  freeTilesetPackage(tilesetPackage);
 freeProject:
-    freeCurrentProject();
+  freeCurrentProject();
 closeScreen:
-    closeGlobalScreen();
+  closeGlobalScreen();
 done:
-    return retCode;
+  return retCode;
 }

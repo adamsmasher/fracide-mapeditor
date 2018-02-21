@@ -164,9 +164,9 @@ error:
 }
 
 void quit(void) {
-    if(ensureEverythingSaved()) {
-        stopRunning();
-    }
+  if(ensureEverythingSaved()) {
+    stopRunning();
+  }
 }
 
 void newMap(void) {
