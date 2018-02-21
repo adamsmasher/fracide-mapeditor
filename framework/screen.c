@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "menubuild.h"
+#include "windowset.h"
 
 static struct Screen *screen = NULL;
 static void          *vi     = NULL;
@@ -44,6 +45,8 @@ FrameworkWindow *openWindowOnGlobalScreen(WindowKind *windowKind) {
     fprintf(stderr, "openWindowOnScreen: screen not yet initialized\n");
     return NULL;
   }
+
+  /* TODO: move much of the rest into window.c */
   windowKind->newWindow.Screen = screen;
 
   window = malloc(sizeof(FrameworkWindow));
@@ -65,6 +68,7 @@ FrameworkWindow *openWindowOnGlobalScreen(WindowKind *windowKind) {
   }
 
   SetMenuStrip(window->intuitionWindow, window->menu);
+  addWindowToSet(window);
 
   return window;
 error_closeWindow:
