@@ -27,6 +27,7 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *scree
 
   window->kind = windowKind;
   window->children = NULL;
+  window->next = NULL;
 
   window->intuitionWindow = OpenWindow(&windowKind->newWindow);
   if(!window->intuitionWindow) {
