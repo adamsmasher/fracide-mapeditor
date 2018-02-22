@@ -19,6 +19,7 @@ void addWindowToSet(FrameworkWindow *window) {
 
 void removeWindowFromSet(FrameworkWindow *window) {
   sigMask &= ~(1L << window->intuitionWindow->UserPort->mp_SigBit);
+  /* TODO: actually remove the window from the set! */
 }
 
 void closeAllWindows(void) {
