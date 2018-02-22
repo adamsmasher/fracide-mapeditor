@@ -7,7 +7,6 @@ FrameworkWindow *windowSetFirstWindow(void) {
   return firstWindow;
 }
 
-/* TODO: write an openWindow function that automatically does this */
 void addWindowToSet(FrameworkWindow *window) {
   FrameworkWindow **i = &firstWindow;
   while(*i) {
