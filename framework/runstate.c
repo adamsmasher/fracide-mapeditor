@@ -4,6 +4,7 @@
 
 #include <proto/exec.h>
 
+#include "window.h"
 #include "windowset.h"
 
 static BOOL running = TRUE;
