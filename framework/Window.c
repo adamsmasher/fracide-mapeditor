@@ -65,7 +65,9 @@ static void handleWindowChildEvents(FrameworkWindow *window, long signalSet) {
 static void refreshWindow(FrameworkWindow *window) {
   struct Window *iwindow = window->intuitionWindow;
   GT_BeginRefresh(iwindow);
-  /* TODO: add an optional callback here */
+  if(window->kind->refreshWindow) {
+    window->kind->refreshWindow(window);
+  }
   GT_EndRefresh(iwindow, TRUE);
 }
 

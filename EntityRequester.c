@@ -48,7 +48,9 @@ static WindowKind entityRequesterWindowKind = {
     0xFFFF, 0xFFFF,
     CUSTOMSCREEN
   },
-  NULL
+  NULL, /* no menu */
+  NULL, /* no custom refresh logic */
+  NULL  /* no custom close logic */
 };
 
 static struct NewGadget entityListNewGadget = {

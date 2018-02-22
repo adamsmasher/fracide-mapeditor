@@ -106,7 +106,9 @@ static WindowKind entityBrowserWindowKind = {
     ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
     CUSTOMSCREEN
   },
-  NULL
+  NULL, /* no menu */
+  NULL, /* no custom refresh logic */
+  NULL  /* no custom close handler */
 };
 
 static struct NewGadget entityListNewGadget = {

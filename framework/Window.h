@@ -5,14 +5,16 @@
 
 struct FrameworkWindow_tag;
 
-typedef void (*CloseFunction)(struct FrameworkWindow_tag*);
+typedef void (*RefreshFunction)(struct FrameworkWindow_tag*);
+typedef void (*CloseFunction)  (struct FrameworkWindow_tag*);
 
 typedef struct WindowKind_tag {
   struct NewWindow newWindow;
   struct MenuSpec_tag *menuSpec;
   /* TODO: makes me sad that we build a menu for every window... */
 
-  CloseFunction closeWindow;
+  RefreshFunction refreshWindow;
+  CloseFunction   closeWindow;
 } WindowKind;
 
 typedef struct FrameworkWindow_tag {

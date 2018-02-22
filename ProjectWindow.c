@@ -31,8 +31,8 @@ static WindowKind projectWindowKind = {
     CUSTOMSCREEN
   },
   NULL, /* menu spec; set me later */
-  /* TODO: fix me - close window */
-  NULL
+  NULL, /* no custom refresh logic */
+  NULL  /* no custom close logic */
 };
 
 FrameworkWindow *getProjectWindow(void) {

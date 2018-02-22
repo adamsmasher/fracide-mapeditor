@@ -113,27 +113,30 @@ static MenuSpec mapEditorMenuSpec[] = {
 
 static struct Menu *menu = NULL;
 
-static WindowKind mapEditorWindowKind = {
-  {
-    40, 40, MAP_EDITOR_WIDTH, MAP_EDITOR_HEIGHT,
-    0xFF, 0xFF,
-    CLOSEWINDOW|REFRESHWINDOW|GADGETUP|MOUSEBUTTONS|MENUPICK,
-    WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|ACTIVATE,
-    NULL,
-    NULL,
-    "Map Editor",
-    NULL,
-    NULL,
-    MAP_EDITOR_WIDTH,MAP_EDITOR_HEIGHT,
-    MAP_EDITOR_WIDTH,MAP_EDITOR_HEIGHT,
-    CUSTOMSCREEN
-  },
-  NULL, /* TODO: fix me - menuspec */
-  NULL  /* TODO: fix me - close window */
-};
-
 #define TILE_WIDTH  16
 #define TILE_HEIGHT 16
+
+/* TODO: adjust based on screen */
+#define MAP_BORDER_LEFT   28
+#define MAP_BORDER_TOP    51
+#define MAP_BORDER_WIDTH  (MAP_TILES_ACROSS * TILE_WIDTH  * 2 + 2)
+#define MAP_BORDER_HEIGHT (MAP_TILES_HIGH   * TILE_HEIGHT * 2 + 2)
+
+/* TODO: generate these dynamically */
+static WORD mapBorderPoints[] = {
+  0,                  0,
+  MAP_BORDER_WIDTH-1, 0,
+  MAP_BORDER_WIDTH-1, MAP_BORDER_HEIGHT-1,
+  0,                  MAP_BORDER_HEIGHT-1,
+  0,                  0
+};
+static struct Border mapBorder = {
+  -1, -1,
+  1, 1,
+  JAM1,
+  5, mapBorderPoints,
+  NULL
+};
 
 /* TODO: adjust based on titlebar height */
 #define CURRENT_TILESET_LEFT   378
@@ -151,21 +154,64 @@ static WindowKind mapEditorWindowKind = {
 #define TILESET_SCROLL_LEFT    CURRENT_TILESET_LEFT + TILE_WIDTH * TILESET_PALETTE_TILES_ACROSS * 2 + 1
 #define TILESET_SCROLL_TOP     CHOOSE_TILESET_TOP + CHOOSE_TILESET_HEIGHT + 8
 
-/* TODO: adjust based on screen */
-#define MAP_BORDER_LEFT   28
-#define MAP_BORDER_TOP    51
-#define MAP_BORDER_WIDTH  (MAP_TILES_ACROSS * TILE_WIDTH  * 2 + 2)
-#define MAP_BORDER_HEIGHT (MAP_TILES_HIGH   * TILE_HEIGHT * 2 + 2)
+#define TILESET_BORDER_LEFT   CURRENT_TILESET_LEFT
+#define TILESET_BORDER_TOP    (TILESET_SCROLL_TOP + 1)
+#define TILESET_BORDER_WIDTH  (TILE_WIDTH * TILESET_PALETTE_TILES_ACROSS * 2 + 2)
+#define TILESET_BORDER_HEIGHT TILESET_SCROLL_HEIGHT
+
+static WORD tilesetBorderPoints[] = {
+  0,                      0,
+  TILESET_BORDER_WIDTH-1, 0,
+  TILESET_BORDER_WIDTH-1, TILESET_BORDER_HEIGHT-1,
+  0,                      TILESET_BORDER_HEIGHT-1,
+  0,                      0
+};
+static struct Border tilesetBorder = {
+  -1, -1,
+  1, 1,
+  JAM1,
+  5, tilesetBorderPoints,
+  NULL
+};
+
+static void drawBorders(struct RastPort *rport) {
+  DrawBorder(rport, &mapBorder, MAP_BORDER_LEFT, MAP_BORDER_TOP);
+  DrawBorder(rport, &tilesetBorder,
+    TILESET_BORDER_LEFT, TILESET_BORDER_TOP);
+}
+
+static void refreshMapEditorWindow(FrameworkWindow *mapEditorWindow) {
+  drawBorders(mapEditorWindow->intuitionWindow->RPort);
+}
+
+static void refreshMapEditor(MapEditor *mapEditor) {
+  refreshMapEditorWindow(mapEditor->window);
+}
+
+static WindowKind mapEditorWindowKind = {
+  {
+    40, 40, MAP_EDITOR_WIDTH, MAP_EDITOR_HEIGHT,
+    0xFF, 0xFF,
+    CLOSEWINDOW|REFRESHWINDOW|GADGETUP|MOUSEBUTTONS|MENUPICK,
+    WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|ACTIVATE,
+    NULL,
+    NULL,
+    "Map Editor",
+    NULL,
+    NULL,
+    MAP_EDITOR_WIDTH,MAP_EDITOR_HEIGHT,
+    MAP_EDITOR_WIDTH,MAP_EDITOR_HEIGHT,
+    CUSTOMSCREEN
+  },
+  NULL, /* no menu */
+  refreshMapEditorWindow,
+  NULL  /* no custom close logic */
+};
 
 #define MAP_NAME_LEFT   (MAP_BORDER_LEFT  + 80)
 #define MAP_NAME_TOP    18
 #define MAP_NAME_WIDTH  (MAP_BORDER_WIDTH - 81)
 #define MAP_NAME_HEIGHT 14
-
-#define TILESET_BORDER_LEFT   CURRENT_TILESET_LEFT
-#define TILESET_BORDER_TOP    (TILESET_SCROLL_TOP + 1)
-#define TILESET_BORDER_WIDTH  (TILE_WIDTH * TILESET_PALETTE_TILES_ACROSS * 2 + 2)
-#define TILESET_BORDER_HEIGHT TILESET_SCROLL_HEIGHT
 
 #define ENTITIES_LEFT   (TILESET_BORDER_LEFT - 1)
 #define ENTITIES_TOP    (TILESET_BORDER_TOP + TILESET_BORDER_HEIGHT + 10)
@@ -357,35 +403,6 @@ static struct NewGadget *allNewGadgets[] = {
   NULL
 };
 
-/* TODO: generate these dynamically */
-static WORD mapBorderPoints[] = {
-  0,                  0,
-  MAP_BORDER_WIDTH-1, 0,
-  MAP_BORDER_WIDTH-1, MAP_BORDER_HEIGHT-1,
-  0,                  MAP_BORDER_HEIGHT-1,
-  0,                  0
-};
-static struct Border mapBorder = {
-  -1, -1,
-  1, 1,
-  JAM1,
-  5, mapBorderPoints,
-  NULL
-};
-static WORD tilesetBorderPoints[] = {
-  0,                      0,
-  TILESET_BORDER_WIDTH-1, 0,
-  TILESET_BORDER_WIDTH-1, TILESET_BORDER_HEIGHT-1,
-  0,                      TILESET_BORDER_HEIGHT-1,
-  0,                      0
-};
-static struct Border tilesetBorder = {
-  -1, -1,
-  1, 1,
-  JAM1,
-  5, tilesetBorderPoints,
-  NULL
-};
 static WORD tileBorderPoints[] = {
   0,  0,
   31, 0,
@@ -475,16 +492,6 @@ static void createMapEditorGadgets(MapEditor *mapEditor) {
     mapEditor->downGadget = NULL;
     FreeGadgets(glist);
   }
-}
-
-static void drawBorders(struct RastPort *rport) {
-  DrawBorder(rport, &mapBorder, MAP_BORDER_LEFT, MAP_BORDER_TOP);
-  DrawBorder(rport, &tilesetBorder,
-    TILESET_BORDER_LEFT, TILESET_BORDER_TOP);
-}
-
-static void refreshMapEditor(MapEditor *mapEditor) {
-  drawBorders(mapEditor->window->intuitionWindow->RPort);
 }
 
 static void initMapEditorPaletteImages(MapEditor *mapEditor) {
