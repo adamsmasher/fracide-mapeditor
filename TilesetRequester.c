@@ -116,7 +116,6 @@ TilesetRequester *newTilesetRequester(char *title) {
     if(!tilesetRequester) {
         goto error_freeGadgets;
     }
-    GT_RefreshWindow(tilesetRequester->window->intuitionWindow, NULL);
 
     tilesetRequester->closed = 0;
 

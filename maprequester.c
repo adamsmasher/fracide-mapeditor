@@ -243,8 +243,6 @@ static int spawnRequester(struct Window *window, char *title) {
         goto error_FreeGadgets;
     }
 
-    GT_RefreshWindow(mapRequester.window->intuitionWindow, NULL);
-
     requesterLoop(&mapRequester);
 
     CloseWindow(mapRequester.window->intuitionWindow);

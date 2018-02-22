@@ -142,8 +142,6 @@ static EntityRequester *newGenericEntityRequester(char *title, int editable) {
         fprintf(stderr, "newGenericEntityRequester: couldn't open window\n");
         goto error_freeGadgets;
     }
-    /* TODO: have open window do this */
-    GT_RefreshWindow(entityRequester->window->intuitionWindow, NULL);
 
     entityRequester->closed = 0;
     entityRequester->selected = 0;

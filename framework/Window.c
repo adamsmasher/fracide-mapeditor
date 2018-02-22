@@ -42,6 +42,7 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *scree
 
   SetMenuStrip(window->intuitionWindow, window->menu);
   addWindowToSet(window);
+  GT_RefreshWindow(window->intuitionWindow, NULL);
 
   return window;
 error_closeWindow:

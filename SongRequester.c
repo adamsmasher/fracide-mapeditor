@@ -148,7 +148,6 @@ static SongRequester *newGenericSongRequester(char *title, int editable) {
         fprintf(stderr, "newGenericSongRequester: couldn't open window\n");
         goto error_freeGadgets;
     }
-    GT_RefreshWindow(songRequester->window->intuitionWindow, NULL);
 
     songRequester->closed = 0;
     songRequester->selected = 0;

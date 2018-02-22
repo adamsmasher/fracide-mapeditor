@@ -913,7 +913,6 @@ static MapEditor *newMapEditor(void) {
     goto error_freeImageData;
   }
 
-  GT_RefreshWindow(mapEditor->window->intuitionWindow, NULL);
   refreshMapEditor(mapEditor);
 
   mapEditor->prev             = NULL;

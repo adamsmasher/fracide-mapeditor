@@ -513,7 +513,6 @@ EntityBrowser *newEntityBrowser(char *title, Entity *entities, int entityCnt) {
         fprintf(stderr, "newEntityBrowser: couldn't open window\n");
         goto error_freeGadgets;
     }
-    GT_RefreshWindow(entityBrowser->window->intuitionWindow, NULL);
 
     entityBrowser->closed = 0;
     entityBrowser->selectedEntity = 0;
