@@ -33,9 +33,19 @@ error:
 }
 
 void closeGlobalScreen(void) {
-  /* TODO: add init checks */
-  FreeVisualInfo(vi);
-  CloseScreen(screen);
+  if(vi) {
+    FreeVisualInfo(vi);
+    vi = NULL;
+  } else {
+    fprintf(stderr, "closeGlobalScreen: vi was NULL\n");
+  }
+
+  if(screen) {
+    CloseScreen(screen);
+    screen = NULL;
+  } else {
+    fprintf(stderr, "closeGlobalScreen: screen was NULL\n");
+  }
 }
 
 FrameworkWindow *openWindowOnGlobalScreen(WindowKind *windowKind) {
