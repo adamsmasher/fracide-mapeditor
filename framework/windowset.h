@@ -10,7 +10,6 @@ FrameworkWindow *windowSetFirstWindow(void);
 
 void closeAllWindows(void);
 
-/* TODO: I wonder if we don't need to expose this now... */
 long windowSetSigMask(void);
 
 #endif
