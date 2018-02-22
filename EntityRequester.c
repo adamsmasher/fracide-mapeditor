@@ -87,8 +87,8 @@ static void initEntityRequesterVi(void) {
 static void createEntityRequesterGadgets(EntityRequester *entityRequester) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
-    int height = entityRequester->window ? entityRequester->window->Height : ENTITY_REQUESTER_HEIGHT;
-    int width  = entityRequester->window ? entityRequester->window->Width  : ENTITY_REQUESTER_WIDTH;
+    int height = entityRequester->window ? entityRequester->window->intuitionWindow->Height : ENTITY_REQUESTER_HEIGHT;
+    int width  = entityRequester->window ? entityRequester->window->intuitionWindow->Width  : ENTITY_REQUESTER_WIDTH;
 
     gad = CreateContext(&glist);
 
@@ -142,7 +142,8 @@ static EntityRequester *newGenericEntityRequester(char *title, int editable) {
         fprintf(stderr, "newGenericEntityRequester: couldn't open window\n");
         goto error_freeGadgets;
     }
-    GT_RefreshWindow(entityRequester->window, NULL);
+    /* TODO: have open window do this */
+    GT_RefreshWindow(entityRequester->window->intuitionWindow, NULL);
 
     entityRequester->closed = 0;
     entityRequester->selected = 0;
@@ -169,22 +170,23 @@ EntityRequester *newEntityRequester(void) {
 }
 
 void freeEntityRequester(EntityRequester *entityRequester) {
-    CloseWindow(entityRequester->window);
+    /* TODO: fix me */
+    CloseWindow(entityRequester->window->intuitionWindow);
     FreeGadgets(entityRequester->gadgets);
     free(entityRequester);
 }
 
 void resizeEntityRequester(EntityRequester *entityRequester) {
-    RemoveGList(entityRequester->window, entityRequester->gadgets, -1);
+    RemoveGList(entityRequester->window->intuitionWindow, entityRequester->gadgets, -1);
     FreeGadgets(entityRequester->gadgets);
-    SetRast(entityRequester->window->RPort, 0);
+    SetRast(entityRequester->window->intuitionWindow->RPort, 0);
     createEntityRequesterGadgets(entityRequester);
     if(!entityRequester->gadgets) {
         fprintf(stderr, "resizeEntityRequester: couldn't make gadgets");
         return;
     }
-    AddGList(entityRequester->window, entityRequester->gadgets, (UWORD)~0, -1, NULL);
-    RefreshWindowFrame(entityRequester->window);
-    RefreshGList(entityRequester->gadgets, entityRequester->window, NULL, -1);
-    GT_RefreshWindow(entityRequester->window, NULL);
+    AddGList(entityRequester->window->intuitionWindow, entityRequester->gadgets, (UWORD)~0, -1, NULL);
+    RefreshWindowFrame(entityRequester->window->intuitionWindow);
+    RefreshGList(entityRequester->gadgets, entityRequester->window->intuitionWindow, NULL, -1);
+    GT_RefreshWindow(entityRequester->window->intuitionWindow, NULL);
 }
