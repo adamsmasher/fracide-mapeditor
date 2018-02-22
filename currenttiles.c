@@ -18,25 +18,31 @@
 TilesetPackage *tilesetPackage = NULL;
 
 int loadTilesetPackageFromFile(char *file) {
-    TilesetPackage *newTilesetPackage;
+  TilesetPackage *newTilesetPackage;
+  FrameworkWindow *window = getProjectWindow();
 
-    newTilesetPackage = tilesetPackageLoadFromFile(file);
-    if(!newTilesetPackage) {
-        EasyRequest(
-            getProjectWindow(),
-            &tilesetPackageLoadFailEasyStruct,
-            NULL,
-            file);
-        goto error;
-    }
-    freeTilesetPackage(tilesetPackage);
-    tilesetPackage = newTilesetPackage;
-    currentProjectSetTilesetPackagePath(file);
+  if(!window) {
+    fprintf(stderr, "loadTIlesetPackageFromFile: failed to get project window\n");
+    goto error;
+  }
 
-    return 1;
+  newTilesetPackage = tilesetPackageLoadFromFile(file);
+  if(!newTilesetPackage) {
+    EasyRequest(
+      window->intuitionWindow,
+      &tilesetPackageLoadFailEasyStruct,
+      NULL,
+      file);
+    goto error;
+  }
+  freeTilesetPackage(tilesetPackage);
+  tilesetPackage = newTilesetPackage;
+  currentProjectSetTilesetPackagePath(file);
+
+  return 1;
 
 error:
-    return 0;
+  return 0;
 }
 
 int loadTilesetPackageFromAsl(char *dir, char *file) {
