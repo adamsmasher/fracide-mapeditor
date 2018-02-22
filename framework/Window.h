@@ -5,7 +5,6 @@
 
 struct FrameworkWindow_tag;
 
-typedef void (*EventHandler)(struct FrameworkWindow_tag*, long signalSet);
 typedef void (*CloseFunction)(struct FrameworkWindow_tag*);
 
 typedef struct WindowKind_tag {
@@ -13,7 +12,6 @@ typedef struct WindowKind_tag {
   struct MenuSpec_tag *menuSpec;
   /* TODO: makes me sad that we build a menu for every window... */
 
-  EventHandler  handleEvents;
   CloseFunction closeWindow;
 } WindowKind;
 

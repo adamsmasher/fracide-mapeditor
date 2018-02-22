@@ -129,7 +129,6 @@ static WindowKind mapEditorWindowKind = {
     CUSTOMSCREEN
   },
   NULL, /* TODO: fix me - menuspec */
-  NULL, /* TODO: fix me - event handle */
   NULL  /* TODO: fix me - close window */
 };
 

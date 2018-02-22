@@ -31,8 +31,7 @@ static WindowKind projectWindowKind = {
     CUSTOMSCREEN
   },
   NULL, /* menu spec; set me later */
-  /* TODO: fix me */
-  NULL,
+  /* TODO: fix me - close window */
   NULL
 };
 
