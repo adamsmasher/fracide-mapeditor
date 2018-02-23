@@ -14,7 +14,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "framework/menubuild.h"
 #include "framework/screen.h"
+#include "framework/window.h"
 
 #include "currentproject.h"
 #include "globals.h"
@@ -48,9 +50,10 @@ static WindowKind songRequesterWindowKind = {
     0xFFFF, 0xFFFF,
     CUSTOMSCREEN
   },
-  NULL, /* no menu */
-  NULL, /* no custom refresh logic */
-  NULL  /* no custom close logic */
+  (MenuSpec*)        NULL,
+  (RefreshFunction)  NULL,
+  (CanCloseFunction) NULL,
+  (CloseFunction)    NULL
 };
 
 static struct NewGadget songListNewGadget = {

@@ -28,6 +28,7 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *scree
   window->kind = windowKind;
   window->children = NULL;
   window->next = NULL;
+  window->closed = FALSE;
 
   window->intuitionWindow = OpenWindow(&windowKind->newWindow);
   if(!window->intuitionWindow) {
@@ -72,6 +73,20 @@ static void refreshWindow(FrameworkWindow *window) {
   GT_EndRefresh(iwindow, TRUE);
 }
 
+static BOOL canCloseWindow(FrameworkWindow *window) {
+  if(window->kind->canCloseWindow) {
+    return window->kind->canCloseWindow(window);
+  } else {
+    return TRUE;
+  }
+}
+
+static void tryToCloseWindow(FrameworkWindow *window) {
+  if(canCloseWindow(window)) {
+    window->closed = TRUE;
+  }
+}
+
 static void dispatchMessage(FrameworkWindow *window, struct IntuiMessage *msg) {
   switch(msg->Class) {
     case IDCMP_MENUPICK:
@@ -79,6 +94,9 @@ static void dispatchMessage(FrameworkWindow *window, struct IntuiMessage *msg) {
       break;
     case IDCMP_REFRESHWINDOW:
       refreshWindow(window);
+      break;
+    case IDCMP_CLOSEWINDOW:
+      tryToCloseWindow(window);
       break;
   }
 }

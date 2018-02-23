@@ -13,7 +13,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "framework/menubuild.h"
 #include "framework/screen.h"
+#include "framework/window.h"
 
 #include "globals.h"
 #include "map.h"
@@ -106,9 +108,10 @@ static WindowKind entityBrowserWindowKind = {
     ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
     CUSTOMSCREEN
   },
-  NULL, /* no menu */
-  NULL, /* no custom refresh logic */
-  NULL  /* no custom close handler */
+  (MenuSpec*)        NULL,
+  (RefreshFunction)  NULL,
+  (CanCloseFunction) NULL,
+  (CloseFunction)    NULL
 };
 
 static struct NewGadget entityListNewGadget = {

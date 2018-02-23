@@ -30,9 +30,10 @@ static WindowKind projectWindowKind = {
     0xFFFF,0xFFFF,
     CUSTOMSCREEN
   },
-  NULL, /* menu spec; set me later */
-  NULL, /* no custom refresh logic */
-  NULL  /* no custom close logic */
+  (MenuSpec*)        NULL, /* set me later */
+  (RefreshFunction)  NULL,
+  (CanCloseFunction) NULL,
+  (CloseFunction)    NULL
 };
 
 FrameworkWindow *getProjectWindow(void) {

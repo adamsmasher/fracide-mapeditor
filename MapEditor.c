@@ -203,9 +203,10 @@ static WindowKind mapEditorWindowKind = {
     MAP_EDITOR_WIDTH,MAP_EDITOR_HEIGHT,
     CUSTOMSCREEN
   },
-  NULL, /* no menu */
-  refreshMapEditorWindow,
-  NULL  /* no custom close logic */
+  (MenuSpec*)        NULL,
+  (RefreshFunction)  refreshMapEditorWindow,
+  (CanCloseFunction) NULL,
+  (CloseFunction)    NULL
 };
 
 #define MAP_NAME_LEFT   (MAP_BORDER_LEFT  + 80)

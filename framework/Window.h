@@ -3,18 +3,18 @@
 
 #include <intuition/intuition.h>
 
-struct FrameworkWindow_tag;
-
-typedef void (*RefreshFunction)(struct FrameworkWindow_tag*);
-typedef void (*CloseFunction)  (struct FrameworkWindow_tag*);
+typedef void (*RefreshFunction) (struct FrameworkWindow_tag*);
+typedef BOOL (*CanCloseFunction)(struct FrameworkWindow_tag*);
+typedef void (*CloseFunction)   (struct FrameworkWindow_tag*);
 
 typedef struct WindowKind_tag {
   struct NewWindow newWindow;
   struct MenuSpec_tag *menuSpec;
   /* TODO: makes me sad that we build a menu for every window... */
 
-  RefreshFunction refreshWindow;
-  CloseFunction   closeWindow;
+  RefreshFunction  refreshWindow;
+  CanCloseFunction canCloseWindow;
+  CloseFunction    closeWindow;
 } WindowKind;
 
 typedef struct FrameworkWindow_tag {
@@ -24,6 +24,8 @@ typedef struct FrameworkWindow_tag {
   struct Menu   *menu;
 
   void *data;
+
+  BOOL closed;
 
   struct FrameworkWindow_tag *children;
   struct FrameworkWindow_tag *next;
