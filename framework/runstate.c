@@ -49,7 +49,6 @@ void runMainLoop(void) {
     FrameworkWindow *i;
     long signalSet = Wait(windowSetSigMask());
     for(i = windowSetFirstWindow(); i != NULL; i = i->next) {
-      /* TODO: handle child windows */
       handleWindowEvents(i, signalSet);
     }
     cleanupDeadWindows();
