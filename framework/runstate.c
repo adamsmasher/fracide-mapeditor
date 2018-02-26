@@ -9,16 +9,36 @@
 
 static BOOL running = TRUE;
 
+static void cleanupDeadChildWindows(FrameworkWindow *window) {
+  FrameworkWindow *i, *next;
+
+  i = window->children;
+  while(i) {
+    next = i->next;
+
+    cleanupDeadChildWindows(i);
+
+    if(i->closed) {
+      closeWindow(i);
+    }
+
+    i = next;
+  }
+}
+
 static void cleanupDeadWindows(void) {
   FrameworkWindow *i, *next;
 
   i = windowSetFirstWindow();
   while(i) {
-    /* TODO: handle child windows */
     next = i->next;
+
+    cleanupDeadChildWindows(i);
+
     if(i->closed) {
       closeWindow(i);
     }
+
     i = next;
   }
 }
