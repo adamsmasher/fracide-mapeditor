@@ -62,7 +62,7 @@ easystructs.o: easystructs.c easystructs.h
 
 mapeditorset.o: mapeditorset.c mapeditorset.h
 
-ProjectWindow.o: ProjectWindow.c ProjectWindow.h
+ProjectWindow.o: ProjectWindow.c ProjectWindow.h framework/Window.h framework/menubuild.h framework/screen.h
 
 SongNamesEditor.o: SongNamesEditor.c SongNamesEditor.h
 

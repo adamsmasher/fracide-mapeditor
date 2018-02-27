@@ -1,17 +1,13 @@
 #include "ProjectWindow.h"
 
-#include <proto/exec.h>
-#include <proto/gadtools.h>
 #include <proto/intuition.h>
 
 #include <stdio.h>
 
 #include "framework/menubuild.h"
 #include "framework/screen.h"
-#include "framework/windowset.h"
 
 #include "entitiesmenu.h"
-#include "globals.h"
 #include "mapmenu.h"
 #include "musicmenu.h"
 #include "projectmenu.h"
