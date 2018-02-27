@@ -8,18 +8,34 @@ FrameworkWindow *windowSetFirstWindow(void) {
 }
 
 void addWindowToSet(FrameworkWindow *window) {
-  FrameworkWindow **i = &firstWindow;
-  while(*i) {
-    i = &(*i)->next;
+  if(firstWindow) {
+    FrameworkWindow *i = firstWindow;
+    while(i->next) {
+      i = i->next;
+    }
+    i->next = window;
+    window->prev = i;
+  } else {
+    firstWindow = window;
   }
-  *i = window;
 
   sigMask |= 1L << window->intuitionWindow->UserPort->mp_SigBit;
 }
 
 void removeWindowFromSet(FrameworkWindow *window) {
+  if(firstWindow == window) {
+    firstWindow = NULL;
+  }
+
+  if(window->prev) {
+    window->prev->next = window->next;
+  }
+
+  if(window->next) {
+    window->next->prev = window->prev;
+  }
+
   sigMask &= ~(1L << window->intuitionWindow->UserPort->mp_SigBit);
-  /* TODO: actually remove the window from the set! */
 }
 
 void closeAllWindows(void) {

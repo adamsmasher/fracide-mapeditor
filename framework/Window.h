@@ -28,7 +28,9 @@ typedef struct FrameworkWindow_tag {
   BOOL closed;
 
   struct FrameworkWindow_tag *children;
+  /* These are managed by the windowset */
   struct FrameworkWindow_tag *next;
+  struct FrameworkWindow_tag *prev;
 } FrameworkWindow;
 
 void handleWindowEvents(FrameworkWindow*, long signalSet);
