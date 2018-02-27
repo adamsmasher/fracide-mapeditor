@@ -9,8 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* TODO: get rid of the menu.h in the main program */
-#include "framework/menu.h"
+#include "menu.h"
 #include "menubuild.h"
 #include "windowset.h"
 

@@ -25,11 +25,10 @@
 #include "currenttiles.h"
 #include "easystructs.h"
 #include "EntityBrowser.h"
+#include "globals.h"
 #include "map.h"
-#include "menu.h"
 #include "workspace.h"
 #include "TilesetRequester.h"
-#include "globals.h"
 
 #define MAP_EDITOR_WIDTH  536
 #define MAP_EDITOR_HEIGHT 384
@@ -105,6 +104,8 @@ static MenuSectionSpec *mapMenuSpec[] = {
   &closeSection,
   END_MENU
 };
+
+#define REVERT_MAP_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
 
 static MenuSpec mapEditorMenuSpec[] = {
   { "Map", &mapMenuSpec },

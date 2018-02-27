@@ -34,7 +34,6 @@
 #include "MapEditor.h"
 #include "mapeditorset.h"
 #include "MapRequester.h"
-#include "menu.h"
 #include "palette.h"
 #include "ProjectWindow.h"
 #include "SongNamesEditor.h"

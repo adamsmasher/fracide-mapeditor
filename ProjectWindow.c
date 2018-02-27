@@ -6,11 +6,27 @@
 
 #include <stdio.h>
 
+#include "framework/menubuild.h"
 #include "framework/screen.h"
 #include "framework/windowset.h"
 
+#include "entitiesmenu.h"
 #include "globals.h"
-#include "menu.h"
+#include "mapmenu.h"
+#include "musicmenu.h"
+#include "projectmenu.h"
+
+static MenuSpec mainMenuSpecData[] = {
+  { "Project",  &projectMenuSpec  },
+  { "Maps",     &mapMenuSpec      },
+  { "Entities", &entitiesMenuSpec },
+  { "Music",    &musicMenuSpec    },
+  END_MENUS
+};
+
+/* TODO: can we get rid of me? */
+static MenuSpec *mainMenuSpec = mainMenuSpecData;
+
 
 static FrameworkWindow *projectWindow = NULL;
 static struct Menu     *menu          = NULL;

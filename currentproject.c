@@ -15,7 +15,6 @@
 #include "easystructs.h"
 #include "globals.h"
 #include "mapeditorset.h"
-#include "menu.h"
 #include "ProjectWindow.h"
 
 #define PROJECT_FILENAME_LENGTH 256
@@ -179,6 +178,9 @@ void clearProject(void) {
     freeProject(&project);
     projectSaved = 1;
 }
+
+/* TODO: this shouldn't go here */
+#define REVERT_PROJECT_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
 
 void setProjectFilename(char *filename) {
   FrameworkWindow *window = getProjectWindow();
