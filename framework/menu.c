@@ -35,6 +35,11 @@ void invokeMenuHandler(FrameworkWindow *window, ULONG menuNumber) {
   UWORD menuNum = MENUNUM(menuNumber);
   UWORD itemNum = ITEMNUM(menuNumber);
 
+  /* if the user just right clicks without selecting anything this is what we get */
+  if(menuNum == 0x1F) {
+    goto done;
+  }
+
   if(!menuSpec) {
     fprintf(stderr, "invokeMenuHandler: attempted to invoke a menu handler on a window with no menu\n");
     goto error;
