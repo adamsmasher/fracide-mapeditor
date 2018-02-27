@@ -68,5 +68,17 @@ SongNamesEditor.o: SongNamesEditor.c SongNamesEditor.h
 
 EntityNamesEditor.o: EntityNamesEditor.c EntityNamesEditor.h
 
+framework/menu.o: framework/menu.c framework/menu.h framework/menubuild.h framework/window.h
+
+framework/menubuild.o: framework/menubuild.c framework/menubuild.h framework/screen.h
+
+framework/runstate.o: framework/runstate.c framework/runstate.h framework/window.h framework/windowset.h
+
+framework/screen.o: framework/screen.c framework/screen.h framework/window.h framework/windowset.h
+
+framework/Window.o: framework/window.c framework/window.h framework/menu.h framework/menubuild.h framework/windowset.h
+
+framework/windowset.o: framework/windowset.c framework/windowset.h framework/window.h
+
 clean:
     delete mapedit mapedit.lnk $(OBJS)
