@@ -16,17 +16,13 @@
 #include "musicmenu.h"
 #include "projectmenu.h"
 
-static MenuSpec mainMenuSpecData[] = {
+static MenuSpec mainMenuSpec[] = {
   { "Project",  &projectMenuSpec  },
   { "Maps",     &mapMenuSpec      },
   { "Entities", &entitiesMenuSpec },
   { "Music",    &musicMenuSpec    },
   END_MENUS
 };
-
-/* TODO: can we get rid of me? */
-static MenuSpec *mainMenuSpec = mainMenuSpecData;
-
 
 static FrameworkWindow *projectWindow = NULL;
 static struct Menu     *menu          = NULL;
