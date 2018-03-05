@@ -3,13 +3,6 @@
 
 #include "MapEditor.h"
 
-/* TODO: move all these project things into currentproject.h */
-void newProject(void);
-void openProject(void);
-void revertProject(void);
-void selectTilesetPackage(void);
-void quit(void);
-
 void refreshAllEntityBrowsers(void);
 
 void refreshAllSongDisplays(void);

@@ -29,6 +29,7 @@
 #define MAP_TILES_ACROSS 10
 #define MAP_TILES_HIGH    9
 
+/* TODO: some of these you get rid of, some move into MapEditorData */
 typedef struct MapEditorTag {
   struct MapEditorTag *next;
   struct MapEditorTag *prev;

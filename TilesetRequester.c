@@ -17,8 +17,9 @@
 #include "framework/screen.h"
 #include "framework/window.h"
 
-#include "currenttiles.h"
 #include "globals.h"
+#include "ProjectWindow.h"
+#include "TilesetPackage.h"
 
 #define TILESET_REQUESTER_WIDTH      200
 #define TILESET_REQUESTER_HEIGHT     336
@@ -28,6 +29,11 @@
 #define TILESET_LIST_HEIGHT_DELTA 26
 #define TILESET_LIST_TOP          20
 #define TILESET_LIST_LEFT         10
+
+typedef struct TilesetRequesterData_tag {
+  /* TODO: this should become a part of the FrameworkWindow */
+  FrameworkWindow *parent;
+} TilesetRequesterData;
 
 static WindowKind tilesetRequesterWindowKind = {
   {
@@ -81,9 +87,10 @@ static void createTilesetRequesterGadgets(TilesetRequester *tilesetRequester) {
 
     tilesetListNewGadget.ng_Height = height - TILESET_LIST_HEIGHT_DELTA;
     tilesetListNewGadget.ng_Width  = width  - TILESET_LIST_WIDTH_DELTA;
-    gad = CreateGadget(LISTVIEW_KIND, gad, &tilesetListNewGadget,
+    /* TODO: FIX ME */
+/*    gad = CreateGadget(LISTVIEW_KIND, gad, &tilesetListNewGadget,
         GTLV_Labels, &tilesetPackage->tilesetNames,
-        TAG_END);
+        TAG_END); */
     tilesetRequester->tilesetList = gad;
 
     if(gad) {
@@ -136,17 +143,20 @@ error:
 }
 
 void closeTilesetRequester(TilesetRequester *tilesetRequester) {
-  /* TODO: the framework should free the window and gadgets */
-    CloseWindow(tilesetRequester->window->intuitionWindow);
+  /* TODO: the framework should free the gadgets */
     FreeGadgets(tilesetRequester->gadgets);
     free(tilesetRequester->title);
     free(tilesetRequester);
 }
 
 void refreshTilesetRequesterList(TilesetRequester *tilesetRequester) {
-    GT_SetGadgetAttrs(tilesetRequester->tilesetList, tilesetRequester->window->intuitionWindow, NULL,
-        GTLV_Labels, &tilesetPackage->tilesetNames,
-        TAG_END);
+  TilesetRequesterData *data = tilesetRequester->window->data;
+  ProjectWindowData *parentData = data->parent->data;
+  TilesetPackage *tilesetPackage = parentData->tilesetPackage;
+
+  GT_SetGadgetAttrs(tilesetRequester->tilesetList, tilesetRequester->window->intuitionWindow, NULL,
+    GTLV_Labels, &tilesetPackage->tilesetNames,
+    TAG_END);
 }
 
 void resizeTilesetRequester(TilesetRequester *tilesetRequester) {

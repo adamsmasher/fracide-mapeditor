@@ -16,8 +16,6 @@
 #include "framework/runstate.h"
 #include "framework/windowset.h"
 
-#include "currentproject.h"
-#include "currenttiles.h"
 #include "easystructs.h"
 #include "globals.h"
 #include "project.h"
@@ -25,21 +23,6 @@
 #include "mapeditorset.h"
 #include "MapRequester.h"
 #include "ProjectWindow.h"
-
-static int ensureEverythingSaved(void) {
-    return ensureMapEditorsSaved() && ensureProjectSaved();
-}
-
-static void updateAllTileDisplays(void) {
-    MapEditor *i = mapEditorSetFirst();
-    while(i) {
-        if(i->tilesetRequester) {
-            refreshTilesetRequesterList(i->tilesetRequester);
-        }
-        mapEditorRefreshTileset(i);
-        i = i->next;
-    }
-}
 
 void refreshAllSongDisplays(void) {
     MapEditor *i = mapEditorSetFirst();
@@ -62,113 +45,6 @@ void refreshAllEntityBrowsers(void) {
     }
 }
 
-void openProject(void) {
-  struct FileRequester *request;
-  FrameworkWindow *window;
-
-  if(!ensureEverythingSaved()) {
-    goto done;
-  }
-
-  window = getProjectWindow();
-  if(!window) {
-    fprintf(stderr, "openProject: couldn't get project window\n");
-    goto error;
-  }
-
-  request = AllocAslRequestTags(ASL_FileRequest,
-    ASL_Hail, "Open Project",
-    ASL_Window, window->intuitionWindow,
-    TAG_END);
-  if(!request) {
-    goto done;
-  }
-
-  if(AslRequest(request, NULL)) {
-    openProjectFromAsl(request->rf_Dir, request->rf_File);
-  }
-
-  FreeAslRequest(request);
-done:
-  return;
-error:
-  return;
-}
-
-void newProject(void) {
-    if(ensureEverythingSaved()) {
-        clearProject();
-        initCurrentProject();
-        setProjectFilename(NULL);
-    }
-}
-
-static int confirmRevertProject(void) {
-  FrameworkWindow *window;
-
-  window = getProjectWindow();
-  if(!window) {
-    fprintf(stderr, "confirmRevertProject: couldn't get project window\n");
-    goto error;
-  }
-
-  return EasyRequest(
-    window->intuitionWindow,
-    &confirmRevertProjectEasyStruct,
-    NULL);
-
-  error:
-    return 0;
-}
-
-void revertProject(void) {
-  if(!confirmRevertProject()) {
-    goto done;
-  }
-
-  openProjectFromFile(getProjectFilename());
-
-done:
-  return;
-}
-
-void selectTilesetPackage(void) {
-  struct FileRequester *request;
-  FrameworkWindow *window = getProjectWindow();
-  if(!window) {
-    fprintf(stderr, "selectTilesetPackage: couldn't get project window\n");
-    goto error;
-  }
-
-  request = AllocAslRequestTags(ASL_FileRequest,
-    ASL_Hail, "Select Tileset Package",
-    ASL_Window, getProjectWindow(),
-    TAG_END);
-  if(!request) {
-    fprintf(stderr, "selectTilesetPackage: failed to allocate requester\n");
-    goto error;
-  }
-
-  if(AslRequest(request, NULL)) {
-    if(loadTilesetPackageFromAsl(request->rf_Dir, request->rf_File)) {
-      updateAllTileDisplays();
-    }
-  }
-
-  FreeAslRequest(request);
-
-done:
-  return;
-error:
-  return;
-}
-
-void quit(void) {
-  if(ensureEverythingSaved()) {
-    stopRunning();
-  }
-}
-
 void newMap(void) {
     MapEditor *mapEditor = newMapEditorNewMap();
     if(!mapEditor) {
@@ -180,73 +56,14 @@ void newMap(void) {
     /*addWindowToSet(mapEditor->window);*/
 }
 
-static int confirmCreateMap(int mapNum) {
-  FrameworkWindow *window = getProjectWindow();
-  if(!window) {
-    fprintf(stderr, "confirmCreateMap: couldn't get project window\n");
-    goto error;
-  }
-
-  return EasyRequest(
-    window->intuitionWindow,
-    &confirmCreateMapEasyStruct,
-    NULL,
-    mapNum);
-error:
-  return 0;
-}
-
-int openMapNum(int mapNum) {
-    MapEditor *mapEditor;
-
-    if(!currentProjectHasMap(mapNum)) {
-        if(!confirmCreateMap(mapNum)) {
-            return 0;
-        }
-
-        if(!currentProjectCreateMap(mapNum)) {
-            fprintf(stderr, "openMapNum: failed to create map\n");
-            return 0;
-        }
-    }
-
-    mapEditor = newMapEditorWithMap(currentProjectMap(mapNum), mapNum);
-    if(!mapEditor) {
-        fprintf(stderr, "openMapNum: failed to create new map editor\n");
-        return 0;
-    }
-
-    addToMapEditorSet(mapEditor);
-    /* TODO: fix me */
-    /* addWindowToSet(mapEditor->window); */
-    enableMapRevert(mapEditor);
-    return 1;
-}
-
-void openMap(void) {
-    MapEditor *mapEditor;
-
-    int selected = openMapRequester();
-    if(!selected) {
-        return;
-    }
-
-    mapEditor = findMapEditor(selected - 1);
-    if(mapEditor) {
-        WindowToFront(mapEditor->window->intuitionWindow);
-    } else {
-        openMapNum(selected - 1);
-    }
-}
-
 int saveMapAs(MapEditor *mapEditor) {
     int selected = saveMapRequester(mapEditor);
     if(!selected) {
         return 0;
     }
 
-    if(!currentProjectHasMap(selected - 1)) {
-        if(!currentProjectSaveNewMap(mapEditor->map, selected - 1)) {
+    if(1/* TODO: fix me: !currentProjectHasMap(selected - 1) */) {
+        if(0/* TODO: fix me: !currentProjectSaveNewMap(mapEditor->map, selected - 1) */) {
             fprintf(stderr, "saveMapAs: failed to save map\n");
             return 0;
         }
@@ -255,9 +72,10 @@ int saveMapAs(MapEditor *mapEditor) {
             mapEditor->window->intuitionWindow,
             &saveIntoFullSlotEasyStruct,
             NULL,
-            selected - 1, currentProjectGetMapName(selected - 1));
+            selected - 1, NULL /* FIXME currentProjectGetMapName(selected - 1) */);
         if(response) {
-            currentProjectOverwriteMap(mapEditor->map, selected - 1);
+            /* TODO: fix me */
+            /*currentProjectOverwriteMap(mapEditor->map, selected - 1);*/
         } else {
             return 0;
         }
@@ -268,7 +86,8 @@ int saveMapAs(MapEditor *mapEditor) {
 
     mapEditorSetSaveStatus(mapEditor, SAVED);
 
-    updateCurrentProjectMapName(selected - 1, mapEditor->map);
+    /* TODO: fix me */
+    /* updateCurrentProjectMapName(selected - 1, mapEditor->map); */
 
     return 1;
 }
@@ -277,9 +96,11 @@ int saveMap(MapEditor *mapEditor) {
     if(!mapEditor->mapNum) {
         return saveMapAs(mapEditor);
     } else {
-        currentProjectOverwriteMap(mapEditor->map, mapEditor->mapNum - 1);
+        /* TODO: fix me */
+        /* currentProjectOverwriteMap(mapEditor->map, mapEditor->mapNum - 1); */
         /* TODO: this is what sets the saved status, but that feels fragile */
-        updateCurrentProjectMapName(mapEditor->mapNum - 1, mapEditor->map);
+        /* TODO: fix me */
+        /* updateCurrentProjectMapName(mapEditor->mapNum - 1, mapEditor->map);*/
         mapEditorSetSaveStatus(mapEditor, SAVED);
         return 1;
     }

@@ -18,7 +18,6 @@
 #include "framework/screen.h"
 #include "framework/window.h"
 
-#include "currentproject.h"
 #include "globals.h"
 
 #define ENTITY_REQUESTER_WIDTH      200

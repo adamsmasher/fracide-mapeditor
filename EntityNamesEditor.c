@@ -10,7 +10,6 @@
 
 #include "framework/windowset.h"
 
-#include "currentproject.h"
 #include "EntityRequester.h"
 #include "globals.h"
 #include "workspace.h"

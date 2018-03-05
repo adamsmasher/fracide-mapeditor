@@ -21,14 +21,18 @@
 #include "framework/menubuild.h"
 #include "framework/screen.h"
 
-#include "currentproject.h"
-#include "currenttiles.h"
 #include "easystructs.h"
 #include "EntityBrowser.h"
 #include "globals.h"
 #include "map.h"
 #include "workspace.h"
+#include "ProjectWindow.h"
+#include "TilesetPackage.h"
 #include "TilesetRequester.h"
+
+typedef struct MapEditorData_tag {
+  FrameworkWindow *parent;
+} MapEditorData;
 
 #define MAP_EDITOR_WIDTH  536
 #define MAP_EDITOR_HEIGHT 384
@@ -683,7 +687,11 @@ static void drawEntities(MapEditor *mapEditor) {
   }
 }
 
-void mapEditorSetTilesetUpdateUI(MapEditor *mapEditor, UWORD tilesetNumber) {
+static void mapEditorSetTilesetUpdateUI(MapEditor *mapEditor, UWORD tilesetNumber) {
+  MapEditorData *data = mapEditor->window->data;
+  ProjectWindowData *parentData = data->parent->data;
+  TilesetPackage *tilesetPackage = parentData->tilesetPackage;
+
   GT_SetGadgetAttrs(mapEditor->tilesetNameGadget, mapEditor->window->intuitionWindow, NULL,
     GTTX_Text, tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber],
     TAG_END);
@@ -742,6 +750,10 @@ void mapEditorSetSaveStatus(MapEditor *mapEditor, int status) {
 }
 
 void mapEditorRefreshTileset(MapEditor *mapEditor) {
+  MapEditorData *data = mapEditor->window->data;
+  ProjectWindowData *parentData = data->parent->data;
+  TilesetPackage *tilesetPackage = parentData->tilesetPackage;
+
   if(mapEditor->map->tilesetNum) {
     if(mapEditor->map->tilesetNum - 1 < tilesetPackage->tilesetPackageFile.tilesetCnt) {
        mapEditorSetTilesetUpdateUI(mapEditor, mapEditor->map->tilesetNum - 1);
@@ -1117,6 +1129,9 @@ static void openNewEntityBrowser(MapEditor *mapEditor) {
 static void handleChooseTilesetClicked(MapEditor *mapEditor) {
   TilesetRequester *tilesetRequester;
   char title[32];
+  MapEditorData *data = mapEditor->window->data;
+  ProjectWindowData *parentData = data->parent->data;
+  TilesetPackage *tilesetPackage = parentData->tilesetPackage;
 
   if(mapEditor->tilesetRequester) {
     WindowToFront(mapEditor->tilesetRequester->window->intuitionWindow);
@@ -1130,7 +1145,7 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
       NULL);
 
     if(choice) {
-      selectTilesetPackage();
+      selectTilesetPackage(data->parent);
     }
   }
 

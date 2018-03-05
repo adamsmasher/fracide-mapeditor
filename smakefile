@@ -12,7 +12,7 @@ MENU_HEADERS= projectmenu.h mapmenu.h entitiesmenu.h musicmenu.h
 DATA_OBJS=    easystructs.o
 DATA_HEADERS= easystructs.h
 
-OTHER_OBJS= globals.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o workspace.o currentproject.o currenttiles.o mapeditorset.o
+OTHER_OBJS= globals.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o workspace.o mapeditorset.o
 WINDOW_OBJS= ProjectWindow.o SongNamesEditor.o EntityNamesEditor.o
 
 OBJS= $(FRAMEWORK_OBJS) $(MENU_OBJS) $(DATA_OBJS) $(OTHER_OBJS) $(WINDOW_OBJS)
@@ -54,15 +54,11 @@ musicmenu.o: musicmenu.c musicmenu.h workspace.h
 
 workspace.o: workspace.c workspace.h
 
-currentproject.o: currentproject.c currentproject.h
-
-currenttiles.o: currenttiles.c currenttiles.h
-
 easystructs.o: easystructs.c easystructs.h
 
 mapeditorset.o: mapeditorset.c mapeditorset.h
 
-ProjectWindow.o: ProjectWindow.c ProjectWindow.h framework/Window.h framework/menubuild.h framework/screen.h
+ProjectWindow.o: ProjectWindow.c ProjectWindow.h framework/Window.h framework/menubuild.h framework/screen.h easystructs.h MapEditor.h Project.h TilesetPackage.h
 
 SongNamesEditor.o: SongNamesEditor.c SongNamesEditor.h
 

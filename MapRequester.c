@@ -18,7 +18,6 @@
 #include "framework/screen.h"
 #include "framework/window.h"
 
-#include "currentproject.h"
 #include "globals.h"
 #include "ProjectWindow.h"
 

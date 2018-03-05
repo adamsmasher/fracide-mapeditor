@@ -24,8 +24,6 @@
 #include "framework/screen.h"
 #include "framework/windowset.h"
 
-#include "currentproject.h"
-#include "currenttiles.h"
 #include "easystructs.h"
 #include "EntityBrowser.h"
 #include "EntityNamesEditor.h"
@@ -346,18 +344,12 @@ int main(void) {
     goto closeScreen;
   }
     
-  initCurrentProject();
-
   runMainLoop();
     
   retCode = 0;
 
   /* TODO: maybe this should happen automatically? */
   closeAllWindows();
-freeTilesetPackage:
-  freeTilesetPackage(tilesetPackage);
-freeProject:
-  freeCurrentProject();
 closeScreen:
   closeGlobalScreen();
 done:
