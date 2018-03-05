@@ -13,8 +13,8 @@ static MenuSectionSpec openSection =
   END_SECTION };
 
 static MenuSectionSpec saveSection =
-  { { "Save",       "S",         MENU_ITEM_ENABLED,  saveProject   },
-    { "Save As...", "A",         MENU_ITEM_ENABLED,  saveProjectAs },
+  { { "Save",       "S",         MENU_ITEM_ENABLED,  (Handler)saveProject   },
+    { "Save As...", "A",         MENU_ITEM_ENABLED,  (Handler)saveProjectAs },
     { "Revert",     NO_SHORTKEY, MENU_ITEM_DISABLED, revertProject },
   END_SECTION };
 
