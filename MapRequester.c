@@ -20,6 +20,7 @@
 
 #include "globals.h"
 #include "ProjectWindow.h"
+#include "ProjectWindowData.h"
 
 #define MAP_REQUESTER_WIDTH      240
 #define MAP_REQUESTER_HEIGHT     336
@@ -112,6 +113,7 @@ typedef struct MapRequester_tag {
 
 static void createMapRequesterGadgets(MapRequester *mapRequester) {
     struct Gadget *gad;
+    ProjectWindowData *projectData = NULL; /* TODO: fix me */
     int height = mapRequester->window ? mapRequester->window->intuitionWindow->Height : MAP_REQUESTER_HEIGHT;
     int width  = mapRequester->window ? mapRequester->window->intuitionWindow->Width  : MAP_REQUESTER_WIDTH;
     mapRequester->gadgets = NULL;
@@ -121,7 +123,7 @@ static void createMapRequesterGadgets(MapRequester *mapRequester) {
     mapListNewGadget.ng_Width  = width  - MAP_LIST_WIDTH_DELTA;
     mapListNewGadget.ng_Height = height - MAP_LIST_HEIGHT_DELTA;
     gad = CreateGadget(LISTVIEW_KIND, gad, &mapListNewGadget,
-        GTLV_Labels, currentProjectGetMapNames(),
+        GTLV_Labels, projectDataGetMapNames(projectData),
         GTLV_ShowSelected, NULL,
         TAG_END);
 

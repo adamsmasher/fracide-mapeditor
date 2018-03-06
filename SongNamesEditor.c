@@ -10,15 +10,17 @@
 
 #include "framework/windowset.h"
 
-#include "globals.h"
 #include "SongRequester.h"
+#include "ProjectWindowData.h"
 #include "workspace.h"
 
 SongRequester *songNamesEditor = NULL;
 
 static void songNamesEditorSelectSong(int songNum) {
+  ProjectWindowData *projectData = NULL; /* TODO: fix me */
+
   GT_SetGadgetAttrs(songNamesEditor->songNameGadget, songNamesEditor->window->intuitionWindow, NULL,
-    GTST_String, currentProjectGetSongName(songNum),
+    GTST_String, projectDataGetSongName(projectData, songNum),
     GA_Disabled, FALSE,
     TAG_END);
 
@@ -26,10 +28,12 @@ static void songNamesEditorSelectSong(int songNum) {
 }
 
 static void songNamesEditorUpdateSelectedSong(void) {
+  ProjectWindowData *projectData = NULL; /* TODO: fix me */
+
   int selected = songNamesEditor->selected - 1;
 
   char *name = ((struct StringInfo*)songNamesEditor->songNameGadget->SpecialInfo)->Buffer;
-  updateCurrentProjectSongName(selected, name);
+  projectDataUpdateSongName(projectData, selected, name);
 
   GT_RefreshWindow(songNamesEditor->window->intuitionWindow, NULL);
 

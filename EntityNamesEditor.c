@@ -11,40 +11,43 @@
 #include "framework/windowset.h"
 
 #include "EntityRequester.h"
-#include "globals.h"
+#include "ProjectWindowData.h"
 #include "workspace.h"
 
+/* TODO help i'm duplicated everywhere */
 static int listItemStart(int selected) {
-    if(selected < 10) {
-        return 2;
-    } else if(selected < 100) {
-        return 3;
-    } else {
-        return 4;
-    }
+  if(selected < 10) {
+    return 2;
+  } else if(selected < 100) {
+    return 3;
+  } else {
+    return 4;
+  }
 }
 
 static EntityRequester *entityNamesEditor = NULL;
 
 static void handleEntityNamesEditorSelectEntity(struct IntuiMessage *msg) {
-    int selected = msg->Code;
+  ProjectWindowData *projectData = NULL; /* TODO fix me */
+  int selected = msg->Code;
 
-    GT_SetGadgetAttrs(entityNamesEditor->entityNameGadget, entityNamesEditor->window->intuitionWindow, NULL,
-       GTST_String, currentProjectGetEntityName(selected),
-       GA_Disabled, FALSE,
-       TAG_END);
+  GT_SetGadgetAttrs(entityNamesEditor->entityNameGadget, entityNamesEditor->window->intuitionWindow, NULL,
+    GTST_String, projectDataGetEntityName(projectData, selected),
+    GA_Disabled, FALSE,
+    TAG_END);
 
-    entityNamesEditor->selected = selected + 1;
+  entityNamesEditor->selected = selected + 1;
 }
 
 static void handleEntityNamesEditorUpdateEntity(struct IntuiMessage *msg) {
-    int selected = entityNamesEditor->selected - 1;
-    char *name = ((struct StringInfo*)entityNamesEditor->entityNameGadget->SpecialInfo)->Buffer;
+  ProjectWindowData *projectData = NULL; /* TODO: fix me */
+  int selected = entityNamesEditor->selected - 1;
+  char *name = ((struct StringInfo*)entityNamesEditor->entityNameGadget->SpecialInfo)->Buffer;
 
-    updateCurrentProjectEntityName(selected, name);
+  projectDataUpdateEntityName(projectData, selected, name);
 
-    GT_RefreshWindow(entityNamesEditor->window->intuitionWindow, NULL);
-    refreshAllEntityBrowsers();
+  GT_RefreshWindow(entityNamesEditor->window->intuitionWindow, NULL);
+  refreshAllEntityBrowsers();
 }
 
 static void handleEntityNamesEditorGadgetUp(struct IntuiMessage *msg) {

@@ -27,6 +27,7 @@
 #include "map.h"
 #include "workspace.h"
 #include "ProjectWindow.h"
+#include "ProjectWindowData.h"
 #include "TilesetPackage.h"
 #include "TilesetRequester.h"
 
@@ -690,7 +691,7 @@ static void drawEntities(MapEditor *mapEditor) {
 static void mapEditorSetTilesetUpdateUI(MapEditor *mapEditor, UWORD tilesetNumber) {
   MapEditorData *data = mapEditor->window->data;
   ProjectWindowData *parentData = data->parent->data;
-  TilesetPackage *tilesetPackage = parentData->tilesetPackage;
+  TilesetPackage *tilesetPackage = NULL /* TODO: fix me parentData->tilesetPackage */;
 
   GT_SetGadgetAttrs(mapEditor->tilesetNameGadget, mapEditor->window->intuitionWindow, NULL,
     GTTX_Text, tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber],
@@ -752,7 +753,7 @@ void mapEditorSetSaveStatus(MapEditor *mapEditor, int status) {
 void mapEditorRefreshTileset(MapEditor *mapEditor) {
   MapEditorData *data = mapEditor->window->data;
   ProjectWindowData *parentData = data->parent->data;
-  TilesetPackage *tilesetPackage = parentData->tilesetPackage;
+  TilesetPackage *tilesetPackage = NULL/* TODO: fix me parentData->tilesetPackage */;
 
   if(mapEditor->map->tilesetNum) {
     if(mapEditor->map->tilesetNum - 1 < tilesetPackage->tilesetPackageFile.tilesetCnt) {
@@ -774,8 +775,9 @@ void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
 }
 
 static void mapEditorSetSongUpdateUI(MapEditor *mapEditor, UWORD songNumber) {
+  MapEditorData *data = mapEditor->window->data;
   GT_SetGadgetAttrs(mapEditor->songNameGadget, mapEditor->window->intuitionWindow, NULL,
-    GTTX_Text, currentProjectGetSongName(songNumber),
+    GTTX_Text, projectDataGetSongName(data->parent->data, songNumber),
     TAG_END);
 }
 
@@ -1131,7 +1133,7 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
   char title[32];
   MapEditorData *data = mapEditor->window->data;
   ProjectWindowData *parentData = data->parent->data;
-  TilesetPackage *tilesetPackage = parentData->tilesetPackage;
+  TilesetPackage *tilesetPackage = NULL /* TODO: fix me parentData->tilesetPackage */;
 
   if(mapEditor->tilesetRequester) {
     WindowToFront(mapEditor->tilesetRequester->window->intuitionWindow);

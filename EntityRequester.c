@@ -19,6 +19,7 @@
 #include "framework/window.h"
 
 #include "globals.h"
+#include "ProjectWindowData.h"
 
 #define ENTITY_REQUESTER_WIDTH      200
 #define ENTITY_REQUESTER_HEIGHT     336
@@ -91,6 +92,7 @@ static void initEntityRequesterVi(void) {
 static void createEntityRequesterGadgets(EntityRequester *entityRequester) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
+    ProjectWindowData *projectData = NULL; /* TODO: fix me */
     int height = entityRequester->window ? entityRequester->window->intuitionWindow->Height : ENTITY_REQUESTER_HEIGHT;
     int width  = entityRequester->window ? entityRequester->window->intuitionWindow->Width  : ENTITY_REQUESTER_WIDTH;
 
@@ -111,7 +113,7 @@ static void createEntityRequesterGadgets(EntityRequester *entityRequester) {
     entityListNewGadget.ng_Width  = width  - ENTITY_LIST_WIDTH_DELTA;
     gad = CreateGadget(LISTVIEW_KIND, gad, &entityListNewGadget,
         GTLV_ShowSelected, entityRequester->entityNameGadget,
-        GTLV_Labels, currentProjectGetEntityNames(),
+        GTLV_Labels, projectDataGetEntityNames(projectData),
         TAG_END);
 
     if(gad) {

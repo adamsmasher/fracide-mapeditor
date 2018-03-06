@@ -19,6 +19,7 @@
 #include "framework/window.h"
 
 #include "globals.h"
+#include "ProjectWindowData.h"
 
 #define SONG_REQUESTER_WIDTH      200
 #define SONG_REQUESTER_HEIGHT     336
@@ -91,6 +92,7 @@ static void initSongRequesterVi(void) {
 static void createSongRequesterGadgets(SongRequester *songRequester) {
     struct Gadget *gad;
     struct Gadget *glist = NULL;
+    ProjectWindowData *projectData = NULL; /* TODO: fix me */
     int height = songRequester->window ? songRequester->window->intuitionWindow->Height : SONG_REQUESTER_HEIGHT;
     int width  = songRequester->window ? songRequester->window->intuitionWindow->Width  : SONG_REQUESTER_WIDTH;
 
@@ -111,7 +113,7 @@ static void createSongRequesterGadgets(SongRequester *songRequester) {
     songListNewGadget.ng_Width  = width  - SONG_LIST_WIDTH_DELTA;
     gad = CreateGadget(LISTVIEW_KIND, gad, &songListNewGadget,
         GTLV_ShowSelected, songRequester->songNameGadget,
-        GTLV_Labels, currentProjectGetSongNames(),
+        GTLV_Labels, projectDataGetSongNames(projectData),
         TAG_END);
 
     if(gad) {

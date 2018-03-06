@@ -19,6 +19,7 @@
 
 #include "globals.h"
 #include "ProjectWindow.h"
+#include "ProjectWindowData.h"
 #include "TilesetPackage.h"
 
 #define TILESET_REQUESTER_WIDTH      200
@@ -152,7 +153,7 @@ void closeTilesetRequester(TilesetRequester *tilesetRequester) {
 void refreshTilesetRequesterList(TilesetRequester *tilesetRequester) {
   TilesetRequesterData *data = tilesetRequester->window->data;
   ProjectWindowData *parentData = data->parent->data;
-  TilesetPackage *tilesetPackage = parentData->tilesetPackage;
+  TilesetPackage *tilesetPackage = NULL; /* TODO: fix me parentData->tilesetPackage;*/
 
   GT_SetGadgetAttrs(tilesetRequester->tilesetList, tilesetRequester->window->intuitionWindow, NULL,
     GTLV_Labels, &tilesetPackage->tilesetNames,

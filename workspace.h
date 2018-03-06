@@ -9,8 +9,6 @@ void refreshAllSongDisplays(void);
 
 /* TODO: put me...somewhere, too, maybe */
 void newMap(void);
-void openMap(void);
-int openMapNum(int);
 int saveMap(MapEditor*);
 int saveMapAs(MapEditor*);
 

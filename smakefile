@@ -14,8 +14,9 @@ DATA_HEADERS= easystructs.h
 
 OTHER_OBJS= globals.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o workspace.o mapeditorset.o
 WINDOW_OBJS= ProjectWindow.o SongNamesEditor.o EntityNamesEditor.o
+WINDOW_DATA_OBJS= ProjectWindowData.o
 
-OBJS= $(FRAMEWORK_OBJS) $(MENU_OBJS) $(DATA_OBJS) $(OTHER_OBJS) $(WINDOW_OBJS)
+OBJS= $(FRAMEWORK_OBJS) $(MENU_OBJS) $(DATA_OBJS) $(OTHER_OBJS) $(WINDOW_OBJS) $(WINDOW_DATA_OBJS)
 
 mapedit: $(OBJS)
    sc link to mapedit with <<
@@ -58,7 +59,9 @@ easystructs.o: easystructs.c easystructs.h
 
 mapeditorset.o: mapeditorset.c mapeditorset.h
 
-ProjectWindow.o: ProjectWindow.c ProjectWindow.h framework/Window.h framework/menubuild.h framework/screen.h easystructs.h MapEditor.h Project.h TilesetPackage.h
+ProjectWindow.o: ProjectWindow.c ProjectWindow.h ProjectWindowData.h framework/Window.h framework/menubuild.h framework/screen.h easystructs.h MapEditor.h Project.h
+
+ProjectWindowData.o: ProjectWindowData.c ProjectWindowData.h Map.h Project.h TilesetPackage.h
 
 SongNamesEditor.o: SongNamesEditor.c SongNamesEditor.h
 

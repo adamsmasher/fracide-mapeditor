@@ -19,7 +19,9 @@
 #include "MapEditor.h"
 #include "mapmenu.h"
 #include "musicmenu.h"
+#include "Project.h"
 #include "projectmenu.h"
+#include "ProjectWindowData.h"
 
 static MenuSpec mainMenuSpec[] = {
   { "Project",  &projectMenuSpec  },
@@ -34,10 +36,8 @@ static MenuSpec mainMenuSpec[] = {
 static FrameworkWindow *projectWindow = NULL;
 static struct Menu     *menu          = NULL;
 
-static void onClose(FrameworkWindow *window) {
-  ProjectWindowData *data = window->data;
-  freeProject(&data->project);
-  free(data);
+static void onClose(FrameworkWindow *projectWindow) {
+  freeProjectData(projectWindow->data);
 }
 
 static WindowKind projectWindowKind = {
@@ -83,7 +83,7 @@ BOOL openProjectWindow(void) {
 
   makeWindowFullScreen();
 
-  data = malloc(sizeof(ProjectWindowData));
+  data = createProjectData();
   if(!data) {
     fprintf(stderr, "openProjectWindow: failed to allocate data\n");
     goto error;
@@ -95,10 +95,6 @@ BOOL openProjectWindow(void) {
     goto error_freeData;
   }
 
-  initProject(&data->project);
-  data->projectSaved = TRUE;
-  data->projectFilename[0] = '\0';
-
   projectWindow->data = data;
 
   ActivateWindow(projectWindow->intuitionWindow);
@@ -106,11 +102,12 @@ BOOL openProjectWindow(void) {
   return TRUE;
 
 error_freeData:
-  free(data);
+  freeProjectData(data);
 error:
   return FALSE;
 }
 
+/* TODO: do we need to exist? */
 void closeProjectWindow(void) {
   if(!projectWindow) {
     fprintf(stderr, "closeProjectWindow: projectWindow not yet opened!\n");
@@ -123,20 +120,16 @@ void closeProjectWindow(void) {
 }
 
 static void setProjectFilename(FrameworkWindow *projectWindow, char *filename) {
-  ProjectWindowData *data = projectWindow->data;
+  setProjectDataFilename(projectWindow->data, filename);
+  OnMenu(projectWindow->intuitionWindow, REVERT_PROJECT_MENU_ITEM);
+}
 
-  /* TODO: honestly these OnMenu/OffMenu things could probably be made into functions elsewhere */
-  if(filename) {
-    strcpy(data->projectFilename, filename);
-    OnMenu(projectWindow->intuitionWindow, REVERT_PROJECT_MENU_ITEM);
-  } else {
-    data->projectFilename[0] = '\0';
-    OffMenu(projectWindow->intuitionWindow, REVERT_PROJECT_MENU_ITEM);
-  }
+static void clearProjectFilename(FrameworkWindow *projectWindow) {
+  clearProjectDataFilename(projectWindow->data);
+  OffMenu(projectWindow->intuitionWindow, REVERT_PROJECT_MENU_ITEM);
 }
 
 static BOOL saveProjectToAsl(FrameworkWindow *projectWindow, char *dir, char *file) {
-  ProjectWindowData *data = projectWindow->data;
   size_t bufferLen = strlen(dir) + strlen(file) + 2;
   char *buffer = malloc(bufferLen);
 
@@ -162,7 +155,7 @@ static BOOL saveProjectToAsl(FrameworkWindow *projectWindow, char *dir, char *fi
     goto error_freeBuffer;
   }
 
-  if(!saveProjectToFile(&data->project, buffer)) {
+  if(!projectDataSaveProjectToFile(projectWindow->data, buffer)) {
     EasyRequest(
       projectWindow->intuitionWindow,
       &projectSaveFailEasyStruct,
@@ -171,8 +164,6 @@ static BOOL saveProjectToAsl(FrameworkWindow *projectWindow, char *dir, char *fi
     goto error_freeBuffer;
   }
   setProjectFilename(projectWindow, buffer);
-
-  data->projectSaved = TRUE;
 
 freeBuffer:
   free(buffer);
@@ -213,21 +204,23 @@ error:
 
 BOOL saveProject(FrameworkWindow *projectWindow) {
   ProjectWindowData *data = projectWindow->data;
+  char *filename = projectDataGetFilename(data);
 
-  if(data->projectFilename[0]) {
-    if(!saveProjectToFile(&data->project, data->projectFilename)) {
+  if(filename) {
+    if(!projectDataSaveProjectToFile(data, filename)) {
       EasyRequest(
         projectWindow->intuitionWindow,
         &projectSaveFailEasyStruct,
         NULL,
-        data->projectFilename);
+        filename);
       goto error;
-    } else {
-      return TRUE;
     }
   } else {
     return saveProjectAs(projectWindow);
   }
+
+done:
+  return TRUE;
 
 error:
   return FALSE;
@@ -249,111 +242,92 @@ static BOOL unsavedProjectAlert(FrameworkWindow *projectWindow) {
       fprintf(stderr, "unsavedProjectAlert: unknown response %d\n", response);
       goto error;
   }
-  
+
 error:
   return FALSE;
 }
 
 static BOOL ensureProjectSaved(FrameworkWindow *projectWindow) {
-  ProjectWindowData *data = projectWindow->data;
-  return (BOOL)(data->projectSaved || unsavedProjectAlert(projectWindow));
+  return (BOOL)(projectDataIsSaved(projectWindow->data) || unsavedProjectAlert(projectWindow));
 }
 
-/* TODO: maybe even just make this take data? */
-/* Note that this doesn't INIT the project, in case you're going
-   to load a project in, for example */
-static void clearProject(FrameworkWindow *projectWindow) {
-  ProjectWindowData *data = projectWindow->data;
-
-  closeAllMapEditors();
-  freeTilesetPackage(data->tilesetPackage);
-  data->tilesetPackage = NULL;
-  freeProject(&data->project);
-  data->projectSaved = TRUE;
+static BOOL ensureEverythingSaved(FrameworkWindow *projectWindow) {
+  return (BOOL)(ensureMapEditorsSaved() && ensureProjectSaved(projectWindow));
 }
 
-static void openProjectFromFile(char *file) {
-  Project *myNewProject;
-  ProjectWindowData *data;
-
-  FrameworkWindow *window = getProjectWindow();
-  if(!window) {
-    fprintf(stderr, "openProjectFromFile: couldn't get project window\n");
-    goto error;
-  }
-
-  data = window->data;
-
-  myNewProject = malloc(sizeof(Project));
-  if(!myNewProject) {
-    fprintf(stderr, "openProjectFromFile: failed to allocate project\n");
-    goto error;
-  }
-
-  if(!loadProjectFromFile(file, myNewProject)) {
+static BOOL loadTilesetPackageFromFile(FrameworkWindow *projectWindow, char *filename) {
+  if(!projectDataLoadTilesetPackage(projectWindow->data, filename)) {
     EasyRequest(
-      window->intuitionWindow,
-      &projectLoadFailEasyStruct,
-      NULL,
-      file);
-    goto freeProject;
-  }
-
-  clearProject(projectWindow);
-  copyProject(myNewProject, &data->project);
-  setProjectFilename(projectWindow, file);
-
-  if(*data->project.tilesetPackagePath && !loadTilesetPackageFromFile(data->project.tilesetPackagePath)) {
-    EasyRequest(
-      window->intuitionWindow,
+      projectWindow->intuitionWindow,
       &tilesetPackageLoadFailEasyStruct,
       NULL,
-      data->project.tilesetPackagePath);
+      filename);
+    goto error;
+  }
 
-      /* because the tileset will now be empty, we've changed from the
-         saved version */
-      data->projectSaved = FALSE;
-      goto error_freeProject;
-    }
+done:
+  return TRUE;
 
-freeProject:
-    free(myNewProject);
+error:
+  return FALSE;
+}
+
+static void openProjectFromFile(FrameworkWindow *projectWindow, char *filename) {
+  switch(projectDataLoadProjectFromFile(projectWindow->data, filename)) {
+    case PROJECT_LOAD_OK:
+      break;
+    case PROJECT_LOAD_OK_TILESET_ERROR:
+      EasyRequest(
+        projectWindow->intuitionWindow,
+        &tilesetPackageLoadFailEasyStruct,
+        NULL,
+        projectDataGetTilesetPath(projectWindow->data));
+      break;
+    case PROJECT_LOAD_ERROR:
+      EasyRequest(
+        projectWindow->intuitionWindow,
+        &projectLoadFailEasyStruct,
+        NULL,
+        filename);
+      goto error;
+  }
+
+  setProjectFilename(projectWindow, filename);
+
 done:
     return;
 
-error_freeProject:
-    free(myNewProject);
 error:
     return;
 }
 
-static void openProjectFromAsl(char *dir, char *file) {
-    size_t bufferLen = strlen(dir) + strlen(file) + 2;
-    char *buffer = malloc(bufferLen);
+static void openProjectFromAsl(FrameworkWindow *projectWindow, char *dir, char *file) {
+  size_t bufferLen = strlen(dir) + strlen(file) + 2;
+  char *buffer = malloc(bufferLen);
 
-    if(!buffer) {
-        fprintf(
-            stderr,
-            "openProjectFromAsl: failed to allocate buffer "
-            "(dir: %s) (file: %s)\n",
-            dir  ? dir  : "NULL",
-            file ? file : "NULL");
-        goto done;
-    }
+  if(!buffer) {
+    fprintf(
+      stderr,
+      "openProjectFromAsl: failed to allocate buffer "
+      "(dir: %s) (file: %s)\n",
+      dir  ? dir  : "NULL",
+      file ? file : "NULL");
+    goto done;
+  }
 
-    strcpy(buffer, dir);
-    if(!AddPart(buffer, file, (ULONG)bufferLen)) {
-        fprintf(
-            stderr,
-            "openProjectFromAsl: failed to add part "
-            "(buffer: %s) (file: %s) (len: %d)\n",
-            buffer ? buffer : "NULL",
-            file   ? file   : "NULL",
-            bufferLen);
-        goto freeBuffer;
-    }
+  strcpy(buffer, dir);
+  if(!AddPart(buffer, file, (ULONG)bufferLen)) {
+    fprintf(
+      stderr,
+      "openProjectFromAsl: failed to add part "
+      "(buffer: %s) (file: %s) (len: %d)\n",
+      buffer ? buffer : "NULL",
+      file   ? file   : "NULL",
+      bufferLen);
+    goto freeBuffer;
+  }
 
-    openProjectFromFile(buffer);
+  openProjectFromFile(projectWindow, buffer);
 
 freeBuffer:
     free(buffer);
@@ -361,17 +335,10 @@ done:
     return;
 }
 
-static BOOL ensureEverythingSaved(FrameworkWindow *projectWindow) {
-  return (BOOL)(ensureMapEditorsSaved() && ensureProjectSaved(projectWindow));
-}
-
 void newProject(FrameworkWindow *projectWindow) {
-  ProjectWindowData *data = projectWindow->data;
-
   if(ensureEverythingSaved(projectWindow)) {
-    clearProject(projectWindow);
-    initProject(&data->project);
-    setProjectFilename(projectWindow, NULL);
+    projectDataInitProject(projectWindow->data);
+    clearProjectFilename(projectWindow);
   }
 }
 
@@ -391,7 +358,7 @@ void openProject(FrameworkWindow *projectWindow) {
   }
 
   if(AslRequest(request, NULL)) {
-    openProjectFromAsl(request->rf_Dir, request->rf_File);
+    openProjectFromAsl(projectWindow, request->rf_Dir, request->rf_File);
   }
 
   FreeAslRequest(request);
@@ -408,16 +375,12 @@ static int confirmRevertProject(FrameworkWindow *projectWindow) {
     NULL);
 }
 
-static char *getProjectFilename(ProjectWindowData *data) {
-  return data->projectFilename;
-}
-
 void revertProject(FrameworkWindow *projectWindow) {
   if(!confirmRevertProject(projectWindow)) {
     goto done;
   }
 
-  openProjectFromFile(getProjectFilename(projectWindow->data));
+  openProjectFromFile(projectWindow, projectDataGetFilename(projectWindow->data));
 
 done:
   return;
@@ -433,6 +396,26 @@ static void updateAllTileDisplays(void) {
     i = i->next;
   } */
 /* TODO: fix me */
+}
+
+static BOOL loadTilesetPackageFromAsl(char *dir, char *file) {
+  char buffer[TILESET_PACKAGE_PATH_SIZE];
+
+  if(strlen(dir) >= sizeof(buffer)) {
+    fprintf(stderr, "loadTilesetPackageFromAsl: dir %s file %s doesn't fit in buffer\n", dir, file);
+    goto error;
+  }
+
+  strcpy(buffer, dir);
+  if(!AddPart(buffer, file, TILESET_PACKAGE_PATH_SIZE)) {
+    fprintf(stderr, "loadTilesetPackageFromAsl: dir %s file %s doesn't fit in buffer\n", dir, file);
+    goto error;
+  }
+
+  return loadTilesetPackageFromFile(projectWindow, buffer);
+
+error:
+  return FALSE;
 }
 
 void selectTilesetPackage(FrameworkWindow *projectWindow) {
@@ -465,31 +448,9 @@ void quit(FrameworkWindow *projectWindow) {
   }
 }
 
-/* TODO: just send in data? */
-static void setTilesetPackagePath(FrameworkWindow *projectWindow, char *file) {
-  ProjectWindowData *data = projectWindow->data;
-
-  strcpy(data->project.tilesetPackagePath, file);
-  data->projectSaved = FALSE;
-}
-
-/* TODO: just pass in data? */
-static BOOL createMap(FrameworkWindow *projectWindow, int mapNum) {
-  ProjectWindowData *data = projectWindow->data;
-
-  data->project.maps[mapNum] = allocMap();
-  if(!data->project.maps[mapNum]) {
-    fprintf(stderr, "createMap: failed to allocate new map\n");
-    return FALSE;
-  }
-  data->project.mapCnt++;
-  data->projectSaved = FALSE;
-  return TRUE;
-}
-
 /* TODO: this is weird */
 /* TODO: just pass in data? */
-static BOOL currentProjectSaveNewMap(FrameworkWindow *projectWindow, Map *map, int mapNum) {
+/* static BOOL currentProjectSaveNewMap(FrameworkWindow *projectWindow, Map *map, int mapNum) {
   ProjectWindowData *data = projectWindow->data;
 
   Map *mapCopy = copyMap(map);
@@ -500,233 +461,20 @@ static BOOL currentProjectSaveNewMap(FrameworkWindow *projectWindow, Map *map, i
   data->project.mapCnt++;
   data->project.maps[mapNum] = mapCopy;
   return TRUE;
-}
+} */
 
 /* TODO: just take data? */
-static void currentProjectOverwriteMap(FrameworkWindow *projectWindow, Map *map, int mapNum) {
+/* static void currentProjectOverwriteMap(FrameworkWindow *projectWindow, Map *map, int mapNum) {
   ProjectWindowData *data = projectWindow->data;
   overwriteMap(map, data->project.maps[mapNum]);
-}
-
-/* TODO: just take data? */
-static BOOL currentProjectHasMap(FrameworkWindow *projectWindow, int mapNum) {
-  ProjectWindowData *data = projectWindow->data;
-  return (BOOL)(data->project.maps[mapNum] ? TRUE : FALSE);
-}
-
-/* TODO: just take data? */
-static Map *currentProjectMap(int mapNum) {
-  ProjectWindowData *data = projectWindow->data;
-  return data->project.maps[mapNum];
-}
-
-/* TODO: move me somewhere, remove duplicate code from SongNamesEditor, EntityNamesEditor... */
-static int listItemStart(int selected) {
-  if(selected < 10) {
-    return 2;
-  } else if(selected < 100) {
-    return 3;
-  } else {
-    return 4;
-  }
-}
+} */
 
 /* TODO: just pass in data? */
-static void updateCurrentProjectMapName(FrameworkWindow *projectWindow, int mapNum, Map *map) {
+/* TODO: this is weird */
+/* static void updateCurrentProjectMapName(FrameworkWindow *projectWindow, int mapNum, Map *map) {
   ProjectWindowData *data = projectWindow->data;
   updateProjectMapName(&data->project, mapNum, map);
-}
-
-void updateCurrentProjectSongName(int songNum, char *name) {
-  ProjectWindowData *data;
-
-  FrameworkWindow *window = getProjectWindow();
-  if(!window) {
-    fprintf(stderr, "updateCurrentProjectSongName: failed to get project window\n");
-    goto error;
-  }
-
-  data = window->data;
-
-  strcpy(&data->project.songNameStrs[songNum][listItemStart(songNum)], name);
-  /* TODO: uhm, when is this called? is this correct? */
-  data->projectSaved = TRUE;
-
-done:
-  return;
-
-error:
-  return;
-}
-
-void updateCurrentProjectEntityName(int entityNum, char *name) {
-  ProjectWindowData *data;
-
-  FrameworkWindow *window = getProjectWindow();
-  if(!window) {
-    fprintf(stderr, "updateCurrentProjectEntityName: failed to get project window\n");
-    goto error;
-  }
-
-  data = window->data;
-
-  strcpy(&data->project.entityNameStrs[entityNum][listItemStart(entityNum)], name);
-  /* TODO: uhm, when is this called? is this correct? */
-  data->projectSaved = TRUE;
-
-done:
-  return;
-
-error:
-  return;
-}
-
-/* TODO: just pass in data? */
-static char *currentProjectGetMapName(FrameworkWindow *projectWindow, int mapNum) {
-  ProjectWindowData *data = projectWindow->data;
-
-  Map *map = data->project.maps[mapNum];
-  if(!map) {
-    return NULL;
-  }
-  return map->name;
-}
-
-char *currentProjectGetSongName(int songNum) {
-  ProjectWindowData *data;
-
-  FrameworkWindow *window = getProjectWindow();
-  if(!window) {
-    fprintf(stderr, "currentProjectGetSongName: failed to get project window\n");
-    goto error;
-  }
-
-  data = window->data;
-
-  return data->project.songNameStrs[songNum];
-
-error:
-  return NULL;
-}
-
-char *currentProjectGetEntityName(int entityNum) {
-  ProjectWindowData *data;
-
-  FrameworkWindow *window = getProjectWindow();
-  if(!window) {
-    fprintf(stderr, "currentProjectGetEntityName: failed to get project window\n");
-    goto error;
-  }
-
-  data = window->data;
-
-  return data->project.entityNameStrs[entityNum];
-
-error:
-  return NULL;
-}
-
-struct List *currentProjectGetMapNames(void) {
-  ProjectWindowData *data;
-
-  FrameworkWindow *window = getProjectWindow();
-  if(!window) {
-    fprintf(stderr, "currentProjectGetMapNames: failed to get project window\n");
-    goto error;
-  }
-
-  data = window->data; 
-
-  return &data->project.mapNames;
-
-error:
-  return NULL;
-}
-
-struct List *currentProjectGetSongNames(void) {
-  ProjectWindowData *data;
-
-  FrameworkWindow *window = getProjectWindow();
-  if(!window) {
-    fprintf(stderr, "currentProjectGetSongNames: failed to get project window\n");
-    goto error;
-  }
-
-  data = window->data;
-
-  return &data->project.songNames;
-
-error:
-  return NULL;
-}
-
-struct List *currentProjectGetEntityNames(void) {
-  ProjectWindowData *data;
-
-  FrameworkWindow *window = getProjectWindow();
-  if(!window) {
-    fprintf(stderr, "currentProjectGetEntityNames: failed to get project window\n");
-    goto error;
-  }
-
-  data = window->data;
-
-  return &data->project.entityNames;
-
-error:
-  return NULL;
-}
-
-int loadTilesetPackageFromFile(char *file) {
-  TilesetPackage *newTilesetPackage;
-  ProjectWindowData *data;
-  FrameworkWindow *window = getProjectWindow();
-
-  if(!window) {
-    fprintf(stderr, "loadTIlesetPackageFromFile: failed to get project window\n");
-    goto error;
-  }
-
-  data = window->data;
-
-  newTilesetPackage = tilesetPackageLoadFromFile(file);
-  if(!newTilesetPackage) {
-    EasyRequest(
-      window->intuitionWindow,
-      &tilesetPackageLoadFailEasyStruct,
-      NULL,
-      file);
-    goto error;
-  }
-  freeTilesetPackage(data->tilesetPackage);
-  data->tilesetPackage = newTilesetPackage;
-  setTilesetPackagePath(window, file);
-
-  return 1;
-
-error:
-  return 0;
-}
-
-int loadTilesetPackageFromAsl(char *dir, char *file) {
-    char buffer[TILESET_PACKAGE_PATH_SIZE];
-
-    if(strlen(dir) >= sizeof(buffer)) {
-        fprintf(stderr, "loadTilesetPackageFromAsl: dir %s file %s doesn't fit in buffer\n", dir, file);
-        goto error;
-    }
-
-    strcpy(buffer, dir);
-    if(!AddPart(buffer, file, TILESET_PACKAGE_PATH_SIZE)) {
-        fprintf(stderr, "loadTilesetPackageFromAsl: dir %s file %s doesn't fit in buffer\n", dir, file);
-        goto error;
-    }
-
-    return loadTilesetPackageFromFile(buffer);
-
-error:
-    return 0;
-}
+} */
 
 static int confirmCreateMap(FrameworkWindow *projectWindow, int mapNum) {
   return EasyRequest(
@@ -736,45 +484,37 @@ static int confirmCreateMap(FrameworkWindow *projectWindow, int mapNum) {
     mapNum);
 }
 
-static BOOL currentProjectCreateMap(ProjectWindowData *data, int mapNum) {
-  data->project.maps[mapNum] = allocMap();
-  if(!data->project.maps[mapNum]) {
-    fprintf(stderr, "currentProjectCreateMap: failed to allocate new map\n");
-    goto error;
-  }
-  data->project.mapCnt++;
-  data->projectSaved = 0;
-  return TRUE;
-
-error:
-  return FALSE;
-}
-
-int openMapNum(FrameworkWindow *projectWindow, int mapNum) {
+/* TODO: I kind of feel that this belongs in MapEditor, maybe? */
+BOOL openMapNum(FrameworkWindow *projectWindow, int mapNum) {
   MapEditor *mapEditor;
 
-  if(!currentProjectHasMap(projectWindow, mapNum)) {
+  if(!projectDataHasMap(projectWindow->data, mapNum)) {
     if(!confirmCreateMap(projectWindow, mapNum)) {
-      return 0;
+      goto error;
     }
 
-    if(!currentProjectCreateMap(projectWindow->data, mapNum)) {
+    if(!projectDataCreateMap(projectWindow->data, mapNum)) {
       fprintf(stderr, "openMapNum: failed to create map\n");
-      return 0;
+      goto error;
     }
   }
 
-  mapEditor = newMapEditorWithMap(currentProjectMap(mapNum), mapNum);
+  mapEditor = newMapEditorWithMap(projectDataGetMap(projectWindow->data, mapNum), mapNum);
   if(!mapEditor) {
     fprintf(stderr, "openMapNum: failed to create new map editor\n");
-    return 0;
+    goto error;
   }
 
   addToMapEditorSet(mapEditor);
   /* TODO: fix me */
   /* addWindowToSet(mapEditor->window); */
   enableMapRevert(mapEditor);
-  return 1;
+
+done:
+  return TRUE;
+
+error:
+  return FALSE;
 }
 
 void openMap(FrameworkWindow *projectWindow) {
