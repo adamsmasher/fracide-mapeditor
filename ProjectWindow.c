@@ -71,7 +71,7 @@ static void makeWindowFullScreen(void) {
   newWindow->MinHeight = newWindow->Height = getScreenHeight();
 }
 
-BOOL openProjectWindow(void) {
+FrameworkWindow *openProjectWindow(void) {
   ProjectWindowData *data;
 
   if(projectWindow) {
@@ -99,12 +99,12 @@ BOOL openProjectWindow(void) {
 
   ActivateWindow(projectWindow->intuitionWindow);
 
-  return TRUE;
+  return projectWindow;
 
 error_freeData:
   freeProjectData(data);
 error:
-  return FALSE;
+  return NULL;
 }
 
 /* TODO: do we need to exist? */

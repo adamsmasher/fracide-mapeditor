@@ -9,7 +9,7 @@
 FrameworkWindow *getProjectWindow(void);
 
 /* TODO: maybe also us */
-BOOL openProjectWindow(void);
+FrameworkWindow *openProjectWindow(void);
 void closeProjectWindow(void);
 
 void newProject(FrameworkWindow*);
