@@ -1,6 +1,8 @@
 #ifndef FRAMEWORK_WINDOWSET_H
 #define FRAMEWORK_WINDOWSET_H
 
+/* TODO: get rid of me */
+
 #include "Window.h"
 
 void addWindowToSet(FrameworkWindow*);
