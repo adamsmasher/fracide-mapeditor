@@ -8,8 +8,6 @@
 
 #include <string.h>
 
-#include "framework/windowset.h"
-
 #include "SongRequester.h"
 #include "ProjectWindowData.h"
 #include "workspace.h"

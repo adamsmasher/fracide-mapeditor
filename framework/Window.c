@@ -11,7 +11,6 @@
 
 #include "menu.h"
 #include "menubuild.h"
-#include "windowset.h"
 
 FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *screen) {
   FrameworkWindow *window;
@@ -46,7 +45,6 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *scree
   }
 
   SetMenuStrip(window->intuitionWindow, window->menu);
-  addWindowToSet(window);
   GT_RefreshWindow(window->intuitionWindow, NULL);
 
   return window;
@@ -137,7 +135,6 @@ void closeWindow(FrameworkWindow *window) {
   ClearMenuStrip(window->intuitionWindow);
   FreeMenus(window->menu);
 
-  removeWindowFromSet(window);
   CloseWindow(window->intuitionWindow);
 
   free(window);

@@ -7,7 +7,6 @@
 #include <stdlib.h>
 
 #include "window.h"
-#include "windowset.h"
 
 static struct Screen *screen = NULL;
 static void          *vi     = NULL;

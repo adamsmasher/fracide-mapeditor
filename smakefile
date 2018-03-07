@@ -4,7 +4,7 @@
 
 # TODO: update dependencies
 
-FRAMEWORK_OBJS= framework/menu.o framework/menubuild.o framework/runstate.o framework/screen.o framework/window.o framework/windowset.o
+FRAMEWORK_OBJS= framework/menu.o framework/menubuild.o framework/runstate.o framework/screen.o framework/window.o
 
 MENU_OBJS=    projectmenu.o mapmenu.o entitiesmenu.o musicmenu.o
 MENU_HEADERS= projectmenu.h mapmenu.h entitiesmenu.h musicmenu.h
@@ -73,11 +73,9 @@ framework/menubuild.o: framework/menubuild.c framework/menubuild.h framework/scr
 
 framework/runstate.o: framework/runstate.c framework/runstate.h framework/window.h
 
-framework/screen.o: framework/screen.c framework/screen.h framework/window.h framework/windowset.h
+framework/screen.o: framework/screen.c framework/screen.h framework/window.h
 
-framework/Window.o: framework/window.c framework/window.h framework/menu.h framework/menubuild.h framework/windowset.h
-
-framework/windowset.o: framework/windowset.c framework/windowset.h framework/window.h
+framework/Window.o: framework/window.c framework/window.h framework/menu.h framework/menubuild.h
 
 clean:
     delete mapedit mapedit.lnk $(OBJS)

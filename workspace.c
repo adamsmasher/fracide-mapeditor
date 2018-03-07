@@ -13,9 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "framework/runstate.h"
-#include "framework/windowset.h"
-
 #include "easystructs.h"
 #include "globals.h"
 #include "project.h"

@@ -22,7 +22,6 @@
 
 #include "framework/runstate.h"
 #include "framework/screen.h"
-#include "framework/windowset.h"
 
 #include "easystructs.h"
 #include "EntityBrowser.h"

@@ -30,7 +30,6 @@ typedef struct FrameworkWindow_tag {
   long treeSigMask;
   struct FrameworkWindow_tag *parent;
   struct FrameworkWindow_tag *children;
-  /* These are managed by the windowset */
   struct FrameworkWindow_tag *next;
   struct FrameworkWindow_tag *prev;
 } FrameworkWindow;

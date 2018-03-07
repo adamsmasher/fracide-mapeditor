@@ -1,7 +1,5 @@
 #include "mapeditorset.h"
 
-#include "framework/windowset.h"
-
 #include "MapEditor.h"
 #include "workspace.h"
 
