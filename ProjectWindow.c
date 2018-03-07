@@ -432,7 +432,8 @@ error:
 
 void quit(FrameworkWindow *projectWindow) {
   if(ensureEverythingSaved(projectWindow)) {
-    stopRunning();
+    /* TODO: double check if this is the best way to do this. */
+    projectWindow->closed = TRUE;
   }
 }
 

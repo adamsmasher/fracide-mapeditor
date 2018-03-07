@@ -1,8 +1,8 @@
 #ifndef RUNSTATE_H
 #define RUNSTATE_H
 
-void runMainLoop(void);
+#include "window.h"
 
-void stopRunning(void);
+void runMainLoop(FrameworkWindow *root);
 
 #endif

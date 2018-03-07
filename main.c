@@ -346,10 +346,8 @@ int main(void) {
     goto error_closeScreen;
   }
     
-  runMainLoop();
-    
-  /* TODO: maybe this should happen automatically? */
-  closeAllWindows();
+  runMainLoop(projectWindow);
+
 closeScreen:
   closeGlobalScreen();
 done:

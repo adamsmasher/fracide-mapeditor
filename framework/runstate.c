@@ -7,7 +7,7 @@
 #include "window.h"
 #include "windowset.h"
 
-static BOOL running = TRUE;
+static void cleanupDeadWindows(FrameworkWindow*);
 
 static void cleanupDeadChildWindows(FrameworkWindow *window) {
   FrameworkWindow *i, *next;
@@ -15,46 +15,25 @@ static void cleanupDeadChildWindows(FrameworkWindow *window) {
   i = window->children;
   while(i) {
     next = i->next;
-
-    cleanupDeadChildWindows(i);
-
-    if(i->closed) {
-      closeWindow(i);
-    }
-
+    cleanupDeadWindows(i);
     i = next;
   }
 }
 
-static void cleanupDeadWindows(void) {
-  FrameworkWindow *i, *next;
+static void cleanupDeadWindows(FrameworkWindow *window) {
+  cleanupDeadChildWindows(window);
 
-  i = windowSetFirstWindow();
-  while(i) {
-    next = i->next;
-
-    cleanupDeadChildWindows(i);
-
-    if(i->closed) {
-      closeWindow(i);
-    }
-
-    i = next;
+  if(window->closed) {
+    closeWindow(window);
   }
 }
 
-void runMainLoop(void) {
-  running = TRUE;
+void runMainLoop(FrameworkWindow *root) {
+  BOOL running = TRUE;
   while(running) {
-    FrameworkWindow *i;
     long signalSet = Wait(windowSetSigMask());
-    for(i = windowSetFirstWindow(); i != NULL; i = i->next) {
-      handleWindowEvents(i, signalSet);
-    }
-    cleanupDeadWindows();
+    handleWindowEvents(root, signalSet);
+    running = !root->closed;
+    cleanupDeadWindows(root);
   }
-}
-
-void stopRunning(void) {
-  running = FALSE;
 }
