@@ -3,7 +3,7 @@
 
 #include "MapEditor.h"
 
-int openMapRequester(void);
+int openMapRequester(FrameworkWindow *projectWindow);
 int saveMapRequester(MapEditor*);
 
 #endif

@@ -33,9 +33,6 @@ static MenuSpec mainMenuSpec[] = {
 
 #define REVERT_PROJECT_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
 
-/* TODO: get rid of me if you can */
-static FrameworkWindow *projectWindow = NULL;
-
 static void onClose(FrameworkWindow *projectWindow) {
   freeProjectData(projectWindow->data);
 }
@@ -61,10 +58,6 @@ static WindowKind projectWindowKind = {
   (CloseFunction)    onClose
 };
 
-FrameworkWindow *getProjectWindow(void) {
-  return projectWindow;
-}
-
 static void makeWindowFullScreen(void) {
   struct NewWindow *newWindow = &projectWindowKind.newWindow;
   newWindow->MinWidth  = newWindow->Width  = getScreenWidth();
@@ -72,12 +65,8 @@ static void makeWindowFullScreen(void) {
 }
 
 FrameworkWindow *openProjectWindow(void) {
+  FrameworkWindow *projectWindow;
   ProjectWindowData *data;
-
-  if(projectWindow) {
-    fprintf(stderr, "openProjectWindow: cannot be called when project window already exists\n");
-    goto error;
-  }
 
   projectWindowKind.menuSpec = mainMenuSpec;
 
@@ -386,7 +375,8 @@ static void updateAllTileDisplays(void) {
 /* TODO: fix me */
 }
 
-static BOOL loadTilesetPackageFromAsl(char *dir, char *file) {
+/* TODO: maybe push the UI logic out */
+static BOOL loadTilesetPackageFromAsl(FrameworkWindow *projectWindow, char *dir, char *file) {
   char buffer[TILESET_PACKAGE_PATH_SIZE];
 
   if(strlen(dir) >= sizeof(buffer)) {
@@ -417,7 +407,7 @@ void selectTilesetPackage(FrameworkWindow *projectWindow) {
   }
 
   if(AslRequest(request, NULL)) {
-    if(loadTilesetPackageFromAsl(request->rf_Dir, request->rf_File)) {
+    if(loadTilesetPackageFromAsl(projectWindow, request->rf_Dir, request->rf_File)) {
       updateAllTileDisplays();
     }
   }

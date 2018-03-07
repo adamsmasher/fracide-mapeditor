@@ -267,14 +267,8 @@ error:
     return 0;
 }
 
-int openMapRequester(void) {
-  FrameworkWindow *window = getProjectWindow();
-  if(!window) {
-    fprintf(stderr, "openMapRequester: couldn't get project window\n");
-    goto error;
-  }
-
-  return spawnRequester(window->intuitionWindow, "Open Map");
+int openMapRequester(FrameworkWindow *projectWindow) {
+  return spawnRequester(projectWindow->intuitionWindow, "Open Map");
 error:
   return 0;
 }

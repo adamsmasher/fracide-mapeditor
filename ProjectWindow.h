@@ -5,9 +5,6 @@
 
 #include "framework/Window.h"
 
-/* TODO: get rid of me if you can */
-FrameworkWindow *getProjectWindow(void);
-
 FrameworkWindow *openProjectWindow(void);
 
 void newProject(FrameworkWindow*);
