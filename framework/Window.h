@@ -27,6 +27,7 @@ typedef struct FrameworkWindow_tag {
 
   BOOL closed;
 
+  long treeSigMask;
   struct FrameworkWindow_tag *parent;
   struct FrameworkWindow_tag *children;
   /* These are managed by the windowset */

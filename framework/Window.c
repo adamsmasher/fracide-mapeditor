@@ -37,6 +37,8 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *scree
     goto error_freeWindow;
   }
 
+  window->treeSigMask = 1L << window->intuitionWindow->UserPort->mp_SigBit;
+
   window->menu = createAndLayoutMenuFromSpec(windowKind->menuSpec);
   if(!window->menu) {
     fprintf(stderr, "openWindowOnGlobalScreen: failed to create menu\n");
