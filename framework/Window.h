@@ -27,7 +27,7 @@ typedef struct FrameworkWindow_tag {
 
   BOOL closed;
 
-  /* TODO: also store the parent */
+  struct FrameworkWindow_tag *parent;
   struct FrameworkWindow_tag *children;
   /* These are managed by the windowset */
   struct FrameworkWindow_tag *next;
