@@ -31,10 +31,6 @@
 #include "TilesetPackage.h"
 #include "TilesetRequester.h"
 
-typedef struct MapEditorData_tag {
-  FrameworkWindow *parent;
-} MapEditorData;
-
 #define MAP_EDITOR_WIDTH  536
 #define MAP_EDITOR_HEIGHT 384
 
@@ -689,8 +685,7 @@ static void drawEntities(MapEditor *mapEditor) {
 }
 
 static void mapEditorSetTilesetUpdateUI(MapEditor *mapEditor, UWORD tilesetNumber) {
-  MapEditorData *data = mapEditor->window->data;
-  ProjectWindowData *parentData = data->parent->data;
+  ProjectWindowData *parentData = mapEditor->window->parent->data;
   TilesetPackage *tilesetPackage = NULL /* TODO: fix me parentData->tilesetPackage */;
 
   GT_SetGadgetAttrs(mapEditor->tilesetNameGadget, mapEditor->window->intuitionWindow, NULL,
@@ -751,8 +746,7 @@ void mapEditorSetSaveStatus(MapEditor *mapEditor, int status) {
 }
 
 void mapEditorRefreshTileset(MapEditor *mapEditor) {
-  MapEditorData *data = mapEditor->window->data;
-  ProjectWindowData *parentData = data->parent->data;
+  ProjectWindowData *parentData = mapEditor->window->parent->data;
   TilesetPackage *tilesetPackage = NULL/* TODO: fix me parentData->tilesetPackage */;
 
   if(mapEditor->map->tilesetNum) {
@@ -775,9 +769,8 @@ void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {
 }
 
 static void mapEditorSetSongUpdateUI(MapEditor *mapEditor, UWORD songNumber) {
-  MapEditorData *data = mapEditor->window->data;
   GT_SetGadgetAttrs(mapEditor->songNameGadget, mapEditor->window->intuitionWindow, NULL,
-    GTTX_Text, projectDataGetSongName(data->parent->data, songNumber),
+    GTTX_Text, projectDataGetSongName(mapEditor->window->parent->data, songNumber),
     TAG_END);
 }
 
@@ -1131,8 +1124,8 @@ static void openNewEntityBrowser(MapEditor *mapEditor) {
 static void handleChooseTilesetClicked(MapEditor *mapEditor) {
   TilesetRequester *tilesetRequester;
   char title[32];
-  MapEditorData *data = mapEditor->window->data;
-  ProjectWindowData *parentData = data->parent->data;
+  FrameworkWindow *projectWindow = mapEditor->window->parent;
+  ProjectWindowData *parentData = projectWindow->data;
   TilesetPackage *tilesetPackage = NULL /* TODO: fix me parentData->tilesetPackage */;
 
   if(mapEditor->tilesetRequester) {
@@ -1147,7 +1140,7 @@ static void handleChooseTilesetClicked(MapEditor *mapEditor) {
       NULL);
 
     if(choice) {
-      selectTilesetPackage(data->parent);
+      selectTilesetPackage(projectWindow);
     }
   }
 

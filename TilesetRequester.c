@@ -31,11 +31,6 @@
 #define TILESET_LIST_TOP          20
 #define TILESET_LIST_LEFT         10
 
-typedef struct TilesetRequesterData_tag {
-  /* TODO: this should become a part of the FrameworkWindow */
-  FrameworkWindow *parent;
-} TilesetRequesterData;
-
 static WindowKind tilesetRequesterWindowKind = {
   {
     40, 40, TILESET_REQUESTER_WIDTH, TILESET_REQUESTER_HEIGHT,
@@ -151,8 +146,7 @@ void closeTilesetRequester(TilesetRequester *tilesetRequester) {
 }
 
 void refreshTilesetRequesterList(TilesetRequester *tilesetRequester) {
-  TilesetRequesterData *data = tilesetRequester->window->data;
-  ProjectWindowData *parentData = data->parent->data;
+  ProjectWindowData *parentData = tilesetRequester->window->parent->data;
   TilesetPackage *tilesetPackage = NULL; /* TODO: fix me parentData->tilesetPackage;*/
 
   GT_SetGadgetAttrs(tilesetRequester->tilesetList, tilesetRequester->window->intuitionWindow, NULL,
