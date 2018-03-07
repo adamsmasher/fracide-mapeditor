@@ -107,18 +107,6 @@ error:
   return NULL;
 }
 
-/* TODO: do we need to exist? */
-void closeProjectWindow(void) {
-  if(!projectWindow) {
-    fprintf(stderr, "closeProjectWindow: projectWindow not yet opened!\n");
-    return;
-  }
-
-  closeWindow(projectWindow);
-
-  projectWindow = NULL;
-}
-
 static void setProjectFilename(FrameworkWindow *projectWindow, char *filename) {
   setProjectDataFilename(projectWindow->data, filename);
   OnMenu(projectWindow->intuitionWindow, REVERT_PROJECT_MENU_ITEM);

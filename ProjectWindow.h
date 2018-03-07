@@ -8,9 +8,7 @@
 /* TODO: get rid of me if you can */
 FrameworkWindow *getProjectWindow(void);
 
-/* TODO: maybe also us */
 FrameworkWindow *openProjectWindow(void);
-void closeProjectWindow(void);
 
 void newProject(FrameworkWindow*);
 BOOL saveProject(FrameworkWindow*);
