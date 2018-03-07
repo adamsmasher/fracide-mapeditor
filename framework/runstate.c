@@ -5,7 +5,6 @@
 #include <proto/exec.h>
 
 #include "window.h"
-#include "windowset.h"
 
 static void cleanupDeadWindows(FrameworkWindow*);
 
@@ -31,7 +30,7 @@ static void cleanupDeadWindows(FrameworkWindow *window) {
 void runMainLoop(FrameworkWindow *root) {
   BOOL running = TRUE;
   while(running) {
-    long signalSet = Wait(windowSetSigMask());
+    long signalSet = Wait(root->treeSigMask);
     handleWindowEvents(root, signalSet);
     running = !root->closed;
     cleanupDeadWindows(root);

@@ -71,7 +71,7 @@ framework/menu.o: framework/menu.c framework/menu.h framework/menubuild.h framew
 
 framework/menubuild.o: framework/menubuild.c framework/menubuild.h framework/screen.h
 
-framework/runstate.o: framework/runstate.c framework/runstate.h framework/window.h framework/windowset.h
+framework/runstate.o: framework/runstate.c framework/runstate.h framework/window.h
 
 framework/screen.o: framework/screen.c framework/screen.h framework/window.h framework/windowset.h
 
