@@ -330,28 +330,31 @@ static void handleEntityBrowserChildMessages(EntityBrowser *entityBrowser, long 
 }
 
 int main(void) {
-  int retCode;
+  int errorCode;
 
   if(!initGlobalScreen(&newScreen)) {
-    retCode = -1;
-    goto done;
+    errorCode = -1;
+    goto error;
   }
 
   initPalette(getGlobalViewPort());
 
   if(!openProjectWindow()) {
-    retCode = -2;
-    goto closeScreen;
+    errorCode = -2;
+    goto error_closeScreen;
   }
     
   runMainLoop();
     
-  retCode = 0;
-
   /* TODO: maybe this should happen automatically? */
   closeAllWindows();
 closeScreen:
   closeGlobalScreen();
 done:
-  return retCode;
+  return 0;
+
+error_closeScreen:
+  closeGlobalScreen();
+error:
+  return errorCode;
 }
