@@ -33,6 +33,7 @@ static MenuSpec mainMenuSpec[] = {
 
 #define REVERT_PROJECT_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
 
+/* TODO: get rid of me if you can */
 static FrameworkWindow *projectWindow = NULL;
 static struct Menu     *menu          = NULL;
 
