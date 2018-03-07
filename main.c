@@ -331,6 +331,7 @@ static void handleEntityBrowserChildMessages(EntityBrowser *entityBrowser, long 
 
 int main(void) {
   int errorCode;
+  FrameworkWindow *projectWindow;
 
   if(!initGlobalScreen(&newScreen)) {
     errorCode = -1;
@@ -339,7 +340,8 @@ int main(void) {
 
   initPalette(getGlobalViewPort());
 
-  if(!openProjectWindow()) {
+  projectWindow = openProjectWindow();
+  if(!projectWindow) {
     errorCode = -2;
     goto error_closeScreen;
   }
