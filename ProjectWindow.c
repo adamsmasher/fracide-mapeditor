@@ -35,7 +35,6 @@ static MenuSpec mainMenuSpec[] = {
 
 /* TODO: get rid of me if you can */
 static FrameworkWindow *projectWindow = NULL;
-static struct Menu     *menu          = NULL;
 
 static void onClose(FrameworkWindow *projectWindow) {
   freeProjectData(projectWindow->data);
