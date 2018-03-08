@@ -1,5 +1,3 @@
-/* TODO: make all public functions take a this argument... */
-
 #include "ProjectWindow.h"
 
 #include <libraries/asl.h>
