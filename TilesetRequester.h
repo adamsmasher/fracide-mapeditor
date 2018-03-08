@@ -18,6 +18,8 @@ typedef struct TilesetRequesterTag {
 TilesetRequester *newTilesetRequester(char *title);
 void closeTilesetRequester(TilesetRequester*);
 
+BOOL isTilesetRequesterWindow(FrameworkWindow*);
+
 void refreshTilesetRequesterList(TilesetRequester*);
 void resizeTilesetRequester(TilesetRequester*);
 

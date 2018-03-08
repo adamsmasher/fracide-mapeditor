@@ -67,6 +67,8 @@ typedef struct MapEditorTag {
 MapEditor *newMapEditorNewMap(void);
 MapEditor *newMapEditorWithMap(Map*, int mapNum);
 
+BOOL isMapEditorWindow(FrameworkWindow*);
+
 void closeMapEditor(MapEditor*);
 
 void mapEditorSetMapNum(MapEditor*, UWORD);

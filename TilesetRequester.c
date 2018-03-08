@@ -52,6 +52,10 @@ static WindowKind tilesetRequesterWindowKind = {
   (CloseFunction)    NULL
 };
 
+BOOL isTilesetRequesterWindow(FrameworkWindow *window) {
+  return (BOOL)(window->kind == &tilesetRequesterWindowKind);
+}
+
 static struct NewGadget tilesetListNewGadget = {
     TILESET_LIST_LEFT,  TILESET_LIST_TOP,
     TILESET_REQUESTER_WIDTH  - TILESET_LIST_WIDTH_DELTA,

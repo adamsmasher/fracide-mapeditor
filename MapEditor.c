@@ -211,6 +211,10 @@ static WindowKind mapEditorWindowKind = {
   (CloseFunction)    NULL
 };
 
+BOOL isMapEditorWindow(FrameworkWindow *window) {
+  return (BOOL)(window->kind == &mapEditorWindowKind);
+}
+
 #define MAP_NAME_LEFT   (MAP_BORDER_LEFT  + 80)
 #define MAP_NAME_TOP    18
 #define MAP_NAME_WIDTH  (MAP_BORDER_WIDTH - 81)
@@ -760,6 +764,22 @@ void mapEditorRefreshTileset(MapEditor *mapEditor) {
       mapEditorSetSaveStatus(mapEditor, UNSAVED);
     }
   }
+}
+
+static void updateTilesetRequesterChildren(FrameworkWindow *mapEditor) {
+  FrameworkWindow *i = mapEditor->children;
+  while(i) {
+    if(isTilesetRequesterWindow(i)) {
+      /* TODO: pass in i, not i->data... */
+      refreshTilesetRequesterList(i->data);
+    }
+    i = i->next;
+  }
+}
+
+void mapEditorUpdateTileDisplays(FrameworkWindow *mapEditor) {
+  updateTilesetRequesterChildren(mapEditor);
+  mapEditorRefreshTileset(mapEditor->data);
 }
 
 void mapEditorSetTileset(MapEditor *mapEditor, UWORD tilesetNumber) {

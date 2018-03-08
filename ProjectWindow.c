@@ -361,16 +361,14 @@ done:
   return;
 }
 
-static void updateAllTileDisplays(void) {
-/*  MapEditor *i = mapEditorSetFirst();
+static void updateAllTileDisplays(FrameworkWindow *projectWindow) {
+  FrameworkWindow *i = projectWindow->children;
   while(i) {
-    if(i->tilesetRequester) {
-      refreshTilesetRequesterList(i->tilesetRequester);
+    if(isMapEditorWindow(i)) {
+      mapEditorUpdateTileDisplays(i);
     }
-    mapEditorRefreshTileset(i);
     i = i->next;
-  } */
-/* TODO: fix me */
+  }
 }
 
 /* TODO: maybe push the UI logic out */
