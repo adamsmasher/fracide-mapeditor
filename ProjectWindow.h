@@ -7,16 +7,16 @@
 
 FrameworkWindow *openProjectWindow(void);
 
-void newProject(FrameworkWindow*);
-BOOL saveProject(FrameworkWindow*);
-BOOL saveProjectAs(FrameworkWindow*);
-void openProject(FrameworkWindow*);
-void revertProject(FrameworkWindow*);
-void selectTilesetPackage(FrameworkWindow*);
-void quit(FrameworkWindow*);
+void newProject(FrameworkWindow *projectWindow);
+BOOL saveProject(FrameworkWindow *projectWindow);
+BOOL saveProjectAs(FrameworkWindow *projectWindow);
+void openProject(FrameworkWindow *projectWindow);
+void revertProject(FrameworkWindow *projectWindow);
+void selectTilesetPackage(FrameworkWindow *projectWindow);
+void quit(FrameworkWindow *projectWindow);
 
-void openMap(FrameworkWindow*);
-BOOL openMapNum(FrameworkWindow*, int mapNum);
+void openMap(FrameworkWindow *projectWindow);
+BOOL openMapNum(FrameworkWindow *projectWindow, int mapNum);
 
 void refreshAllSongDisplays(FrameworkWindow *projectWindow);
 void refreshAllEntityBrowsers(FrameworkWindow *projectWindow);
