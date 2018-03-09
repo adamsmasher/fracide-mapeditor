@@ -227,8 +227,21 @@ static BOOL ensureProjectSaved(FrameworkWindow *projectWindow) {
   return (BOOL)(projectDataIsSaved(projectWindow->data) || unsavedProjectAlert(projectWindow));
 }
 
+static BOOL ensureMapEditorsSaved(FrameworkWindow *projectWindow) {
+  FrameworkWindow *i = projectWindow->children;
+  while(i) {
+    if(isMapEditorWindow(i)) {
+      MapEditor *mapEditor = i->data;
+      if(!mapEditor->saved && !unsavedMapEditorAlert(mapEditor)) {
+        return FALSE;
+      }
+    }
+    i = i->next;
+  }
+}
+
 static BOOL ensureEverythingSaved(FrameworkWindow *projectWindow) {
-  return (BOOL)(ensureMapEditorsSaved() && ensureProjectSaved(projectWindow));
+  return (BOOL)(ensureMapEditorsSaved(projectWindow) && ensureProjectSaved(projectWindow));
 }
 
 static BOOL loadTilesetPackageFromFile(FrameworkWindow *projectWindow, char *filename) {

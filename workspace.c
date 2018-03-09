@@ -17,7 +17,6 @@
 #include "globals.h"
 #include "project.h"
 #include "MapEditor.h"
-#include "mapeditorset.h"
 #include "MapRequester.h"
 #include "ProjectWindow.h"
 

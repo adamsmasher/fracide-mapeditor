@@ -29,7 +29,6 @@
 #include "EntityRequester.h"
 #include "globals.h"
 #include "MapEditor.h"
-#include "mapeditorset.h"
 #include "MapRequester.h"
 #include "palette.h"
 #include "ProjectWindow.h"
