@@ -492,6 +492,20 @@ error:
   return FALSE;
 }
 
+static MapEditor *findMapEditor(FrameworkWindow *projectWindow, int mapNum) {
+  FrameworkWindow *i = projectWindow->children;
+  while(i) {
+    if(isMapEditorWindow(i)) {
+      MapEditor *mapEditor = i->data;
+      if(mapEditor->mapNum - 1 == mapNum) {
+        return mapEditor;
+      }
+    }
+    i = i->next;
+  }
+  return NULL;
+}
+
 void openMap(FrameworkWindow *projectWindow) {
   MapEditor *mapEditor;
 
@@ -501,7 +515,7 @@ void openMap(FrameworkWindow *projectWindow) {
   }
   selected--;
 
-  mapEditor = findMapEditor(selected);
+  mapEditor = findMapEditor(projectWindow, selected);
   if(mapEditor) {
     WindowToFront(mapEditor->window->intuitionWindow);
   } else {

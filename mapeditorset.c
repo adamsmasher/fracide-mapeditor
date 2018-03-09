@@ -28,17 +28,6 @@ void removeFromMapEditorSet(MapEditor *mapEditor) {
     }
 }
 
-MapEditor *findMapEditor(int mapNum) {
-    MapEditor *mapEditor = firstMapEditor;
-    while(mapEditor) {
-        if(mapEditor->mapNum - 1 == mapNum) {
-            return mapEditor;
-        }
-        mapEditor = mapEditor->next;
-    }
-    return NULL;
-}
-
 int ensureMapEditorsSaved(void) {
     MapEditor *i = firstMapEditor;
     while(i) {
