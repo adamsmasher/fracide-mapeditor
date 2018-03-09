@@ -27,9 +27,9 @@ void newMap(void) {
         fprintf(stderr, "newMap: failed to create mapEditor\n");
         return;
     }
-    addToMapEditorSet(mapEditor);
-    /* TODO: fix me */
-    /*addWindowToSet(mapEditor->window);*/
+    /* TODO: fix us */
+    /* addToMapEditorSet(mapEditor);
+    addWindowToSet(mapEditor->window);*/
 }
 
 int saveMapAs(MapEditor *mapEditor) {

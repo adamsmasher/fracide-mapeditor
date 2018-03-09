@@ -9,25 +9,6 @@ MapEditor *mapEditorSetFirst(void) {
     return firstMapEditor;
 }
 
-void addToMapEditorSet(MapEditor *mapEditor) {
-    mapEditor->next = firstMapEditor;
-    if(firstMapEditor) {
-        firstMapEditor->prev = mapEditor;
-    }
-    firstMapEditor = mapEditor;
-}
-
-void removeFromMapEditorSet(MapEditor *mapEditor) {
-    if(mapEditor->next) {
-        mapEditor->next->prev = mapEditor->prev;
-    }
-    if(mapEditor->prev) {
-        mapEditor->prev->next = mapEditor->next;
-    } else {
-        firstMapEditor = mapEditor->next;
-    }
-}
-
 int ensureMapEditorsSaved(void) {
     MapEditor *i = firstMapEditor;
     while(i) {
@@ -37,20 +18,4 @@ int ensureMapEditorsSaved(void) {
         i = i->next;
     }
     return 1;
-}
-
-void closeAllMapEditors(void) {
-    MapEditor *i = firstMapEditor;
-    while(i) {
-        MapEditor *next = i->next;
-        /* TODO: fix me */
-        /* removeWindowFromSet(i->window); */
-        if(i->tilesetRequester) {
-            /* TODO: fix me */
-            /* removeWindowFromSet(i->tilesetRequester->window); */
-        }
-        closeMapEditor(i);
-        i = next;
-    }
-    firstMapEditor = NULL;
 }

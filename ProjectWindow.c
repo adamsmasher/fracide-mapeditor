@@ -482,8 +482,8 @@ BOOL openMapNum(FrameworkWindow *projectWindow, int mapNum) {
     goto error;
   }
 
-  addToMapEditorSet(mapEditor);
-  /* TODO: fix me */
+  /* TODO: fix us */
+  /* addToMapEditorSet(mapEditor); */
   /* addWindowToSet(mapEditor->window); */
   enableMapRevert(mapEditor);
 
