@@ -405,7 +405,7 @@ void selectTilesetPackage(FrameworkWindow *projectWindow) {
 
   if(AslRequest(request, NULL)) {
     if(loadTilesetPackageFromAsl(projectWindow, request->rf_Dir, request->rf_File)) {
-      updateAllTileDisplays();
+      updateAllTileDisplays(projectWindow);
     }
   }
 

@@ -75,6 +75,7 @@ void mapEditorSetMapNum(MapEditor*, UWORD);
 
 void mapEditorSetTileset(MapEditor*, UWORD);
 void mapEditorRefreshTileset(MapEditor*);
+void mapEditorUpdateTileDisplays(FrameworkWindow *mapEditor);
 
 void mapEditorSetSong(MapEditor*, UWORD);
 void mapEditorRefreshSong(MapEditor*);
