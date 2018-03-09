@@ -3,8 +3,6 @@
 
 #include "MapEditor.h"
 
-void refreshAllEntityBrowsers(void);
-
 /* TODO: put me...somewhere, too, maybe */
 void newMap(void);
 int saveMap(MapEditor*);

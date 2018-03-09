@@ -21,16 +21,6 @@
 #include "MapRequester.h"
 #include "ProjectWindow.h"
 
-void refreshAllEntityBrowsers(void) {
-    MapEditor *i = mapEditorSetFirst();
-    while(i) {
-        if(i->entityBrowser) {
-            GT_RefreshWindow(i->entityBrowser->window->intuitionWindow, NULL);
-        }
-        i = i->next;
-    }
-}
-
 void newMap(void) {
     MapEditor *mapEditor = newMapEditorNewMap();
     if(!mapEditor) {

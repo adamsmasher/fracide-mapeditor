@@ -539,3 +539,17 @@ void refreshAllSongDisplays(FrameworkWindow *projectWindow) {
     i = i->next;
   }
 }
+
+void refreshAllEntityBrowsers(FrameworkWindow *projectWindow) {
+  FrameworkWindow *i = projectWindow->children;
+  while(i) {
+    if(isMapEditorWindow(i)) {
+      /* TODO: make this a function on map requesters */
+      MapEditor *mapEditor = i->data;
+      if(mapEditor->entityBrowser) {
+        GT_RefreshWindow(mapEditor->entityBrowser->window->intuitionWindow, NULL);
+      }
+    }
+    i = i->next;
+  }
+}

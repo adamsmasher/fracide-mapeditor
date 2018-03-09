@@ -19,5 +19,6 @@ void openMap(FrameworkWindow*);
 BOOL openMapNum(FrameworkWindow*, int mapNum);
 
 void refreshAllSongDisplays(FrameworkWindow *projectWindow);
+void refreshAllEntityBrowsers(FrameworkWindow *projectWindow);
 
 #endif
