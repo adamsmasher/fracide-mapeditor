@@ -372,6 +372,7 @@ static void updateAllTileDisplays(FrameworkWindow *projectWindow) {
 }
 
 /* TODO: maybe push the UI logic out */
+/* TODO: best still, add Asl handling to the framework */
 static BOOL loadTilesetPackageFromAsl(FrameworkWindow *projectWindow, char *dir, char *file) {
   char buffer[TILESET_PACKAGE_PATH_SIZE];
 
