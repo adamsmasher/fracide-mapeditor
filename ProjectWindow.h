@@ -18,4 +18,6 @@ void quit(FrameworkWindow*);
 void openMap(FrameworkWindow*);
 BOOL openMapNum(FrameworkWindow*, int mapNum);
 
+void refreshAllSongDisplays(FrameworkWindow *projectWindow);
+
 #endif

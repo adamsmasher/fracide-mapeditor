@@ -21,17 +21,6 @@
 #include "MapRequester.h"
 #include "ProjectWindow.h"
 
-void refreshAllSongDisplays(void) {
-    MapEditor *i = mapEditorSetFirst();
-    while(i) {
-        if(i->songRequester) {
-            GT_RefreshWindow(i->songRequester->window->intuitionWindow, NULL);
-        }
-        mapEditorRefreshSong(i);
-        i = i->next;
-    }
-}
-
 void refreshAllEntityBrowsers(void) {
     MapEditor *i = mapEditorSetFirst();
     while(i) {

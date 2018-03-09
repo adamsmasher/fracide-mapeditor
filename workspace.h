@@ -5,8 +5,6 @@
 
 void refreshAllEntityBrowsers(void);
 
-void refreshAllSongDisplays(void);
-
 /* TODO: put me...somewhere, too, maybe */
 void newMap(void);
 int saveMap(MapEditor*);

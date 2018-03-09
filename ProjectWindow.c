@@ -4,6 +4,7 @@
 #include <proto/asl.h>
 #include <proto/dos.h>
 #include <proto/intuition.h>
+#include <proto/gadtools.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -521,5 +522,20 @@ void openMap(FrameworkWindow *projectWindow) {
     WindowToFront(mapEditor->window->intuitionWindow);
   } else {
     openMapNum(projectWindow, selected);
+  }
+}
+
+void refreshAllSongDisplays(FrameworkWindow *projectWindow) {
+  FrameworkWindow *i = projectWindow->children;
+  while(i) {
+    if(isMapEditorWindow(i)) {
+      /* TODO: make this a function on map requesters */
+      MapEditor *mapEditor = i->data;
+      if(mapEditor->songRequester) {
+        GT_RefreshWindow(mapEditor->songRequester->window->intuitionWindow, NULL);
+      }
+      mapEditorRefreshSong(mapEditor);
+    }
+    i = i->next;
   }
 }
