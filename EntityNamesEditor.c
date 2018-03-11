@@ -10,7 +10,6 @@
 
 #include "EntityRequester.h"
 #include "ProjectWindowData.h"
-#include "workspace.h"
 
 /* TODO help i'm duplicated everywhere */
 static int listItemStart(int selected) {

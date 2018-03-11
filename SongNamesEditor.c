@@ -10,7 +10,6 @@
 
 #include "SongRequester.h"
 #include "ProjectWindowData.h"
-#include "workspace.h"
 
 SongRequester *songNamesEditor = NULL;
 

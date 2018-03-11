@@ -36,7 +36,6 @@
 #include "SongRequester.h"
 #include "TilesetPackage.h"
 #include "TilesetRequester.h"
-#include "workspace.h"
 
 #define SCR_WIDTH  640
 #define SCR_HEIGHT 512
