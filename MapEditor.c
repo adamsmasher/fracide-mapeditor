@@ -73,6 +73,10 @@ static void revertMenuItemClicked(FrameworkWindow *window) {
   revertMap(mapEditor);
 }
 
+BOOL ensureMapEditorSaved(MapEditor *mapEditor) {
+  return (BOOL)(mapEditor->saved || unsavedMapEditorAlert(mapEditor));
+}
+
 static void closeMenuItemClicked(FrameworkWindow *window) {
   MapEditor *mapEditor = window->data;
   if(mapEditor->saved || unsavedMapEditorAlert(mapEditor)) {

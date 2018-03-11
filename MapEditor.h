@@ -84,6 +84,7 @@ void mapEditorRefreshSong(MapEditor*);
 #define SAVED   1
 
 void mapEditorSetSaveStatus(MapEditor*, int);
+BOOL ensureMapEditorSaved(MapEditor*);
 
 void mapEditorDrawEntity(MapEditor*, Entity*, int entityNum);
 void mapEditorRedrawTile(MapEditor*, int row, int col);

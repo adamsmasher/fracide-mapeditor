@@ -231,8 +231,7 @@ static BOOL ensureMapEditorsSaved(FrameworkWindow *projectWindow) {
   FrameworkWindow *i = projectWindow->children;
   while(i) {
     if(isMapEditorWindow(i)) {
-      MapEditor *mapEditor = i->data;
-      if(!mapEditor->saved && !unsavedMapEditorAlert(mapEditor)) {
+      if(!ensureMapEditorSaved(i->data)) {
         return FALSE;
       }
     }
