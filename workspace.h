@@ -9,7 +9,4 @@ int saveMapAs(MapEditor*);
 
 int unsavedMapEditorAlert(MapEditor*);
 
-/* TODO: no. put me in mapeditor set if anywhere. */
-extern MapEditor *firstMapEditor;
-
 #endif
