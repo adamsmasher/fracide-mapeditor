@@ -273,8 +273,11 @@ error:
   return 0;
 }
 
-int saveMapRequester(MapEditor *mapEditor) {
-    char title[96];
-    sprintf(title, "Save Map %s", mapEditor->map->name);
-    return spawnRequester(mapEditor->window->intuitionWindow, title);
+/* TODO: I think this belongs in MapEditor */
+int saveMapRequester(FrameworkWindow *mapEditorWindow) {
+  char title[96];
+  MapEditorData *data = mapEditorWindow->data;
+
+  sprintf(title, "Save Map %s", data->map->name);
+  return spawnRequester(mapEditorWindow->intuitionWindow, title);
 }

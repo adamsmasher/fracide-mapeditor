@@ -29,12 +29,7 @@
 #define MAP_TILES_ACROSS 10
 #define MAP_TILES_HIGH    9
 
-/* TODO: some of these you get rid of, some move into MapEditorData */
-typedef struct MapEditorTag {
-  struct MapEditorTag *next;
-  struct MapEditorTag *prev;
-
-  FrameworkWindow *window;
+typedef struct MapEditorData_tag {
   struct Gadget *gadgets;
 
   Map *map;
@@ -48,8 +43,7 @@ typedef struct MapEditorTag {
   struct Gadget *upGadget;
   struct Gadget *downGadget;
 
-  int closed;
-  int saved;
+  BOOL saved;
 
   TilesetRequester *tilesetRequester;
   SongRequester    *songRequester;
@@ -62,34 +56,34 @@ typedef struct MapEditorTag {
   int selected;
 
   char title[16];
-} MapEditor;
+} MapEditorData;
 
-MapEditor *newMapEditorNewMap(void);
-MapEditor *newMapEditorWithMap(Map*, int mapNum);
+FrameworkWindow *newMapEditorNewMap(void);
+FrameworkWindow *newMapEditorWithMap(Map*, int mapNum);
 
 BOOL isMapEditorWindow(FrameworkWindow*);
 
-void closeMapEditor(MapEditor*);
+void mapEditorSetMapNum(FrameworkWindow *mapEditor, UWORD mapNum);
 
-void mapEditorSetMapNum(MapEditor*, UWORD);
-
-void mapEditorSetTileset(MapEditor*, UWORD);
-void mapEditorRefreshTileset(MapEditor*);
+void mapEditorSetTileset(FrameworkWindow *mapEditor, UWORD tilesetNum);
+void mapEditorRefreshTileset(FrameworkWindow *mapEditor);
 void mapEditorUpdateTileDisplays(FrameworkWindow *mapEditor);
 
-void mapEditorSetSong(MapEditor*, UWORD);
-void mapEditorRefreshSong(MapEditor*);
+void mapEditorSetSong(FrameworkWindow *mapEditor, UWORD songNum);
+void mapEditorRefreshSong(FrameworkWindow *mapEditor);
 
-#define UNSAVED 0
-#define SAVED   1
+typedef enum SaveStatus_tag {
+  UNSAVED,
+  SAVED
+} SaveStatus;
 
-void mapEditorSetSaveStatus(MapEditor*, int);
-BOOL ensureMapEditorSaved(MapEditor*);
+void mapEditorSetSaveStatus(FrameworkWindow *mapEditor, SaveStatus);
+BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor);
 
-void mapEditorDrawEntity(MapEditor*, Entity*, int entityNum);
-void mapEditorRedrawTile(MapEditor*, int row, int col);
+void mapEditorDrawEntity(FrameworkWindow *mapEditor, Entity*, int entityNum);
+void mapEditorRedrawTile(FrameworkWindow *mapEditor, int row, int col);
 
-void enableMapRevert(MapEditor*);
-void disableMapRevert(MapEditor*);
+void enableMapRevert(FrameworkWindow *mapEditor);
+void disableMapRevert(FrameworkWindow *mapEditor);
 
 #endif

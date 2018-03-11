@@ -475,7 +475,7 @@ static int confirmCreateMap(FrameworkWindow *projectWindow, int mapNum) {
 
 /* TODO: I kind of feel that this belongs in MapEditor, maybe? */
 BOOL openMapNum(FrameworkWindow *projectWindow, int mapNum) {
-  MapEditor *mapEditor;
+  FrameworkWindow *mapEditor;
 
   if(!projectDataHasMap(projectWindow->data, mapNum)) {
     if(!confirmCreateMap(projectWindow, mapNum)) {
@@ -506,13 +506,13 @@ error:
   return FALSE;
 }
 
-static MapEditor *findMapEditor(FrameworkWindow *projectWindow, int mapNum) {
+static FrameworkWindow *findMapEditor(FrameworkWindow *projectWindow, int mapNum) {
   FrameworkWindow *i = projectWindow->children;
   while(i) {
     if(isMapEditorWindow(i)) {
-      MapEditor *mapEditor = i->data;
-      if(mapEditor->mapNum - 1 == mapNum) {
-        return mapEditor;
+      MapEditorData *data = i->data;
+      if(data->mapNum - 1 == mapNum) {
+        return i;
       }
     }
     i = i->next;
@@ -521,7 +521,7 @@ static MapEditor *findMapEditor(FrameworkWindow *projectWindow, int mapNum) {
 }
 
 void newMap(FrameworkWindow *projectWindow) {
-  MapEditor *mapEditor = newMapEditorNewMap();
+  FrameworkWindow *mapEditor = newMapEditorNewMap();
   if(!mapEditor) {
     fprintf(stderr, "newMap: failed to create mapEditor\n");
     return;
@@ -532,7 +532,7 @@ void newMap(FrameworkWindow *projectWindow) {
 }
 
 void openMap(FrameworkWindow *projectWindow) {
-  MapEditor *mapEditor;
+  FrameworkWindow *mapEditor;
 
   int selected = openMapRequester(projectWindow);
   if(!selected) {
@@ -542,7 +542,7 @@ void openMap(FrameworkWindow *projectWindow) {
 
   mapEditor = findMapEditor(projectWindow, selected);
   if(mapEditor) {
-    WindowToFront(mapEditor->window->intuitionWindow);
+    WindowToFront(mapEditor->intuitionWindow);
   } else {
     openMapNum(projectWindow, selected);
   }
@@ -553,11 +553,11 @@ void refreshAllSongDisplays(FrameworkWindow *projectWindow) {
   while(i) {
     if(isMapEditorWindow(i)) {
       /* TODO: make this a function on map requesters */
-      MapEditor *mapEditor = i->data;
-      if(mapEditor->songRequester) {
-        GT_RefreshWindow(mapEditor->songRequester->window->intuitionWindow, NULL);
+      MapEditorData *data = i->data;
+      if(data->songRequester) {
+        GT_RefreshWindow(data->songRequester->window->intuitionWindow, NULL);
       }
-      mapEditorRefreshSong(mapEditor);
+      mapEditorRefreshSong(i);
     }
     i = i->next;
   }
@@ -568,9 +568,9 @@ void refreshAllEntityBrowsers(FrameworkWindow *projectWindow) {
   while(i) {
     if(isMapEditorWindow(i)) {
       /* TODO: make this a function on map requesters */
-      MapEditor *mapEditor = i->data;
-      if(mapEditor->entityBrowser) {
-        GT_RefreshWindow(mapEditor->entityBrowser->window->intuitionWindow, NULL);
+      MapEditorData *data = i->data;
+      if(data->entityBrowser) {
+        GT_RefreshWindow(data->entityBrowser->window->intuitionWindow, NULL);
       }
     }
     i = i->next;

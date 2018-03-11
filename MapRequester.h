@@ -4,6 +4,6 @@
 #include "MapEditor.h"
 
 int openMapRequester(FrameworkWindow *projectWindow);
-int saveMapRequester(MapEditor*);
+int saveMapRequester(FrameworkWindow *mapEditorWindow);
 
 #endif
