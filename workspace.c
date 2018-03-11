@@ -69,30 +69,3 @@ int saveMap(MapEditor *mapEditor) {
         return 1;
     }
 }
-
-int unsavedMapEditorAlert(MapEditor *mapEditor) {
-    int response;
-
-    if(mapEditor->mapNum) {
-        response = EasyRequest(
-            mapEditor->window->intuitionWindow,
-            &unsavedMapAlertEasyStructWithNum,
-            NULL,
-            mapEditor->mapNum - 1, mapEditor->map->name);
-    } else {
-        response = EasyRequest(
-            mapEditor->window->intuitionWindow,
-            &unsavedMapAlertEasyStructNoNum,
-            NULL,
-            mapEditor->map->name);
-    }
-
-    switch(response) {
-        case 0: return 0;                  /* cancel */
-        case 1: return saveMap(mapEditor); /* save */
-        case 2: return 1;                  /* don't save */
-        default:
-            fprintf(stderr, "unsavedMapEditorAlert: unknown response %d\n", response);
-            return 0;
-    }
-}

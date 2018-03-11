@@ -73,6 +73,33 @@ static void revertMenuItemClicked(FrameworkWindow *window) {
   revertMap(mapEditor);
 }
 
+static BOOL unsavedMapEditorAlert(MapEditor *mapEditor) {
+  int response;
+
+  if(mapEditor->mapNum) {
+    response = EasyRequest(
+      mapEditor->window->intuitionWindow,
+      &unsavedMapAlertEasyStructWithNum,
+      NULL,
+      mapEditor->mapNum - 1, mapEditor->map->name);
+  } else {
+    response = EasyRequest(
+      mapEditor->window->intuitionWindow,
+      &unsavedMapAlertEasyStructNoNum,
+      NULL,
+      mapEditor->map->name);
+  }
+
+  switch(response) {
+    case 0: return FALSE;              /* cancel */
+    case 1: return saveMap(mapEditor); /* save */
+    case 2: return TRUE;               /* don't save */
+    default:
+      fprintf(stderr, "unsavedMapEditorAlert: unknown response %d\n", response);
+      return FALSE;
+    }
+}
+
 BOOL ensureMapEditorSaved(MapEditor *mapEditor) {
   return (BOOL)(mapEditor->saved || unsavedMapEditorAlert(mapEditor));
 }

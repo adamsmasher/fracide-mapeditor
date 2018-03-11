@@ -7,6 +7,4 @@
 int saveMap(MapEditor*);
 int saveMapAs(MapEditor*);
 
-int unsavedMapEditorAlert(MapEditor*);
-
 #endif
