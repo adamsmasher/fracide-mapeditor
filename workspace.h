@@ -4,7 +4,6 @@
 #include "MapEditor.h"
 
 /* TODO: put me...somewhere, too, maybe */
-void newMap(void);
 int saveMap(MapEditor*);
 int saveMapAs(MapEditor*);
 

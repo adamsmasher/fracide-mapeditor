@@ -20,17 +20,6 @@
 #include "MapRequester.h"
 #include "ProjectWindow.h"
 
-void newMap(void) {
-    MapEditor *mapEditor = newMapEditorNewMap();
-    if(!mapEditor) {
-        fprintf(stderr, "newMap: failed to create mapEditor\n");
-        return;
-    }
-    /* TODO: fix us */
-    /* addToMapEditorSet(mapEditor);
-    addWindowToSet(mapEditor->window);*/
-}
-
 int saveMapAs(MapEditor *mapEditor) {
     int selected = saveMapRequester(mapEditor);
     if(!selected) {

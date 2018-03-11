@@ -521,6 +521,17 @@ static MapEditor *findMapEditor(FrameworkWindow *projectWindow, int mapNum) {
   return NULL;
 }
 
+void newMap(FrameworkWindow *projectWindow) {
+  MapEditor *mapEditor = newMapEditorNewMap();
+  if(!mapEditor) {
+    fprintf(stderr, "newMap: failed to create mapEditor\n");
+    return;
+  }
+  /* TODO: fix us */
+  /* addToMapEditorSet(mapEditor);
+    addWindowToSet(mapEditor->window);*/
+}
+
 void openMap(FrameworkWindow *projectWindow) {
   MapEditor *mapEditor;
 
