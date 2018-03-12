@@ -97,7 +97,8 @@ static WindowKind projectWindowKind = {
   (RefreshFunction)  NULL,
   (CanCloseFunction) ensureEverythingSaved,
   (CloseFunction)    onClose,
-  (GadgetUpFunction) NULL
+  (GadgetUpFunction) NULL,
+  (ClickFunction)    NULL
 };
 
 static void makeWindowFullScreen(void) {
