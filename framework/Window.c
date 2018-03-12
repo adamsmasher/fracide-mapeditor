@@ -98,6 +98,12 @@ static void invokeGadgetUpHandler(FrameworkWindow *window, struct Gadget *gadget
   }
 }
 
+static void invokeClickHandler(FrameworkWindow *window, WORD x, WORD y) {
+  if(window->kind->clickOnWindow) {
+    window->kind->clickOnWindow(window, x, y);
+  }
+}
+
 static void dispatchMessage(FrameworkWindow *window, struct IntuiMessage *msg) {
   switch(msg->Class) {
     case IDCMP_MENUPICK:
@@ -111,6 +117,9 @@ static void dispatchMessage(FrameworkWindow *window, struct IntuiMessage *msg) {
       break;
     case IDCMP_GADGETUP:
       invokeGadgetUpHandler(window, (struct Gadget*)msg->IAddress);
+      break;
+    case IDCMP_MOUSEBUTTONS:
+      invokeClickHandler(window, msg->MouseX, msg->MouseY);
       break;
   }
 }
