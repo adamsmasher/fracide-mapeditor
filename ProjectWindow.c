@@ -96,7 +96,8 @@ static WindowKind projectWindowKind = {
   (MenuSpec*)        mainMenuSpec,
   (RefreshFunction)  NULL,
   (CanCloseFunction) ensureEverythingSaved,
-  (CloseFunction)    onClose
+  (CloseFunction)    onClose,
+  (GadgetUpFunction) NULL
 };
 
 static void makeWindowFullScreen(void) {
