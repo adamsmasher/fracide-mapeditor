@@ -469,7 +469,6 @@ static int confirmCreateMap(FrameworkWindow *projectWindow, int mapNum) {
     mapNum);
 }
 
-/* TODO: I kind of feel that this belongs in MapEditor, maybe? */
 BOOL openMapNum(FrameworkWindow *projectWindow, int mapNum) {
   FrameworkWindow *mapEditor;
 
