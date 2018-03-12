@@ -119,7 +119,7 @@ static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
   }
 
   mapEditorSetMapNum(mapEditorWindow, selected - 1);
-  enableMapRevert(mapEditorWindow);
+  disableMapRevert(mapEditorWindow);
 
   mapEditorSetSaveStatus(mapEditorWindow, SAVED);
 
