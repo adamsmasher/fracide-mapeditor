@@ -1405,11 +1405,3 @@ static void handleMapEditorMessage(FrameworkWindow *mapEditorWindow, struct Intu
       break;
   }
 }
-
-static void handleMapEditorMessages(FrameworkWindow *mapEditorWindow) {
-  struct IntuiMessage *msg = NULL;
-  while(msg = GT_GetIMsg(mapEditorWindow->intuitionWindow->UserPort)) {
-    handleMapEditorMessage(mapEditorWindow, msg);
-    GT_ReplyIMsg(msg);
-  }
-}
