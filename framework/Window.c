@@ -75,6 +75,7 @@ static void refreshWindow(FrameworkWindow *window) {
 }
 
 static BOOL canCloseWindow(FrameworkWindow *window) {
+  /* TODO: also check to make sure that you can close children! */
   if(window->kind->canCloseWindow) {
     return window->kind->canCloseWindow(window);
   } else {
