@@ -429,10 +429,7 @@ error:
 }
 
 void quit(FrameworkWindow *projectWindow) {
-  if(ensureEverythingSaved(projectWindow)) {
-    /* TODO: double check if this is the best way to do this. */
-    projectWindow->closed = TRUE;
-  }
+  tryToCloseWindow(projectWindow);
 }
 
 /* TODO: this is weird */
