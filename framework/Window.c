@@ -116,17 +116,17 @@ void handleWindowEvents(FrameworkWindow *window, long signalSet) {
   handleWindowChildEvents(window, signalSet);
 }
 
-static void closeChildren(FrameworkWindow *window) {
+static void forceCloseChildren(FrameworkWindow *window) {
   FrameworkWindow *i = window->children;
   while(i) {
     FrameworkWindow *next = i->next;
-    closeWindow(i);
+    forceCloseWindow(i);
     i = next;
   }
 }
 
-void closeWindow(FrameworkWindow *window) {
-  closeChildren(window);
+void forceCloseWindow(FrameworkWindow *window) {
+  forceCloseChildren(window);
 
   if(window->kind->closeWindow) {
     window->kind->closeWindow(window);

@@ -23,7 +23,7 @@ static void cleanupDeadWindows(FrameworkWindow *window) {
   cleanupDeadChildWindows(window);
 
   if(window->closed) {
-    closeWindow(window);
+    forceCloseWindow(window);
   }
 }
 
