@@ -472,6 +472,244 @@ static void handleMapEditorGadgetUp(FrameworkWindow *mapEditorWindow, struct Gad
     }
 }
 
+
+static int mapEditorClickInPalette(WORD x, WORD y) {
+  return ((x > TILESET_BORDER_LEFT                        ) &&
+          (x < TILESET_BORDER_LEFT + TILESET_BORDER_WIDTH ) &&
+          (y > TILESET_BORDER_TOP                         ) &&
+          (y < TILESET_BORDER_TOP  + TILESET_BORDER_HEIGHT));
+}
+
+static int mapEditorClickInMap(WORD x, WORD y) {
+  return ((x > MAP_BORDER_LEFT                    ) &&
+          (x < MAP_BORDER_LEFT + MAP_BORDER_WIDTH ) &&
+          (y > MAP_BORDER_TOP                     ) &&
+          (y < MAP_BORDER_TOP  + MAP_BORDER_HEIGHT));
+}
+
+static unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y) {
+  unsigned int row = y;
+  unsigned int col = x;
+
+  row -= TILESET_BORDER_TOP;
+  col -= TILESET_BORDER_LEFT;
+
+  row >>= 5;
+  col >>= 5;
+
+  return (row << 2) + col;
+}
+
+static unsigned int mapEditorGetMapTileClicked(WORD x, WORD y) {
+  unsigned int row = y;
+  unsigned int col = x;
+
+  row -= MAP_BORDER_TOP;
+  col -= MAP_BORDER_LEFT;
+
+  row >>= 5;
+  col >>= 5;
+
+  return (row * 10) + col;
+}
+
+static void redrawPaletteTile(FrameworkWindow *mapEditorWindow, unsigned int tile) {
+  MapEditorData *data = mapEditorWindow->data;
+  struct Image *image = &data->paletteImages[tile];
+  struct Image *next = image->NextImage;
+  image->NextImage = NULL;
+  DrawImage(mapEditorWindow->intuitionWindow->RPort, image,
+    TILESET_BORDER_LEFT,
+    TILESET_BORDER_TOP);
+  image->NextImage = next;
+}
+
+static WORD tileBorderPoints[] = {
+  0,  0,
+  31, 0,
+  31, 31,
+  0,  31,
+  0,  0
+};
+static struct Border tileBorder = {
+  0, 0,
+  0, 0,
+  COMPLEMENT,
+  5, tileBorderPoints,
+  NULL
+};
+
+static void mapEditorSetSelected(FrameworkWindow *mapEditorWindow, unsigned int selected) {
+  long row;
+  long col;
+  MapEditorData *data = mapEditorWindow->data;
+
+  if(data->selected >= 0) {
+    redrawPaletteTile(mapEditorWindow, data->selected);
+  }
+
+  data->selected = (int)selected;
+
+  row = selected >> 2;
+  col = selected & 0x03;
+
+  DrawBorder(mapEditorWindow->intuitionWindow->RPort, &tileBorder,
+    TILESET_BORDER_LEFT + (col * 32),
+    TILESET_BORDER_TOP  + (row * 32));
+}
+
+static void handleMapEditorPaletteClick(FrameworkWindow *mapEditorWindow, WORD x, WORD y) {
+  int tile = mapEditorGetPaletteTileClicked(x, y);
+  mapEditorSetSelected(mapEditorWindow, tile);
+}
+
+static void copyScaledTileset(UWORD *src, UWORD *dst) {
+  struct BitMap srcBitMap;
+  struct BitMap dstBitMap;
+  struct BitScaleArgs scaleArgs;
+  int tileNum;
+
+  srcBitMap.BytesPerRow = 2;
+  srcBitMap.Rows = 16;
+  srcBitMap.Flags = 0;
+  srcBitMap.Depth = 2;
+
+  dstBitMap.BytesPerRow = 4;
+  dstBitMap.Rows = 32;
+  dstBitMap.Flags = 0;
+  dstBitMap.Depth = 2;
+
+  scaleArgs.bsa_SrcX = 0;
+  scaleArgs.bsa_SrcY = 0;
+  scaleArgs.bsa_SrcWidth = 16;
+  scaleArgs.bsa_SrcHeight = 16;
+  scaleArgs.bsa_XSrcFactor = 1;
+  scaleArgs.bsa_YSrcFactor = 1;
+  scaleArgs.bsa_DestX = 0;
+  scaleArgs.bsa_DestY = 0;
+  scaleArgs.bsa_XDestFactor = 2;
+  scaleArgs.bsa_YDestFactor = 2;
+  scaleArgs.bsa_SrcBitMap = &srcBitMap;
+  scaleArgs.bsa_DestBitMap = &dstBitMap;
+  scaleArgs.bsa_Flags = 0;
+
+  for(tileNum = 0; tileNum < TILES_PER_SET; tileNum++) {
+    srcBitMap.Planes[0] = (PLANEPTR)src;
+    srcBitMap.Planes[1] = (PLANEPTR)(src + 16);
+
+    dstBitMap.Planes[0] = (PLANEPTR)dst;
+    dstBitMap.Planes[1] = (PLANEPTR)(dst + 64);
+
+    BitMapScale(&scaleArgs);
+
+    src += 32;
+    dst += 128;
+  }
+}
+
+static void drawEntity(struct RastPort *rport, Entity *entity, int entityNum) {
+  char             text[2];
+  struct IntuiText itext;
+
+  text[0] = '0' + entityNum;
+  text[1] = '\0';
+
+  itext.DrawMode  = COMPLEMENT;
+  itext.ITextFont = NULL;
+  itext.NextText  = NULL;
+  itext.IText     = text;
+  itext.LeftEdge  = entity->col * 32;
+  itext.TopEdge   = entity->row * 32;
+
+  PrintIText(rport, &itext, MAP_BORDER_LEFT + 1, MAP_BORDER_TOP + 1);
+
+}
+
+/* IN A DREAM WORLD: store the IntuiTexts in the map editor and render them all at once */
+static void drawEntities(FrameworkWindow *mapEditorWindow) {
+  int i;
+  MapEditorData *data = mapEditorWindow->data;
+  Entity *entity = &data->map->entities[0];
+  struct RastPort *rport = mapEditorWindow->intuitionWindow->RPort;
+
+  for(i = 0; i < data->map->entityCnt; i++) {
+    drawEntity(rport, entity, i);
+    entity++;
+  }
+}
+
+static void mapEditorSetTilesetUpdateUI(FrameworkWindow *mapEditorWindow, UWORD tilesetNumber) {
+  MapEditorData *data = mapEditorWindow->data;
+  ProjectWindowData *parentData = mapEditorWindow->parent->data;
+  TilesetPackage *tilesetPackage = NULL /* TODO: fix me parentData->tilesetPackage */;
+
+  GT_SetGadgetAttrs(data->tilesetNameGadget, mapEditorWindow->intuitionWindow, NULL,
+    GTTX_Text, tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber],
+    TAG_END);
+
+  copyScaledTileset(
+    (UWORD*)tilesetPackage->tilesetPackageFile.tilesetImgs[tilesetNumber],
+    data->imageData);
+
+  DrawImage(mapEditorWindow->intuitionWindow->RPort, data->paletteImages,
+    TILESET_BORDER_LEFT,
+    TILESET_BORDER_TOP);
+
+  DrawImage(mapEditorWindow->intuitionWindow->RPort, data->mapImages,
+    MAP_BORDER_LEFT,
+    MAP_BORDER_TOP);
+
+  drawEntities(mapEditorWindow);
+}
+
+static void mapEditorSetTileTo(FrameworkWindow *mapEditorWindow, unsigned int tile, UBYTE to) {
+  MapEditorData *data = mapEditorWindow->data;
+  data->map->tiles[tile] = to;
+  data->mapImages[tile].ImageData = data->imageData + (to << 7);
+  mapEditorSetSaveStatus(mapEditorWindow, UNSAVED);
+}
+
+static void redrawMapTile(FrameworkWindow *mapEditorWindow, unsigned int tile) {
+  MapEditorData *data = mapEditorWindow->data;
+  struct Image *image = &data->mapImages[tile];
+  struct Image *next = image->NextImage;
+  int entity_i;
+
+  image->NextImage = NULL;
+  DrawImage(mapEditorWindow->intuitionWindow->RPort, image,
+    MAP_BORDER_LEFT,
+    MAP_BORDER_TOP);
+  image->NextImage = next;
+
+  if(entity_i = mapFindEntity(data->map, tile / 10, tile % 10)) {
+    entity_i--;
+    drawEntity(mapEditorWindow->intuitionWindow->RPort, &data->map->entities[entity_i], entity_i);
+  }
+}
+
+static void mapEditorSetTile(FrameworkWindow *mapEditorWindow, unsigned int tile) {
+  MapEditorData *data = mapEditorWindow->data;
+  mapEditorSetTileTo(mapEditorWindow, tile, data->selected);
+  redrawMapTile(mapEditorWindow, tile);
+}
+
+static void handleMapEditorMapClick(FrameworkWindow *mapEditorWindow, WORD x, WORD y) {
+  unsigned int tile = mapEditorGetMapTileClicked(x, y);
+  mapEditorSetTile(mapEditorWindow, tile);
+}
+
+static void handleMapEditorClick(FrameworkWindow *mapEditorWindow, WORD x, WORD y) {
+  MapEditorData *data = mapEditorWindow->data;
+
+  if(data->map->tilesetNum) {
+    if(mapEditorClickInPalette(x, y)) {
+      handleMapEditorPaletteClick(mapEditorWindow, x, y);
+    } else if(mapEditorClickInMap(x, y)) {
+      handleMapEditorMapClick(mapEditorWindow, x, y);
+    }
+  }
+}
+
 static WindowKind mapEditorWindowKind = {
   {
     40, 40, MAP_EDITOR_WIDTH, MAP_EDITOR_HEIGHT,
@@ -693,21 +931,6 @@ static struct NewGadget *allNewGadgets[] = {
   NULL
 };
 
-static WORD tileBorderPoints[] = {
-  0,  0,
-  31, 0,
-  31, 31,
-  0,  31,
-  0,  0
-};
-static struct Border tileBorder = {
-  0, 0,
-  0, 0,
-  COMPLEMENT,
-  5, tileBorderPoints,
-  NULL
-};
-
 static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
   sizeof(struct EasyStruct),
   0,
@@ -873,110 +1096,11 @@ void closeMapEditor(MapEditorData *data) {
   free(data);
 }
 
-static void copyScaledTileset(UWORD *src, UWORD *dst) {
-  struct BitMap srcBitMap;
-  struct BitMap dstBitMap;
-  struct BitScaleArgs scaleArgs;
-  int tileNum;
-
-  srcBitMap.BytesPerRow = 2;
-  srcBitMap.Rows = 16;
-  srcBitMap.Flags = 0;
-  srcBitMap.Depth = 2;
-
-  dstBitMap.BytesPerRow = 4;
-  dstBitMap.Rows = 32;
-  dstBitMap.Flags = 0;
-  dstBitMap.Depth = 2;
-
-  scaleArgs.bsa_SrcX = 0;
-  scaleArgs.bsa_SrcY = 0;
-  scaleArgs.bsa_SrcWidth = 16;
-  scaleArgs.bsa_SrcHeight = 16;
-  scaleArgs.bsa_XSrcFactor = 1;
-  scaleArgs.bsa_YSrcFactor = 1;
-  scaleArgs.bsa_DestX = 0;
-  scaleArgs.bsa_DestY = 0;
-  scaleArgs.bsa_XDestFactor = 2;
-  scaleArgs.bsa_YDestFactor = 2;
-  scaleArgs.bsa_SrcBitMap = &srcBitMap;
-  scaleArgs.bsa_DestBitMap = &dstBitMap;
-  scaleArgs.bsa_Flags = 0;
-
-  for(tileNum = 0; tileNum < TILES_PER_SET; tileNum++) {
-    srcBitMap.Planes[0] = (PLANEPTR)src;
-    srcBitMap.Planes[1] = (PLANEPTR)(src + 16);
-
-    dstBitMap.Planes[0] = (PLANEPTR)dst;
-    dstBitMap.Planes[1] = (PLANEPTR)(dst + 64);
-
-    BitMapScale(&scaleArgs);
-
-    src += 32;
-    dst += 128;
-  }
-}
-
-static void drawEntity(struct RastPort *rport, Entity *entity, int entityNum) {
-  char             text[2];
-  struct IntuiText itext;
-
-  text[0] = '0' + entityNum;
-  text[1] = '\0';
-
-  itext.DrawMode  = COMPLEMENT;
-  itext.ITextFont = NULL;
-  itext.NextText  = NULL;
-  itext.IText     = text;
-  itext.LeftEdge  = entity->col * 32;
-  itext.TopEdge   = entity->row * 32;
-
-  PrintIText(rport, &itext, MAP_BORDER_LEFT + 1, MAP_BORDER_TOP + 1);
-
-}
-
 void mapEditorDrawEntity(FrameworkWindow *mapEditorWindow, Entity *entity, int entityNum) {
   MapEditorData *data = mapEditorWindow->data;
   if(data->map->tilesetNum) {
     drawEntity(mapEditorWindow->intuitionWindow->RPort, entity, entityNum);
   }
-}
-
-/* IN A DREAM WORLD: store the IntuiTexts in the map editor and render them all at once */
-static void drawEntities(FrameworkWindow *mapEditorWindow) {
-  int i;
-  MapEditorData *data = mapEditorWindow->data;
-  Entity *entity = &data->map->entities[0];
-  struct RastPort *rport = mapEditorWindow->intuitionWindow->RPort;
-
-  for(i = 0; i < data->map->entityCnt; i++) {
-    drawEntity(rport, entity, i);
-    entity++;
-  }
-}
-
-static void mapEditorSetTilesetUpdateUI(FrameworkWindow *mapEditorWindow, UWORD tilesetNumber) {
-  MapEditorData *data = mapEditorWindow->data;
-  ProjectWindowData *parentData = mapEditorWindow->parent->data;
-  TilesetPackage *tilesetPackage = NULL /* TODO: fix me parentData->tilesetPackage */;
-
-  GT_SetGadgetAttrs(data->tilesetNameGadget, mapEditorWindow->intuitionWindow, NULL,
-    GTTX_Text, tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber],
-    TAG_END);
-
-  copyScaledTileset(
-    (UWORD*)tilesetPackage->tilesetPackageFile.tilesetImgs[tilesetNumber],
-    data->imageData);
-
-  DrawImage(mapEditorWindow->intuitionWindow->RPort, data->paletteImages,
-    TILESET_BORDER_LEFT,
-    TILESET_BORDER_TOP);
-
-  DrawImage(mapEditorWindow->intuitionWindow->RPort, data->mapImages,
-    MAP_BORDER_LEFT,
-    MAP_BORDER_TOP);
-
-  drawEntities(mapEditorWindow);
 }
 
 static void mapEditorClearTilesetUI(FrameworkWindow *mapEditorWindow) {
@@ -1083,53 +1207,11 @@ void mapEditorRefreshSong(FrameworkWindow *mapEditorWindow) {
   }
 }
 
-static void redrawPaletteTile(FrameworkWindow *mapEditorWindow, unsigned int tile) {
-  MapEditorData *data = mapEditorWindow->data;
-  struct Image *image = &data->paletteImages[tile];
-  struct Image *next = image->NextImage;
-  image->NextImage = NULL;
-  DrawImage(mapEditorWindow->intuitionWindow->RPort, image,
-    TILESET_BORDER_LEFT,
-    TILESET_BORDER_TOP);
-  image->NextImage = next;
-}
-
-static void redrawMapTile(FrameworkWindow *mapEditorWindow, unsigned int tile) {
-  MapEditorData *data = mapEditorWindow->data;
-  struct Image *image = &data->mapImages[tile];
-  struct Image *next = image->NextImage;
-  int entity_i;
-
-  image->NextImage = NULL;
-  DrawImage(mapEditorWindow->intuitionWindow->RPort, image,
-    MAP_BORDER_LEFT,
-    MAP_BORDER_TOP);
-  image->NextImage = next;
-
-  if(entity_i = mapFindEntity(data->map, tile / 10, tile % 10)) {
-    entity_i--;
-    drawEntity(mapEditorWindow->intuitionWindow->RPort, &data->map->entities[entity_i], entity_i);
-  }
-}
-
 void mapEditorRedrawTile(FrameworkWindow *mapEditorWindow, int row, int col) {
   MapEditorData *data = mapEditorWindow->data;
   if(data->map->tilesetNum) {
     redrawMapTile(mapEditorWindow, row * 10 + col);
   }
-}
-
-static void mapEditorSetTileTo(FrameworkWindow *mapEditorWindow, unsigned int tile, UBYTE to) {
-  MapEditorData *data = mapEditorWindow->data;
-  data->map->tiles[tile] = to;
-  data->mapImages[tile].ImageData = data->imageData + (to << 7);
-  mapEditorSetSaveStatus(mapEditorWindow, UNSAVED);
-}
-
-static void mapEditorSetTile(FrameworkWindow *mapEditorWindow, unsigned int tile) {
-  MapEditorData *data = mapEditorWindow->data;
-  mapEditorSetTileTo(mapEditorWindow, tile, data->selected);
-  redrawMapTile(mapEditorWindow, tile);
 }
 
 void mapEditorSetMapNum(FrameworkWindow *mapEditorWindow, UWORD mapNum) {
@@ -1307,93 +1389,12 @@ error:
   return NULL;
 }
 
-static int mapEditorClickInPalette(WORD x, WORD y) {
-  return ((x > TILESET_BORDER_LEFT                        ) &&
-          (x < TILESET_BORDER_LEFT + TILESET_BORDER_WIDTH ) &&
-          (y > TILESET_BORDER_TOP                         ) &&
-          (y < TILESET_BORDER_TOP  + TILESET_BORDER_HEIGHT));
-}
-
-static int mapEditorClickInMap(WORD x, WORD y) {
-  return ((x > MAP_BORDER_LEFT                    ) &&
-          (x < MAP_BORDER_LEFT + MAP_BORDER_WIDTH ) &&
-          (y > MAP_BORDER_TOP                     ) &&
-          (y < MAP_BORDER_TOP  + MAP_BORDER_HEIGHT));
-}
-
-static unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y) {
-  unsigned int row = y;
-  unsigned int col = x;
-
-  row -= TILESET_BORDER_TOP;
-  col -= TILESET_BORDER_LEFT;
-
-  row >>= 5;
-  col >>= 5;
-
-  return (row << 2) + col;
-}
-
-static unsigned int mapEditorGetMapTileClicked(WORD x, WORD y) {
-  unsigned int row = y;
-  unsigned int col = x;
-
-  row -= MAP_BORDER_TOP;
-  col -= MAP_BORDER_LEFT;
-
-  row >>= 5;
-  col >>= 5;
-
-  return (row * 10) + col;
-}
-
-static void mapEditorSetSelected(FrameworkWindow *mapEditorWindow, unsigned int selected) {
-  long row;
-  long col;
-  MapEditorData *data = mapEditorWindow->data;
-
-  if(data->selected >= 0) {
-    redrawPaletteTile(mapEditorWindow, data->selected);
-  }
-
-  data->selected = (int)selected;
-
-  row = selected >> 2;
-  col = selected & 0x03;
-
-  DrawBorder(mapEditorWindow->intuitionWindow->RPort, &tileBorder,
-    TILESET_BORDER_LEFT + (col * 32),
-    TILESET_BORDER_TOP  + (row * 32));
-}
-
 void enableMapRevert(FrameworkWindow *mapEditorWindow) {
   OnMenu(mapEditorWindow->intuitionWindow, REVERT_MAP_MENU_ITEM);
 }
 
 void disableMapRevert(FrameworkWindow *mapEditorWindow) {
   OffMenu(mapEditorWindow->intuitionWindow, REVERT_MAP_MENU_ITEM);
-}
-
-static void handleMapEditorPaletteClick(FrameworkWindow *mapEditorWindow, WORD x, WORD y) {
-  int tile = mapEditorGetPaletteTileClicked(x, y);
-  mapEditorSetSelected(mapEditorWindow, tile);
-}
-
-static void handleMapEditorMapClick(FrameworkWindow *mapEditorWindow, WORD x, WORD y) {
-  unsigned int tile = mapEditorGetMapTileClicked(x, y);
-  mapEditorSetTile(mapEditorWindow, tile);
-}
-
-static void handleMapEditorClick(FrameworkWindow *mapEditorWindow, WORD x, WORD y) {
-  MapEditorData *data = mapEditorWindow->data;
-
-  if(data->map->tilesetNum) {
-    if(mapEditorClickInPalette(x, y)) {
-      handleMapEditorPaletteClick(mapEditorWindow, x, y);
-    } else if(mapEditorClickInMap(x, y)) {
-      handleMapEditorMapClick(mapEditorWindow, x, y);
-    }
-  }
 }
 
 static void handleMapEditorMessage(FrameworkWindow *mapEditorWindow, struct IntuiMessage *msg) {
