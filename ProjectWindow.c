@@ -67,6 +67,7 @@ static BOOL ensureMapEditorsSaved(FrameworkWindow *projectWindow) {
     }
     i = i->next;
   }
+  return TRUE;
 }
 
 static void onClose(FrameworkWindow *projectWindow) {
