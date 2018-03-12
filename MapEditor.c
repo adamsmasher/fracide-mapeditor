@@ -729,7 +729,8 @@ static WindowKind mapEditorWindowKind = {
   (RefreshFunction)  refreshMapEditor,
   (CanCloseFunction) NULL, /* TODO: check if map is saved here */
   (CloseFunction)    NULL,
-  (GadgetUpFunction) handleMapEditorGadgetUp
+  (GadgetUpFunction) handleMapEditorGadgetUp,
+  (ClickFunction)    handleMapEditorClick
 };
 
 BOOL isMapEditorWindow(FrameworkWindow *window) {
@@ -1395,12 +1396,4 @@ void enableMapRevert(FrameworkWindow *mapEditorWindow) {
 
 void disableMapRevert(FrameworkWindow *mapEditorWindow) {
   OffMenu(mapEditorWindow->intuitionWindow, REVERT_MAP_MENU_ITEM);
-}
-
-static void handleMapEditorMessage(FrameworkWindow *mapEditorWindow, struct IntuiMessage *msg) {
-  switch(msg->Class) {
-    case IDCMP_MOUSEBUTTONS:
-      handleMapEditorClick(mapEditorWindow, msg->MouseX, msg->MouseY);
-      break;
-  }
 }
