@@ -698,6 +698,7 @@ static void handleMapEditorMapClick(FrameworkWindow *mapEditorWindow, WORD x, WO
   mapEditorSetTile(mapEditorWindow, tile);
 }
 
+/* TODO: maybe we can use buttons for this... */
 static void handleMapEditorClick(FrameworkWindow *mapEditorWindow, WORD x, WORD y) {
   MapEditorData *data = mapEditorWindow->data;
 
