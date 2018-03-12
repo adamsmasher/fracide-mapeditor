@@ -92,7 +92,7 @@ static WindowKind projectWindowKind = {
     0xFFFF,0xFFFF,
     CUSTOMSCREEN
   },
-  (MenuSpec*)        NULL, /* set me later */
+  (MenuSpec*)        mainMenuSpec,
   (RefreshFunction)  NULL,
   (CanCloseFunction) ensureEverythingSaved,
   (CloseFunction)    onClose
@@ -107,8 +107,6 @@ static void makeWindowFullScreen(void) {
 FrameworkWindow *openProjectWindow(void) {
   FrameworkWindow *projectWindow;
   ProjectWindowData *data;
-
-  projectWindowKind.menuSpec = mainMenuSpec;
 
   makeWindowFullScreen();
 
