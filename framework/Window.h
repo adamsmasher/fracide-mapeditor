@@ -6,6 +6,7 @@
 typedef void (*RefreshFunction) (struct FrameworkWindow_tag*);
 typedef BOOL (*CanCloseFunction)(struct FrameworkWindow_tag*);
 typedef void (*CloseFunction)   (struct FrameworkWindow_tag*);
+typedef void (*GadgetUpFunction)(struct FrameworkWindow_tag*, struct Gadget*);
 
 typedef struct WindowKind_tag {
   struct NewWindow newWindow;
@@ -15,6 +16,7 @@ typedef struct WindowKind_tag {
   RefreshFunction  refreshWindow;
   CanCloseFunction canCloseWindow;
   CloseFunction    closeWindow;
+  GadgetUpFunction gadgetUpOnWindow;
 } WindowKind;
 
 typedef struct FrameworkWindow_tag {

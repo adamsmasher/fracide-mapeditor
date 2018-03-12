@@ -92,6 +92,12 @@ BOOL tryToCloseWindow(FrameworkWindow *window) {
   }
 }
 
+static void invokeGadgetUpHandler(FrameworkWindow *window, struct Gadget *gadget) {
+  if(window->kind->gadgetUpOnWindow) {
+    window->kind->gadgetUpOnWindow(window, gadget);
+  }
+}
+
 static void dispatchMessage(FrameworkWindow *window, struct IntuiMessage *msg) {
   switch(msg->Class) {
     case IDCMP_MENUPICK:
@@ -102,6 +108,9 @@ static void dispatchMessage(FrameworkWindow *window, struct IntuiMessage *msg) {
       break;
     case IDCMP_CLOSEWINDOW:
       tryToCloseWindow(window);
+      break;
+    case IDCMP_GADGETUP:
+      invokeGadgetUpHandler(window, (struct Gadget*)msg->IAddress);
       break;
   }
 }
