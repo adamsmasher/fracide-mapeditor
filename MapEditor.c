@@ -259,6 +259,219 @@ static void refreshMapEditor(FrameworkWindow *mapEditorWindow) {
   drawBorders(mapEditorWindow->intuitionWindow->RPort);
 }
 
+static void attachTilesetRequesterToMapEditor
+(MapEditorData *data, TilesetRequester *tilesetRequester) {
+  data->tilesetRequester = tilesetRequester;
+}
+
+static void handleChooseTilesetClicked(FrameworkWindow *mapEditorWindow) {
+  TilesetRequester *tilesetRequester;
+  char title[32];
+  MapEditorData *data = mapEditorWindow->data;
+  FrameworkWindow *projectWindow = mapEditorWindow->parent;
+  ProjectWindowData *parentData = projectWindow->data;
+  TilesetPackage *tilesetPackage = NULL /* TODO: fix me parentData->tilesetPackage */;
+
+  if(data->tilesetRequester) {
+    WindowToFront(data->tilesetRequester->window->intuitionWindow);
+    goto done;
+  }
+
+  if(!tilesetPackage) {
+    int choice = EasyRequest(
+      mapEditorWindow->intuitionWindow,
+      &noTilesetPackageLoadedEasyStruct,
+      NULL);
+
+    if(choice) {
+      selectTilesetPackage(projectWindow);
+    }
+  }
+
+  /* even after giving the user the opportunity to set the tileset
+     package, we need to be sure they did so... */
+  if(!tilesetPackage) {
+    goto done;
+  }
+
+  if(data->mapNum) {
+    sprintf(title, "Choose Tileset For Map %d", data->mapNum - 1);
+  } else {
+    strcpy(title, "Choose Tileset");
+  }
+
+  tilesetRequester = newTilesetRequester(title);
+  if(!tilesetRequester) {
+    fprintf(stderr, "handleChooseTilesetClicked: couldn't make requester\n");
+    goto error;
+  }
+
+  attachTilesetRequesterToMapEditor(data, tilesetRequester);
+  /* TODO: fix me */
+  /* addWindowToSet(tilesetRequester->window); */
+done:
+  return;
+error:
+  return;
+}
+
+static void updateMapEditorMapName(FrameworkWindow *mapEditorWindow) {
+  MapEditorData *data = mapEditorWindow->data;
+  struct StringInfo *stringInfo = data->mapNameGadget->SpecialInfo;
+
+  strcpy(data->map->name, stringInfo->Buffer);
+  mapEditorSetSaveStatus(mapEditorWindow, UNSAVED);
+}
+
+static void attachSongRequesterToMapEditor
+(MapEditorData *data, SongRequester *songRequester) {
+  data->songRequester = songRequester;
+}
+
+static void handleChangeSongClicked(FrameworkWindow *mapEditorWindow) {
+  MapEditorData *data = mapEditorWindow->data;
+
+  if(!data->songRequester) {
+    char title[32];
+    SongRequester *songRequester;
+
+    if(data->mapNum) {
+      sprintf(title, "Change Soundtrack For Map %d", data->mapNum - 1);
+    } else {
+      strcpy(title, "Change Soundtrack");
+    }
+
+    songRequester = newSongRequester(title);
+    if(songRequester) {
+      attachSongRequesterToMapEditor(data, songRequester);
+      /* TODO: fix me */
+      /* addWindowToSet(songRequester->window); */
+    }
+  } else {
+    WindowToFront(data->songRequester->window->intuitionWindow);
+  }
+}
+
+static void mapEditorClearSongUpdateUI(FrameworkWindow *mapEditorWindow) {
+  MapEditorData *data = mapEditorWindow->data;
+  GT_SetGadgetAttrs(data->songNameGadget, mapEditorWindow->intuitionWindow, NULL,
+    GTTX_Text, "N/A",
+    TAG_END);
+}
+
+static void mapEditorClearSong(FrameworkWindow *mapEditorWindow) {
+  MapEditorData *data = mapEditorWindow->data;
+  data->map->songNum = 0;
+  mapEditorClearSongUpdateUI(mapEditorWindow);
+  mapEditorSetSaveStatus(mapEditorWindow, UNSAVED);
+}
+
+static void moveToMap(FrameworkWindow *mapEditorWindow, int mapNum) {
+  MapEditorData *data = mapEditorWindow->data;
+  FrameworkWindow *projectWindow = mapEditorWindow->parent;
+
+  if(data->saved || unsavedMapEditorAlert(mapEditorWindow)) {
+    if(openMapNum(projectWindow, mapNum - 1)) {
+      mapEditorWindow->closed = 1;
+    }
+  }
+}
+
+static void handleMapUp(FrameworkWindow *mapEditorWindow) {
+  MapEditorData *data = mapEditorWindow->data;
+  moveToMap(mapEditorWindow, data->mapNum - 16);
+}
+
+static void handleMapDown(FrameworkWindow *mapEditorWindow) {
+  MapEditorData *data = mapEditorWindow->data;
+  moveToMap(mapEditorWindow, data->mapNum + 16);
+}
+
+static void handleMapLeft(FrameworkWindow *mapEditorWindow) {
+  MapEditorData *data = mapEditorWindow->data;
+  moveToMap(mapEditorWindow, data->mapNum - 1);
+}
+
+static void handleMapRight(FrameworkWindow *mapEditorWindow) {
+  MapEditorData *data = mapEditorWindow->data;
+  moveToMap(mapEditorWindow, data->mapNum + 1);
+}
+
+static void attachEntityBrowserToMapEditor
+(MapEditorData *data, EntityBrowser *entityBrowser) {
+  data->entityBrowser = entityBrowser;
+}
+
+static void openNewEntityBrowser(FrameworkWindow *mapEditorWindow) {
+  char title[32];
+  EntityBrowser *entityBrowser;
+  MapEditorData *data = mapEditorWindow->data;
+
+  if(data->mapNum) {
+    sprintf(title, "Entities (Map %d)", data->mapNum - 1);
+  } else {
+    strcpy(title, "Entities");
+  }
+
+  entityBrowser = newEntityBrowser(title, data->map->entities, data->map->entityCnt);
+  if(!entityBrowser) {
+    fprintf(stderr, "openNewEntityBrowser: couldn't create new entity browser\n");
+    goto error;
+  }
+
+  attachEntityBrowserToMapEditor(data, entityBrowser);
+  /* TODO: fix me */
+  /* addWindowToSet(entityBrowser->window); */
+
+  done:
+    return;
+
+  error:
+    return;
+}
+
+static void handleEntitiesClicked(FrameworkWindow *mapEditorWindow) {
+  MapEditorData *data = mapEditorWindow->data;
+
+  if(!data->entityBrowser) {
+    openNewEntityBrowser(mapEditorWindow);
+  } else {
+    WindowToFront(data->entityBrowser->window->intuitionWindow);
+  }
+}
+
+static void handleMapEditorGadgetUp(FrameworkWindow *mapEditorWindow, struct Gadget *gadget) {
+  switch(gadget->GadgetID) {
+    case CHOOSE_TILESET_ID:
+      handleChooseTilesetClicked(mapEditorWindow);
+      break;
+    case MAP_NAME_ID:
+      updateMapEditorMapName(mapEditorWindow);
+      break;
+    case SONG_CHANGE_ID:
+      handleChangeSongClicked(mapEditorWindow);
+      break;
+    case SONG_CLEAR_ID:
+      mapEditorClearSong(mapEditorWindow);
+      break;
+    case MAP_LEFT_ID:
+      handleMapLeft(mapEditorWindow);
+      break;
+    case MAP_RIGHT_ID:
+      handleMapRight(mapEditorWindow);
+      break;
+    case MAP_UP_ID:
+      handleMapUp(mapEditorWindow);
+      break;
+    case MAP_DOWN_ID:
+      handleMapDown(mapEditorWindow);
+      break;
+    case ENTITIES_ID:
+      handleEntitiesClicked(mapEditorWindow);
+      break;
+    }
+}
+
 static WindowKind mapEditorWindowKind = {
   {
     40, 40, MAP_EDITOR_WIDTH, MAP_EDITOR_HEIGHT,
@@ -277,7 +490,8 @@ static WindowKind mapEditorWindowKind = {
   (MenuSpec*)        NULL,
   (RefreshFunction)  refreshMapEditor,
   (CanCloseFunction) NULL, /* TODO: check if map is saved here */
-  (CloseFunction)    NULL
+  (CloseFunction)    NULL,
+  (GadgetUpFunction) handleMapEditorGadgetUp
 };
 
 BOOL isMapEditorWindow(FrameworkWindow *window) {
@@ -659,21 +873,6 @@ void closeMapEditor(MapEditorData *data) {
   free(data);
 }
 
-static void attachTilesetRequesterToMapEditor
-(MapEditorData *data, TilesetRequester *tilesetRequester) {
-  data->tilesetRequester = tilesetRequester;
-}
-
-static void attachSongRequesterToMapEditor
-(MapEditorData *data, SongRequester *songRequester) {
-  data->songRequester = songRequester;
-}
-
-static void attachEntityBrowserToMapEditor
-(MapEditorData *data, EntityBrowser *entityBrowser) {
-  data->entityBrowser = entityBrowser;
-}
-
 static void copyScaledTileset(UWORD *src, UWORD *dst) {
   struct BitMap srcBitMap;
   struct BitMap dstBitMap;
@@ -870,13 +1069,6 @@ static void mapEditorSetSongUpdateUI(FrameworkWindow *mapEditorWindow, UWORD son
     TAG_END);
 }
 
-static void mapEditorClearSongUpdateUI(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  GT_SetGadgetAttrs(data->songNameGadget, mapEditorWindow->intuitionWindow, NULL,
-    GTTX_Text, "N/A",
-    TAG_END);
-}
-
 void mapEditorSetSong(FrameworkWindow *mapEditorWindow, UWORD songNumber) {
   MapEditorData *data = mapEditorWindow->data;
   data->map->songNum = songNumber + 1;
@@ -889,13 +1081,6 @@ void mapEditorRefreshSong(FrameworkWindow *mapEditorWindow) {
   if(data->map->songNum) {
      mapEditorSetSongUpdateUI(mapEditorWindow, data->map->songNum - 1);
   }
-}
-
-static void mapEditorClearSong(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  data->map->songNum = 0;
-  mapEditorClearSongUpdateUI(mapEditorWindow);
-  mapEditorSetSaveStatus(mapEditorWindow, UNSAVED);
 }
 
 static void redrawPaletteTile(FrameworkWindow *mapEditorWindow, unsigned int tile) {
@@ -1181,196 +1366,12 @@ static void mapEditorSetSelected(FrameworkWindow *mapEditorWindow, unsigned int 
     TILESET_BORDER_TOP  + (row * 32));
 }
 
-static void updateMapEditorMapName(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  struct StringInfo *stringInfo = data->mapNameGadget->SpecialInfo;
-
-  strcpy(data->map->name, stringInfo->Buffer);
-  mapEditorSetSaveStatus(mapEditorWindow, UNSAVED);
-}
-
 void enableMapRevert(FrameworkWindow *mapEditorWindow) {
   OnMenu(mapEditorWindow->intuitionWindow, REVERT_MAP_MENU_ITEM);
 }
 
 void disableMapRevert(FrameworkWindow *mapEditorWindow) {
   OffMenu(mapEditorWindow->intuitionWindow, REVERT_MAP_MENU_ITEM);
-}
-
-static void openNewEntityBrowser(FrameworkWindow *mapEditorWindow) {
-  char title[32];
-  EntityBrowser *entityBrowser;
-  MapEditorData *data = mapEditorWindow->data;
-
-  if(data->mapNum) {
-    sprintf(title, "Entities (Map %d)", data->mapNum - 1);
-  } else {
-    strcpy(title, "Entities");
-  }
-
-  entityBrowser = newEntityBrowser(title, data->map->entities, data->map->entityCnt);
-  if(!entityBrowser) {
-    fprintf(stderr, "openNewEntityBrowser: couldn't create new entity browser\n");
-    goto error;
-  }
-
-  attachEntityBrowserToMapEditor(data, entityBrowser);
-  /* TODO: fix me */
-  /* addWindowToSet(entityBrowser->window); */
-
-  done:
-    return;
-
-  error:
-    return;
-}
-
-static void handleChooseTilesetClicked(FrameworkWindow *mapEditorWindow) {
-  TilesetRequester *tilesetRequester;
-  char title[32];
-  MapEditorData *data = mapEditorWindow->data;
-  FrameworkWindow *projectWindow = mapEditorWindow->parent;
-  ProjectWindowData *parentData = projectWindow->data;
-  TilesetPackage *tilesetPackage = NULL /* TODO: fix me parentData->tilesetPackage */;
-
-  if(data->tilesetRequester) {
-    WindowToFront(data->tilesetRequester->window->intuitionWindow);
-    goto done;
-  }
-
-  if(!tilesetPackage) {
-    int choice = EasyRequest(
-      mapEditorWindow->intuitionWindow,
-      &noTilesetPackageLoadedEasyStruct,
-      NULL);
-
-    if(choice) {
-      selectTilesetPackage(projectWindow);
-    }
-  }
-
-  /* even after giving the user the opportunity to set the tileset
-     package, we need to be sure they did so... */
-  if(!tilesetPackage) {
-    goto done;
-  }
-
-  if(data->mapNum) {
-    sprintf(title, "Choose Tileset For Map %d", data->mapNum - 1);
-  } else {
-    strcpy(title, "Choose Tileset");
-  }
-
-  tilesetRequester = newTilesetRequester(title);
-  if(!tilesetRequester) {
-    fprintf(stderr, "handleChooseTilesetClicked: couldn't make requester\n");
-    goto error;
-  }
-
-  attachTilesetRequesterToMapEditor(data, tilesetRequester);
-  /* TODO: fix me */
-  /* addWindowToSet(tilesetRequester->window); */
-done:
-  return;
-error:
-  return;
-}
-
-static void handleChangeSongClicked(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-
-  if(!data->songRequester) {
-    char title[32];
-    SongRequester *songRequester;
-
-    if(data->mapNum) {
-      sprintf(title, "Change Soundtrack For Map %d", data->mapNum - 1);
-    } else {
-      strcpy(title, "Change Soundtrack");
-    }
-
-    songRequester = newSongRequester(title);
-    if(songRequester) {
-      attachSongRequesterToMapEditor(data, songRequester);
-      /* TODO: fix me */
-      /* addWindowToSet(songRequester->window); */
-    }
-  } else {
-    WindowToFront(data->songRequester->window->intuitionWindow);
-  }
-}
-
-static void moveToMap(FrameworkWindow *mapEditorWindow, int mapNum) {
-  MapEditorData *data = mapEditorWindow->data;
-  FrameworkWindow *projectWindow = mapEditorWindow->parent;
-
-  if(data->saved || unsavedMapEditorAlert(mapEditorWindow)) {
-    if(openMapNum(projectWindow, mapNum - 1)) {
-      mapEditorWindow->closed = 1;
-    }
-  }
-}
-
-static void handleMapUp(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  moveToMap(mapEditorWindow, data->mapNum - 16);
-}
-
-static void handleMapDown(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  moveToMap(mapEditorWindow, data->mapNum + 16);
-}
-
-static void handleMapLeft(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  moveToMap(mapEditorWindow, data->mapNum - 1);
-}
-
-static void handleMapRight(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  moveToMap(mapEditorWindow, data->mapNum + 1);
-}
-
-static void handleEntitiesClicked(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-
-  if(!data->entityBrowser) {
-    openNewEntityBrowser(mapEditorWindow);
-  } else {
-    WindowToFront(data->entityBrowser->window->intuitionWindow);
-  }
-}
-
-static void handleMapEditorGadgetUp(FrameworkWindow *mapEditorWindow, struct Gadget *gadget) {
-  switch(gadget->GadgetID) {
-    case CHOOSE_TILESET_ID:
-      handleChooseTilesetClicked(mapEditorWindow);
-      break;
-    case MAP_NAME_ID:
-      updateMapEditorMapName(mapEditorWindow);
-      break;
-    case SONG_CHANGE_ID:
-      handleChangeSongClicked(mapEditorWindow);
-      break;
-    case SONG_CLEAR_ID:
-      mapEditorClearSong(mapEditorWindow);
-      break;
-    case MAP_LEFT_ID:
-      handleMapLeft(mapEditorWindow);
-      break;
-    case MAP_RIGHT_ID:
-      handleMapRight(mapEditorWindow);
-      break;
-    case MAP_UP_ID:
-      handleMapUp(mapEditorWindow);
-      break;
-    case MAP_DOWN_ID:
-      handleMapDown(mapEditorWindow);
-      break;
-    case ENTITIES_ID:
-      handleEntitiesClicked(mapEditorWindow);
-      break;
-    }
 }
 
 static void handleMapEditorPaletteClick(FrameworkWindow *mapEditorWindow, WORD x, WORD y) {
@@ -1397,9 +1398,6 @@ static void handleMapEditorClick(FrameworkWindow *mapEditorWindow, WORD x, WORD 
 
 static void handleMapEditorMessage(FrameworkWindow *mapEditorWindow, struct IntuiMessage *msg) {
   switch(msg->Class) {
-    case IDCMP_GADGETUP:
-      handleMapEditorGadgetUp(mapEditorWindow, (struct Gadget*)msg->IAddress);
-      break;
     case IDCMP_MOUSEBUTTONS:
       handleMapEditorClick(mapEditorWindow, msg->MouseX, msg->MouseY);
       break;
