@@ -82,9 +82,12 @@ static BOOL canCloseWindow(FrameworkWindow *window) {
   }
 }
 
-static void tryToCloseWindow(FrameworkWindow *window) {
+BOOL tryToCloseWindow(FrameworkWindow *window) {
   if(canCloseWindow(window)) {
     window->closed = TRUE;
+    return TRUE;
+  } else {
+    return FALSE;
   }
 }
 

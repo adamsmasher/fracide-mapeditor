@@ -38,6 +38,7 @@ void handleWindowEvents(FrameworkWindow*, long signalSet);
 
 FrameworkWindow *openWindowOnScreen(WindowKind*, struct Screen*);
 
+BOOL tryToCloseWindow(FrameworkWindow*);
 void forceCloseWindow(FrameworkWindow*);
 
 #endif
