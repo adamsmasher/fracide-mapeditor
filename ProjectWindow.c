@@ -32,8 +32,49 @@ static MenuSpec mainMenuSpec[] = {
 
 #define REVERT_PROJECT_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
 
+static BOOL unsavedProjectAlert(FrameworkWindow *projectWindow) {
+  int response;
+
+  response = EasyRequest(
+    projectWindow->intuitionWindow,
+    &unsavedProjectAlertEasyStruct,
+    NULL);
+
+  switch(response) {
+    case 0: return FALSE;
+    case 1: return saveProject(projectWindow);
+    case 2: return TRUE;
+    default:
+      fprintf(stderr, "unsavedProjectAlert: unknown response %d\n", response);
+      goto error;
+  }
+
+error:
+  return FALSE;
+}
+
+static BOOL ensureProjectSaved(FrameworkWindow *projectWindow) {
+  return (BOOL)(projectDataIsSaved(projectWindow->data) || unsavedProjectAlert(projectWindow));
+}
+
+static BOOL ensureMapEditorsSaved(FrameworkWindow *projectWindow) {
+  FrameworkWindow *i = projectWindow->children;
+  while(i) {
+    if(isMapEditorWindow(i)) {
+      if(!ensureMapEditorSaved(i->data)) {
+        return FALSE;
+      }
+    }
+    i = i->next;
+  }
+}
+
 static void onClose(FrameworkWindow *projectWindow) {
   freeProjectData(projectWindow->data);
+}
+
+static BOOL ensureEverythingSaved(FrameworkWindow *projectWindow) {
+  return (BOOL)(ensureMapEditorsSaved(projectWindow) && ensureProjectSaved(projectWindow));
 }
 
 static WindowKind projectWindowKind = {
@@ -53,7 +94,7 @@ static WindowKind projectWindowKind = {
   },
   (MenuSpec*)        NULL, /* set me later */
   (RefreshFunction)  NULL,
-  (CanCloseFunction) NULL, /* TODO: check for saved/unsaved here */
+  (CanCloseFunction) ensureEverythingSaved,
   (CloseFunction)    onClose
 };
 
@@ -200,47 +241,6 @@ done:
 
 error:
   return FALSE;
-}
-
-static BOOL unsavedProjectAlert(FrameworkWindow *projectWindow) {
-  int response;
-
-  response = EasyRequest(
-    projectWindow->intuitionWindow,
-    &unsavedProjectAlertEasyStruct,
-    NULL);
-
-  switch(response) {
-    case 0: return FALSE;
-    case 1: return saveProject(projectWindow);
-    case 2: return TRUE;
-    default:
-      fprintf(stderr, "unsavedProjectAlert: unknown response %d\n", response);
-      goto error;
-  }
-
-error:
-  return FALSE;
-}
-
-static BOOL ensureProjectSaved(FrameworkWindow *projectWindow) {
-  return (BOOL)(projectDataIsSaved(projectWindow->data) || unsavedProjectAlert(projectWindow));
-}
-
-static BOOL ensureMapEditorsSaved(FrameworkWindow *projectWindow) {
-  FrameworkWindow *i = projectWindow->children;
-  while(i) {
-    if(isMapEditorWindow(i)) {
-      if(!ensureMapEditorSaved(i->data)) {
-        return FALSE;
-      }
-    }
-    i = i->next;
-  }
-}
-
-static BOOL ensureEverythingSaved(FrameworkWindow *projectWindow) {
-  return (BOOL)(ensureMapEditorsSaved(projectWindow) && ensureProjectSaved(projectWindow));
 }
 
 static BOOL loadTilesetPackageFromFile(FrameworkWindow *projectWindow, char *filename) {
