@@ -33,6 +33,48 @@
 #define MAP_EDITOR_WIDTH  536
 #define MAP_EDITOR_HEIGHT 384
 
+static void newMapMenuItemClicked(FrameworkWindow*);
+static void openMapMenuItemClicked(FrameworkWindow*);
+static BOOL saveMap(FrameworkWindow*);
+static BOOL saveMapAs(FrameworkWindow*);
+static void revertMap(FrameworkWindow*);
+static void closeMap(FrameworkWindow*);
+
+static MenuSectionSpec newSection =
+  { { "New", "N", MENU_ITEM_ENABLED, newMapMenuItemClicked },
+    END_SECTION };
+
+static MenuSectionSpec openSection =
+  { { "New", "N", MENU_ITEM_ENABLED, openMapMenuItemClicked },
+    END_SECTION };
+
+static MenuSectionSpec saveSection =
+  { { "Save",       "S",         MENU_ITEM_ENABLED,  (Handler)saveMap   },
+    { "Save As...", "A",         MENU_ITEM_ENABLED,  (Handler)saveMapAs },
+    { "Revert",     NO_SHORTKEY, MENU_ITEM_DISABLED,          revertMap },
+  END_SECTION };
+
+static MenuSectionSpec closeSection =
+  { { "Close", "Q", MENU_ITEM_ENABLED, closeMap },
+    END_SECTION };
+
+static MenuSectionSpec *mapMenuSpec[] = {
+  &newSection,
+  &openSection,
+  &saveSection,
+  &closeSection,
+  END_MENU
+};
+
+#define REVERT_MAP_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
+
+static MenuSpec mapEditorMenuSpec[] = {
+  { "Map", &mapMenuSpec },
+  END_MENUS
+};
+
+static struct Menu *menu = NULL;
+
 static void newMapMenuItemClicked(FrameworkWindow *mapEditorWindow) {
   FrameworkWindow *projectWindow = mapEditorWindow->parent;
   newMap(projectWindow);
@@ -41,6 +83,14 @@ static void newMapMenuItemClicked(FrameworkWindow *mapEditorWindow) {
 static void openMapMenuItemClicked(FrameworkWindow *mapEditorWindow) {
   FrameworkWindow *projectWindow = mapEditorWindow->parent;
   openMap(projectWindow);
+}
+
+static void enableMapRevert(FrameworkWindow *mapEditorWindow) {
+  OnMenu(mapEditorWindow->intuitionWindow, REVERT_MAP_MENU_ITEM);
+}
+
+static void disableMapRevert(FrameworkWindow *mapEditorWindow) {
+  OffMenu(mapEditorWindow->intuitionWindow, REVERT_MAP_MENU_ITEM);
 }
 
 static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
@@ -152,41 +202,6 @@ static void closeMap(FrameworkWindow *mapEditorWindow) {
     mapEditorWindow->closed = 1;
   }
 }
-
-static MenuSectionSpec newSection =
-  { { "New", "N", MENU_ITEM_ENABLED, newMapMenuItemClicked },
-    END_SECTION };
-
-static MenuSectionSpec openSection =
-  { { "New", "N", MENU_ITEM_ENABLED, openMapMenuItemClicked },
-    END_SECTION };
-
-static MenuSectionSpec saveSection =
-  { { "Save",       "S",         MENU_ITEM_ENABLED,  (Handler)saveMap   },
-    { "Save As...", "A",         MENU_ITEM_ENABLED,  (Handler)saveMapAs },
-    { "Revert",     NO_SHORTKEY, MENU_ITEM_DISABLED,          revertMap },
-  END_SECTION };
-
-static MenuSectionSpec closeSection =
-  { { "Close", "Q", MENU_ITEM_ENABLED, closeMap },
-    END_SECTION };
-
-static MenuSectionSpec *mapMenuSpec[] = {
-  &newSection,
-  &openSection,
-  &saveSection,
-  &closeSection,
-  END_MENU
-};
-
-#define REVERT_MAP_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
-
-static MenuSpec mapEditorMenuSpec[] = {
-  { "Map", &mapMenuSpec },
-  END_MENUS
-};
-
-static struct Menu *menu = NULL;
 
 #define TILE_WIDTH  16
 #define TILE_HEIGHT 16
@@ -1389,12 +1404,4 @@ error_freeMap:
   free(mapCopy);
 error:
   return NULL;
-}
-
-void enableMapRevert(FrameworkWindow *mapEditorWindow) {
-  OnMenu(mapEditorWindow->intuitionWindow, REVERT_MAP_MENU_ITEM);
-}
-
-void disableMapRevert(FrameworkWindow *mapEditorWindow) {
-  OffMenu(mapEditorWindow->intuitionWindow, REVERT_MAP_MENU_ITEM);
 }

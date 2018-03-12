@@ -494,7 +494,6 @@ BOOL openMapNum(FrameworkWindow *projectWindow, int mapNum) {
   /* TODO: fix us */
   /* addToMapEditorSet(mapEditor); */
   /* addWindowToSet(mapEditor->window); */
-  enableMapRevert(mapEditor);
 
 done:
   return TRUE;

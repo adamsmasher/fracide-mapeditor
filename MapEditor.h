@@ -83,7 +83,4 @@ BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor);
 void mapEditorDrawEntity(FrameworkWindow *mapEditor, Entity*, int entityNum);
 void mapEditorRedrawTile(FrameworkWindow *mapEditor, int row, int col);
 
-void enableMapRevert(FrameworkWindow *mapEditor);
-void disableMapRevert(FrameworkWindow *mapEditor);
-
 #endif
