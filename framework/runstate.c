@@ -9,11 +9,9 @@
 static void cleanupDeadWindows(FrameworkWindow*);
 
 static void cleanupDeadChildWindows(FrameworkWindow *window) {
-  FrameworkWindow *i, *next;
-
-  i = window->children;
+  FrameworkWindow *i = window->children;
   while(i) {
-    next = i->next;
+    FrameworkWindow *next = i->next;
     cleanupDeadWindows(i);
     i = next;
   }
