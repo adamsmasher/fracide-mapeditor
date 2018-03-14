@@ -1098,19 +1098,6 @@ static void closeAttachedEntityBrowser(MapEditorData *data) {
   }
 }
 
-void closeMapEditor(MapEditorData *data) {
-  /* TODO: these should all be taken care of by the framework
-  closeAttachedTilesetRequester(mapEditor);
-  closeAttachedSongRequester(mapEditor);
-  closeAttachedEntityBrowser(mapEditor);
-  ClearMenuStrip(mapEditor->window);
-  CloseWindow(mapEditor->window); */
-  FreeGadgets(data->gadgets);
-  FreeMem(data->imageData, IMAGE_DATA_SIZE);
-  free(data->map);
-  free(data);
-}
-
 void mapEditorDrawEntity(FrameworkWindow *mapEditorWindow, Entity *entity, int entityNum) {
   MapEditorData *data = mapEditorWindow->data;
   if(data->map->tilesetNum) {
