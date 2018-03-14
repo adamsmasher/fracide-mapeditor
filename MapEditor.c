@@ -1342,7 +1342,6 @@ FrameworkWindow *newMapEditorNewMap(void) {
   if(!mapEditorWindow) {
     goto error_freeMap;
   }
-
   
   data = mapEditorWindow->data;
   data->map = map;
