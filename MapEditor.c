@@ -73,8 +73,6 @@ static MenuSpec mapEditorMenuSpec[] = {
   END_MENUS
 };
 
-static struct Menu *menu = NULL;
-
 static void newMapMenuItemClicked(FrameworkWindow *mapEditorWindow) {
   FrameworkWindow *projectWindow = mapEditorWindow->parent;
   newMap(projectWindow);
