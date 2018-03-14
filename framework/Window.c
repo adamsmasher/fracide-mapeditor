@@ -12,6 +12,11 @@
 #include "menu.h"
 #include "menubuild.h"
 
+static struct Gadget *buildWindowGadgets() {
+  /* TODO: fix me */
+  return NULL;
+}
+
 FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *screen) {
   FrameworkWindow *window;
 
@@ -23,18 +28,24 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *scree
     goto error;
   }
 
+  window->gadgets = buildWindowGadgets(/* TODO: fix me */);
+  if(!window->gadgets) {
+    fprintf(stderr, "openWindowOnGlobalScreen: failed to create gadgets\n");
+    goto error_freeWindow;
+  }
+  windowKind->newWindow.FirstGadget = window->gadgets;
+
   window->kind = windowKind;
   window->parent = NULL;
   window->children = NULL;
   window->next = NULL;
   window->prev = NULL;
   window->closed = FALSE;
-  window->gadgets = NULL; /* TODO: fix me */
 
   window->intuitionWindow = OpenWindow(&windowKind->newWindow);
   if(!window->intuitionWindow) {
     fprintf(stderr, "openWindowOnGlobalScreen: failed to open window\n");
-    goto error_freeWindow;
+    goto error_freeGadgets;
   }
 
   window->treeSigMask = 1L << window->intuitionWindow->UserPort->mp_SigBit;
@@ -51,6 +62,8 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *scree
   return window;
 error_closeWindow:
   CloseWindow(window->intuitionWindow);
+error_freeGadgets:
+  FreeGadgets(window->gadgets);
 error_freeWindow:
   free(window);
 error:
