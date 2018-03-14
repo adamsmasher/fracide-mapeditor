@@ -954,7 +954,15 @@ static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
   "OK"
 };
 
-static void createMapEditorGadgets(MapEditorData *data) {
+static struct Gadget *createMapEditorGadgets(
+  struct Gadget **tilesetNameGadget,
+  struct Gadget **mapNameGadget,
+  struct Gadget **songNameGadget,
+  struct Gadget **leftGadget,
+  struct Gadget **rightGadget,
+  struct Gadget **upGadget,
+  struct Gadget **downGadget)
+{
   struct Gadget *gad;
   struct Gadget *glist = NULL;
 
@@ -964,7 +972,7 @@ static void createMapEditorGadgets(MapEditorData *data) {
     GTTX_Text, "N/A",
     GTTX_Border, TRUE,
     TAG_END);
-  data->tilesetNameGadget = gad;
+  *tilesetNameGadget = gad;
 	
   gad = CreateGadget(BUTTON_KIND, gad, &chooseTilesetNewGadget, TAG_END);
 
@@ -975,13 +983,13 @@ static void createMapEditorGadgets(MapEditorData *data) {
 	
   gad = CreateGadget(STRING_KIND, gad, &mapNameNewGadget,
     TAG_END);
-  data->mapNameGadget = gad;
+  *mapNameGadget = gad;
 
   gad = CreateGadget(TEXT_KIND, gad, &songNameNewGadget,
     GTTX_Text, "N/A",
     GTTX_Border, TRUE,
     TAG_END);
-  data->songNameGadget = gad;
+  *songNameGadget = gad;
 
   gad = CreateGadget(BUTTON_KIND, gad, &songChangeNewGadget, TAG_END);
   gad = CreateGadget(BUTTON_KIND, gad, &songClearNewGadget, TAG_END);
@@ -989,36 +997,37 @@ static void createMapEditorGadgets(MapEditorData *data) {
   gad = CreateGadget(BUTTON_KIND, gad, &mapLeftNewGadget,
     GA_Disabled, TRUE,
     TAG_END);
-  data->leftGadget = gad;
+  *leftGadget = gad;
 
   gad = CreateGadget(BUTTON_KIND, gad, &mapRightNewGadget,
     GA_Disabled, TRUE,
     TAG_END);
-  data->rightGadget = gad;
+  *rightGadget = gad;
 
   gad = CreateGadget(BUTTON_KIND, gad, &mapUpNewGadget,
     GA_Disabled, TRUE,
     TAG_END);
-  data->upGadget = gad;
+  *upGadget = gad;
 
   gad = CreateGadget(BUTTON_KIND, gad, &mapDownNewGadget,
     GA_Disabled, TRUE,
     TAG_END);
-  data->downGadget = gad;
+  *downGadget = gad;
 
   gad = CreateGadget(BUTTON_KIND, gad, &entitiesNewGadget, TAG_END);
 
   if(gad) {
-    data->gadgets = glist;
+    return glist;
   } else {
-    data->tilesetNameGadget = NULL;
-    data->mapNameGadget = NULL;
-    data->songNameGadget = NULL;
-    data->leftGadget = NULL;
-    data->rightGadget = NULL;
-    data->upGadget = NULL;
-    data->downGadget = NULL;
+    *tilesetNameGadget = NULL;
+    *mapNameGadget = NULL;
+    *songNameGadget = NULL;
+    *leftGadget = NULL;
+    *rightGadget = NULL;
+    *upGadget = NULL;
+    *downGadget = NULL;
     FreeGadgets(glist);
+    return NULL;
   }
 }
 
@@ -1273,7 +1282,14 @@ static FrameworkWindow *newMapEditor(void) {
     goto error;
   }
 
-  createMapEditorGadgets(data);
+  data->gadgets = createMapEditorGadgets(
+    &data->tilesetNameGadget,
+    &data->mapNameGadget,
+    &data->songNameGadget,
+    &data->leftGadget,
+    &data->rightGadget,
+    &data->upGadget,
+    &data->downGadget);
   if(!data->gadgets) {
     fprintf(stderr, "newMapEditor: failed to create gadgets\n");
     goto error_freeData;
