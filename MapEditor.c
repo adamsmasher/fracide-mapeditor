@@ -38,7 +38,6 @@ static void openMapMenuItemClicked(FrameworkWindow*);
 static BOOL saveMap(FrameworkWindow*);
 static BOOL saveMapAs(FrameworkWindow*);
 static void revertMap(FrameworkWindow*);
-static void closeMap(FrameworkWindow*);
 
 static MenuSectionSpec newSection =
   { { "New", "N", MENU_ITEM_ENABLED, newMapMenuItemClicked },
@@ -55,7 +54,7 @@ static MenuSectionSpec saveSection =
   END_SECTION };
 
 static MenuSectionSpec closeSection =
-  { { "Close", "Q", MENU_ITEM_ENABLED, closeMap },
+  { { "Close", "Q", MENU_ITEM_ENABLED, (Handler)tryToCloseWindow },
     END_SECTION };
 
 static MenuSectionSpec *mapMenuSpec[] = {
@@ -192,13 +191,6 @@ static BOOL unsavedMapEditorAlert(FrameworkWindow *mapEditorWindow) {
 BOOL ensureMapEditorSaved(FrameworkWindow *mapEditorWindow) {
   MapEditorData *data = mapEditorWindow->data;
   return (BOOL)(data->saved || unsavedMapEditorAlert(mapEditorWindow));
-}
-
-static void closeMap(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  if(data->saved || unsavedMapEditorAlert(mapEditorWindow)) {
-    mapEditorWindow->closed = 1;
-  }
 }
 
 #define TILE_WIDTH  16
