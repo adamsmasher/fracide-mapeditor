@@ -29,6 +29,7 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *scree
   window->next = NULL;
   window->prev = NULL;
   window->closed = FALSE;
+  window->gadgets = NULL; /* TODO: fix me */
 
   window->intuitionWindow = OpenWindow(&windowKind->newWindow);
   if(!window->intuitionWindow) {
@@ -158,6 +159,7 @@ void forceCloseWindow(FrameworkWindow *window) {
   FreeMenus(window->menu);
 
   CloseWindow(window->intuitionWindow);
+  FreeGadgets(window->gadgets);
 
   free(window);
 }

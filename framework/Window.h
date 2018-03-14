@@ -26,6 +26,7 @@ typedef struct FrameworkWindow_tag {
 
   struct Window *intuitionWindow;
   struct Menu   *menu;
+  struct Gadget *gadgets;
 
   void *data;
 
