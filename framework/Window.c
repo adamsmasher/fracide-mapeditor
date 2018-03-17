@@ -12,12 +12,7 @@
 #include "menu.h"
 #include "menubuild.h"
 
-static struct Gadget *buildWindowGadgets() {
-  /* TODO: fix me */
-  return NULL;
-}
-
-FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *screen) {
+FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Gadget *gadgets, struct Screen *screen) {
   FrameworkWindow *window;
 
   windowKind->newWindow.Screen = screen;
@@ -28,12 +23,8 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *scree
     goto error;
   }
 
-  window->gadgets = buildWindowGadgets(/* TODO: fix me */);
-  if(!window->gadgets) {
-    fprintf(stderr, "openWindowOnGlobalScreen: failed to create gadgets\n");
-    goto error_freeWindow;
-  }
-  windowKind->newWindow.FirstGadget = window->gadgets;
+  window->gadgets = gadgets;
+  windowKind->newWindow.FirstGadget = gadgets;
 
   window->kind = windowKind;
   window->parent = NULL;

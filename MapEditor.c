@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "framework/gadgets.h"
 #include "framework/menubuild.h"
 #include "framework/screen.h"
 
@@ -733,7 +734,7 @@ static WindowKind mapEditorWindowKind = {
   },
   (MenuSpec*)        NULL,
   (RefreshFunction)  refreshMapEditor,
-  (CanCloseFunction) NULL, /* TODO: check if map is saved here */
+  (CanCloseFunction) ensureMapEditorSaved, /* TODO: check if map is saved here */
   (CloseFunction)    NULL,
   (GadgetUpFunction) handleMapEditorGadgetUp,
   (ClickFunction)    handleMapEditorClick
@@ -801,6 +802,12 @@ static struct NewGadget mapNameNewGadget = {
   NULL  /* user data */
 };
 
+static GadgetSpec mapNameGadgetSpec = {
+  STRING_KIND,
+  &mapNameNewGadget,
+  { TAG_END }
+};
+
 static struct NewGadget currentTilesetNewGadget = {
   CURRENT_TILESET_LEFT,  CURRENT_TILESET_TOP,
   CURRENT_TILESET_WIDTH, CURRENT_TILESET_HEIGHT,
@@ -810,6 +817,18 @@ static struct NewGadget currentTilesetNewGadget = {
   PLACETEXT_ABOVE,
   NULL, /* visual info, filled in later */
   NULL  /* user data */
+};
+
+struct TagItem currentTilesetGadgetTags[] = {
+  { GTTX_Text,   "N/A" },
+  { GTTX_Border, TRUE  },
+  TAG_END
+};
+
+static GadgetSpec currentTilesetGadgetSpec = {
+  TEXT_KIND, 
+  &currentTilesetNewGadget,
+  currentTilesetGadgetTags
 };
 
 static struct NewGadget chooseTilesetNewGadget = {
@@ -823,6 +842,12 @@ static struct NewGadget chooseTilesetNewGadget = {
   NULL  /* user data */
 };
 
+static GadgetSpec chooseTilesetGadgetSpec = {
+  BUTTON_KIND,
+  &chooseTilesetNewGadget,
+  { TAG_END }
+};
+
 static struct NewGadget tilesetScrollNewGadget = {
   TILESET_SCROLL_LEFT,  TILESET_SCROLL_TOP,
   TILESET_SCROLL_WIDTH, TILESET_SCROLL_HEIGHT,
@@ -832,6 +857,18 @@ static struct NewGadget tilesetScrollNewGadget = {
   0,    /* flags */
   NULL, /* visual info, filled in later */
   NULL  /* user data */
+};
+
+static struct TagItem tilesetScrollGadgetTags[] = {
+  { PGA_Freedom, LORIENT_VERT },
+  { GA_Disabled, TRUE         },
+  TAG_END 
+};
+
+static GadgetSpec tilesetScrollGadgetSpec = {
+  SCROLLER_KIND,
+  &tilesetScrollNewGadget,
+  tilesetScrollGadgetTags
 };
 
 static struct NewGadget songNameNewGadget = {
@@ -845,6 +882,18 @@ static struct NewGadget songNameNewGadget = {
   NULL   /* user data */
 };
 
+static struct TagItem songNameGadgetTags[] = { 
+  { GTTX_Text, "N/A",  },
+  { GTTX_Border, TRUE, },
+  TAG_END 
+};
+
+static GadgetSpec songNameGadgetSpec = {
+  TEXT_KIND,
+  &songNameNewGadget,
+  songNameGadgetTags
+};
+
 static struct NewGadget songChangeNewGadget = {
   SONG_CHANGE_LEFT,  SONG_CHANGE_TOP,
   SONG_CHANGE_WIDTH, SONG_CHANGE_HEIGHT,
@@ -854,6 +903,12 @@ static struct NewGadget songChangeNewGadget = {
   0,
   NULL,
   NULL
+};
+
+static GadgetSpec songChangeGadgetSpec = {
+  BUTTON_KIND,
+  &songChangeNewGadget,
+  { TAG_END }
 };
 
 static struct NewGadget songClearNewGadget = {
@@ -867,6 +922,12 @@ static struct NewGadget songClearNewGadget = {
   NULL
 };
 
+static GadgetSpec songClearGadgetSpec = {
+  BUTTON_KIND,
+  &songClearNewGadget,
+  { TAG_END }
+};
+
 static struct NewGadget mapLeftNewGadget = {
   MAP_LEFT_LEFT,  MAP_LEFT_TOP,
   MAP_LEFT_WIDTH, MAP_LEFT_HEIGHT,
@@ -876,6 +937,17 @@ static struct NewGadget mapLeftNewGadget = {
   0,
   NULL,
   NULL
+};
+
+static struct TagItem mapLeftGadgetTags[] = {
+  { GA_Disabled, TRUE },
+  TAG_END
+};
+
+static GadgetSpec mapLeftGadgetSpec = {
+  BUTTON_KIND,
+  &mapLeftNewGadget,
+  mapLeftGadgetTags
 };
 
 static struct NewGadget mapRightNewGadget = {
@@ -889,6 +961,17 @@ static struct NewGadget mapRightNewGadget = {
   NULL
 };
 
+static struct TagItem mapRightGadgetTags[] = {
+  { GA_Disabled, TRUE },
+  TAG_END
+};
+
+static GadgetSpec mapRightGadgetSpec = {
+  BUTTON_KIND,
+  &mapRightNewGadget,
+  mapRightGadgetTags
+};
+
 static struct NewGadget mapUpNewGadget = {
   MAP_UP_LEFT,  MAP_UP_TOP,
   MAP_UP_WIDTH, MAP_UP_HEIGHT,
@@ -898,6 +981,17 @@ static struct NewGadget mapUpNewGadget = {
   0,
   NULL,
   NULL
+};
+
+static struct TagItem mapUpGadgetTags[] = {
+  { GA_Disabled, TRUE },
+  TAG_END
+};
+
+static GadgetSpec mapUpGadgetSpec = {
+  BUTTON_KIND,
+  &mapUpNewGadget,
+  mapUpGadgetTags
 };
 
 static struct NewGadget mapDownNewGadget = {
@@ -911,6 +1005,17 @@ static struct NewGadget mapDownNewGadget = {
   NULL
 };
 
+static struct TagItem mapDownGadgetTags[] = {
+  { GA_Disabled, TRUE },
+  TAG_END 
+};
+
+static GadgetSpec mapDownGadgetSpec = {
+  BUTTON_KIND,
+  &mapDownNewGadget,
+  mapDownGadgetTags
+};
+
 static struct NewGadget entitiesNewGadget = {
   ENTITIES_LEFT,  ENTITIES_TOP,
   ENTITIES_WIDTH, ENTITIES_HEIGHT,
@@ -922,20 +1027,10 @@ static struct NewGadget entitiesNewGadget = {
   NULL
 };
 
-static struct NewGadget *allNewGadgets[] = {
-  &mapNameNewGadget,
-  &currentTilesetNewGadget,
-  &chooseTilesetNewGadget,
-  &tilesetScrollNewGadget,
-  &songNameNewGadget,
-  &songChangeNewGadget,
-  &songClearNewGadget,
-  &mapLeftNewGadget,
-  &mapRightNewGadget,
-  &mapUpNewGadget,
-  &mapDownNewGadget,
+static GadgetSpec entitiesGadgetSpec = {
+  BUTTON_KIND,
   &entitiesNewGadget,
-  NULL
+  { TAG_END }
 };
 
 static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
@@ -945,83 +1040,6 @@ static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
   "This map had tileset %ld, which does not exist\nin the new package.\nThe tileset has been removed from this map.",
   "OK"
 };
-
-static struct Gadget *createMapEditorGadgets(
-  struct Gadget **tilesetNameGadget,
-  struct Gadget **mapNameGadget,
-  struct Gadget **songNameGadget,
-  struct Gadget **leftGadget,
-  struct Gadget **rightGadget,
-  struct Gadget **upGadget,
-  struct Gadget **downGadget)
-{
-  struct Gadget *gad;
-  struct Gadget *glist = NULL;
-
-  gad = CreateContext(&glist);
-
-  gad = CreateGadget(TEXT_KIND, gad, &currentTilesetNewGadget,
-    GTTX_Text, "N/A",
-    GTTX_Border, TRUE,
-    TAG_END);
-  *tilesetNameGadget = gad;
-	
-  gad = CreateGadget(BUTTON_KIND, gad, &chooseTilesetNewGadget, TAG_END);
-
-  gad = CreateGadget(SCROLLER_KIND, gad, &tilesetScrollNewGadget,
-    PGA_Freedom, LORIENT_VERT,
-    GA_Disabled, TRUE,
-    TAG_END);
-	
-  gad = CreateGadget(STRING_KIND, gad, &mapNameNewGadget,
-    TAG_END);
-  *mapNameGadget = gad;
-
-  gad = CreateGadget(TEXT_KIND, gad, &songNameNewGadget,
-    GTTX_Text, "N/A",
-    GTTX_Border, TRUE,
-    TAG_END);
-  *songNameGadget = gad;
-
-  gad = CreateGadget(BUTTON_KIND, gad, &songChangeNewGadget, TAG_END);
-  gad = CreateGadget(BUTTON_KIND, gad, &songClearNewGadget, TAG_END);
-
-  gad = CreateGadget(BUTTON_KIND, gad, &mapLeftNewGadget,
-    GA_Disabled, TRUE,
-    TAG_END);
-  *leftGadget = gad;
-
-  gad = CreateGadget(BUTTON_KIND, gad, &mapRightNewGadget,
-    GA_Disabled, TRUE,
-    TAG_END);
-  *rightGadget = gad;
-
-  gad = CreateGadget(BUTTON_KIND, gad, &mapUpNewGadget,
-    GA_Disabled, TRUE,
-    TAG_END);
-  *upGadget = gad;
-
-  gad = CreateGadget(BUTTON_KIND, gad, &mapDownNewGadget,
-    GA_Disabled, TRUE,
-    TAG_END);
-  *downGadget = gad;
-
-  gad = CreateGadget(BUTTON_KIND, gad, &entitiesNewGadget, TAG_END);
-
-  if(gad) {
-    return glist;
-  } else {
-    *tilesetNameGadget = NULL;
-    *mapNameGadget = NULL;
-    *songNameGadget = NULL;
-    *leftGadget = NULL;
-    *rightGadget = NULL;
-    *upGadget = NULL;
-    *downGadget = NULL;
-    FreeGadgets(glist);
-    return NULL;
-  }
-}
 
 static void initMapEditorPaletteImages(MapEditorData *data) {
   int top, left, row, col;
@@ -1267,6 +1285,7 @@ void mapEditorSetMapNum(FrameworkWindow *mapEditorWindow, UWORD mapNum) {
 
 static FrameworkWindow *newMapEditor(void) {
   FrameworkWindow *mapEditorWindow;
+  struct Gadget *gadgets;
 
   MapEditorData *data = malloc(sizeof(MapEditorData));
   if(!data) {
@@ -1274,19 +1293,25 @@ static FrameworkWindow *newMapEditor(void) {
     goto error;
   }
 
-  data->gadgets = createMapEditorGadgets(
-    &data->tilesetNameGadget,
-    &data->mapNameGadget,
-    &data->songNameGadget,
-    &data->leftGadget,
-    &data->rightGadget,
-    &data->upGadget,
-    &data->downGadget);
-  if(!data->gadgets) {
+  gadgets = buildGadgets(
+    &currentTilesetGadgetSpec, &data->tilesetNameGadget,
+    &chooseTilesetGadgetSpec,  NULL,
+    &tilesetScrollGadgetSpec,  NULL,
+    &mapNameGadgetSpec,        &data->mapNameGadget,
+    &songNameGadgetSpec,       &data->songNameGadget,
+    &songChangeGadgetSpec,     NULL,
+    &songClearGadgetSpec,      NULL,
+    &mapLeftGadgetSpec,        &data->leftGadget,
+    &mapRightGadgetSpec,       &data->rightGadget,
+    &mapUpGadgetSpec,          &data->upGadget,
+    &mapDownGadgetSpec,        &data->downGadget,
+    &entitiesGadgetSpec,       NULL,
+    NULL);
+
+  if(!gadgets) {
     fprintf(stderr, "newMapEditor: failed to create gadgets\n");
     goto error_freeData;
   }
-  mapEditorWindowKind.newWindow.FirstGadget = data->gadgets;
 
   data->imageData = AllocMem(IMAGE_DATA_SIZE, MEMF_CHIP);
   if(!data->imageData) {
@@ -1296,7 +1321,7 @@ static FrameworkWindow *newMapEditor(void) {
   initMapEditorPaletteImages(data);
   initMapEditorMapImages(data);
 
-  mapEditorWindow = openWindowOnGlobalScreen(&mapEditorWindowKind);
+  mapEditorWindow = openWindowOnGlobalScreen(&mapEditorWindowKind, gadgets);
   if(!mapEditorWindow) {
     fprintf(stderr, "newMapEditor: failed to open window\n");
     goto error_freeImageData;
@@ -1316,7 +1341,8 @@ static FrameworkWindow *newMapEditor(void) {
 error_freeImageData:
   FreeMem(data->imageData, IMAGE_DATA_SIZE);
 error_freeGadgets:
-  FreeGadgets(data->gadgets);
+  /* TODO: we free this twice on window creation failure! */
+  FreeGadgets(gadgets);
 error_freeData:
   free(data);
 error:

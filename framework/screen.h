@@ -11,7 +11,7 @@ void closeGlobalScreen(void);
 WORD getScreenWidth(void);
 WORD getScreenHeight(void);
 
-FrameworkWindow *openWindowOnGlobalScreen(WindowKind*);
+FrameworkWindow *openWindowOnGlobalScreen(WindowKind*, struct Gadget*);
 
 struct ViewPort *getGlobalViewPort(void);
 void            *getGlobalVi(void);

@@ -30,8 +30,6 @@
 #define MAP_TILES_HIGH    9
 
 typedef struct MapEditorData_tag {
-  struct Gadget *gadgets;
-
   Map *map;
   int mapNum;
 

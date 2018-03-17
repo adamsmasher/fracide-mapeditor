@@ -41,7 +41,8 @@ typedef struct FrameworkWindow_tag {
 
 void handleWindowEvents(FrameworkWindow*, long signalSet);
 
-FrameworkWindow *openWindowOnScreen(WindowKind*, struct Screen*);
+/* n.b.: this window takes ownership of its gadgets and frees them on close */
+FrameworkWindow *openWindowOnScreen(WindowKind*, struct Gadget*, struct Screen*);
 
 BOOL tryToCloseWindow(FrameworkWindow*);
 void forceCloseWindow(FrameworkWindow*);

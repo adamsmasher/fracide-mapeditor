@@ -119,7 +119,7 @@ FrameworkWindow *openProjectWindow(void) {
     goto error;
   }
 
-  projectWindow = openWindowOnGlobalScreen(&projectWindowKind);
+  projectWindow = openWindowOnGlobalScreen(&projectWindowKind, NULL);
   if(!projectWindow) {
     fprintf(stderr, "openProjectWindow: failed to open window!\n");
     goto error_freeData;
