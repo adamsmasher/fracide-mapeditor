@@ -63,6 +63,8 @@ SongNamesEditor.o: SongNamesEditor.c SongNamesEditor.h
 
 EntityNamesEditor.o: EntityNamesEditor.c EntityNamesEditor.h
 
+framework/gadgets.o: framework/gadgets.c framework/gadgets.h
+
 framework/menu.o: framework/menu.c framework/menu.h framework/menubuild.h framework/window.h
 
 framework/menubuild.o: framework/menubuild.c framework/menubuild.h framework/screen.h
