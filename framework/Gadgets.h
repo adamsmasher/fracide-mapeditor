@@ -36,6 +36,13 @@ typedef struct ScrollSpec_tag {
   Orientation orientation;
 } ScrollerSpec;
 
+typedef struct StringSpec_tag {
+  WORD left, top;
+  WORD width, height;
+  char *label;
+  TextPlacement textPlacement;
+} StringSpec;
+
 typedef struct GadgetSpec_tag {
   unsigned long kind;
   struct NewGadget *newGadget;
