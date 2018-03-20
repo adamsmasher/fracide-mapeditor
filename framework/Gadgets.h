@@ -3,6 +3,11 @@
 
 #include <libraries/gadtools.h>
 
+typedef enum Border_tag {
+  NO_BORDER,
+  BORDERED
+} Border;
+
 typedef enum Orientation_tag {
   HORIZONTAL,
   VERTICAL
@@ -42,6 +47,15 @@ typedef struct StringSpec_tag {
   char *label;
   TextPlacement textPlacement;
 } StringSpec;
+
+typedef struct TextSpec_tag {
+  WORD left, top;
+  WORD width, height;
+  char *label;
+  TextPlacement textPlacement;
+  char *text;
+  Border border;
+} TextSpec;
 
 typedef struct GadgetSpec_tag {
   unsigned long kind;
