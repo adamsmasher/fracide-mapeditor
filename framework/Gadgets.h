@@ -3,6 +3,11 @@
 
 #include <libraries/gadtools.h>
 
+typedef enum Orientation_tag {
+  HORIZONTAL,
+  VERTICAL
+} Orientation;
+
 typedef enum State_tag {
   DISABLED,
   ENABLED
@@ -23,6 +28,13 @@ typedef struct ButtonSpec_tag {
   TextPlacement textPlacement;
   State state;
 } ButtonSpec;
+
+typedef struct ScrollSpec_tag {
+  WORD left, top;
+  WORD width, height;
+  State state;
+  Orientation orientation;
+} ScrollerSpec;
 
 typedef struct GadgetSpec_tag {
   unsigned long kind;
