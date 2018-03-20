@@ -19,8 +19,8 @@ typedef enum State_tag {
 } State;
 
 typedef enum TextPlacement_tag {
-  TEXT_ON_THE_LEFT,
-  TEXT_ON_THE_RIGHT,
+  TEXT_ON_LEFT,
+  TEXT_ON_RIGHT,
   TEXT_ABOVE,
   TEXT_BELOW,
   TEXT_INSIDE
