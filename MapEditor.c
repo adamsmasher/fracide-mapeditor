@@ -24,7 +24,6 @@
 
 #include "easystructs.h"
 #include "EntityBrowser.h"
-#include "globals.h"
 #include "map.h"
 #include "ProjectWindow.h"
 #include "ProjectWindowData.h"

@@ -13,11 +13,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "framework/font.h"
 #include "framework/menubuild.h"
 #include "framework/screen.h"
 #include "framework/window.h"
 
-#include "globals.h"
 #include "map.h"
 
 #define ENTITY_BROWSER_WIDTH  350

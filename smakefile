@@ -4,7 +4,7 @@
 
 # TODO: update dependencies
 
-FRAMEWORK_OBJS= framework/gadgets.o framework/menu.o framework/menubuild.o framework/runstate.o framework/screen.o framework/window.o
+FRAMEWORK_OBJS= framework/font.o framework/gadgets.o framework/menu.o framework/menubuild.o framework/runstate.o framework/screen.o framework/window.o
 
 MENU_OBJS=    projectmenu.o mapmenu.o entitiesmenu.o musicmenu.o
 MENU_HEADERS= projectmenu.h mapmenu.h entitiesmenu.h musicmenu.h
@@ -12,7 +12,7 @@ MENU_HEADERS= projectmenu.h mapmenu.h entitiesmenu.h musicmenu.h
 DATA_OBJS=    easystructs.o
 DATA_HEADERS= easystructs.h
 
-OTHER_OBJS= globals.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o
+OTHER_OBJS= MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o
 WINDOW_OBJS= ProjectWindow.o SongNamesEditor.o EntityNamesEditor.o
 WINDOW_DATA_OBJS= ProjectWindowData.o
 
@@ -23,25 +23,23 @@ mapedit: $(OBJS)
 $(OBJS)
 <
 
-main.o: main.c MapEditor.h globals.h TilesetPackage.h TilesetRequester.h MapRequester.h SongRequester.h EntityBrowser.h Map.h Entity.h EntityRequester.h palette.h
+main.o: main.c MapEditor.h TilesetPackage.h TilesetRequester.h MapRequester.h SongRequester.h EntityBrowser.h Map.h Entity.h EntityRequester.h palette.h
 
-MapEditor.o: MapEditor.c MapEditor.h globals.h SongRequester.h tilesetRequester.h map.h EntityBrowser.h
-
-globals.o: globals.c Project.h SongRequester.h TilesetPackage.h EntityRequester.h
+MapEditor.o: MapEditor.c MapEditor.h SongRequester.h tilesetRequester.h map.h EntityBrowser.h
 
 TilesetPackage.o: TilesetPackage.c
 
-TilesetRequester.o: TilesetRequester.c globals.h
+TilesetRequester.o: TilesetRequester.c
 
-Project.o: Project.c Project.h globals.h Map.h
+Project.o: Project.c Project.h Map.h
 
 MapRequester.o: MapRequester.c MapRequester.h MapEditor.h
 
 map.o: Map.c Map.h Entity.h
 
-SongRequester.o: SongRequester.c SongRequester.h globals.h
+SongRequester.o: SongRequester.c SongRequester.h
 
-EntityBrowser.o: EntityBrowser.c EntityBrowser.h globals.h Entity.h
+EntityBrowser.o: EntityBrowser.c EntityBrowser.h Entity.h
 
 Entity.o: Entity.c Entity.h
 
@@ -63,7 +61,9 @@ SongNamesEditor.o: SongNamesEditor.c SongNamesEditor.h
 
 EntityNamesEditor.o: EntityNamesEditor.c EntityNamesEditor.h
 
-framework/gadgets.o: framework/gadgets.c framework/gadgets.h
+framework/font.o: framework/font.c framework/font.h
+
+framework/gadgets.o: framework/gadgets.c framework/gadgets.h framework/font.h framework/screen.h
 
 framework/menu.o: framework/menu.c framework/menu.h framework/menubuild.h framework/window.h
 

@@ -1,5 +1,5 @@
-#ifndef GLOBALS_H
-#define GLOBALS_H
+#ifndef FRAMEWORK_FONT_H
+#define FRAMEWORK_FONT_H
 
 #include <intuition/intuition.h>
 

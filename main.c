@@ -27,7 +27,6 @@
 #include "EntityBrowser.h"
 #include "EntityNamesEditor.h"
 #include "EntityRequester.h"
-#include "globals.h"
 #include "MapEditor.h"
 #include "MapRequester.h"
 #include "palette.h"

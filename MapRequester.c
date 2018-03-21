@@ -14,11 +14,11 @@
 #include <graphics/gfx.h>
 #include <proto/graphics.h>
 
+#include "framework/font.h"
 #include "framework/menubuild.h"
 #include "framework/screen.h"
 #include "framework/window.h"
 
-#include "globals.h"
 #include "ProjectWindow.h"
 #include "ProjectWindowData.h"
 
