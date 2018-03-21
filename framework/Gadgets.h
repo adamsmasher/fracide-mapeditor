@@ -57,11 +57,12 @@ typedef struct TextSpec_tag {
   Border border;
 } TextSpec;
 
-typedef struct GadgetSpec_tag {
-  unsigned long kind;
-  struct NewGadget *newGadget;
-  struct TagItem *tags;
-} GadgetSpec;
+typedef struct GadgetSpec_tag GadgetSpec;
+
+GadgetSpec *makeButtonGadget(ButtonSpec*);
+GadgetSpec *makeScrollerGadget(ScrollerSpec*);
+GadgetSpec *makeStringGadget(StringSpec*);
+GadgetSpec *makeTextGadget(TextSpec*);
 
 struct Gadget *buildGadgets(GadgetSpec*, struct Gadget**, ...);
 

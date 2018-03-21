@@ -790,246 +790,100 @@ BOOL isMapEditorWindow(FrameworkWindow *window) {
 
 #define IMAGE_DATA_SIZE (TILES_PER_SET * 256)
 
-static struct NewGadget mapNameNewGadget = {
+static StringSpec mapNameSpec = {
   MAP_NAME_LEFT,  MAP_NAME_TOP,
   MAP_NAME_WIDTH, MAP_NAME_HEIGHT,
   "Map Name:",
-  &Topaz80,
-  MAP_NAME_ID,
-  PLACETEXT_LEFT,
-  NULL, /* visual info, filled in later */
-  NULL  /* user data */
+  TEXT_ON_LEFT
 };
 
-static GadgetSpec mapNameGadgetSpec = {
-  STRING_KIND,
-  &mapNameNewGadget,
-  { TAG_END }
-};
-
-static struct NewGadget currentTilesetNewGadget = {
+static TextSpec currentTilesetSpec = {
   CURRENT_TILESET_LEFT,  CURRENT_TILESET_TOP,
   CURRENT_TILESET_WIDTH, CURRENT_TILESET_HEIGHT,
   "Current Tileset",
-  &Topaz80,
-  CURRENT_TILESET_ID,
-  PLACETEXT_ABOVE,
-  NULL, /* visual info, filled in later */
-  NULL  /* user data */
+  TEXT_ABOVE,
+  "N/A",
+  BORDERED
 };
 
-struct TagItem currentTilesetGadgetTags[] = {
-  { GTTX_Text,   "N/A" },
-  { GTTX_Border, TRUE  },
-  TAG_END
-};
-
-static GadgetSpec currentTilesetGadgetSpec = {
-  TEXT_KIND, 
-  &currentTilesetNewGadget,
-  currentTilesetGadgetTags
-};
-
-static struct NewGadget chooseTilesetNewGadget = {
+static ButtonSpec chooseTilesetSpec = {
   CHOOSE_TILESET_LEFT, CHOOSE_TILESET_TOP,
   CHOOSE_TILESET_WIDTH, CHOOSE_TILESET_HEIGHT,
   "Choose Tileset...",
-  &Topaz80,
-  CHOOSE_TILESET_ID,
-  PLACETEXT_IN,
-  NULL, /* visual info, filled in later */
-  NULL  /* user data */
+  TEXT_INSIDE,
+  ENABLED
 };
 
-static GadgetSpec chooseTilesetGadgetSpec = {
-  BUTTON_KIND,
-  &chooseTilesetNewGadget,
-  { TAG_END }
-};
-
-static struct NewGadget tilesetScrollNewGadget = {
+static ScrollerSpec tilesetScrollSpec = {
   TILESET_SCROLL_LEFT,  TILESET_SCROLL_TOP,
   TILESET_SCROLL_WIDTH, TILESET_SCROLL_HEIGHT,
-  NULL, /* no text */
-  NULL,
-  TILESET_SCROLL_ID,
-  0,    /* flags */
-  NULL, /* visual info, filled in later */
-  NULL  /* user data */
+  DISABLED,
+  VERTICAL
 };
 
-static struct TagItem tilesetScrollGadgetTags[] = {
-  { PGA_Freedom, LORIENT_VERT },
-  { GA_Disabled, TRUE         },
-  TAG_END 
-};
-
-static GadgetSpec tilesetScrollGadgetSpec = {
-  SCROLLER_KIND,
-  &tilesetScrollNewGadget,
-  tilesetScrollGadgetTags
-};
-
-static struct NewGadget songNameNewGadget = {
+static TextSpec songNameSpec = {
   SONG_NAME_LEFT,  SONG_NAME_TOP,
   SONG_NAME_WIDTH, SONG_NAME_HEIGHT,
   "Soundtrack:",
-  &Topaz80,
-  SONG_NAME_LABEL_ID,
-  PLACETEXT_LEFT,
-  NULL,  /* visual info, filled in later */
-  NULL   /* user data */
+  TEXT_ON_LEFT,
+  "N/A",
+  BORDERED
 };
 
-static struct TagItem songNameGadgetTags[] = { 
-  { GTTX_Text, "N/A",  },
-  { GTTX_Border, TRUE, },
-  TAG_END 
-};
-
-static GadgetSpec songNameGadgetSpec = {
-  TEXT_KIND,
-  &songNameNewGadget,
-  songNameGadgetTags
-};
-
-static struct NewGadget songChangeNewGadget = {
+static ButtonSpec songChangeSpec = {
   SONG_CHANGE_LEFT,  SONG_CHANGE_TOP,
   SONG_CHANGE_WIDTH, SONG_CHANGE_HEIGHT,
   "Change...",
-  &Topaz80,
-  SONG_CHANGE_ID,
-  0,
-  NULL,
-  NULL
+  TEXT_INSIDE,
+  ENABLED
 };
 
-static GadgetSpec songChangeGadgetSpec = {
-  BUTTON_KIND,
-  &songChangeNewGadget,
-  { TAG_END }
-};
-
-static struct NewGadget songClearNewGadget = {
+static ButtonSpec songClearSpec = {
   SONG_CLEAR_LEFT,  SONG_CLEAR_TOP,
   SONG_CLEAR_WIDTH, SONG_CLEAR_HEIGHT,
   "X",
-  &Topaz80,
-  SONG_CLEAR_ID,
-  0,
-  NULL,
-  NULL
+  TEXT_INSIDE,
+  ENABLED
 };
 
-static GadgetSpec songClearGadgetSpec = {
-  BUTTON_KIND,
-  &songClearNewGadget,
-  { TAG_END }
-};
-
-static struct NewGadget mapLeftNewGadget = {
+static ButtonSpec mapLeftSpec = {
   MAP_LEFT_LEFT,  MAP_LEFT_TOP,
   MAP_LEFT_WIDTH, MAP_LEFT_HEIGHT,
   "<",
-  &Topaz80,
-  MAP_LEFT_ID,
-  0,
-  NULL,
-  NULL
+  TEXT_INSIDE,
+  DISABLED
 };
 
-static struct TagItem mapLeftGadgetTags[] = {
-  { GA_Disabled, TRUE },
-  TAG_END
-};
-
-static GadgetSpec mapLeftGadgetSpec = {
-  BUTTON_KIND,
-  &mapLeftNewGadget,
-  mapLeftGadgetTags
-};
-
-static struct NewGadget mapRightNewGadget = {
+static ButtonSpec mapRightSpec = {
   MAP_RIGHT_LEFT,  MAP_RIGHT_TOP,
   MAP_RIGHT_WIDTH, MAP_RIGHT_HEIGHT,
   ">",
-  &Topaz80,
-  MAP_RIGHT_ID,
-  0,
-  NULL,
-  NULL
+  TEXT_INSIDE,
+  DISABLED
 };
 
-static struct TagItem mapRightGadgetTags[] = {
-  { GA_Disabled, TRUE },
-  TAG_END
-};
-
-static GadgetSpec mapRightGadgetSpec = {
-  BUTTON_KIND,
-  &mapRightNewGadget,
-  mapRightGadgetTags
-};
-
-static struct NewGadget mapUpNewGadget = {
+static ButtonSpec mapUpSpec = {
   MAP_UP_LEFT,  MAP_UP_TOP,
   MAP_UP_WIDTH, MAP_UP_HEIGHT,
   "^",
-  &Topaz80,
-  MAP_UP_ID,
-  0,
-  NULL,
-  NULL
+  TEXT_INSIDE,
+  DISABLED
 };
 
-static struct TagItem mapUpGadgetTags[] = {
-  { GA_Disabled, TRUE },
-  TAG_END
-};
-
-static GadgetSpec mapUpGadgetSpec = {
-  BUTTON_KIND,
-  &mapUpNewGadget,
-  mapUpGadgetTags
-};
-
-static struct NewGadget mapDownNewGadget = {
+static ButtonSpec mapDownSpec = {
   MAP_DOWN_LEFT,  MAP_DOWN_TOP,
   MAP_DOWN_WIDTH, MAP_DOWN_HEIGHT,
   "v",
-  &Topaz80,
-  MAP_DOWN_ID,
-  0,
-  NULL,
-  NULL
+  TEXT_INSIDE,
+  DISABLED
 };
 
-static struct TagItem mapDownGadgetTags[] = {
-  { GA_Disabled, TRUE },
-  TAG_END 
-};
-
-static GadgetSpec mapDownGadgetSpec = {
-  BUTTON_KIND,
-  &mapDownNewGadget,
-  mapDownGadgetTags
-};
-
-static struct NewGadget entitiesNewGadget = {
+static ButtonSpec entitiesSpec = {
   ENTITIES_LEFT,  ENTITIES_TOP,
   ENTITIES_WIDTH, ENTITIES_HEIGHT,
   "Entities...",
-  &Topaz80,
-  ENTITIES_ID,
-  0,
-  NULL,
-  NULL
-};
-
-static GadgetSpec entitiesGadgetSpec = {
-  BUTTON_KIND,
-  &entitiesNewGadget,
-  { TAG_END }
+  TEXT_INSIDE,
+  ENABLED
 };
 
 static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
@@ -1293,18 +1147,18 @@ static FrameworkWindow *newMapEditor(void) {
   }
 
   gadgets = buildGadgets(
-    &currentTilesetGadgetSpec, &data->tilesetNameGadget,
-    &chooseTilesetGadgetSpec,  NULL,
-    &tilesetScrollGadgetSpec,  NULL,
-    &mapNameGadgetSpec,        &data->mapNameGadget,
-    &songNameGadgetSpec,       &data->songNameGadget,
-    &songChangeGadgetSpec,     NULL,
-    &songClearGadgetSpec,      NULL,
-    &mapLeftGadgetSpec,        &data->leftGadget,
-    &mapRightGadgetSpec,       &data->rightGadget,
-    &mapUpGadgetSpec,          &data->upGadget,
-    &mapDownGadgetSpec,        &data->downGadget,
-    &entitiesGadgetSpec,       NULL,
+    makeTextGadget(&currentTilesetSpec),    &data->tilesetNameGadget,
+    makeButtonGadget(&chooseTilesetSpec),   NULL,
+    makeScrollerGadget(&tilesetScrollSpec), NULL,
+    makeStringGadget(&mapNameSpec),         &data->mapNameGadget,
+    makeTextGadget(&songNameSpec),          &data->songNameGadget,
+    makeButtonGadget(&songChangeSpec),      NULL,
+    makeButtonGadget(&songClearSpec),       NULL,
+    makeButtonGadget(&mapLeftSpec),         &data->leftGadget,
+    makeButtonGadget(&mapRightSpec),        &data->rightGadget,
+    makeButtonGadget(&mapUpSpec),           &data->upGadget,
+    makeButtonGadget(&mapDownSpec),         &data->downGadget,
+    makeButtonGadget(&entitiesSpec),        NULL,
     NULL);
 
   if(!gadgets) {
