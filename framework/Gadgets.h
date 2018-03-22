@@ -3,6 +3,10 @@
 
 #include <libraries/gadtools.h>
 
+#include "window.h"
+
+typedef void (*OnClick)(FrameworkWindow*);
+
 typedef enum Border_tag {
   NO_BORDER,
   BORDERED
@@ -32,6 +36,8 @@ typedef struct ButtonSpec_tag {
   char *label;
   TextPlacement textPlacement;
   State state;
+
+  OnClick onClick;
 } ButtonSpec;
 
 typedef struct ScrollSpec_tag {
