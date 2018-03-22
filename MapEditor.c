@@ -1091,49 +1091,30 @@ void mapEditorRedrawTile(FrameworkWindow *mapEditorWindow, int row, int col) {
 void mapEditorSetMapNum(FrameworkWindow *mapEditorWindow, UWORD mapNum) {
   MapEditorData *data = mapEditorWindow->data;  
 
+  BOOL upDisabled = mapNum < 16 ? TRUE : FALSE;
+  BOOL downDisabled = mapNum >= 112 ? TRUE : FALSE;
+  BOOL leftDisabled = mapNum % 16 == 0 ? TRUE : FALSE;
+  BOOL rightDisabled = mapNum % 16 == 15 ? TRUE : FALSE;
+
   data->mapNum = mapNum + 1;
 
-  if(mapNum < 16) {
-    GT_SetGadgetAttrs(data->upGadget, mapEditorWindow->intuitionWindow, NULL,
-      GA_Disabled, TRUE,
-      TAG_END);
-  } else {
-    GT_SetGadgetAttrs(data->upGadget, mapEditorWindow->intuitionWindow, NULL,
-      GA_Disabled, FALSE,
-      TAG_END);
-  }
+  GT_SetGadgetAttrs(data->upGadget, mapEditorWindow->intuitionWindow, NULL,
+    GA_Disabled, upDisabled,
+    TAG_END);
 
-  if(mapNum >= 112) {
-    GT_SetGadgetAttrs(data->downGadget, mapEditorWindow->intuitionWindow, NULL,
-      GA_Disabled, TRUE,
-      TAG_END);
-    } else {
-      GT_SetGadgetAttrs(data->downGadget, mapEditorWindow->intuitionWindow, NULL,
-        GA_Disabled, FALSE,
-        TAG_END);
-    }
+  GT_SetGadgetAttrs(data->downGadget, mapEditorWindow->intuitionWindow, NULL,
+    GA_Disabled, downDisabled,
+    TAG_END);
 
-    if(mapNum % 16 == 0) {
-      GT_SetGadgetAttrs(data->leftGadget, mapEditorWindow->intuitionWindow, NULL,
-        GA_Disabled, TRUE,
-        TAG_END);
-    } else {
-      GT_SetGadgetAttrs(data->leftGadget, mapEditorWindow->intuitionWindow, NULL,
-        GA_Disabled, FALSE,
-        TAG_END);
-    }
+  GT_SetGadgetAttrs(data->leftGadget, mapEditorWindow->intuitionWindow, NULL,
+    GA_Disabled, leftDisabled,
+    TAG_END);
 
-    if(mapNum % 16 == 15) {
-      GT_SetGadgetAttrs(data->rightGadget, mapEditorWindow->intuitionWindow, NULL,
-        GA_Disabled, TRUE,
-        TAG_END);
-    } else {
-      GT_SetGadgetAttrs(data->rightGadget, mapEditorWindow->intuitionWindow, NULL,
-        GA_Disabled, FALSE,
-        TAG_END);
-    }
+  GT_SetGadgetAttrs(data->rightGadget, mapEditorWindow->intuitionWindow, NULL,
+    GA_Disabled, rightDisabled,
+    TAG_END);
 
-    updateMapEditorTitle(mapEditorWindow);
+  updateMapEditorTitle(mapEditorWindow);
 }
 
 static FrameworkWindow *newMapEditor(void) {
