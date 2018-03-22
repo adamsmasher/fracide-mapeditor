@@ -445,15 +445,6 @@ static void handleEntitiesClicked(FrameworkWindow *mapEditorWindow) {
   }
 }
 
-static void handleMapEditorGadgetUp(FrameworkWindow *mapEditorWindow, struct Gadget *gadget) {
-  switch(gadget->GadgetID) {
-    case MAP_NAME_ID:
-      updateMapEditorMapName(mapEditorWindow);
-      break;
-    }
-}
-
-
 static int mapEditorClickInPalette(WORD x, WORD y) {
   return ((x > TILESET_BORDER_LEFT                        ) &&
           (x < TILESET_BORDER_LEFT + TILESET_BORDER_WIDTH ) &&
@@ -770,7 +761,8 @@ static StringSpec mapNameSpec = {
   MAP_NAME_LEFT,  MAP_NAME_TOP,
   MAP_NAME_WIDTH, MAP_NAME_HEIGHT,
   "Map Name:",
-  TEXT_ON_LEFT
+  TEXT_ON_LEFT,
+  updateMapEditorMapName
 };
 
 static TextSpec currentTilesetSpec = {

@@ -6,6 +6,7 @@
 #include "window.h"
 
 typedef void (*OnClick)(FrameworkWindow*);
+typedef void (*OnEntry)(FrameworkWindow*);
 
 typedef enum Border_tag {
   NO_BORDER,
@@ -52,6 +53,7 @@ typedef struct StringSpec_tag {
   WORD width, height;
   char *label;
   TextPlacement textPlacement;
+  OnEntry onEntry;
 } StringSpec;
 
 typedef struct TextSpec_tag {
