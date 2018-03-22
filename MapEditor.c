@@ -1084,6 +1084,7 @@ void mapEditorRefreshSong(FrameworkWindow *mapEditorWindow) {
 void mapEditorRedrawTile(FrameworkWindow *mapEditorWindow, int row, int col) {
   MapEditorData *data = mapEditorWindow->data;
   if(data->map->tilesetNum) {
+    /* TODO: it's messed up how we pass this in and then undo it... */
     redrawMapTile(mapEditorWindow, row * 10 + col);
   }
 }
