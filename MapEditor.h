@@ -14,14 +14,6 @@
 #define CHOOSE_TILESET_ID  (CURRENT_TILESET_ID + 1)
 #define TILESET_SCROLL_ID  (CHOOSE_TILESET_ID  + 1)
 #define MAP_NAME_ID        (TILESET_SCROLL_ID  + 1)
-#define SONG_NAME_LABEL_ID (MAP_NAME_ID        + 1)
-#define SONG_CHANGE_ID     (SONG_NAME_LABEL_ID + 1)
-#define SONG_CLEAR_ID      (SONG_CHANGE_ID     + 1)
-#define MAP_LEFT_ID        (SONG_CLEAR_ID      + 1)
-#define MAP_RIGHT_ID       (MAP_LEFT_ID        + 1)
-#define MAP_UP_ID          (MAP_RIGHT_ID       + 1)
-#define MAP_DOWN_ID        (MAP_UP_ID          + 1)
-#define ENTITIES_ID        (MAP_DOWN_ID        + 1)
 
 #define TILESET_PALETTE_TILES_ACROSS 4
 #define TILESET_PALETTE_TILES_HIGH   8
