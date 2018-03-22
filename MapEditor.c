@@ -447,32 +447,8 @@ static void handleEntitiesClicked(FrameworkWindow *mapEditorWindow) {
 
 static void handleMapEditorGadgetUp(FrameworkWindow *mapEditorWindow, struct Gadget *gadget) {
   switch(gadget->GadgetID) {
-    case CHOOSE_TILESET_ID:
-      handleChooseTilesetClicked(mapEditorWindow);
-      break;
     case MAP_NAME_ID:
       updateMapEditorMapName(mapEditorWindow);
-      break;
-    case SONG_CHANGE_ID:
-      handleChangeSongClicked(mapEditorWindow);
-      break;
-    case SONG_CLEAR_ID:
-      mapEditorClearSong(mapEditorWindow);
-      break;
-    case MAP_LEFT_ID:
-      handleMapLeft(mapEditorWindow);
-      break;
-    case MAP_RIGHT_ID:
-      handleMapRight(mapEditorWindow);
-      break;
-    case MAP_UP_ID:
-      handleMapUp(mapEditorWindow);
-      break;
-    case MAP_DOWN_ID:
-      handleMapDown(mapEditorWindow);
-      break;
-    case ENTITIES_ID:
-      handleEntitiesClicked(mapEditorWindow);
       break;
     }
 }
@@ -811,7 +787,8 @@ static ButtonSpec chooseTilesetSpec = {
   CHOOSE_TILESET_WIDTH, CHOOSE_TILESET_HEIGHT,
   "Choose Tileset...",
   TEXT_INSIDE,
-  ENABLED
+  ENABLED,
+  handleChooseTilesetClicked
 };
 
 static ScrollerSpec tilesetScrollSpec = {
@@ -835,7 +812,8 @@ static ButtonSpec songChangeSpec = {
   SONG_CHANGE_WIDTH, SONG_CHANGE_HEIGHT,
   "Change...",
   TEXT_INSIDE,
-  ENABLED
+  ENABLED,
+  handleChangeSongClicked
 };
 
 static ButtonSpec songClearSpec = {
@@ -843,7 +821,8 @@ static ButtonSpec songClearSpec = {
   SONG_CLEAR_WIDTH, SONG_CLEAR_HEIGHT,
   "X",
   TEXT_INSIDE,
-  ENABLED
+  ENABLED,
+  mapEditorClearSong
 };
 
 static ButtonSpec mapLeftSpec = {
@@ -851,7 +830,8 @@ static ButtonSpec mapLeftSpec = {
   MAP_LEFT_WIDTH, MAP_LEFT_HEIGHT,
   "<",
   TEXT_INSIDE,
-  DISABLED
+  DISABLED,
+  handleMapLeft
 };
 
 static ButtonSpec mapRightSpec = {
@@ -859,7 +839,8 @@ static ButtonSpec mapRightSpec = {
   MAP_RIGHT_WIDTH, MAP_RIGHT_HEIGHT,
   ">",
   TEXT_INSIDE,
-  DISABLED
+  DISABLED,
+  handleMapRight
 };
 
 static ButtonSpec mapUpSpec = {
@@ -867,7 +848,8 @@ static ButtonSpec mapUpSpec = {
   MAP_UP_WIDTH, MAP_UP_HEIGHT,
   "^",
   TEXT_INSIDE,
-  DISABLED
+  DISABLED,
+  handleMapUp
 };
 
 static ButtonSpec mapDownSpec = {
@@ -875,7 +857,8 @@ static ButtonSpec mapDownSpec = {
   MAP_DOWN_WIDTH, MAP_DOWN_HEIGHT,
   "v",
   TEXT_INSIDE,
-  DISABLED
+  DISABLED,
+  handleMapDown
 };
 
 static ButtonSpec entitiesSpec = {
@@ -883,7 +866,8 @@ static ButtonSpec entitiesSpec = {
   ENTITIES_WIDTH, ENTITIES_HEIGHT,
   "Entities...",
   TEXT_INSIDE,
-  ENABLED
+  ENABLED,
+  handleEntitiesClicked
 };
 
 static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
