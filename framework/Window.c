@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "GadgetEvents.h"
 #include "menu.h"
 #include "menubuild.h"
 
@@ -98,8 +99,9 @@ BOOL tryToCloseWindow(FrameworkWindow *window) {
 }
 
 static void invokeGadgetUpHandler(FrameworkWindow *window, struct Gadget *gadget) {
-  if(window->kind->gadgetUpOnWindow) {
-    window->kind->gadgetUpOnWindow(window, gadget);
+  GadgetUpHandler handler = findHandlerForGadgetUp(gadget);
+  if(handler) {
+    handler(window);
   }
 }
 
