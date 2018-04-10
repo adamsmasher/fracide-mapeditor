@@ -702,7 +702,6 @@ static WindowKind mapEditorWindowKind = {
   (RefreshFunction)  refreshMapEditor,
   (CanCloseFunction) ensureMapEditorSaved, /* TODO: check if map is saved here */
   (CloseFunction)    NULL,
-  (GadgetUpFunction) handleMapEditorGadgetUp,
   (ClickFunction)    handleMapEditorClick
 };
 

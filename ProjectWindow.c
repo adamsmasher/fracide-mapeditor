@@ -97,7 +97,6 @@ static WindowKind projectWindowKind = {
   (RefreshFunction)  NULL,
   (CanCloseFunction) ensureEverythingSaved,
   (CloseFunction)    onClose,
-  (GadgetUpFunction) NULL,
   (ClickFunction)    NULL
 };
 
