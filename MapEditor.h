@@ -43,8 +43,8 @@ typedef struct MapEditorData_tag {
   char title[16];
 } MapEditorData;
 
-FrameworkWindow *newMapEditorNewMap(void);
-FrameworkWindow *newMapEditorWithMap(Map*, int mapNum);
+FrameworkWindow *newMapEditorNewMap(FrameworkWindow *parent);
+FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map*, int mapNum);
 
 BOOL isMapEditorWindow(FrameworkWindow*);
 

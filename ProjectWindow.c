@@ -484,15 +484,11 @@ BOOL openMapNum(FrameworkWindow *projectWindow, int mapNum) {
     }
   }
 
-  mapEditor = newMapEditorWithMap(projectDataGetMap(projectWindow->data, mapNum), mapNum);
+  mapEditor = newMapEditorWithMap(projectWindow, projectDataGetMap(projectWindow->data, mapNum), mapNum);
   if(!mapEditor) {
     fprintf(stderr, "openMapNum: failed to create new map editor\n");
     goto error;
   }
-
-  /* TODO: fix us */
-  /* addToMapEditorSet(mapEditor); */
-  /* addWindowToSet(mapEditor->window); */
 
 done:
   return TRUE;
@@ -516,14 +512,11 @@ static FrameworkWindow *findMapEditor(FrameworkWindow *projectWindow, int mapNum
 }
 
 void newMap(FrameworkWindow *projectWindow) {
-  FrameworkWindow *mapEditor = newMapEditorNewMap();
+  FrameworkWindow *mapEditor = newMapEditorNewMap(projectWindow);
   if(!mapEditor) {
     fprintf(stderr, "newMap: failed to create mapEditor\n");
     return;
   }
-  /* TODO: fix us */
-  /* addToMapEditorSet(mapEditor);
-    addWindowToSet(mapEditor->window);*/
 }
 
 void openMap(FrameworkWindow *projectWindow) {

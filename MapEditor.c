@@ -1096,7 +1096,7 @@ void mapEditorSetMapNum(FrameworkWindow *mapEditorWindow, UWORD mapNum) {
   updateMapEditorTitle(mapEditorWindow);
 }
 
-static FrameworkWindow *newMapEditor(void) {
+static FrameworkWindow *newMapEditor(FrameworkWindow *parent) {
   FrameworkWindow *mapEditorWindow;
   struct Gadget *gadgets;
 
@@ -1134,7 +1134,7 @@ static FrameworkWindow *newMapEditor(void) {
   initMapEditorPaletteImages(data);
   initMapEditorMapImages(data);
 
-  mapEditorWindow = openWindowOnGlobalScreen(&mapEditorWindowKind, gadgets);
+  mapEditorWindow = openChildWindow(parent, &mapEditorWindowKind, gadgets);
   if(!mapEditorWindow) {
     fprintf(stderr, "newMapEditor: failed to open window\n");
     goto error_freeImageData;
@@ -1162,7 +1162,7 @@ error:
     return NULL;
 }
 
-FrameworkWindow *newMapEditorNewMap(void) {
+FrameworkWindow *newMapEditorNewMap(FrameworkWindow *parent) {
   Map *map;
   MapEditorData *data;
   FrameworkWindow *mapEditorWindow;
@@ -1172,7 +1172,7 @@ FrameworkWindow *newMapEditorNewMap(void) {
     goto error;
   }
 
-  mapEditorWindow = newMapEditor();
+  mapEditorWindow = newMapEditor(parent);
   if(!mapEditorWindow) {
     goto error_freeMap;
   }
@@ -1191,7 +1191,7 @@ error:
   return NULL;
 }
 
-FrameworkWindow *newMapEditorWithMap(Map *map, int mapNum) {
+FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, int mapNum) {
   Map *mapCopy;
   FrameworkWindow *mapEditorWindow;
   MapEditorData *data;
@@ -1202,7 +1202,7 @@ FrameworkWindow *newMapEditorWithMap(Map *map, int mapNum) {
     goto error;
   }
 
-  mapEditorWindow = newMapEditor();
+  mapEditorWindow = newMapEditor(parent);
   if(!mapEditorWindow) {
     goto error_freeMap;
   }
