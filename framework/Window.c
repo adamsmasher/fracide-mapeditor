@@ -62,6 +62,20 @@ error:
   return NULL;
 }
 
+static void attachChildWindow(FrameworkWindow *parent, FrameworkWindow *child) {
+  child->parent = parent;
+  child->prev   = NULL;
+  child->next   = parent->children;
+
+  parent->children = child;
+}
+
+FrameworkWindow *openChildWindow(FrameworkWindow *parent, WindowKind *windowKind, struct Gadget *gadgets) {
+  FrameworkWindow *child = openWindowOnScreen(windowKind, gadgets, parent->intuitionWindow->WScreen);
+  attachChildWindow(parent, child);
+  return child;
+}
+
 static void handleWindowChildEvents(FrameworkWindow *window, long signalSet) {
   FrameworkWindow *i = window->children;
   while(i) {
