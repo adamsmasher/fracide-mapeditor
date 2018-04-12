@@ -700,7 +700,7 @@ static WindowKind mapEditorWindowKind = {
   },
   (MenuSpec*)        NULL,
   (RefreshFunction)  refreshMapEditor,
-  (CanCloseFunction) ensureMapEditorSaved, /* TODO: check if map is saved here */
+  (CanCloseFunction) ensureMapEditorSaved,
   (CloseFunction)    NULL,
   (ClickFunction)    handleMapEditorClick
 };
