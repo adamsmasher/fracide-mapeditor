@@ -613,14 +613,13 @@ static void drawEntities(FrameworkWindow *mapEditorWindow) {
 static void mapEditorSetTilesetUpdateUI(FrameworkWindow *mapEditorWindow, UWORD tilesetNumber) {
   MapEditorData *data = mapEditorWindow->data;
   ProjectWindowData *parentData = mapEditorWindow->parent->data;
-  TilesetPackage *tilesetPackage = NULL /* TODO: fix me parentData->tilesetPackage */;
 
   GT_SetGadgetAttrs(data->tilesetNameGadget, mapEditorWindow->intuitionWindow, NULL,
-    GTTX_Text, tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber],
+    GTTX_Text, projectDataGetTilesetName(parentData, tilesetNumber),
     TAG_END);
 
   copyScaledTileset(
-    (UWORD*)tilesetPackage->tilesetPackageFile.tilesetImgs[tilesetNumber],
+    (UWORD*)projectDataGetTilesetImgs(parentData, tilesetNumber),
     data->imageData);
 
   DrawImage(mapEditorWindow->intuitionWindow->RPort, data->paletteImages,

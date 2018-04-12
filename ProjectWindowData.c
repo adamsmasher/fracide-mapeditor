@@ -217,3 +217,11 @@ error:
 char *projectDataGetTilesetPath(ProjectWindowData *data) {
   return data->project.tilesetPackagePath;
 }
+
+char *projectDataGetTilesetName(ProjectWindowData *data, UWORD tilesetNumber) {
+  return data->tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber];
+}
+
+TilesetImgs *projectDataGetTilesetImgs(ProjectWindowData *data, UWORD tilesetNumber) {
+  return &data->tilesetPackage->tilesetPackageFile.tilesetImgs[tilesetNumber];
+}

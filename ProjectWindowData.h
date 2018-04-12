@@ -4,6 +4,7 @@
 #include <exec/types.h>
 
 #include "Map.h"
+#include "TilesetPackage.h"
 
 typedef struct ProjectWindowData_tag ProjectWindowData;
 
@@ -43,5 +44,7 @@ char *projectDataGetFilename(ProjectWindowData *data);
 
 BOOL projectDataLoadTilesetPackage(ProjectWindowData*, char*);
 char *projectDataGetTilesetPath(ProjectWindowData*);
+char *projectDataGetTilesetName(ProjectWindowData*, UWORD tilesetNumber);
+TilesetImgs *projectDataGetTilesetImgs(ProjectWindowData*, UWORD tilesetNumber);
 
 #endif
