@@ -1004,7 +1004,7 @@ void mapEditorRefreshTileset(FrameworkWindow *mapEditorWindow) {
 
   if(data->map->tilesetNum) {
     if(data->map->tilesetNum - 1 < tilesetPackage->tilesetPackageFile.tilesetCnt) {
-       mapEditorSetTilesetUpdateUI(mapEditorWindow, data->map->tilesetNum - 1);
+      mapEditorSetTilesetUpdateUI(mapEditorWindow, data->map->tilesetNum - 1);
     } else {
       mapEditorClearTilesetUI(mapEditorWindow);
       EasyRequest(mapEditorWindow->intuitionWindow, &tilesetOutOfBoundsEasyStruct, NULL,
