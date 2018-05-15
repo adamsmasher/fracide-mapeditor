@@ -44,7 +44,7 @@ static MenuSectionSpec newSection =
     END_SECTION };
 
 static MenuSectionSpec openSection =
-  { { "New", "N", MENU_ITEM_ENABLED, openMapMenuItemClicked },
+  { { "Open", "O", MENU_ITEM_ENABLED, openMapMenuItemClicked },
     END_SECTION };
 
 static MenuSectionSpec saveSection =
