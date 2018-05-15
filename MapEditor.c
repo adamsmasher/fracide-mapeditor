@@ -697,7 +697,7 @@ static WindowKind mapEditorWindowKind = {
     MAP_EDITOR_WIDTH,MAP_EDITOR_HEIGHT,
     CUSTOMSCREEN
   },
-  (MenuSpec*)        NULL,
+  (MenuSpec*)        mapEditorMenuSpec,
   (RefreshFunction)  refreshMapEditor,
   (CanCloseFunction) ensureMapEditorSaved,
   (CloseFunction)    NULL,
