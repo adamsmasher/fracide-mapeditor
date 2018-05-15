@@ -42,13 +42,15 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Gadget *gadge
 
   window->treeSigMask = 1L << window->intuitionWindow->UserPort->mp_SigBit;
 
-  window->menu = createAndLayoutMenuFromSpec(windowKind->menuSpec);
-  if(!window->menu) {
-    fprintf(stderr, "openWindowOnGlobalScreen: failed to create menu\n");
-    goto error_closeWindow;
+  if(windowKind->menuSpec) {
+    window->menu = createAndLayoutMenuFromSpec(windowKind->menuSpec);
+    if(!window->menu) {
+      fprintf(stderr, "openWindowOnGlobalScreen: failed to create menu\n");
+      goto error_closeWindow;
+    }
+    SetMenuStrip(window->intuitionWindow, window->menu);
   }
 
-  SetMenuStrip(window->intuitionWindow, window->menu);
   GT_RefreshWindow(window->intuitionWindow, NULL);
 
   return window;
