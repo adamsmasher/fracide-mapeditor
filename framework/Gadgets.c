@@ -104,7 +104,7 @@ static struct Gadget *buildButton(ButtonSpec *buttonSpec, struct Gadget *context
   newGadget.ng_GadgetID   = gadgetId;
   newGadget.ng_Flags      = textPlacementToFlags(buttonSpec->textPlacement);
   newGadget.ng_VisualInfo = getGlobalVi();
-  newGadget.ng_UserData   = buttonSpec->onClick;
+  newGadget.ng_UserData   = (void*)buttonSpec->onClick;
   return CreateGadget(BUTTON_KIND, context, &newGadget,
     GA_Disabled, stateToDisabledTag(buttonSpec->state),
     TAG_END);
@@ -139,7 +139,7 @@ static struct Gadget *buildString(StringSpec *stringSpec, struct Gadget *context
   newGadget.ng_GadgetID   = gadgetId;
   newGadget.ng_Flags      = textPlacementToFlags(stringSpec->textPlacement);
   newGadget.ng_VisualInfo = getGlobalVi();
-  newGadget.ng_UserData   = stringSpec->onEntry;
+  newGadget.ng_UserData   = (void*)stringSpec->onEntry;
   return CreateGadget(STRING_KIND, context, &newGadget, TAG_END);
 }
 

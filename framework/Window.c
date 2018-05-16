@@ -91,7 +91,7 @@ static void refreshWindow(FrameworkWindow *window) {
   struct Window *iwindow = window->intuitionWindow;
   GT_BeginRefresh(iwindow);
   if(window->kind->refreshWindow) {
-    window->kind->refreshWindow(window);
+    (*window->kind->refreshWindow)(window);
   }
   GT_EndRefresh(iwindow, TRUE);
 }
@@ -99,7 +99,7 @@ static void refreshWindow(FrameworkWindow *window) {
 static BOOL canCloseWindow(FrameworkWindow *window) {
   /* TODO: also check to make sure that you can close children! */
   if(window->kind->canCloseWindow) {
-    return window->kind->canCloseWindow(window);
+    return (*window->kind->canCloseWindow)(window);
   } else {
     return TRUE;
   }
@@ -117,20 +117,20 @@ BOOL tryToCloseWindow(FrameworkWindow *window) {
 static void invokeGadgetUpHandler(FrameworkWindow *window, struct Gadget *gadget) {
   GadgetUpHandler handler = findHandlerForGadgetUp(gadget);
   if(handler) {
-    handler(window);
+    (*handler)(window);
   }
 }
 
 static void invokeClickHandler(FrameworkWindow *window, WORD x, WORD y) {
   if(window->kind->clickOnWindow) {
-    window->kind->clickOnWindow(window, x, y);
+    (*window->kind->clickOnWindow)(window, x, y);
   }
 }
 
 static void dispatchMessage(FrameworkWindow *window, struct IntuiMessage *msg) {
   switch(msg->Class) {
     case IDCMP_MENUPICK:
-      invokeMenuHandler(window, msg->Code);
+      invokeMenuHandler(window, (ULONG)msg->Code);
       break;
     case IDCMP_REFRESHWINDOW:
       refreshWindow(window);
@@ -174,7 +174,7 @@ void forceCloseWindow(FrameworkWindow *window) {
   forceCloseChildren(window);
 
   if(window->kind->closeWindow) {
-    window->kind->closeWindow(window);
+    (*window->kind->closeWindow)(window);
   }
 
   ClearMenuStrip(window->intuitionWindow);

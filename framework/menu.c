@@ -47,7 +47,7 @@ void invokeMenuHandler(FrameworkWindow *window, ULONG menuNumber) {
 
   handler = getMenuHandler(menuSpec, menuNum, itemNum);
 
-  handler(window);
+  (*handler)(window);
 done:
   return;
 
