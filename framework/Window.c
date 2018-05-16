@@ -70,6 +70,7 @@ static void attachChildWindow(FrameworkWindow *parent, FrameworkWindow *child) {
   child->next   = parent->children;
 
   parent->children = child;
+  parent->treeSigMask |= child->treeSigMask;
 }
 
 FrameworkWindow *openChildWindow(FrameworkWindow *parent, WindowKind *windowKind, struct Gadget *gadgets) {
@@ -170,6 +171,13 @@ static void forceCloseChildren(FrameworkWindow *window) {
   }
 }
 
+static void removeChildWindow(FrameworkWindow *parent, FrameworkWindow *child) {
+  if(parent->children == child) {
+    parent->children = child->next;
+  }
+  parent->treeSigMask &= ~child->treeSigMask;
+}
+
 void forceCloseWindow(FrameworkWindow *window) {
   forceCloseChildren(window);
 
@@ -182,6 +190,18 @@ void forceCloseWindow(FrameworkWindow *window) {
 
   CloseWindow(window->intuitionWindow);
   FreeGadgets(window->gadgets);
+
+  if(window->parent) {
+    removeChildWindow(window->parent, window);
+  }
+
+  if(window->next) {
+    window->next->prev = window->prev;
+  }
+
+  if(window->prev) {
+    window->prev->next = window->next;
+  }
 
   free(window);
 }
