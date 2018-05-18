@@ -17,6 +17,7 @@
 #include "entitiesmenu.h"
 #include "MapEditor.h"
 #include "mapmenu.h"
+#include "MapRequester.h"
 #include "musicmenu.h"
 #include "Project.h"
 #include "projectmenu.h"

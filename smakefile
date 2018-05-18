@@ -53,7 +53,7 @@ musicmenu.o: musicmenu.c musicmenu.h
 
 easystructs.o: easystructs.c easystructs.h
 
-ProjectWindow.o: ProjectWindow.c ProjectWindow.h ProjectWindowData.h framework/Window.h framework/menubuild.h framework/screen.h easystructs.h MapEditor.h Project.h
+ProjectWindow.o: ProjectWindow.c ProjectWindow.h ProjectWindowData.h framework/Window.h framework/menubuild.h framework/screen.h easystructs.h MapEditor.h MapRequester.c Project.h
 
 ProjectWindowData.o: ProjectWindowData.c ProjectWindowData.h Map.h Project.h TilesetPackage.h
 
