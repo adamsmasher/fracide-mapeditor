@@ -25,6 +25,7 @@
 #include "easystructs.h"
 #include "EntityBrowser.h"
 #include "map.h"
+#include "MapRequester.h"
 #include "ProjectWindow.h"
 #include "ProjectWindowData.h"
 #include "TilesetPackage.h"

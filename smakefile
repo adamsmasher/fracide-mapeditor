@@ -25,7 +25,7 @@ $(OBJS)
 
 main.o: main.c MapEditor.h TilesetPackage.h TilesetRequester.h MapRequester.h SongRequester.h EntityBrowser.h Map.h Entity.h EntityRequester.h palette.h
 
-MapEditor.o: MapEditor.c MapEditor.h SongRequester.h tilesetRequester.h map.h EntityBrowser.h
+MapEditor.o: MapEditor.c MapEditor.h MapRequester.h SongRequester.h tilesetRequester.h map.h EntityBrowser.h
 
 TilesetPackage.o: TilesetPackage.c
 
