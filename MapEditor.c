@@ -111,7 +111,8 @@ static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
       mapEditorWindow->intuitionWindow,
       &saveIntoFullSlotEasyStruct,
       NULL,
-      selected - 1, NULL /* FIXME currentProjectGetMapName(selected - 1) */);
+      selected - 1,
+      projectDataGetMapName(projectData, selected - 1));
     if(response) {
       /* TODO: fix me */
       /*currentProjectOverwriteMap(mapEditor->map, selected - 1);*/
