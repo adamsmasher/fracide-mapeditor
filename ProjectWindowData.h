@@ -25,6 +25,7 @@ BOOL projectDataHasMap(ProjectWindowData*, int mapNum);
 Map *projectDataGetMap(ProjectWindowData*, int mapNum);
 struct List *projectDataGetMapNames(ProjectWindowData*);
 char *projectDataGetMapName(ProjectWindowData*, int mapNum);
+BOOL projectDataSaveNewMap(ProjectWindowData*, Map*, int mapNum);
 
 struct List *projectDataGetEntityNames(ProjectWindowData*);
 char *projectDataGetEntityName(ProjectWindowData*, int entityNum);

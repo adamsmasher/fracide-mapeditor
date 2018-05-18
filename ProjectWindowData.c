@@ -126,6 +126,18 @@ struct List *projectDataGetMapNames(ProjectWindowData *data) {
   return &data->project.mapNames;
 }
 
+/* TODO: maybe just expose savemap and have it check whether it's new or not? */
+BOOL projectDataSaveNewMap(ProjectWindowData *data, Map *map, int mapNum) {
+  Map *mapCopy = copyMap(map);
+  if(!mapCopy) {
+    fprintf(stderr, "currentProjectSaveNewMap: couldn't allocate map copy\n");
+    return FALSE;
+  }
+  data->project.mapCnt++;
+  data->project.maps[mapNum] = mapCopy;
+  return TRUE;
+}
+
 char *projectDataGetMapName(ProjectWindowData *data, int mapNum) {
   Map *map = data->project.maps[mapNum];
   if(!map) {

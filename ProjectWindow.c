@@ -434,21 +434,6 @@ void quit(FrameworkWindow *projectWindow) {
   tryToCloseWindow(projectWindow);
 }
 
-/* TODO: this is weird */
-/* TODO: just pass in data? */
-/* static BOOL currentProjectSaveNewMap(FrameworkWindow *projectWindow, Map *map, int mapNum) {
-  ProjectWindowData *data = projectWindow->data;
-
-  Map *mapCopy = copyMap(map);
-  if(!mapCopy) {
-    fprintf(stderr, "currentProjectSaveNewMap: couldn't allocate map copy\n");
-    return FALSE;
-  }
-  data->project.mapCnt++;
-  data->project.maps[mapNum] = mapCopy;
-  return TRUE;
-} */
-
 /* TODO: just take data? */
 /* static void currentProjectOverwriteMap(FrameworkWindow *projectWindow, Map *map, int mapNum) {
   ProjectWindowData *data = projectWindow->data;

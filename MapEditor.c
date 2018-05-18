@@ -92,6 +92,7 @@ static void disableMapRevert(FrameworkWindow *mapEditorWindow) {
 }
 
 static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
+  MapEditorData *data = mapEditorWindow->data;
   FrameworkWindow *projectWindow = mapEditorWindow->parent;
   ProjectWindowData *projectData = projectWindow->data;
 
@@ -101,7 +102,7 @@ static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
   }
 
   if(!projectDataHasMap(projectData, selected - 1)) {
-    if(0/* TODO: fix me: !currentProjectSaveNewMap(mapEditor->map, selected - 1) */) {
+    if(projectDataSaveNewMap(projectData, data->map, selected - 1)) {
       fprintf(stderr, "saveMapAs: failed to save map\n");
       return FALSE;
     }
