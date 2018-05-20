@@ -435,12 +435,6 @@ void quit(FrameworkWindow *projectWindow) {
   tryToCloseWindow(projectWindow);
 }
 
-/* TODO: just take data? */
-/* static void currentProjectOverwriteMap(FrameworkWindow *projectWindow, Map *map, int mapNum) {
-  ProjectWindowData *data = projectWindow->data;
-  overwriteMap(map, data->project.maps[mapNum]);
-} */
-
 /* TODO: just pass in data? */
 /* TODO: this is weird */
 /* static void updateCurrentProjectMapName(FrameworkWindow *projectWindow, int mapNum, Map *map) {

@@ -114,8 +114,7 @@ static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
       selected - 1,
       projectDataGetMapName(projectData, selected - 1));
     if(response) {
-      /* TODO: fix me */
-      /*currentProjectOverwriteMap(mapEditor->map, selected - 1);*/
+      projectDataOverwriteMap(projectData, data->map, selected - 1);
     } else {
       return FALSE;
     }

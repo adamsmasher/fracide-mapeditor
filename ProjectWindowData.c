@@ -126,7 +126,6 @@ struct List *projectDataGetMapNames(ProjectWindowData *data) {
   return &data->project.mapNames;
 }
 
-/* TODO: maybe just expose savemap and have it check whether it's new or not? */
 BOOL projectDataSaveNewMap(ProjectWindowData *data, Map *map, int mapNum) {
   Map *mapCopy = copyMap(map);
   if(!mapCopy) {
@@ -136,6 +135,10 @@ BOOL projectDataSaveNewMap(ProjectWindowData *data, Map *map, int mapNum) {
   data->project.mapCnt++;
   data->project.maps[mapNum] = mapCopy;
   return TRUE;
+}
+
+void projectDataOverwriteMap(ProjectWindowData *data, Map *map, int mapNum) {
+  overwriteMap(map, data->project.maps[mapNum]);
 }
 
 char *projectDataGetMapName(ProjectWindowData *data, int mapNum) {
