@@ -131,14 +131,14 @@ static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
 
 static BOOL saveMap(FrameworkWindow *mapEditorWindow) {
   MapEditorData *data = mapEditorWindow->data;
+  ProjectWindowData *projectData = mapEditorWindow->parent->data;
+
   if(!data->mapNum) {
     return saveMapAs(mapEditorWindow);
   } else {
-    /* TODO: fix me */
-    /* currentProjectOverwriteMap(mapEditor->map, mapEditor->mapNum - 1); */
+    projectDataOverwriteMap(projectData, data->map, data->mapNum - 1);
     /* TODO: this is what sets the saved status, but that feels fragile */
-    /* TODO: fix me */
-    /* updateCurrentProjectMapName(mapEditor->mapNum - 1, mapEditor->map);*/
+    projectDataUpdateMapName(projectData, data->mapNum - 1, data->map);
     mapEditorSetSaveStatus(mapEditorWindow, SAVED);
     return TRUE;
   }
