@@ -93,8 +93,7 @@ static void disableMapRevert(FrameworkWindow *mapEditorWindow) {
 
 static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
   MapEditorData *data = mapEditorWindow->data;
-  FrameworkWindow *projectWindow = mapEditorWindow->parent;
-  ProjectWindowData *projectData = projectWindow->data;
+  ProjectWindowData *projectData = mapEditorWindow->parent->data;
 
   int selected = saveMapRequester(mapEditorWindow);
   if(!selected) {
