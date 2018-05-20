@@ -149,6 +149,11 @@ char *projectDataGetMapName(ProjectWindowData *data, int mapNum) {
   return map->name;
 }
 
+/* TODO: this is weird */
+void projectDataUpdateMapName(ProjectWindowData *data, int mapNum, Map *map) {
+  updateProjectMapName(&data->project, mapNum, map);
+}
+
 struct List *projectDataGetEntityNames(ProjectWindowData *data) {
   /* TODO: i suspect i want to move the LISTS into the data and out of the project */
   return &data->project.entityNames;

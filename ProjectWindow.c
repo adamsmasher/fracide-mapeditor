@@ -435,13 +435,6 @@ void quit(FrameworkWindow *projectWindow) {
   tryToCloseWindow(projectWindow);
 }
 
-/* TODO: just pass in data? */
-/* TODO: this is weird */
-/* static void updateCurrentProjectMapName(FrameworkWindow *projectWindow, int mapNum, Map *map) {
-  ProjectWindowData *data = projectWindow->data;
-  updateProjectMapName(&data->project, mapNum, map);
-} */
-
 static int confirmCreateMap(FrameworkWindow *projectWindow, int mapNum) {
   return EasyRequest(
     projectWindow->intuitionWindow,

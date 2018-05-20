@@ -125,8 +125,7 @@ static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
 
   mapEditorSetSaveStatus(mapEditorWindow, SAVED);
 
-  /* TODO: fix me */
-  /* updateCurrentProjectMapName(selected - 1, mapEditor->map); */
+  projectDataUpdateMapName(projectData, selected - 1, data->map);
 
   return TRUE;
 }
