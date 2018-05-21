@@ -137,7 +137,6 @@ static BOOL saveMap(FrameworkWindow *mapEditorWindow) {
     return saveMapAs(mapEditorWindow);
   } else {
     projectDataOverwriteMap(projectData, data->map, data->mapNum - 1);
-    /* TODO: this is what sets the saved status, but that feels fragile */
     projectDataUpdateMapName(projectData, data->mapNum - 1, data->map);
     mapEditorSetSaveStatus(mapEditorWindow, SAVED);
     return TRUE;

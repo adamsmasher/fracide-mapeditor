@@ -139,6 +139,7 @@ BOOL projectDataSaveNewMap(ProjectWindowData *data, Map *map, int mapNum) {
 
 void projectDataOverwriteMap(ProjectWindowData *data, Map *map, int mapNum) {
   overwriteMap(map, data->project.maps[mapNum]);
+  data->projectSaved = FALSE;
 }
 
 char *projectDataGetMapName(ProjectWindowData *data, int mapNum) {
