@@ -924,30 +924,6 @@ static void initMapEditorMapImages(MapEditorData *data) {
   data->mapImages[89].NextImage = NULL;
 }
 
-static void closeAttachedTilesetRequester(MapEditorData *data) {
-  if(data->tilesetRequester) {
-    /* TODO: you need to do this differently now that there's child windows */
-    closeTilesetRequester(data->tilesetRequester);
-    data->tilesetRequester = NULL;
-  }
-}
-
-static void closeAttachedSongRequester(MapEditorData *data) {
-  if(data->songRequester) {
-    /* TODO: you need to do this differently now that there's child windows */
-    freeSongRequester(data->songRequester);
-    data->songRequester = NULL;
-  }
-}
-
-static void closeAttachedEntityBrowser(MapEditorData *data) {
-  if(data->entityBrowser) {
-    /* TODO: you need to do this differently now that there's child windows */
-    freeEntityBrowser(data->entityBrowser);
-    data->entityBrowser = NULL;
-  }
-}
-
 void mapEditorDrawEntity(FrameworkWindow *mapEditorWindow, Entity *entity, int entityNum) {
   MapEditorData *data = mapEditorWindow->data;
   if(data->map->tilesetNum) {
