@@ -217,6 +217,10 @@ char *projectDataGetFilename(ProjectWindowData *data) {
   }
 }
 
+BOOL projectDataHasTilesetPackage(ProjectWindowData *data) {
+  return (BOOL)(data->tilesetPackage);
+}
+
 BOOL projectDataLoadTilesetPackage(ProjectWindowData *data, char *filename) {
   TilesetPackage *newTilesetPackage = tilesetPackageLoadFromFile(filename);
   if(!newTilesetPackage) {

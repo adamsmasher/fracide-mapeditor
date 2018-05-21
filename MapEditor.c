@@ -277,14 +277,13 @@ static void handleChooseTilesetClicked(FrameworkWindow *mapEditorWindow) {
   MapEditorData *data = mapEditorWindow->data;
   FrameworkWindow *projectWindow = mapEditorWindow->parent;
   ProjectWindowData *parentData = projectWindow->data;
-  TilesetPackage *tilesetPackage = NULL /* TODO: fix me parentData->tilesetPackage */;
 
   if(data->tilesetRequester) {
     WindowToFront(data->tilesetRequester->window->intuitionWindow);
     goto done;
   }
 
-  if(!tilesetPackage) {
+  if(!projectDataHasTilesetPackage(parentData)) {
     int choice = EasyRequest(
       mapEditorWindow->intuitionWindow,
       &noTilesetPackageLoadedEasyStruct,
@@ -297,7 +296,7 @@ static void handleChooseTilesetClicked(FrameworkWindow *mapEditorWindow) {
 
   /* even after giving the user the opportunity to set the tileset
      package, we need to be sure they did so... */
-  if(!tilesetPackage) {
+  if(!projectDataHasTilesetPackage(parentData)) {
     goto done;
   }
 

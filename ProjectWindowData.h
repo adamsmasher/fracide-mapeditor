@@ -45,6 +45,7 @@ void setProjectDataFilename(ProjectWindowData*, char*);
 void clearProjectDataFilename(ProjectWindowData*);
 char *projectDataGetFilename(ProjectWindowData *data);
 
+BOOL projectDataHasTilesetPackage(ProjectWindowData*);
 BOOL projectDataLoadTilesetPackage(ProjectWindowData*, char*);
 char *projectDataGetTilesetPath(ProjectWindowData*);
 char *projectDataGetTilesetName(ProjectWindowData*, UWORD tilesetNumber);
