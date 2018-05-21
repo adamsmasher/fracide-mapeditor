@@ -276,14 +276,14 @@ static void handleChooseTilesetClicked(FrameworkWindow *mapEditorWindow) {
   char title[32];
   MapEditorData *data = mapEditorWindow->data;
   FrameworkWindow *projectWindow = mapEditorWindow->parent;
-  ProjectWindowData *parentData = projectWindow->data;
+  ProjectWindowData *projectData = projectWindow->data;
 
   if(data->tilesetRequester) {
     WindowToFront(data->tilesetRequester->window->intuitionWindow);
     goto done;
   }
 
-  if(!projectDataHasTilesetPackage(parentData)) {
+  if(!projectDataHasTilesetPackage(projectData)) {
     int choice = EasyRequest(
       mapEditorWindow->intuitionWindow,
       &noTilesetPackageLoadedEasyStruct,
@@ -296,7 +296,7 @@ static void handleChooseTilesetClicked(FrameworkWindow *mapEditorWindow) {
 
   /* even after giving the user the opportunity to set the tileset
      package, we need to be sure they did so... */
-  if(!projectDataHasTilesetPackage(parentData)) {
+  if(!projectDataHasTilesetPackage(projectData)) {
     goto done;
   }
 
@@ -613,14 +613,14 @@ static void drawEntities(FrameworkWindow *mapEditorWindow) {
 
 static void mapEditorSetTilesetUpdateUI(FrameworkWindow *mapEditorWindow, UWORD tilesetNumber) {
   MapEditorData *data = mapEditorWindow->data;
-  ProjectWindowData *parentData = mapEditorWindow->parent->data;
+  ProjectWindowData *projectData = mapEditorWindow->parent->data;
 
   GT_SetGadgetAttrs(data->tilesetNameGadget, mapEditorWindow->intuitionWindow, NULL,
-    GTTX_Text, projectDataGetTilesetName(parentData, tilesetNumber),
+    GTTX_Text, projectDataGetTilesetName(projectData, tilesetNumber),
     TAG_END);
 
   copyScaledTileset(
-    (UWORD*)projectDataGetTilesetImgs(parentData, tilesetNumber),
+    (UWORD*)projectDataGetTilesetImgs(projectData, tilesetNumber),
     data->imageData);
 
   DrawImage(mapEditorWindow->intuitionWindow->RPort, data->paletteImages,
@@ -999,7 +999,7 @@ void mapEditorSetSaveStatus(FrameworkWindow *mapEditorWindow, SaveStatus status)
 
 void mapEditorRefreshTileset(FrameworkWindow *mapEditorWindow) {
   MapEditorData *data = mapEditorWindow->data;
-  ProjectWindowData *parentData = mapEditorWindow->parent->data;
+  ProjectWindowData *projectData = mapEditorWindow->parent->data;
   TilesetPackage *tilesetPackage = NULL/* TODO: fix me parentData->tilesetPackage */;
 
   if(data->map->tilesetNum) {
