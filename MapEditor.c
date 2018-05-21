@@ -976,10 +976,9 @@ void mapEditorSetSaveStatus(FrameworkWindow *mapEditorWindow, SaveStatus status)
 void mapEditorRefreshTileset(FrameworkWindow *mapEditorWindow) {
   MapEditorData *data = mapEditorWindow->data;
   ProjectWindowData *projectData = mapEditorWindow->parent->data;
-  TilesetPackage *tilesetPackage = NULL/* TODO: fix me parentData->tilesetPackage */;
 
   if(data->map->tilesetNum) {
-    if(data->map->tilesetNum - 1 < tilesetPackage->tilesetPackageFile.tilesetCnt) {
+    if(data->map->tilesetNum - 1 < projectDataGetTilesetCount(projectData)) {
       mapEditorSetTilesetUpdateUI(mapEditorWindow, data->map->tilesetNum - 1);
     } else {
       mapEditorClearTilesetUI(mapEditorWindow);

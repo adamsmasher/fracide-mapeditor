@@ -247,6 +247,10 @@ char *projectDataGetTilesetName(ProjectWindowData *data, UWORD tilesetNumber) {
   return data->tilesetPackage->tilesetPackageFile.tilesetNames[tilesetNumber];
 }
 
+WORD projectDataGetTilesetCount(ProjectWindowData *data) {
+  return data->tilesetPackage->tilesetPackageFile.tilesetCnt;
+}
+
 TilesetImgs *projectDataGetTilesetImgs(ProjectWindowData *data, UWORD tilesetNumber) {
   return &data->tilesetPackage->tilesetPackageFile.tilesetImgs[tilesetNumber];
 }

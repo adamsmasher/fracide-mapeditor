@@ -49,6 +49,7 @@ BOOL projectDataHasTilesetPackage(ProjectWindowData*);
 BOOL projectDataLoadTilesetPackage(ProjectWindowData*, char*);
 char *projectDataGetTilesetPath(ProjectWindowData*);
 char *projectDataGetTilesetName(ProjectWindowData*, UWORD tilesetNumber);
+WORD projectDataGetTilesetCount(ProjectWindowData*);
 TilesetImgs *projectDataGetTilesetImgs(ProjectWindowData*, UWORD tilesetNumber);
 
 #endif
