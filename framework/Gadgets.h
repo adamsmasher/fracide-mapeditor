@@ -72,6 +72,8 @@ GadgetSpec *makeScrollerGadget(ScrollerSpec*);
 GadgetSpec *makeStringGadget(StringSpec*);
 GadgetSpec *makeTextGadget(TextSpec*);
 
+/* pass in pairs of GadgetSpecs and where to build the gadgets */
+/* returns a pointer to the first gadget */
 struct Gadget *buildGadgets(GadgetSpec*, struct Gadget**, ...);
 
 #endif
