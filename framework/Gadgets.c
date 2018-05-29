@@ -15,6 +15,7 @@ union GadgetSpecBody {
   ScrollerSpec *scrollerSpec;
   StringSpec   *stringSpec;
   TextSpec     *textSpec;
+  ListViewSpec *listViewSpec;
 };
 
 struct GadgetSpec_tag {
@@ -47,6 +48,13 @@ GadgetSpec *makeTextGadget(TextSpec *textSpec) {
   GadgetSpec *gadgetSpec = malloc(sizeof(GadgetSpec));
   gadgetSpec->kind = TEXT_KIND;
   gadgetSpec->specBody.textSpec = textSpec;
+  return gadgetSpec;
+}
+
+GadgetSpec *makeListViewGadget(ListViewSpec *listViewSpec) {
+  GadgetSpec *gadgetSpec = malloc(sizeof(GadgetSpec));
+  gadgetSpec->kind = LISTVIEW_KIND;
+  gadgetSpec->specBody.listViewSpec = listViewSpec;
   return gadgetSpec;
 }
 
@@ -161,12 +169,31 @@ static struct Gadget *buildText(TextSpec *textSpec, struct Gadget *context, UWOR
     TAG_END);
 }
 
+static struct Gadget *buildListView(ListViewSpec *listViewSpec, struct Gadget *context, UWORD gadgetId) {
+  struct NewGadget newGadget;
+  newGadget.ng_LeftEdge   = listViewSpec->left;
+  newGadget.ng_TopEdge    = listViewSpec->top;
+  newGadget.ng_Width      = listViewSpec->width;
+  newGadget.ng_Height     = listViewSpec->height;
+  newGadget.ng_GadgetText = NULL;
+  newGadget.ng_TextAttr   = &Topaz80;
+  newGadget.ng_GadgetID   = gadgetId;
+  newGadget.ng_Flags      = 0;
+  newGadget.ng_VisualInfo = getGlobalVi();
+  newGadget.ng_UserData   = NULL;
+  return CreateGadget(LISTVIEW_KIND, context, &newGadget,
+    /* TODO: show selected */
+    /* TODO: labels */
+    TAG_END);
+}
+
 static struct Gadget *buildGadget(GadgetSpec *gadgetSpec, struct Gadget *context, UWORD gadgetId) {
   switch(gadgetSpec->kind) {
     case BUTTON_KIND:   return buildButton(gadgetSpec->specBody.buttonSpec,     context, gadgetId);
     case SCROLLER_KIND: return buildScroller(gadgetSpec->specBody.scrollerSpec, context, gadgetId);
     case STRING_KIND:   return buildString(gadgetSpec->specBody.stringSpec,     context, gadgetId);
     case TEXT_KIND:     return buildText(gadgetSpec->specBody.textSpec,         context, gadgetId);
+    case LISTVIEW_KIND: return buildListView(gadgetSpec->specBody.listViewSpec, context, gadgetId);
     default:
       fprintf(stderr, "buildGadget: invalid gadget kind %lu\n", gadgetSpec->kind);
       return NULL;

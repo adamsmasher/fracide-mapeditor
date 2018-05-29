@@ -65,12 +65,20 @@ typedef struct TextSpec_tag {
   Border border;
 } TextSpec;
 
+typedef struct ListViewSpec_tag {
+  WORD left, top;
+  WORD width, height;
+/* TODO: show selected */
+/* TODO: labels */
+} ListViewSpec;
+
 typedef struct GadgetSpec_tag GadgetSpec;
 
 GadgetSpec *makeButtonGadget(ButtonSpec*);
 GadgetSpec *makeScrollerGadget(ScrollerSpec*);
 GadgetSpec *makeStringGadget(StringSpec*);
 GadgetSpec *makeTextGadget(TextSpec*);
+GadgetSpec *makeListViewGadget(ListViewSpec*);
 
 /* pass in pairs of GadgetSpecs and where to build the gadgets */
 /* returns a pointer to the first gadget */
