@@ -1,5 +1,7 @@
 #include "ProjectWindowData.h"
 
+#include <proto/exec.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -24,7 +26,31 @@ struct ProjectWindowData_tag {
   BOOL projectSaved;
   char projectFilename[PROJECT_FILENAME_LENGTH];
   TilesetPackage *tilesetPackage;
+  /* TODO: one day this should only exist inside the ListView gadget */
+  struct List songNames;
 };
+
+static void initSongNameNodes(ProjectWindowData *data) {
+  int i;
+  struct Node *node, *next;
+
+  NewList(&data->songNames);
+  for(i = 0; i < 128; i++) {
+    /* TODO: don't do this */
+    sprintf(data->project.songNameStrs[i], "%d:", i);
+    node = malloc(sizeof(struct Node));
+    /* TODO: handle node creation failure */
+    AddTail(&data->songNames, node);
+  }
+
+  node = data->songNames.lh_Head;
+  i = 0;
+  while(next = node->ln_Succ) {
+    node->ln_Name = data->project.songNameStrs[i];
+    node = next;
+    i++;
+  }
+}
 
 ProjectWindowData *createProjectData(void) {
   ProjectWindowData *data = malloc(sizeof(ProjectWindowData));
@@ -38,9 +64,21 @@ ProjectWindowData *createProjectData(void) {
   clearProjectDataFilename(data);
   data->tilesetPackage = NULL;
 
+  initSongNameNodes(data);
+
   return data;
 error:
   return NULL;
+}
+
+static void freeSongNames(ProjectWindowData *data) {
+  struct Node *node, *next;
+
+  node = data->songNames.lh_Head;
+  while(next = node->ln_Succ) {
+    free(node);
+    node = next;
+  }
 }
 
 static void clearProjectData(ProjectWindowData *data) {
@@ -48,6 +86,8 @@ static void clearProjectData(ProjectWindowData *data) {
   data->tilesetPackage = NULL;
   freeProject(&data->project);
   data->projectSaved = TRUE;
+
+  freeSongNames(data);
 }
 
 void freeProjectData(ProjectWindowData *data) {
@@ -170,8 +210,8 @@ void projectDataUpdateEntityName(ProjectWindowData *data, int entityNum, char *n
 }
 
 struct List *projectDataGetSongNames(ProjectWindowData *data) {
-  /* TODO: i suspect i want to move the LISTS into the data and out of the project */
-  return &data->project.songNames;
+  /* TODO: i suspect i want to move the LISTS into the gadget */
+  return &data->songNames;
 }
 
 char *projectDataGetSongName(ProjectWindowData *data, int songNum) {

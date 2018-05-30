@@ -13,7 +13,6 @@ typedef struct Project_tag {
     Map *maps[128];
     struct List mapNames;
     char mapNameStrs[128][80];
-    struct List songNames;
     char songNameStrs[128][80];
     struct List entityNames;
     char entityNameStrs[128][80];
