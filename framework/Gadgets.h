@@ -68,8 +68,8 @@ typedef struct TextSpec_tag {
 typedef struct ListViewSpec_tag {
   WORD left, top;
   WORD width, height;
+  struct List *labels;
 /* TODO: show selected */
-/* TODO: labels */
 } ListViewSpec;
 
 typedef struct GadgetSpec_tag GadgetSpec;

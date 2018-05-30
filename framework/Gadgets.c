@@ -183,7 +183,7 @@ static struct Gadget *buildListView(ListViewSpec *listViewSpec, struct Gadget *c
   newGadget.ng_UserData   = NULL;
   return CreateGadget(LISTVIEW_KIND, context, &newGadget,
     /* TODO: show selected */
-    /* TODO: labels */
+    GTLV_Labels, listViewSpec->labels,
     TAG_END);
 }
 
