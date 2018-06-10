@@ -1,40 +1,10 @@
-#include <proto/exec.h>
-
-#include <proto/dos.h>
-
 #include <intuition/intuition.h>
-#include <intuition/gadgetclass.h>
-#include <proto/intuition.h>
-
-#include <graphics/gfx.h>
-#include <graphics/view.h>
-#include <proto/graphics.h>
-
-#include <libraries/asl.h>
-#include <proto/asl.h>
-
-#include <libraries/gadtools.h>
-#include <proto/gadtools.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "framework/runstate.h"
 #include "framework/screen.h"
 
-#include "easystructs.h"
-#include "EntityBrowser.h"
-#include "EntityNamesEditor.h"
-#include "EntityRequester.h"
-#include "MapEditor.h"
-#include "MapRequester.h"
 #include "palette.h"
 #include "ProjectWindow.h"
-#include "SongNamesEditor.h"
-#include "SongRequester.h"
-#include "TilesetPackage.h"
-#include "TilesetRequester.h"
 
 #define SCR_WIDTH  640
 #define SCR_HEIGHT 512

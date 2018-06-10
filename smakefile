@@ -23,7 +23,7 @@ mapedit: $(OBJS)
 $(OBJS)
 <
 
-main.o: main.c MapEditor.h TilesetPackage.h TilesetRequester.h MapRequester.h SongRequester.h EntityBrowser.h Map.h Entity.h EntityRequester.h palette.h
+main.o: main.c framework/runstate.h framework/screen.h palette.h ProjectWindow.h
 
 MapEditor.o: MapEditor.c MapEditor.h MapRequester.h SongRequester.h tilesetRequester.h map.h EntityBrowser.h
 
