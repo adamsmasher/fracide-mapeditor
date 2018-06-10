@@ -35,6 +35,10 @@
 #define SONG_NAME_BOTTOM_OFFSET 26
 #define SONG_NAME_LEFT          SONG_LIST_LEFT
 
+static void handleSongRequesterGadgetUp(FrameworkWindow *mapEditorWindow, SongRequester *songRequester, struct IntuiMessage *msg) {
+  mapEditorSetSong(mapEditorWindow, msg->Code);
+}
+
 static WindowKind songRequesterWindowKind = {
   {
     40, 40, SONG_REQUESTER_WIDTH, SONG_REQUESTER_HEIGHT,
