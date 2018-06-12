@@ -439,10 +439,10 @@ static void openNewEntityBrowser(FrameworkWindow *mapEditorWindow) {
 static void handleEntitiesClicked(FrameworkWindow *mapEditorWindow) {
   MapEditorData *data = mapEditorWindow->data;
 
-  if(!data->entityBrowser) {
-    openNewEntityBrowser(mapEditorWindow);
-  } else {
+  if(data->entityBrowser) {
     WindowToFront(data->entityBrowser->window->intuitionWindow);
+  } else {
+    openNewEntityBrowser(mapEditorWindow);
   }
 }
 
