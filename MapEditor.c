@@ -403,37 +403,9 @@ static void handleMapRight(FrameworkWindow *mapEditorWindow) {
   moveToMap(mapEditorWindow, data->mapNum + 1);
 }
 
-static void attachEntityBrowserToMapEditor
-(MapEditorData *data, EntityBrowser *entityBrowser) {
-  data->entityBrowser = entityBrowser;
-}
-
 static void openNewEntityBrowser(FrameworkWindow *mapEditorWindow) {
-  char title[32];
-  EntityBrowser *entityBrowser;
   MapEditorData *data = mapEditorWindow->data;
-
-  if(data->mapNum) {
-    sprintf(title, "Entities (Map %d)", data->mapNum - 1);
-  } else {
-    strcpy(title, "Entities");
-  }
-
-  entityBrowser = newEntityBrowser(title, data->map->entities, data->map->entityCnt);
-  if(!entityBrowser) {
-    fprintf(stderr, "openNewEntityBrowser: couldn't create new entity browser\n");
-    goto error;
-  }
-
-  attachEntityBrowserToMapEditor(data, entityBrowser);
-  /* TODO: fix me */
-  /* addWindowToSet(entityBrowser->window); */
-
-  done:
-    return;
-
-  error:
-    return;
+  data->entityBrowser = newEntityBrowser(mapEditorWindow, data->map);
 }
 
 static void handleEntitiesClicked(FrameworkWindow *mapEditorWindow) {
