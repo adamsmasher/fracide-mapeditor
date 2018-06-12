@@ -440,7 +440,7 @@ static void handleEntitiesClicked(FrameworkWindow *mapEditorWindow) {
   MapEditorData *data = mapEditorWindow->data;
 
   if(data->entityBrowser) {
-    WindowToFront(data->entityBrowser->window->intuitionWindow);
+    WindowToFront(data->entityBrowser->intuitionWindow);
   } else {
     openNewEntityBrowser(mapEditorWindow);
   }
