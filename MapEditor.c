@@ -28,11 +28,39 @@
 #include "MapRequester.h"
 #include "ProjectWindow.h"
 #include "ProjectWindowData.h"
+#include "SaveStatus.h"
 #include "TilesetPackage.h"
 #include "TilesetRequester.h"
 
 #define MAP_EDITOR_WIDTH  536
 #define MAP_EDITOR_HEIGHT 384
+
+typedef struct MapEditorData_tag {
+  Map *map;
+  int mapNum;
+
+  struct Gadget *tilesetNameGadget;
+  struct Gadget *mapNameGadget;
+  struct Gadget *songNameGadget;
+  struct Gadget *leftGadget;
+  struct Gadget *rightGadget;
+  struct Gadget *upGadget;
+  struct Gadget *downGadget;
+
+  SaveStatus saveStatus;
+
+  TilesetRequester *tilesetRequester;
+  SongRequester    *songRequester;
+  FrameworkWindow  *entityBrowser;
+
+  struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
+  struct Image mapImages[MAP_TILES_ACROSS * MAP_TILES_HIGH];
+  UWORD *imageData;
+
+  int selected;
+
+  char title[16];
+} MapEditorData;
 
 static void newMapMenuItemClicked(FrameworkWindow*);
 static void openMapMenuItemClicked(FrameworkWindow*);
@@ -91,6 +119,39 @@ static void disableMapRevert(FrameworkWindow *mapEditorWindow) {
   OffMenu(mapEditorWindow->intuitionWindow, REVERT_MAP_MENU_ITEM);
 }
 
+static void updateMapEditorTitle(FrameworkWindow *mapEditorWindow) {
+  MapEditorData *data = mapEditorWindow->data;
+
+  char unsaved = data->saveStatus == SAVED ? '\0' : '*';
+  if(data->mapNum) {
+    sprintf(data->title, "Map %d%c", data->mapNum - 1, unsaved);
+  } else {
+    sprintf(data->title, "Map Editor%c", unsaved);
+  }
+  SetWindowTitles(mapEditorWindow->intuitionWindow, data->title, (STRPTR)-1);
+}
+
+static void mapEditorSetSaveStatus(FrameworkWindow *mapEditorWindow, SaveStatus saveStatus) {
+  MapEditorData *data = mapEditorWindow->data;
+  if(saveStatus != data->saveStatus) {
+    data->saveStatus = saveStatus;
+    if(saveStatus == SAVED) {
+      disableMapRevert(mapEditorWindow);
+    } else {
+      enableMapRevert(mapEditorWindow);
+    }
+    updateMapEditorTitle(mapEditorWindow);
+  }
+}
+
+static int saveMapRequester(FrameworkWindow *mapEditorWindow) {
+  char title[96];
+  MapEditorData *data = mapEditorWindow->data;
+
+  sprintf(title, "Save Map %s", data->map->name);
+  return spawnMapRequester(mapEditorWindow, title);
+}
+
 static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
   MapEditorData *data = mapEditorWindow->data;
   ProjectWindowData *projectData = mapEditorWindow->parent->data;
@@ -120,7 +181,6 @@ static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
   }
 
   mapEditorSetMapNum(mapEditorWindow, selected - 1);
-  disableMapRevert(mapEditorWindow);
 
   mapEditorSetSaveStatus(mapEditorWindow, SAVED);
 
@@ -192,7 +252,7 @@ static BOOL unsavedMapEditorAlert(FrameworkWindow *mapEditorWindow) {
 
 BOOL ensureMapEditorSaved(FrameworkWindow *mapEditorWindow) {
   MapEditorData *data = mapEditorWindow->data;
-  return (BOOL)(data->saved || unsavedMapEditorAlert(mapEditorWindow));
+  return (BOOL)(data->saveStatus == SAVED || unsavedMapEditorAlert(mapEditorWindow));
 }
 
 #define TILE_WIDTH  16
@@ -373,10 +433,9 @@ static void mapEditorClearSong(FrameworkWindow *mapEditorWindow) {
 }
 
 static void moveToMap(FrameworkWindow *mapEditorWindow, int mapNum) {
-  MapEditorData *data = mapEditorWindow->data;
   FrameworkWindow *projectWindow = mapEditorWindow->parent;
 
-  if(data->saved || unsavedMapEditorAlert(mapEditorWindow)) {
+  if(ensureMapEditorSaved(mapEditorWindow)) {
     if(openMapNum(projectWindow, mapNum - 1)) {
       mapEditorWindow->closed = 1;
     }
@@ -405,7 +464,7 @@ static void handleMapRight(FrameworkWindow *mapEditorWindow) {
 
 static void openNewEntityBrowser(FrameworkWindow *mapEditorWindow) {
   MapEditorData *data = mapEditorWindow->data;
-  data->entityBrowser = newEntityBrowser(mapEditorWindow, data->map);
+  data->entityBrowser = newEntityBrowser(mapEditorWindow, data->map, data->mapNum);
 }
 
 static void handleEntitiesClicked(FrameworkWindow *mapEditorWindow) {
@@ -925,24 +984,6 @@ static void mapEditorClearTilesetUI(FrameworkWindow *mapEditorWindow) {
     MAP_BORDER_TOP,
     MAP_BORDER_LEFT + MAP_BORDER_WIDTH  - 3,
     MAP_BORDER_TOP  + MAP_BORDER_HEIGHT - 3);
-}
-
-static void updateMapEditorTitle(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-
-  char unsaved = data->saved ? '\0' : '*';
-  if(data->mapNum) {
-    sprintf(data->title, "Map %d%c", data->mapNum - 1, unsaved);
-  } else {
-    sprintf(data->title, "Map Editor%c", unsaved);
-  }
-  SetWindowTitles(mapEditorWindow->intuitionWindow, data->title, (STRPTR)-1);
-}
-
-void mapEditorSetSaveStatus(FrameworkWindow *mapEditorWindow, SaveStatus status) {
-  MapEditorData *data = mapEditorWindow->data;
-  data->saved = status;
-  updateMapEditorTitle(mapEditorWindow);
 }
 
 void mapEditorRefreshTileset(FrameworkWindow *mapEditorWindow) {

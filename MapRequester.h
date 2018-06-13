@@ -1,9 +1,8 @@
 #ifndef MAP_REQUESTER_H
 #define MAP_REQUESTER_H
 
-#include "MapEditor.h"
+#include "framework/Window.h"
 
-int openMapRequester(FrameworkWindow *projectWindow);
-int saveMapRequester(FrameworkWindow *mapEditorWindow);
+int spawnMapRequester(FrameworkWindow *parent, char *title);
 
 #endif

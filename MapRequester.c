@@ -224,60 +224,45 @@ static void initMapRequesterVi(void) {
   cancelButtonNewGadget.ng_VisualInfo = vi;
 }
 
-static int spawnRequester(struct Window *window, char *title) {
-    MapRequester mapRequester;
-    mapRequester.window = NULL;
+int spawnMapRequester(FrameworkWindow *parent, char *title) {
+  MapRequester mapRequester;
+  mapRequester.window = NULL;
 
-    if(!Request(&requester, window)) {
-        fprintf(stderr, "spawnRequester: couldn't start requester\n");
-        goto error;
-    }
+  if(!Request(&requester, parent->intuitionWindow)) {
+    fprintf(stderr, "spawnMapRequester: couldn't start requester\n");
+    goto error;
+  }
 
-    initMapRequesterVi();
-    createMapRequesterGadgets(&mapRequester);
-    if(!mapRequester.gadgets) {
-        fprintf(stderr, "spawnRequester: couldn't create gadgets\n");
-        goto error_EndRequest;
-    }
-    mapRequesterWindowKind.newWindow.FirstGadget = mapRequester.gadgets;
+  initMapRequesterVi();
+  createMapRequesterGadgets(&mapRequester);
+  if(!mapRequester.gadgets) {
+    fprintf(stderr, "spawnMapRequester: couldn't create gadgets\n");
+    goto error_EndRequest;
+  }
+  mapRequesterWindowKind.newWindow.FirstGadget = mapRequester.gadgets;
 
-    mapRequesterWindowKind.newWindow.Title = title;
+  mapRequesterWindowKind.newWindow.Title = title;
 
-    mapRequester.window = openWindowOnGlobalScreen(&mapRequesterWindowKind);
-    if(!mapRequester.window) {
-        fprintf(stderr, "spawnRequester: couldn't open window\n");
-        goto error_FreeGadgets;
-    }
+  mapRequester.window = openWindowOnGlobalScreen(&mapRequesterWindowKind);
+  if(!mapRequester.window) {
+    fprintf(stderr, "spawnMapRequester: couldn't open window\n");
+    goto error_FreeGadgets;
+  }
 
-    requesterLoop(&mapRequester);
+  requesterLoop(&mapRequester);
 
-    CloseWindow(mapRequester.window->intuitionWindow);
+  CloseWindow(mapRequester.window->intuitionWindow);
 
-    FreeGadgets(mapRequester.gadgets);
+  FreeGadgets(mapRequester.gadgets);
 
-    EndRequest(&requester, window);
+  EndRequest(&requester, parent->intuitionWindow);
 
-    return mapRequester.selected;
+  return mapRequester.selected;
 
 error_FreeGadgets:
-    FreeGadgets(mapRequester.gadgets);
+  FreeGadgets(mapRequester.gadgets);
 error_EndRequest:
-    EndRequest(&requester, window);
-error:
-    return 0;
-}
-
-int openMapRequester(FrameworkWindow *projectWindow) {
-  return spawnRequester(projectWindow->intuitionWindow, "Open Map");
+  EndRequest(&requester, parent->intuitionWindow);
 error:
   return 0;
-}
-
-/* TODO: I think this belongs in MapEditor */
-int saveMapRequester(FrameworkWindow *mapEditorWindow) {
-  char title[96];
-  MapEditorData *data = mapEditorWindow->data;
-
-  sprintf(title, "Save Map %s", data->map->name);
-  return spawnRequester(mapEditorWindow->intuitionWindow, title);
 }
