@@ -37,7 +37,7 @@ void mapEditorAddNewEntity(FrameworkWindow *mapEditor);
 
 BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor);
 
-void mapEditorDrawEntity(FrameworkWindow *mapEditor, Entity*, int entityNum);
+void mapEditorDrawEntity(FrameworkWindow *mapEditor, int entityNum);
 void mapEditorRedrawTile(FrameworkWindow *mapEditor, int row, int col);
 
 #endif

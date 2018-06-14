@@ -955,8 +955,9 @@ static void initMapEditorMapImages(MapEditorData *data) {
   data->mapImages[89].NextImage = NULL;
 }
 
-void mapEditorDrawEntity(FrameworkWindow *mapEditorWindow, Entity *entity, int entityNum) {
+void mapEditorDrawEntity(FrameworkWindow *mapEditorWindow, int entityNum) {
   MapEditorData *data = mapEditorWindow->data;
+  Entity *entity = &data->map->entities[entityNum];
   if(data->map->tilesetNum) {
     drawEntity(mapEditorWindow->intuitionWindow->RPort, entity, entityNum);
   }
