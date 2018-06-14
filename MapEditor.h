@@ -16,6 +16,8 @@
 #define MAP_TILES_ACROSS 10
 #define MAP_TILES_HIGH    9
 
+typedef struct MapEditorData_tag MapEditorData;
+
 FrameworkWindow *newMapEditorNewMap(FrameworkWindow *parent);
 FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map*, int mapNum);
 

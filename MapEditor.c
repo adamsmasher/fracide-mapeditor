@@ -35,7 +35,7 @@
 #define MAP_EDITOR_WIDTH  536
 #define MAP_EDITOR_HEIGHT 384
 
-typedef struct MapEditorData_tag {
+struct MapEditorData_tag {
   Map *map;
   int mapNum;
 
@@ -60,7 +60,7 @@ typedef struct MapEditorData_tag {
   int selected;
 
   char title[16];
-} MapEditorData;
+};
 
 static void newMapMenuItemClicked(FrameworkWindow*);
 static void openMapMenuItemClicked(FrameworkWindow*);
