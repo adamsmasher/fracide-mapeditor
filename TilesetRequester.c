@@ -18,6 +18,7 @@
 #include "framework/screen.h"
 #include "framework/window.h"
 
+#include "MapEditor.h"
 #include "ProjectWindow.h"
 #include "ProjectWindowData.h"
 #include "TilesetPackage.h"
