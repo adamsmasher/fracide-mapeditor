@@ -1232,6 +1232,12 @@ void mapEditorAddNewEntity(FrameworkWindow *mapEditor) {
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
+void mapEditorRemoveEntity(FrameworkWindow *mapEditor, UWORD entityNum) {
+  MapEditorData *data = mapEditor->data;
+  mapRemoveEntity(data->map, entityNum);
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
+}
+
 UWORD mapEditorEntityCount(MapEditorData *data) {
   return data->map->entityCnt;
 }

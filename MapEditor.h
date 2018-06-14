@@ -34,6 +34,7 @@ void mapEditorRefreshSong(FrameworkWindow *mapEditor);
 
 UWORD mapEditorEntityCount(MapEditorData*);
 void mapEditorAddNewEntity(FrameworkWindow *mapEditor);
+void mapEditorRemoveEntity(FrameworkWindow *mapEditor, UWORD entityNum);
 
 BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor);
 
