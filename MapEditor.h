@@ -32,6 +32,9 @@ void mapEditorUpdateTileDisplays(FrameworkWindow *mapEditor);
 void mapEditorSetSong(FrameworkWindow *mapEditor, UWORD songNum);
 void mapEditorRefreshSong(FrameworkWindow *mapEditor);
 
+UWORD mapEditorEntityCount(MapEditorData*);
+void mapEditorAddNewEntity(FrameworkWindow *mapEditor);
+
 BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor);
 
 void mapEditorDrawEntity(FrameworkWindow *mapEditor, Entity*, int entityNum);

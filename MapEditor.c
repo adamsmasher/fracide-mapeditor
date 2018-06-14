@@ -1224,3 +1224,13 @@ error_freeMap:
 error:
   return NULL;
 }
+
+void mapEditorAddNewEntity(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  mapAddNewEntity(data->map);
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
+}
+
+UWORD mapEditorEntityCount(MapEditorData *data) {
+  return data->map->entityCnt;
+}
