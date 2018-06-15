@@ -1229,6 +1229,8 @@ error:
 void mapEditorAddNewEntity(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
   mapAddNewEntity(data->map);
+  /* draw the new entity */
+  mapEditorDrawEntity(mapEditor, mapEditorEntityCount(mapEditor->data) - 1);
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
