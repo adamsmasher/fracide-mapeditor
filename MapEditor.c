@@ -1240,6 +1240,39 @@ void mapEditorRemoveEntity(FrameworkWindow *mapEditor, UWORD entityNum) {
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
+void mapEditorSetEntityRow(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE row) {
+  MapEditorData *data = mapEditor->data;
+  Entity *entity = &data->map->entities[entityNum];
+  UBYTE oldRow = entity->row;
+  UBYTE oldCol = entity->col;
+
+  entity->row = row;
+
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
+  mapEditorDrawEntity(mapEditor, entityNum);
+  mapEditorRedrawTile(mapEditor, oldRow, oldCol);
+}
+
+void mapEditorSetEntityCol(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE col) {
+  MapEditorData *data = mapEditor->data;
+  Entity *entity = &data->map->entities[entityNum];
+  UBYTE oldRow = entity->row;
+  UBYTE oldCol = entity->col;
+
+  entity->col = col;
+
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
+  mapEditorDrawEntity(mapEditor, entityNum);
+  mapEditorRedrawTile(mapEditor, oldRow, oldCol);
+}
+
+void mapEditorSetEntityVRAMSlot(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE vramSlot) {
+  MapEditorData *data = mapEditor->data;
+  Entity *entity = &data->map->entities[entityNum];
+  entity->vramSlot = vramSlot;
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
+}
+
 UWORD mapEditorEntityCount(MapEditorData *data) {
   return data->map->entityCnt;
 }

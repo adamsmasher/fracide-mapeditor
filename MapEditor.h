@@ -35,6 +35,9 @@ void mapEditorRefreshSong(FrameworkWindow *mapEditor);
 UWORD mapEditorEntityCount(MapEditorData*);
 void mapEditorAddNewEntity(FrameworkWindow *mapEditor);
 void mapEditorRemoveEntity(FrameworkWindow *mapEditor, UWORD entityNum);
+void mapEditorSetEntityRow(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE row);
+void mapEditorSetEntityCol(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE col);
+void mapEditorSetEntityVRAMSlot(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE vramSlot);
 
 BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor);
 
