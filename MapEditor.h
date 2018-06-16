@@ -38,8 +38,12 @@ void mapEditorRemoveEntity(FrameworkWindow *mapEditor, UWORD entityNum);
 void mapEditorSetEntityRow(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE row);
 void mapEditorSetEntityCol(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE col);
 void mapEditorSetEntityVRAMSlot(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE vramSlot);
+
 void mapEditorEntityAddNewTag(FrameworkWindow *mapEditor, UWORD entityNum);
+void mapEditorEntityDeleteTag(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum);
 int mapEditorEntityGetTagCount(MapEditorData*, UWORD entityNum);
+char *mapEditorEntityGetTagAlias(MapEditorData*, UWORD entityNum, int tagNum);
+void mapEditorEntitySetTagId(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagId);
 
 BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor);
 

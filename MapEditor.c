@@ -1284,6 +1284,25 @@ void mapEditorEntityAddTag(FrameworkWindow *mapEditor, UWORD entityNum) {
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
+void mapEditorEntityDeleteTag(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum) {
+  MapEditorData *data = mapEditor->data;
+  Entity *entity = &data->map->entities[entityNum];
+  entityDeleteTag(entity, tagNum);
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
+}
+
 int mapEditorEntityGetTagCount(MapEditorData *data, UWORD entityNum) {
   return data->map->entities[entityNum].tagCnt;
+}
+
+char *mapEditorEntityGetTagAlias(MapEditorData *data, UWORD entityNum, int tagNum) {
+  return data->map->entities[entityNum].tags[tagNum].alias;
+}
+
+void mapEditorEntitySetTagId(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagId) {
+  MapEditorData *data = mapEditor->data;
+  Entity *entity = &data->map->entities[entityNum];
+  Frac_tag *tag = &entity->tags[tagNum];
+  tag->id = newTagId;
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
