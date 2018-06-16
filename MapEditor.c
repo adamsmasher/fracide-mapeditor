@@ -1276,3 +1276,14 @@ void mapEditorSetEntityVRAMSlot(FrameworkWindow *mapEditor, UWORD entityNum, UBY
 UWORD mapEditorEntityCount(MapEditorData *data) {
   return data->map->entityCnt;
 }
+
+void mapEditorEntityAddTag(FrameworkWindow *mapEditor, UWORD entityNum) {
+  MapEditorData *data = mapEditor->data;
+  Entity *entity = &data->map->entities[entityNum];
+  entityAddNewTag(entity);
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
+}
+
+int mapEditorEntityGetTagCount(MapEditorData *data, UWORD entityNum) {
+  return data->map->entities[entityNum].tagCnt;
+}
