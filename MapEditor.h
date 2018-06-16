@@ -45,7 +45,7 @@ void mapEditorSetEntityVRAMSlot(FrameworkWindow *mapEditor, UWORD entityNum, UBY
 void mapEditorEntityAddNewTag(FrameworkWindow *mapEditor, UWORD entityNum);
 void mapEditorEntityDeleteTag(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum);
 int mapEditorEntityGetTagCount(MapEditorData*, UWORD entityNum);
-char *mapEditorEntityGetTagAlias(MapEditorData*, UWORD entityNum, int tagNum);
+const char *mapEditorEntityGetTagAlias(MapEditorData*, UWORD entityNum, int tagNum);
 UBYTE mapEditorEntityGetTagId(MapEditorData*, UWORD entityNum, int tagNum);
 void mapEditorEntitySetTagId(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagId);
 UBYTE mapEditorEntityGetTagValue(MapEditorData*, UWORD entityNum, int tagNum);

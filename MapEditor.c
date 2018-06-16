@@ -1310,7 +1310,7 @@ int mapEditorEntityGetTagCount(MapEditorData *data, UWORD entityNum) {
   return data->map->entities[entityNum].tagCnt;
 }
 
-char *mapEditorEntityGetTagAlias(MapEditorData *data, UWORD entityNum, int tagNum) {
+const char *mapEditorEntityGetTagAlias(MapEditorData *data, UWORD entityNum, int tagNum) {
   return data->map->entities[entityNum].tags[tagNum].alias;
 }
 
