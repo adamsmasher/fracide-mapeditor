@@ -1310,6 +1310,14 @@ int mapEditorEntityGetTagCount(MapEditorData *data, UWORD entityNum) {
   return data->map->entities[entityNum].tagCnt;
 }
 
+void mapEditorEntitySetTagAlias(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, const char *newTagAlias) {
+  MapEditorData *data = mapEditor->data;
+  Entity *entity = &data->map->entities[entityNum];
+  Frac_tag *tag = &entity->tags[tagNum];
+  strcpy(tag->alias, newTagAlias);
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
+}
+
 const char *mapEditorEntityGetTagAlias(MapEditorData *data, UWORD entityNum, int tagNum) {
   return data->map->entities[entityNum].tags[tagNum].alias;
 }
@@ -1332,4 +1340,12 @@ UBYTE mapEditorEntityGetTagValue(MapEditorData *data, UWORD entityNum, int tagNu
   Entity *entity = &data->map->entities[entityNum];
   Frac_tag *tag = &entity->tags[tagNum];
   return tag->value;
+}
+
+void mapEditorEntitySetTagValue(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagValue) {
+  MapEditorData *data = mapEditor->data;
+  Entity *entity = &data->map->entities[entityNum];
+  Frac_tag *tag = &entity->tags[tagNum];
+  tag->value = newTagValue;
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }

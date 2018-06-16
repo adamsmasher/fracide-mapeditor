@@ -49,6 +49,8 @@ const char *mapEditorEntityGetTagAlias(MapEditorData*, UWORD entityNum, int tagN
 UBYTE mapEditorEntityGetTagId(MapEditorData*, UWORD entityNum, int tagNum);
 void mapEditorEntitySetTagId(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagId);
 UBYTE mapEditorEntityGetTagValue(MapEditorData*, UWORD entityNum, int tagNum);
+void mapEditorEntitySetTagAlias(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, const char *newTagAlias);
+void mapEditorEntitySetTagValue(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagValue);
 
 BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor);
 
