@@ -1240,6 +1240,11 @@ void mapEditorRemoveEntity(FrameworkWindow *mapEditor, UWORD entityNum) {
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
+UBYTE mapEditorGetEntityRow(MapEditorData *data, UWORD entityNum) {
+  Entity *entity = &data->map->entities[entityNum];
+  return entity->row;
+}
+
 void mapEditorSetEntityRow(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE row) {
   MapEditorData *data = mapEditor->data;
   Entity *entity = &data->map->entities[entityNum];
@@ -1253,6 +1258,11 @@ void mapEditorSetEntityRow(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE ro
   mapEditorRedrawTile(mapEditor, oldRow, oldCol);
 }
 
+UBYTE mapEditorGetEntityCol(MapEditorData *data, UWORD entityNum) {
+  Entity *entity = &data->map->entities[entityNum];
+  return entity->col;
+}
+
 void mapEditorSetEntityCol(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE col) {
   MapEditorData *data = mapEditor->data;
   Entity *entity = &data->map->entities[entityNum];
@@ -1264,6 +1274,11 @@ void mapEditorSetEntityCol(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE co
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
   mapEditorDrawEntity(mapEditor, entityNum);
   mapEditorRedrawTile(mapEditor, oldRow, oldCol);
+}
+
+UBYTE mapEditorGetEntityVRAMSlot(MapEditorData *data, UWORD entityNum) {
+  Entity *entity = &data->map->entities[entityNum];
+  return entity->vramSlot;
 }
 
 void mapEditorSetEntityVRAMSlot(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE vramSlot) {
@@ -1299,10 +1314,22 @@ char *mapEditorEntityGetTagAlias(MapEditorData *data, UWORD entityNum, int tagNu
   return data->map->entities[entityNum].tags[tagNum].alias;
 }
 
+UBYTE mapEditorEntityGetTagId(MapEditorData *data, UWORD entityNum, int tagNum) {
+  Entity *entity = &data->map->entities[entityNum];
+  Frac_tag *tag = &entity->tags[tagNum];
+  return tag->id;
+}
+
 void mapEditorEntitySetTagId(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagId) {
   MapEditorData *data = mapEditor->data;
   Entity *entity = &data->map->entities[entityNum];
   Frac_tag *tag = &entity->tags[tagNum];
   tag->id = newTagId;
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
+}
+
+UBYTE mapEditorEntityGetTagValue(MapEditorData *data, UWORD entityNum, int tagNum) {
+  Entity *entity = &data->map->entities[entityNum];
+  Frac_tag *tag = &entity->tags[tagNum];
+  return tag->value;
 }

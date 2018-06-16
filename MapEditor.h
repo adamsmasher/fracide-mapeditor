@@ -35,6 +35,9 @@ void mapEditorRefreshSong(FrameworkWindow *mapEditor);
 UWORD mapEditorEntityCount(MapEditorData*);
 void mapEditorAddNewEntity(FrameworkWindow *mapEditor);
 void mapEditorRemoveEntity(FrameworkWindow *mapEditor, UWORD entityNum);
+UBYTE mapEditorGetEntityRow(MapEditorData*, UWORD entityNum);
+UBYTE mapEditorGetEntityCol(MapEditorData*, UWORD entityNum);
+UBYTE mapEditorGetEntityVRAMSlot(MapEditorData*, UWORD entityNum);
 void mapEditorSetEntityRow(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE row);
 void mapEditorSetEntityCol(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE col);
 void mapEditorSetEntityVRAMSlot(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE vramSlot);
@@ -43,7 +46,9 @@ void mapEditorEntityAddNewTag(FrameworkWindow *mapEditor, UWORD entityNum);
 void mapEditorEntityDeleteTag(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum);
 int mapEditorEntityGetTagCount(MapEditorData*, UWORD entityNum);
 char *mapEditorEntityGetTagAlias(MapEditorData*, UWORD entityNum, int tagNum);
+UBYTE mapEditorEntityGetTagId(MapEditorData*, UWORD entityNum, int tagNum);
 void mapEditorEntitySetTagId(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagId);
+UBYTE mapEditorEntityGetTagValue(MapEditorData*, UWORD entityNum, int tagNum);
 
 BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor);
 
