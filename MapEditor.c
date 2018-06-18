@@ -1304,7 +1304,7 @@ UWORD mapEditorEntityCount(MapEditorData *data) {
   return data->map->entityCnt;
 }
 
-void mapEditorEntityAddTag(FrameworkWindow *mapEditor, UWORD entityNum) {
+void mapEditorEntityAddNewTag(FrameworkWindow *mapEditor, UWORD entityNum) {
   MapEditorData *data = mapEditor->data;
   Entity *entity = &data->map->entities[entityNum];
   entityAddNewTag(entity);
