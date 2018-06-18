@@ -493,7 +493,7 @@ void newMap(FrameworkWindow *projectWindow) {
 }
 
 static int openMapRequester(FrameworkWindow *projectWindow) {
-  return spawnMapRequester(projectWindow->intuitionWindow, "Open Map");
+  return spawnMapRequester(projectWindow, "Open Map");
 }
 
 void openMap(FrameworkWindow *projectWindow) {
