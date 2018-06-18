@@ -37,7 +37,7 @@
 
 struct MapEditorData_tag {
   Map *map;
-  int mapNum;
+  UWORD mapNum;
 
   struct Gadget *tilesetNameGadget;
   struct Gadget *mapNameGadget;
