@@ -23,6 +23,10 @@ FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map*, int mapNum);
 
 BOOL isMapEditorWindow(FrameworkWindow*);
 
+BOOL mapEditorHasSongRequester(MapEditorData*);
+BOOL mapEditorHasEntityBrowser(MapEditorData*);
+
+UWORD mapEditorGetMapNum(MapEditorData*);
 void mapEditorSetMapNum(FrameworkWindow *mapEditor, UWORD mapNum);
 
 void mapEditorSetTileset(FrameworkWindow *mapEditor, UWORD tilesetNum);

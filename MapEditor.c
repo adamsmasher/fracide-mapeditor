@@ -740,6 +740,14 @@ BOOL isMapEditorWindow(FrameworkWindow *window) {
   return (BOOL)(window->kind == &mapEditorWindowKind);
 }
 
+BOOL mapEditorHasSongRequester(MapEditorData *data) {
+  return (BOOL)(data->songRequester != NULL);
+}
+
+BOOL mapEditorHasEntityBrowser(MapEditorData *data) {
+  return (BOOL)(data->entityBrowser != NULL);
+}
+
 #define MAP_NAME_LEFT   (MAP_BORDER_LEFT  + 80)
 #define MAP_NAME_TOP    18
 #define MAP_NAME_WIDTH  (MAP_BORDER_WIDTH - 81)
@@ -1054,6 +1062,10 @@ void mapEditorRedrawTile(FrameworkWindow *mapEditorWindow, int row, int col) {
     /* TODO: it's messed up how we pass this in and then undo it... */
     redrawMapTile(mapEditorWindow, row * 10 + col);
   }
+}
+
+UWORD mapEditorGetMapNum(MapEditorData *data) {
+  return data->mapNum - 1;
 }
 
 void mapEditorSetMapNum(FrameworkWindow *mapEditorWindow, UWORD mapNum) {
