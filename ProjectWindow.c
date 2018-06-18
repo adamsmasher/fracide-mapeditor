@@ -475,7 +475,7 @@ static FrameworkWindow *findMapEditor(FrameworkWindow *projectWindow, int mapNum
   while(i) {
     if(isMapEditorWindow(i)) {
       MapEditorData *data = i->data;
-      if(data->mapNum - 1 == mapNum) {
+      if(mapEditorGetMapNum(data) == mapNum) {
         return i;
       }
     }
@@ -519,8 +519,8 @@ void refreshAllSongDisplays(FrameworkWindow *projectWindow) {
     if(isMapEditorWindow(i)) {
       /* TODO: make this a function on map requesters */
       MapEditorData *data = i->data;
-      if(data->songRequester) {
-        GT_RefreshWindow(data->songRequester->window->intuitionWindow, NULL);
+      if(mapEditorHasSongRequester(data)) {
+        /* GT_RefreshWindow(data->songRequester->window->intuitionWindow, NULL); */
       }
       mapEditorRefreshSong(i);
     }
@@ -534,8 +534,8 @@ void refreshAllEntityBrowsers(FrameworkWindow *projectWindow) {
     if(isMapEditorWindow(i)) {
       /* TODO: make this a function on map requesters */
       MapEditorData *data = i->data;
-      if(data->entityBrowser) {
-        GT_RefreshWindow(data->entityBrowser->window->intuitionWindow, NULL);
+      if(mapEditorHasEntityBrowser(data)) {
+        /* GT_RefreshWindow(data->entityBrowser->window->intuitionWindow, NULL); */
       }
     }
     i = i->next;
