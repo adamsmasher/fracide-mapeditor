@@ -66,6 +66,16 @@ typedef struct TextSpec_tag {
   Border border;
 } TextSpec;
 
+typedef struct IntegerSpec_tag {
+  WORD left, top;
+  WORD width, height;
+  char *label;
+  TextPlacement textPlacement;
+  UWORD maxChars;
+  State state;
+  OnEntry onEntry;
+} IntegerSpec;
+
 typedef struct ListViewSpec_tag {
   WORD left, top;
   WORD width, height;
@@ -79,6 +89,7 @@ GadgetSpec *makeButtonGadget(ButtonSpec*);
 GadgetSpec *makeScrollerGadget(ScrollerSpec*);
 GadgetSpec *makeStringGadget(StringSpec*);
 GadgetSpec *makeTextGadget(TextSpec*);
+GadgetSpec *makeIntegerGadget(IntegerSpec*);
 GadgetSpec *makeListViewGadget(ListViewSpec*);
 
 /* pass in pairs of GadgetSpecs and where to build the gadgets */

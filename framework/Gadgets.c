@@ -15,6 +15,7 @@ union GadgetSpecBody {
   ScrollerSpec *scrollerSpec;
   StringSpec   *stringSpec;
   TextSpec     *textSpec;
+  IntegerSpec  *integerSpec;
   ListViewSpec *listViewSpec;
 };
 
@@ -48,6 +49,13 @@ GadgetSpec *makeTextGadget(TextSpec *textSpec) {
   GadgetSpec *gadgetSpec = malloc(sizeof(GadgetSpec));
   gadgetSpec->kind = TEXT_KIND;
   gadgetSpec->specBody.textSpec = textSpec;
+  return gadgetSpec;
+}
+
+GadgetSpec *makeIntegerGadget(IntegerSpec *integerSpec) {
+  GadgetSpec *gadgetSpec = malloc(sizeof(GadgetSpec));
+  gadgetSpec->kind = INTEGER_KIND;
+  gadgetSpec->specBody.integerSpec = integerSpec;
   return gadgetSpec;
 }
 
@@ -169,6 +177,24 @@ static struct Gadget *buildText(TextSpec *textSpec, struct Gadget *context, UWOR
     TAG_END);
 }
 
+static struct Gadget *buildInteger(IntegerSpec *integerSpec, struct Gadget *context, UWORD gadgetId) {
+  struct NewGadget newGadget;
+  newGadget.ng_LeftEdge   = integerSpec->left;
+  newGadget.ng_TopEdge    = integerSpec->top;
+  newGadget.ng_Width      = integerSpec->width;
+  newGadget.ng_Height     = integerSpec->height;
+  newGadget.ng_GadgetText = integerSpec->label;
+  newGadget.ng_TextAttr   = &Topaz80;
+  newGadget.ng_GadgetID   = gadgetId;
+  newGadget.ng_Flags      = textPlacementToFlags(integerSpec->textPlacement);
+  newGadget.ng_VisualInfo = getGlobalVi();
+  newGadget.ng_UserData   = NULL;
+  return CreateGadget(INTEGER_KIND, context, &newGadget,
+    GTIN_MaxChars, integerSpec->maxChars,
+    GA_Disabled, stateToDisabledTag(integerSpec->state),
+    TAG_END);
+}
+
 static struct Gadget *buildListView(ListViewSpec *listViewSpec, struct Gadget *context, UWORD gadgetId) {
   struct NewGadget newGadget;
   newGadget.ng_LeftEdge   = listViewSpec->left;
@@ -193,6 +219,7 @@ static struct Gadget *buildGadget(GadgetSpec *gadgetSpec, struct Gadget *context
     case SCROLLER_KIND: return buildScroller(gadgetSpec->specBody.scrollerSpec, context, gadgetId);
     case STRING_KIND:   return buildString(gadgetSpec->specBody.stringSpec,     context, gadgetId);
     case TEXT_KIND:     return buildText(gadgetSpec->specBody.textSpec,         context, gadgetId);
+    case INTEGER_KIND:  return buildInteger(gadgetSpec->specBody.integerSpec,   context, gadgetId);
     case LISTVIEW_KIND: return buildListView(gadgetSpec->specBody.listViewSpec, context, gadgetId);
     default:
       fprintf(stderr, "buildGadget: invalid gadget kind %lu\n", gadgetSpec->kind);
