@@ -53,6 +53,7 @@ typedef struct StringSpec_tag {
   WORD width, height;
   char *label;
   TextPlacement textPlacement;
+  State state;
   OnEntry onEntry;
 } StringSpec;
 

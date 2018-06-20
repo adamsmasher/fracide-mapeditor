@@ -800,6 +800,7 @@ static StringSpec mapNameSpec = {
   MAP_NAME_WIDTH, MAP_NAME_HEIGHT,
   "Map Name:",
   TEXT_ON_LEFT,
+  ENABLED,
   updateMapEditorMapName
 };
 
