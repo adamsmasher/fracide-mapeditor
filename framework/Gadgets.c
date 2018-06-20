@@ -156,7 +156,9 @@ static struct Gadget *buildString(StringSpec *stringSpec, struct Gadget *context
   newGadget.ng_Flags      = textPlacementToFlags(stringSpec->textPlacement);
   newGadget.ng_VisualInfo = getGlobalVi();
   newGadget.ng_UserData   = (void*)stringSpec->onEntry;
-  return CreateGadget(STRING_KIND, context, &newGadget, TAG_END);
+  return CreateGadget(STRING_KIND, context, &newGadget,
+    GA_Disabled, stateToDisabledTag(stringSpec->state),
+    TAG_END);
 }
 
 static struct Gadget *buildText(TextSpec *textSpec, struct Gadget *context, UWORD gadgetId) {
