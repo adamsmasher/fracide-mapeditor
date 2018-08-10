@@ -33,6 +33,13 @@ static MenuSpec mainMenuSpec[] = {
 
 #define REVERT_PROJECT_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
 
+/* displays a message warning that the current project isn't saved in
+   response to a destructive action (like quiting, or opening a new project) */
+/* returns TRUE if the operation should proceed (if the user clicks 'Save'
+   and the project is safely saved, or if the user clicks 'Don't Save' because
+   they don't care about losing changes) */
+/* returns FALSE if the operation should be aborted (if the user clicks 'Cancel',
+   or if they try to 'Save' but for some reason that fails) */
 static BOOL unsavedProjectAlert(FrameworkWindow *projectWindow) {
   int response;
 
@@ -42,9 +49,15 @@ static BOOL unsavedProjectAlert(FrameworkWindow *projectWindow) {
     NULL);
 
   switch(response) {
-    case 0: return FALSE;
-    case 1: return saveProject(projectWindow);
-    case 2: return TRUE;
+    case 0:
+      /* cancel */
+      return FALSE;
+    case 1:
+      /* save - if the save was a success returns TRUE */
+      return saveProject(projectWindow);
+    case 2:
+      /* don't save - proceed anyway, so we return TRUE */
+      return TRUE;
     default:
       fprintf(stderr, "unsavedProjectAlert: unknown response %d\n", response);
       goto error;
