@@ -1065,8 +1065,9 @@ void mapEditorRedrawTile(FrameworkWindow *mapEditorWindow, int row, int col) {
   }
 }
 
+/* results are undefined if the map editor does not have a map */
 UWORD mapEditorGetMapNum(MapEditorData *data) {
-  return data->mapNum - 1;
+  return (UWORD)(data->mapNum - 1);
 }
 
 void mapEditorSetMapNum(FrameworkWindow *mapEditorWindow, UWORD mapNum) {
