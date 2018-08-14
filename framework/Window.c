@@ -97,8 +97,24 @@ static void refreshWindow(FrameworkWindow *window) {
   GT_EndRefresh(iwindow, TRUE);
 }
 
+static BOOL canCloseWindow(FrameworkWindow*);
+
+static BOOL canCloseChildren(FrameworkWindow *window) {
+  FrameworkWindow *i = window->children;
+  while(i) {
+    if(!canCloseWindow(i)) {
+      return FALSE;
+    }
+    i = i->next;
+  }
+  return TRUE;
+}
+
 static BOOL canCloseWindow(FrameworkWindow *window) {
-  /* TODO: also check to make sure that you can close children! */
+  if(!canCloseChildren(window)) {
+    return FALSE;
+  }
+
   if(window->kind->canCloseWindow) {
     return (*window->kind->canCloseWindow)(window);
   } else {
