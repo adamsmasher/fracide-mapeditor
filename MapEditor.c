@@ -1109,6 +1109,14 @@ static FrameworkWindow *newMapEditor(FrameworkWindow *parent) {
     goto error;
   }
 
+  data->imageData = AllocMem(IMAGE_DATA_SIZE, MEMF_CHIP);
+  if(!data->imageData) {
+    fprintf(stderr, "newMapEditor: failed to allocate image data\n");
+    goto error_freeData;
+  }
+  initMapEditorPaletteImages(data);
+  initMapEditorMapImages(data);
+
   gadgets = buildGadgets(
     makeTextGadget(&currentTilesetSpec),    &data->tilesetNameGadget,
     makeButtonGadget(&chooseTilesetSpec),   NULL,
@@ -1126,16 +1134,8 @@ static FrameworkWindow *newMapEditor(FrameworkWindow *parent) {
 
   if(!gadgets) {
     fprintf(stderr, "newMapEditor: failed to create gadgets\n");
-    goto error_freeData;
+    goto error_freeImageData;
   }
-
-  data->imageData = AllocMem(IMAGE_DATA_SIZE, MEMF_CHIP);
-  if(!data->imageData) {
-    fprintf(stderr, "newMapEditor: failed to allocate image data\n");
-    goto error_freeGadgets;
-  }
-  initMapEditorPaletteImages(data);
-  initMapEditorMapImages(data);
 
   mapEditorWindow = openChildWindow(parent, &mapEditorWindowKind, gadgets);
   if(!mapEditorWindow) {
@@ -1156,9 +1156,6 @@ static FrameworkWindow *newMapEditor(FrameworkWindow *parent) {
 
 error_freeImageData:
   FreeMem(data->imageData, IMAGE_DATA_SIZE);
-error_freeGadgets:
-  /* TODO: we free this twice on window creation failure! */
-  FreeGadgets(gadgets);
 error_freeData:
   free(data);
 error:
