@@ -504,17 +504,18 @@ static unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y) {
   return (row << 2) + col;
 }
 
-static unsigned int mapEditorGetMapTileClicked(WORD x, WORD y) {
+static UBYTE mapEditorGetRowClicked(WORD y) {
   unsigned int row = y;
-  unsigned int col = x;
-
   row -= MAP_BORDER_TOP;
-  col -= MAP_BORDER_LEFT;
-
   row >>= 5;
-  col >>= 5;
+  return (UBYTE)row;
+}
 
-  return (row * 10) + col;
+static UBYTE mapEditorGetColClicked(WORD x) {
+  unsigned int col = x;
+  col -= MAP_BORDER_LEFT;
+  col >>= 5;
+  return (UBYTE)col;
 }
 
 static void redrawPaletteTile(FrameworkWindow *mapEditorWindow, unsigned int tile) {
@@ -665,15 +666,17 @@ static void mapEditorSetTilesetUpdateUI(FrameworkWindow *mapEditorWindow, UWORD 
   drawEntities(mapEditorWindow);
 }
 
-static void mapEditorSetTileTo(FrameworkWindow *mapEditorWindow, unsigned int tile, UBYTE to) {
+static void mapEditorSetTileTo(FrameworkWindow *mapEditorWindow, UBYTE row, UBYTE col, UBYTE to) {
   MapEditorData *data = mapEditorWindow->data;
+  UBYTE tile = row * 10 + col;
   data->map->tiles[tile] = to;
   data->mapImages[tile].ImageData = data->imageData + (to << 7);
   mapEditorSetSaveStatus(mapEditorWindow, UNSAVED);
 }
 
-static void redrawMapTile(FrameworkWindow *mapEditorWindow, unsigned int tile) {
+static void redrawMapTile(FrameworkWindow *mapEditorWindow, UBYTE row, UBYTE col) {
   MapEditorData *data = mapEditorWindow->data;
+  UBYTE tile = row * 10 + col;
   struct Image *image = &data->mapImages[tile];
   struct Image *next = image->NextImage;
   int entity_i;
@@ -684,21 +687,22 @@ static void redrawMapTile(FrameworkWindow *mapEditorWindow, unsigned int tile) {
     MAP_BORDER_TOP);
   image->NextImage = next;
 
-  if(entity_i = mapFindEntity(data->map, tile / 10, tile % 10)) {
+  if(entity_i = mapFindEntity(data->map, row, col)) {
     entity_i--;
     drawEntity(mapEditorWindow->intuitionWindow->RPort, &data->map->entities[entity_i], entity_i);
   }
 }
 
-static void mapEditorSetTile(FrameworkWindow *mapEditorWindow, unsigned int tile) {
+static void mapEditorSetTile(FrameworkWindow *mapEditorWindow, UBYTE row, UBYTE col) {
   MapEditorData *data = mapEditorWindow->data;
-  mapEditorSetTileTo(mapEditorWindow, tile, data->selected);
-  redrawMapTile(mapEditorWindow, tile);
+  mapEditorSetTileTo(mapEditorWindow, row, col, data->selected);
+  redrawMapTile(mapEditorWindow, row, col);
 }
 
 static void handleMapEditorMapClick(FrameworkWindow *mapEditorWindow, WORD x, WORD y) {
-  unsigned int tile = mapEditorGetMapTileClicked(x, y);
-  mapEditorSetTile(mapEditorWindow, tile);
+  UBYTE col = mapEditorGetColClicked(x);
+  UBYTE row = mapEditorGetRowClicked(y);
+  mapEditorSetTile(mapEditorWindow, row, col);
 }
 
 /* TODO: maybe we can use buttons for this... */
@@ -1057,11 +1061,10 @@ void mapEditorRefreshSong(FrameworkWindow *mapEditorWindow) {
   }
 }
 
-void mapEditorRedrawTile(FrameworkWindow *mapEditorWindow, int row, int col) {
+void mapEditorRedrawTile(FrameworkWindow *mapEditorWindow, UBYTE row, UBYTE col) {
   MapEditorData *data = mapEditorWindow->data;
   if(data->map->tilesetNum) {
-    /* TODO: it's messed up how we pass this in and then undo it... */
-    redrawMapTile(mapEditorWindow, row * 10 + col);
+    redrawMapTile(mapEditorWindow, row, col);
   }
 }
 
@@ -1216,9 +1219,13 @@ FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, int mapN
   data->map = mapCopy;
 
   if(data->map->tilesetNum) {
-    int i;
-    for(i = 0; i < MAP_TILES_WIDE * MAP_TILES_HIGH; i++) {
-      mapEditorSetTileTo(mapEditorWindow, i, map->tiles[i]);
+    int row, col, i;
+    i = 0;
+    for(row = 0; row < MAP_TILES_HIGH; row++) {
+      for(col = 0; col < MAP_TILES_WIDE; col++) {
+        mapEditorSetTileTo(mapEditorWindow, row, col, map->tiles[i]);
+        i++;
+      }
     }
     mapEditorSetTilesetUpdateUI(mapEditorWindow, map->tilesetNum - 1);
   }

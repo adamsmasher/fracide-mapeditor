@@ -59,6 +59,6 @@ void mapEditorEntitySetTagValue(FrameworkWindow *mapEditor, UWORD entityNum, int
 BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor);
 
 void mapEditorDrawEntity(FrameworkWindow *mapEditor, int entityNum);
-void mapEditorRedrawTile(FrameworkWindow *mapEditor, int row, int col);
+void mapEditorRedrawTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col);
 
 #endif
