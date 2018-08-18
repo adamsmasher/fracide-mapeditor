@@ -57,7 +57,7 @@ BOOL isTilesetRequesterWindow(FrameworkWindow *window) {
   return (BOOL)(window->kind == &tilesetRequesterWindowKind);
 }
 
-static void handleTilesetRequesterGadgetUp(FrameworkWindow *mapEditorWindow, TilesetRequester *tilesetRequester, struct IntuiMessage *msg) {
+static void handleTilesetRequesterGadgetUp(FrameworkWindow *mapEditorWindow, struct IntuiMessage *msg) {
   mapEditorSetTileset(mapEditorWindow, msg->Code);
 }
 
@@ -82,98 +82,103 @@ static void initTilesetRequesterVi(void) {
   tilesetListNewGadget.ng_VisualInfo = vi;
 }
 
-static void createTilesetRequesterGadgets(TilesetRequester *tilesetRequester) {
-    struct Gadget *gad;
-    struct Gadget *glist = NULL;
-    int height = tilesetRequester->window ? tilesetRequester->window->intuitionWindow->Height : TILESET_REQUESTER_HEIGHT;
-    int width  = tilesetRequester->window ? tilesetRequester->window->intuitionWindow->Width  : TILESET_REQUESTER_WIDTH;
+static void createTilesetRequesterGadgets(TilesetRequesterData *data, FrameworkWindow *window) {
+  struct Gadget *gad;
+  struct Gadget *glist = NULL;
+  int height = window ? window->intuitionWindow->Height : TILESET_REQUESTER_HEIGHT;
+  int width  = window ? window->intuitionWindow->Width  : TILESET_REQUESTER_WIDTH;
 
-    gad = CreateContext(&glist);
+  gad = CreateContext(&glist);
 
-    tilesetListNewGadget.ng_Height = height - TILESET_LIST_HEIGHT_DELTA;
-    tilesetListNewGadget.ng_Width  = width  - TILESET_LIST_WIDTH_DELTA;
+  tilesetListNewGadget.ng_Height = height - TILESET_LIST_HEIGHT_DELTA;
+  tilesetListNewGadget.ng_Width  = width  - TILESET_LIST_WIDTH_DELTA;
     /* TODO: FIX ME */
 /*    gad = CreateGadget(LISTVIEW_KIND, gad, &tilesetListNewGadget,
         GTLV_Labels, &tilesetPackage->tilesetNames,
         TAG_END); */
-    tilesetRequester->tilesetList = gad;
+  data->tilesetList = gad;
 
-    if(gad) {
-        tilesetRequester->gadgets = glist;
-	} else {
-        tilesetRequester->tilesetList = NULL;
-        FreeGadgets(glist);
-        tilesetRequester->gadgets = NULL;
-    }	
+  if(gad) {
+    data->gadgets = glist;
+  } else {
+    data->tilesetList = NULL;
+    FreeGadgets(glist);
+    data->gadgets = NULL;
+  }	
 }
 
-TilesetRequester *newTilesetRequester(char *title) {
-    TilesetRequester *tilesetRequester = malloc(sizeof(TilesetRequester));
-    if(!tilesetRequester) {
-        goto error;
-    }
-    tilesetRequester->window = NULL;
+FrameworkWindow *newTilesetRequester(char *title, FrameworkWindow *parent) {
+  FrameworkWindow *window;
+  TilesetRequesterData *data = malloc(sizeof(TilesetRequesterData));
+  if(!data) {
+    fprintf(stderr, "newTilesetRequester: failed to allocate data\n");
+    goto error;
+  }
 
-    tilesetRequester->title = malloc(strlen(title) + 1);
-    if(!tilesetRequester->title) {
-        fprintf(stderr, "newTilesetRequester: couldn't allocate title\n");
-        goto error_freeRequester;
-    }
-    strcpy(tilesetRequester->title, title);
+  data->title = malloc(strlen(title) + 1);
+  if(!data->title) {
+    fprintf(stderr, "newTilesetRequester: couldn't allocate title\n");
+    goto error_freeData;
+  }
+  strcpy(data->title, title);
 
-    initTilesetRequesterVi();
-    createTilesetRequesterGadgets(tilesetRequester);
-    if(!tilesetRequester->gadgets) {
-        goto error_freeTitle;
-    }
-    tilesetRequesterWindowKind.newWindow.FirstGadget = tilesetRequester->gadgets;
+  initTilesetRequesterVi();
+  createTilesetRequesterGadgets(data, NULL);
+  if(!data->gadgets) {
+    goto error_freeTitle;
+  }
+  tilesetRequesterWindowKind.newWindow.FirstGadget = data->gadgets;
 
-    tilesetRequesterWindowKind.newWindow.Title = tilesetRequester->title;
-    tilesetRequester->window = openWindowOnGlobalScreen(&tilesetRequesterWindowKind);
-    if(!tilesetRequester) {
-        goto error_freeGadgets;
-    }
+  tilesetRequesterWindowKind.newWindow.Title = data->title;
+  window = openChildWindow(parent, &tilesetRequesterWindowKind);
+  if(!window) {
+    goto error_freeGadgets;
+  }
+  window->data = data;
 
-    tilesetRequester->closed = 0;
+  data->closed = 0;
 
-    return tilesetRequester;
+  return window;
 error_freeGadgets:
-    FreeGadgets(tilesetRequester->gadgets);
+  FreeGadgets(data->gadgets);
 error_freeTitle:
-    free(tilesetRequester->title);
-error_freeRequester:
-    free(tilesetRequester);
+  free(data->title);
+error_freeData:
+  free(data);
 error:
-    return NULL;
+  return NULL;
 }
 
-void closeTilesetRequester(TilesetRequester *tilesetRequester) {
+void closeTilesetRequester(FrameworkWindow *tilesetRequester) {
+  TilesetRequesterData *data = tilesetRequester->data;
   /* TODO: the framework should free the gadgets */
-    FreeGadgets(tilesetRequester->gadgets);
-    free(tilesetRequester->title);
-    free(tilesetRequester);
+  FreeGadgets(data->gadgets);
+  free(data->title);
+  free(data);
 }
 
-void refreshTilesetRequesterList(TilesetRequester *tilesetRequester) {
-  ProjectWindowData *parentData = tilesetRequester->window->parent->data;
+void refreshTilesetRequesterList(FrameworkWindow *tilesetRequester) {
+  TilesetRequesterData *data = tilesetRequester->data;
+  ProjectWindowData *parentData = tilesetRequester->parent->data;
   TilesetPackage *tilesetPackage = NULL; /* TODO: fix me parentData->tilesetPackage;*/
 
-  GT_SetGadgetAttrs(tilesetRequester->tilesetList, tilesetRequester->window->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->tilesetList, tilesetRequester->intuitionWindow, NULL,
     GTLV_Labels, &tilesetPackage->tilesetNames,
     TAG_END);
 }
 
-void resizeTilesetRequester(TilesetRequester *tilesetRequester) {
-    RemoveGList(tilesetRequester->window->intuitionWindow, tilesetRequester->gadgets, -1);
-    FreeGadgets(tilesetRequester->gadgets);
-    SetRast(tilesetRequester->window->intuitionWindow->RPort, 0);
-    createTilesetRequesterGadgets(tilesetRequester);
-    if(!tilesetRequester->gadgets) {
-        fprintf(stderr, "resizeTilesetRequester: couldn't make gadgets");
-        return;
-    }
-    AddGList(tilesetRequester->window->intuitionWindow, tilesetRequester->gadgets, (UWORD)~0, -1, NULL);
-    RefreshWindowFrame(tilesetRequester->window->intuitionWindow);
-    RefreshGList(tilesetRequester->gadgets, tilesetRequester->window->intuitionWindow, NULL, -1);
-    GT_RefreshWindow(tilesetRequester->window->intuitionWindow, NULL);
+void resizeTilesetRequester(FrameworkWindow *tilesetRequester) {
+  TilesetRequesterData *data = tilesetRequester->data;
+  RemoveGList(tilesetRequester->intuitionWindow, data->gadgets, -1);
+  FreeGadgets(data->gadgets);
+  SetRast(tilesetRequester->intuitionWindow->RPort, 0);
+  createTilesetRequesterGadgets(data, tilesetRequester);
+  if(!data->gadgets) {
+    fprintf(stderr, "resizeTilesetRequester: couldn't make gadgets");
+    return;
+  }
+  AddGList(tilesetRequester->intuitionWindow, data->gadgets, (UWORD)~0, -1, NULL);
+  RefreshWindowFrame(tilesetRequester->intuitionWindow);
+  RefreshGList(data->gadgets, tilesetRequester->intuitionWindow, NULL, -1);
+  GT_RefreshWindow(tilesetRequester->intuitionWindow, NULL);
 }

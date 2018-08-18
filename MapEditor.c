@@ -49,9 +49,9 @@ struct MapEditorData_tag {
 
   SaveStatus saveStatus;
 
-  TilesetRequester *tilesetRequester;
-  SongRequester    *songRequester;
-  FrameworkWindow  *entityBrowser;
+  FrameworkWindow *tilesetRequester;
+  SongRequester   *songRequester;
+  FrameworkWindow *entityBrowser;
 
   struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
   struct Image mapImages[MAP_TILES_ACROSS * MAP_TILES_HIGH];
@@ -326,20 +326,15 @@ static void refreshMapEditor(FrameworkWindow *mapEditorWindow) {
   drawBorders(mapEditorWindow->intuitionWindow->RPort);
 }
 
-static void attachTilesetRequesterToMapEditor
-(MapEditorData *data, TilesetRequester *tilesetRequester) {
-  data->tilesetRequester = tilesetRequester;
-}
-
 static void handleChooseTilesetClicked(FrameworkWindow *mapEditorWindow) {
-  TilesetRequester *tilesetRequester;
+  FrameworkWindow *tilesetRequester;
   char title[32];
   MapEditorData *data = mapEditorWindow->data;
   FrameworkWindow *projectWindow = mapEditorWindow->parent;
   ProjectWindowData *projectData = projectWindow->data;
 
   if(data->tilesetRequester) {
-    WindowToFront(data->tilesetRequester->window->intuitionWindow);
+    WindowToFront(data->tilesetRequester->intuitionWindow);
     goto done;
   }
 
@@ -366,15 +361,13 @@ static void handleChooseTilesetClicked(FrameworkWindow *mapEditorWindow) {
     strcpy(title, "Choose Tileset");
   }
 
-  tilesetRequester = newTilesetRequester(title);
+  tilesetRequester = newTilesetRequester(title, mapEditorWindow);
   if(!tilesetRequester) {
     fprintf(stderr, "handleChooseTilesetClicked: couldn't make requester\n");
     goto error;
   }
 
-  attachTilesetRequesterToMapEditor(data, tilesetRequester);
-  /* TODO: fix me */
-  /* addWindowToSet(tilesetRequester->window); */
+  data->tilesetRequester = tilesetRequester;
 done:
   return;
 error:
@@ -1021,8 +1014,7 @@ static void updateTilesetRequesterChildren(FrameworkWindow *mapEditorWindow) {
   FrameworkWindow *i = mapEditorWindow->children;
   while(i) {
     if(isTilesetRequesterWindow(i)) {
-      /* TODO: pass in i, not i->data... */
-      refreshTilesetRequesterList(i->data);
+      refreshTilesetRequesterList(i);
     }
     i = i->next;
   }

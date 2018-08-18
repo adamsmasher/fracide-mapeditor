@@ -7,20 +7,19 @@
 
 #define TILESET_LIST_ID 0
 
-typedef struct TilesetRequesterTag {
-    FrameworkWindow *window;
+typedef struct TilesetRequesterDataTag {
     struct Gadget *gadgets;
     struct Gadget *tilesetList;
     int           closed;
     char          *title;
-} TilesetRequester;
+} TilesetRequesterData;
 
-TilesetRequester *newTilesetRequester(char *title);
-void closeTilesetRequester(TilesetRequester*);
+FrameworkWindow *newTilesetRequester(char *title, FrameworkWindow *parent);
+void closeTilesetRequester(FrameworkWindow*);
 
 BOOL isTilesetRequesterWindow(FrameworkWindow*);
 
-void refreshTilesetRequesterList(TilesetRequester*);
-void resizeTilesetRequester(TilesetRequester*);
+void refreshTilesetRequesterList(FrameworkWindow*);
+void resizeTilesetRequester(FrameworkWindow*);
 
 #endif
