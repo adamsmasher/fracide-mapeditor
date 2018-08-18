@@ -10,7 +10,6 @@
 typedef struct TilesetRequesterDataTag {
     struct Gadget *gadgets;
     struct Gadget *tilesetList;
-    int           closed;
     char          *title;
 } TilesetRequesterData;
 

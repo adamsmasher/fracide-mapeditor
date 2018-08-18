@@ -136,8 +136,6 @@ FrameworkWindow *newTilesetRequester(char *title, FrameworkWindow *parent) {
   }
   window->data = data;
 
-  data->closed = 0;
-
   return window;
 error_freeGadgets:
   FreeGadgets(data->gadgets);
