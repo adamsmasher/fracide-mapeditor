@@ -8,9 +8,9 @@
 #define TILESET_LIST_ID 0
 
 typedef struct TilesetRequesterDataTag {
-    struct Gadget *gadgets;
-    struct Gadget *tilesetList;
-    char          *title;
+  struct Gadget *gadgets;
+  struct Gadget *tilesetList;
+  char          *title;
 } TilesetRequesterData;
 
 FrameworkWindow *newTilesetRequester(char *title, FrameworkWindow *parent);
