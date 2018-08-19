@@ -74,7 +74,7 @@ static BOOL ensureProjectSaved(FrameworkWindow *projectWindow) {
 static BOOL ensureMapEditorsSaved(FrameworkWindow *projectWindow) {
   FrameworkWindow *i = projectWindow->children;
   while(i) {
-    if(isMapEditorWindow(i)) {
+    if(isMapEditor(i)) {
       if(!ensureMapEditorSaved(i->data)) {
         return FALSE;
       }
@@ -391,7 +391,7 @@ done:
 static void updateAllTileDisplays(FrameworkWindow *projectWindow) {
   FrameworkWindow *i = projectWindow->children;
   while(i) {
-    if(isMapEditorWindow(i)) {
+    if(isMapEditor(i)) {
       mapEditorUpdateTileDisplays(i);
     }
     i = i->next;
@@ -486,7 +486,7 @@ error:
 static FrameworkWindow *findMapEditor(FrameworkWindow *projectWindow, int mapNum) {
   FrameworkWindow *i = projectWindow->children;
   while(i) {
-    if(isMapEditorWindow(i)) {
+    if(isMapEditor(i)) {
       MapEditorData *data = i->data;
       if(mapEditorGetMapNum(data) == mapNum) {
         return i;
@@ -529,7 +529,7 @@ void openMap(FrameworkWindow *projectWindow) {
 void refreshAllSongDisplays(FrameworkWindow *projectWindow) {
   FrameworkWindow *i = projectWindow->children;
   while(i) {
-    if(isMapEditorWindow(i)) {
+    if(isMapEditor(i)) {
       /* TODO: make this a function on map requesters */
       MapEditorData *data = i->data;
       if(mapEditorHasSongRequester(data)) {
@@ -544,7 +544,7 @@ void refreshAllSongDisplays(FrameworkWindow *projectWindow) {
 void refreshAllEntityBrowsers(FrameworkWindow *projectWindow) {
   FrameworkWindow *i = projectWindow->children;
   while(i) {
-    if(isMapEditorWindow(i)) {
+    if(isMapEditor(i)) {
       /* TODO: make this a function on map requesters */
       MapEditorData *data = i->data;
       if(mapEditorHasEntityBrowser(data)) {

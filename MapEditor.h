@@ -21,7 +21,7 @@ typedef struct MapEditorData_tag MapEditorData;
 FrameworkWindow *newMapEditorNewMap(FrameworkWindow *parent);
 FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map*, int mapNum);
 
-BOOL isMapEditorWindow(FrameworkWindow*);
+BOOL isMapEditor(FrameworkWindow*);
 
 BOOL mapEditorHasSongRequester(MapEditorData*);
 BOOL mapEditorHasEntityBrowser(MapEditorData*);

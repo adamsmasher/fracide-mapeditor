@@ -101,26 +101,26 @@ static MenuSpec mapEditorMenuSpec[] = {
   END_MENUS
 };
 
-static void newMapMenuItemClicked(FrameworkWindow *mapEditorWindow) {
-  FrameworkWindow *projectWindow = mapEditorWindow->parent;
+static void newMapMenuItemClicked(FrameworkWindow *mapEditor) {
+  FrameworkWindow *projectWindow = mapEditor->parent;
   newMap(projectWindow);
 }
 
-static void openMapMenuItemClicked(FrameworkWindow *mapEditorWindow) {
-  FrameworkWindow *projectWindow = mapEditorWindow->parent;
+static void openMapMenuItemClicked(FrameworkWindow *mapEditor) {
+  FrameworkWindow *projectWindow = mapEditor->parent;
   openMap(projectWindow);
 }
 
-static void enableMapRevert(FrameworkWindow *mapEditorWindow) {
-  OnMenu(mapEditorWindow->intuitionWindow, REVERT_MAP_MENU_ITEM);
+static void enableMapRevert(FrameworkWindow *mapEditor) {
+  OnMenu(mapEditor->intuitionWindow, REVERT_MAP_MENU_ITEM);
 }
 
-static void disableMapRevert(FrameworkWindow *mapEditorWindow) {
-  OffMenu(mapEditorWindow->intuitionWindow, REVERT_MAP_MENU_ITEM);
+static void disableMapRevert(FrameworkWindow *mapEditor) {
+  OffMenu(mapEditor->intuitionWindow, REVERT_MAP_MENU_ITEM);
 }
 
-static void updateMapEditorTitle(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
+static void updateMapEditorTitle(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
 
   char unsaved = data->saveStatus == SAVED ? '\0' : '*';
   if(data->mapNum) {
@@ -128,35 +128,35 @@ static void updateMapEditorTitle(FrameworkWindow *mapEditorWindow) {
   } else {
     sprintf(data->title, "Map Editor%c", unsaved);
   }
-  SetWindowTitles(mapEditorWindow->intuitionWindow, data->title, (STRPTR)-1);
+  SetWindowTitles(mapEditor->intuitionWindow, data->title, (STRPTR)-1);
 }
 
-static void mapEditorSetSaveStatus(FrameworkWindow *mapEditorWindow, SaveStatus saveStatus) {
-  MapEditorData *data = mapEditorWindow->data;
+static void mapEditorSetSaveStatus(FrameworkWindow *mapEditor, SaveStatus saveStatus) {
+  MapEditorData *data = mapEditor->data;
   if(saveStatus != data->saveStatus) {
     data->saveStatus = saveStatus;
     if(saveStatus == SAVED) {
-      disableMapRevert(mapEditorWindow);
+      disableMapRevert(mapEditor);
     } else {
-      enableMapRevert(mapEditorWindow);
+      enableMapRevert(mapEditor);
     }
-    updateMapEditorTitle(mapEditorWindow);
+    updateMapEditorTitle(mapEditor);
   }
 }
 
-static int saveMapRequester(FrameworkWindow *mapEditorWindow) {
+static int saveMapRequester(FrameworkWindow *mapEditor) {
   char title[96];
-  MapEditorData *data = mapEditorWindow->data;
+  MapEditorData *data = mapEditor->data;
 
   sprintf(title, "Save Map %s", data->map->name);
-  return spawnMapRequester(mapEditorWindow, title);
+  return spawnMapRequester(mapEditor, title);
 }
 
-static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  ProjectWindowData *projectData = mapEditorWindow->parent->data;
+static BOOL saveMapAs(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  ProjectWindowData *projectData = mapEditor->parent->data;
 
-  int selected = saveMapRequester(mapEditorWindow);
+  int selected = saveMapRequester(mapEditor);
   if(!selected) {
     return FALSE;
   }
@@ -168,7 +168,7 @@ static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
     }
   } else {
     int response = EasyRequest(
-      mapEditorWindow->intuitionWindow,
+      mapEditor->intuitionWindow,
       &saveIntoFullSlotEasyStruct,
       NULL,
       selected - 1,
@@ -180,79 +180,79 @@ static BOOL saveMapAs(FrameworkWindow *mapEditorWindow) {
     }
   }
 
-  mapEditorSetMapNum(mapEditorWindow, selected - 1);
+  mapEditorSetMapNum(mapEditor, selected - 1);
 
-  mapEditorSetSaveStatus(mapEditorWindow, SAVED);
+  mapEditorSetSaveStatus(mapEditor, SAVED);
 
   projectDataUpdateMapName(projectData, selected - 1, data->map);
 
   return TRUE;
 }
 
-static BOOL saveMap(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  ProjectWindowData *projectData = mapEditorWindow->parent->data;
+static BOOL saveMap(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  ProjectWindowData *projectData = mapEditor->parent->data;
 
   if(!data->mapNum) {
-    return saveMapAs(mapEditorWindow);
+    return saveMapAs(mapEditor);
   } else {
     projectDataOverwriteMap(projectData, data->map, data->mapNum - 1);
     projectDataUpdateMapName(projectData, data->mapNum - 1, data->map);
-    mapEditorSetSaveStatus(mapEditorWindow, SAVED);
+    mapEditorSetSaveStatus(mapEditor, SAVED);
     return TRUE;
   }
 }
 
-static int confirmRevertMap(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
+static int confirmRevertMap(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
   return EasyRequest(
-    mapEditorWindow->intuitionWindow,
+    mapEditor->intuitionWindow,
     &confirmRevertMapEasyStruct,
     NULL,
     data->mapNum - 1,
     data->map->name);
 }
 
-static void revertMap(FrameworkWindow *mapEditorWindow) {
-  if(confirmRevertMap(mapEditorWindow)) {
-    FrameworkWindow *projectWindow = mapEditorWindow->parent;
-    MapEditorData *data = mapEditorWindow->data;
-    mapEditorWindow->closed = 1;
+static void revertMap(FrameworkWindow *mapEditor) {
+  if(confirmRevertMap(mapEditor)) {
+    FrameworkWindow *projectWindow = mapEditor->parent;
+    MapEditorData *data = mapEditor->data;
+    mapEditor->closed = 1;
     openMapNum(projectWindow, data->mapNum - 1);
   }
 }
 
-static BOOL unsavedMapEditorAlert(FrameworkWindow *mapEditorWindow) {
+static BOOL unsavedMapEditorAlert(FrameworkWindow *mapEditor) {
   int response;
-  MapEditorData *data = mapEditorWindow->data;
+  MapEditorData *data = mapEditor->data;
 
   if(data->mapNum) {
     response = EasyRequest(
-      mapEditorWindow->intuitionWindow,
+      mapEditor->intuitionWindow,
       &unsavedMapAlertEasyStructWithNum,
       NULL,
       data->mapNum - 1, data->map->name);
   } else {
     response = EasyRequest(
-      mapEditorWindow->intuitionWindow,
+      mapEditor->intuitionWindow,
       &unsavedMapAlertEasyStructNoNum,
       NULL,
       data->map->name);
   }
 
   switch(response) {
-    case 0: return FALSE;                    /* cancel */
-    case 1: return saveMap(mapEditorWindow); /* save */
-    case 2: return TRUE;                     /* don't save */
+    case 0: return FALSE;              /* cancel */
+    case 1: return saveMap(mapEditor); /* save */
+    case 2: return TRUE;               /* don't save */
     default:
       fprintf(stderr, "unsavedMapEditorAlert: unknown response %d\n", response);
       return FALSE;
     }
 }
 
-BOOL ensureMapEditorSaved(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  return (BOOL)(data->saveStatus == SAVED || unsavedMapEditorAlert(mapEditorWindow));
+BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  return (BOOL)(data->saveStatus == SAVED || unsavedMapEditorAlert(mapEditor));
 }
 
 #define TILE_WIDTH  16
@@ -322,15 +322,15 @@ static void drawBorders(struct RastPort *rport) {
     TILESET_BORDER_LEFT, TILESET_BORDER_TOP);
 }
 
-static void refreshMapEditor(FrameworkWindow *mapEditorWindow) {
-  drawBorders(mapEditorWindow->intuitionWindow->RPort);
+static void refreshMapEditor(FrameworkWindow *mapEditor) {
+  drawBorders(mapEditor->intuitionWindow->RPort);
 }
 
-static void handleChooseTilesetClicked(FrameworkWindow *mapEditorWindow) {
+static void handleChooseTilesetClicked(FrameworkWindow *mapEditor) {
   FrameworkWindow *tilesetRequester;
   char title[32];
-  MapEditorData *data = mapEditorWindow->data;
-  FrameworkWindow *projectWindow = mapEditorWindow->parent;
+  MapEditorData *data = mapEditor->data;
+  FrameworkWindow *projectWindow = mapEditor->parent;
   ProjectWindowData *projectData = projectWindow->data;
 
   if(data->tilesetRequester) {
@@ -340,7 +340,7 @@ static void handleChooseTilesetClicked(FrameworkWindow *mapEditorWindow) {
 
   if(!projectDataHasTilesetPackage(projectData)) {
     int choice = EasyRequest(
-      mapEditorWindow->intuitionWindow,
+      mapEditor->intuitionWindow,
       &noTilesetPackageLoadedEasyStruct,
       NULL);
 
@@ -361,7 +361,7 @@ static void handleChooseTilesetClicked(FrameworkWindow *mapEditorWindow) {
     strcpy(title, "Choose Tileset");
   }
 
-  tilesetRequester = newTilesetRequester(title, mapEditorWindow);
+  tilesetRequester = newTilesetRequester(title, mapEditor);
   if(!tilesetRequester) {
     fprintf(stderr, "handleChooseTilesetClicked: couldn't make requester\n");
     goto error;
@@ -374,12 +374,12 @@ error:
   return;
 }
 
-static void updateMapEditorMapName(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
+static void updateMapEditorMapName(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
   struct StringInfo *stringInfo = data->mapNameGadget->SpecialInfo;
 
   strcpy(data->map->name, stringInfo->Buffer);
-  mapEditorSetSaveStatus(mapEditorWindow, UNSAVED);
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
 static void attachSongRequesterToMapEditor
@@ -387,8 +387,8 @@ static void attachSongRequesterToMapEditor
   data->songRequester = songRequester;
 }
 
-static void handleChangeSongClicked(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
+static void handleChangeSongClicked(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
 
   if(!data->songRequester) {
     char title[32];
@@ -411,62 +411,62 @@ static void handleChangeSongClicked(FrameworkWindow *mapEditorWindow) {
   }
 }
 
-static void mapEditorClearSongUpdateUI(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  GT_SetGadgetAttrs(data->songNameGadget, mapEditorWindow->intuitionWindow, NULL,
+static void mapEditorClearSongUpdateUI(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  GT_SetGadgetAttrs(data->songNameGadget, mapEditor->intuitionWindow, NULL,
     GTTX_Text, "N/A",
     TAG_END);
 }
 
-static void mapEditorClearSong(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
+static void mapEditorClearSong(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
   data->map->songNum = 0;
-  mapEditorClearSongUpdateUI(mapEditorWindow);
-  mapEditorSetSaveStatus(mapEditorWindow, UNSAVED);
+  mapEditorClearSongUpdateUI(mapEditor);
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
-static void moveToMap(FrameworkWindow *mapEditorWindow, int mapNum) {
-  FrameworkWindow *projectWindow = mapEditorWindow->parent;
+static void moveToMap(FrameworkWindow *mapEditor, int mapNum) {
+  FrameworkWindow *projectWindow = mapEditor->parent;
 
-  if(ensureMapEditorSaved(mapEditorWindow)) {
+  if(ensureMapEditorSaved(mapEditor)) {
     if(openMapNum(projectWindow, mapNum - 1)) {
-      mapEditorWindow->closed = 1;
+      mapEditor->closed = 1;
     }
   }
 }
 
-static void handleMapUp(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  moveToMap(mapEditorWindow, data->mapNum - 16);
+static void handleMapUp(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  moveToMap(mapEditor, data->mapNum - 16);
 }
 
-static void handleMapDown(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  moveToMap(mapEditorWindow, data->mapNum + 16);
+static void handleMapDown(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  moveToMap(mapEditor, data->mapNum + 16);
 }
 
-static void handleMapLeft(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  moveToMap(mapEditorWindow, data->mapNum - 1);
+static void handleMapLeft(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  moveToMap(mapEditor, data->mapNum - 1);
 }
 
-static void handleMapRight(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  moveToMap(mapEditorWindow, data->mapNum + 1);
+static void handleMapRight(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  moveToMap(mapEditor, data->mapNum + 1);
 }
 
-static void openNewEntityBrowser(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  data->entityBrowser = newEntityBrowser(mapEditorWindow, data->map, data->mapNum);
+static void openNewEntityBrowser(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  data->entityBrowser = newEntityBrowser(mapEditor, data->map, data->mapNum);
 }
 
-static void handleEntitiesClicked(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
+static void handleEntitiesClicked(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
 
   if(data->entityBrowser) {
     WindowToFront(data->entityBrowser->intuitionWindow);
   } else {
-    openNewEntityBrowser(mapEditorWindow);
+    openNewEntityBrowser(mapEditor);
   }
 }
 
@@ -511,12 +511,12 @@ static UBYTE mapEditorGetColClicked(WORD x) {
   return (UBYTE)col;
 }
 
-static void redrawPaletteTile(FrameworkWindow *mapEditorWindow, unsigned int tile) {
-  MapEditorData *data = mapEditorWindow->data;
+static void redrawPaletteTile(FrameworkWindow *mapEditor, unsigned int tile) {
+  MapEditorData *data = mapEditor->data;
   struct Image *image = &data->paletteImages[tile];
   struct Image *next = image->NextImage;
   image->NextImage = NULL;
-  DrawImage(mapEditorWindow->intuitionWindow->RPort, image,
+  DrawImage(mapEditor->intuitionWindow->RPort, image,
     TILESET_BORDER_LEFT,
     TILESET_BORDER_TOP);
   image->NextImage = next;
@@ -537,13 +537,13 @@ static struct Border tileBorder = {
   NULL
 };
 
-static void mapEditorSetSelected(FrameworkWindow *mapEditorWindow, unsigned int selected) {
+static void mapEditorSetSelected(FrameworkWindow *mapEditor, unsigned int selected) {
   long row;
   long col;
-  MapEditorData *data = mapEditorWindow->data;
+  MapEditorData *data = mapEditor->data;
 
   if(data->selected >= 0) {
-    redrawPaletteTile(mapEditorWindow, data->selected);
+    redrawPaletteTile(mapEditor, data->selected);
   }
 
   data->selected = (int)selected;
@@ -551,14 +551,14 @@ static void mapEditorSetSelected(FrameworkWindow *mapEditorWindow, unsigned int 
   row = selected >> 2;
   col = selected & 0x03;
 
-  DrawBorder(mapEditorWindow->intuitionWindow->RPort, &tileBorder,
+  DrawBorder(mapEditor->intuitionWindow->RPort, &tileBorder,
     TILESET_BORDER_LEFT + (col * 32),
     TILESET_BORDER_TOP  + (row * 32));
 }
 
-static void handleMapEditorPaletteClick(FrameworkWindow *mapEditorWindow, WORD x, WORD y) {
+static void handleMapEditorPaletteClick(FrameworkWindow *mapEditor, WORD x, WORD y) {
   int tile = mapEditorGetPaletteTileClicked(x, y);
-  mapEditorSetSelected(mapEditorWindow, tile);
+  mapEditorSetSelected(mapEditor, tile);
 }
 
 static void copyScaledTileset(UWORD *src, UWORD *dst) {
@@ -624,11 +624,11 @@ static void drawEntity(struct RastPort *rport, Entity *entity, int entityNum) {
 }
 
 /* IN A DREAM WORLD: store the IntuiTexts in the map editor and render them all at once */
-static void drawEntities(FrameworkWindow *mapEditorWindow) {
+static void drawEntities(FrameworkWindow *mapEditor) {
   int i;
-  MapEditorData *data = mapEditorWindow->data;
+  MapEditorData *data = mapEditor->data;
   Entity *entity = &data->map->entities[0];
-  struct RastPort *rport = mapEditorWindow->intuitionWindow->RPort;
+  struct RastPort *rport = mapEditor->intuitionWindow->RPort;
 
   for(i = 0; i < data->map->entityCnt; i++) {
     drawEntity(rport, entity, i);
@@ -636,11 +636,11 @@ static void drawEntities(FrameworkWindow *mapEditorWindow) {
   }
 }
 
-static void mapEditorSetTilesetUpdateUI(FrameworkWindow *mapEditorWindow, UWORD tilesetNumber) {
-  MapEditorData *data = mapEditorWindow->data;
-  ProjectWindowData *projectData = mapEditorWindow->parent->data;
+static void mapEditorSetTilesetUpdateUI(FrameworkWindow *mapEditor, UWORD tilesetNumber) {
+  MapEditorData *data = mapEditor->data;
+  ProjectWindowData *projectData = mapEditor->parent->data;
 
-  GT_SetGadgetAttrs(data->tilesetNameGadget, mapEditorWindow->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->tilesetNameGadget, mapEditor->intuitionWindow, NULL,
     GTTX_Text, projectDataGetTilesetName(projectData, tilesetNumber),
     TAG_END);
 
@@ -648,70 +648,70 @@ static void mapEditorSetTilesetUpdateUI(FrameworkWindow *mapEditorWindow, UWORD 
     (UWORD*)projectDataGetTilesetImgs(projectData, tilesetNumber),
     data->imageData);
 
-  DrawImage(mapEditorWindow->intuitionWindow->RPort, data->paletteImages,
+  DrawImage(mapEditor->intuitionWindow->RPort, data->paletteImages,
     TILESET_BORDER_LEFT,
     TILESET_BORDER_TOP);
 
-  DrawImage(mapEditorWindow->intuitionWindow->RPort, data->mapImages,
+  DrawImage(mapEditor->intuitionWindow->RPort, data->mapImages,
     MAP_BORDER_LEFT,
     MAP_BORDER_TOP);
 
-  drawEntities(mapEditorWindow);
+  drawEntities(mapEditor);
 }
 
-static void mapEditorSetTileTo(FrameworkWindow *mapEditorWindow, UBYTE row, UBYTE col, UBYTE to) {
-  MapEditorData *data = mapEditorWindow->data;
+static void mapEditorSetTileTo(FrameworkWindow *mapEditor, UBYTE row, UBYTE col, UBYTE to) {
+  MapEditorData *data = mapEditor->data;
   UBYTE tile = row * 10 + col;
   data->map->tiles[tile] = to;
   data->mapImages[tile].ImageData = data->imageData + (to << 7);
-  mapEditorSetSaveStatus(mapEditorWindow, UNSAVED);
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
-static void redrawMapTile(FrameworkWindow *mapEditorWindow, UBYTE row, UBYTE col) {
-  MapEditorData *data = mapEditorWindow->data;
+static void redrawMapTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col) {
+  MapEditorData *data = mapEditor->data;
   UBYTE tile = row * 10 + col;
   struct Image *image = &data->mapImages[tile];
   struct Image *next = image->NextImage;
   int entity_i;
 
   image->NextImage = NULL;
-  DrawImage(mapEditorWindow->intuitionWindow->RPort, image,
+  DrawImage(mapEditor->intuitionWindow->RPort, image,
     MAP_BORDER_LEFT,
     MAP_BORDER_TOP);
   image->NextImage = next;
 
   if(entity_i = mapFindEntity(data->map, row, col)) {
     entity_i--;
-    drawEntity(mapEditorWindow->intuitionWindow->RPort, &data->map->entities[entity_i], entity_i);
+    drawEntity(mapEditor->intuitionWindow->RPort, &data->map->entities[entity_i], entity_i);
   }
 }
 
-static void mapEditorSetTile(FrameworkWindow *mapEditorWindow, UBYTE row, UBYTE col) {
-  MapEditorData *data = mapEditorWindow->data;
-  mapEditorSetTileTo(mapEditorWindow, row, col, data->selected);
-  redrawMapTile(mapEditorWindow, row, col);
+static void mapEditorSetTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col) {
+  MapEditorData *data = mapEditor->data;
+  mapEditorSetTileTo(mapEditor, row, col, data->selected);
+  redrawMapTile(mapEditor, row, col);
 }
 
-static void handleMapEditorMapClick(FrameworkWindow *mapEditorWindow, WORD x, WORD y) {
+static void handleMapEditorMapClick(FrameworkWindow *mapEditor, WORD x, WORD y) {
   UBYTE col = mapEditorGetColClicked(x);
   UBYTE row = mapEditorGetRowClicked(y);
-  mapEditorSetTile(mapEditorWindow, row, col);
+  mapEditorSetTile(mapEditor, row, col);
 }
 
 /* TODO: maybe we can use buttons for this... */
-static void handleMapEditorClick(FrameworkWindow *mapEditorWindow, WORD x, WORD y) {
-  MapEditorData *data = mapEditorWindow->data;
+static void handleMapEditorClick(FrameworkWindow *mapEditor, WORD x, WORD y) {
+  MapEditorData *data = mapEditor->data;
 
   if(data->map->tilesetNum) {
     if(mapEditorClickInPalette(x, y)) {
-      handleMapEditorPaletteClick(mapEditorWindow, x, y);
+      handleMapEditorPaletteClick(mapEditor, x, y);
     } else if(mapEditorClickInMap(x, y)) {
-      handleMapEditorMapClick(mapEditorWindow, x, y);
+      handleMapEditorMapClick(mapEditor, x, y);
     }
   }
 }
 
-static WindowKind mapEditorWindowKind = {
+static WindowKind mapEditorKind = {
   {
     40, 40, MAP_EDITOR_WIDTH, MAP_EDITOR_HEIGHT,
     0xFF, 0xFF,
@@ -733,8 +733,8 @@ static WindowKind mapEditorWindowKind = {
   (ClickFunction)    handleMapEditorClick
 };
 
-BOOL isMapEditorWindow(FrameworkWindow *window) {
-  return (BOOL)(window->kind == &mapEditorWindowKind);
+BOOL isMapEditor(FrameworkWindow *window) {
+  return (BOOL)(window->kind == &mapEditorKind);
 }
 
 BOOL mapEditorHasSongRequester(MapEditorData *data) {
@@ -961,19 +961,19 @@ static void initMapEditorMapImages(MapEditorData *data) {
   data->mapImages[89].NextImage = NULL;
 }
 
-void mapEditorDrawEntity(FrameworkWindow *mapEditorWindow, int entityNum) {
-  MapEditorData *data = mapEditorWindow->data;
+void mapEditorDrawEntity(FrameworkWindow *mapEditor, int entityNum) {
+  MapEditorData *data = mapEditor->data;
   Entity *entity = &data->map->entities[entityNum];
   if(data->map->tilesetNum) {
-    drawEntity(mapEditorWindow->intuitionWindow->RPort, entity, entityNum);
+    drawEntity(mapEditor->intuitionWindow->RPort, entity, entityNum);
   }
 }
 
-static void mapEditorClearTilesetUI(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  struct RastPort *rport = mapEditorWindow->intuitionWindow->RPort;
+static void mapEditorClearTilesetUI(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  struct RastPort *rport = mapEditor->intuitionWindow->RPort;
 
-  GT_SetGadgetAttrs(data->tilesetNameGadget, mapEditorWindow->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->tilesetNameGadget, mapEditor->intuitionWindow, NULL,
     GTTX_Text, "N/A",
     TAG_END);
 
@@ -993,25 +993,25 @@ static void mapEditorClearTilesetUI(FrameworkWindow *mapEditorWindow) {
     MAP_BORDER_TOP  + MAP_BORDER_HEIGHT - 3);
 }
 
-void mapEditorRefreshTileset(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
-  ProjectWindowData *projectData = mapEditorWindow->parent->data;
+void mapEditorRefreshTileset(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  ProjectWindowData *projectData = mapEditor->parent->data;
 
   if(data->map->tilesetNum) {
     if(data->map->tilesetNum - 1 < projectDataGetTilesetCount(projectData)) {
-      mapEditorSetTilesetUpdateUI(mapEditorWindow, data->map->tilesetNum - 1);
+      mapEditorSetTilesetUpdateUI(mapEditor, data->map->tilesetNum - 1);
     } else {
-      mapEditorClearTilesetUI(mapEditorWindow);
-      EasyRequest(mapEditorWindow->intuitionWindow, &tilesetOutOfBoundsEasyStruct, NULL,
+      mapEditorClearTilesetUI(mapEditor);
+      EasyRequest(mapEditor->intuitionWindow, &tilesetOutOfBoundsEasyStruct, NULL,
         data->map->tilesetNum - 1);
       data->map->tilesetNum = 0;
-      mapEditorSetSaveStatus(mapEditorWindow, UNSAVED);
+      mapEditorSetSaveStatus(mapEditor, UNSAVED);
     }
   }
 }
 
-static void updateTilesetRequesterChildren(FrameworkWindow *mapEditorWindow) {
-  FrameworkWindow *i = mapEditorWindow->children;
+static void updateTilesetRequesterChildren(FrameworkWindow *mapEditor) {
+  FrameworkWindow *i = mapEditor->children;
   while(i) {
     if(isTilesetRequesterWindow(i)) {
       refreshTilesetRequesterList(i);
@@ -1020,43 +1020,43 @@ static void updateTilesetRequesterChildren(FrameworkWindow *mapEditorWindow) {
   }
 }
 
-void mapEditorUpdateTileDisplays(FrameworkWindow *mapEditorWindow) {
-  updateTilesetRequesterChildren(mapEditorWindow);
-  mapEditorRefreshTileset(mapEditorWindow);
+void mapEditorUpdateTileDisplays(FrameworkWindow *mapEditor) {
+  updateTilesetRequesterChildren(mapEditor);
+  mapEditorRefreshTileset(mapEditor);
 }
 
-void mapEditorSetTileset(FrameworkWindow *mapEditorWindow, UWORD tilesetNumber) {
-  MapEditorData *data = mapEditorWindow->data;
+void mapEditorSetTileset(FrameworkWindow *mapEditor, UWORD tilesetNumber) {
+  MapEditorData *data = mapEditor->data;
   data->map->tilesetNum = tilesetNumber + 1;
-  mapEditorSetTilesetUpdateUI(mapEditorWindow, tilesetNumber);
-  mapEditorSetSaveStatus(mapEditorWindow, UNSAVED);
+  mapEditorSetTilesetUpdateUI(mapEditor, tilesetNumber);
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
-static void mapEditorSetSongUpdateUI(FrameworkWindow *mapEditorWindow, UWORD songNumber) {
-  MapEditorData *data = mapEditorWindow->data;
-  GT_SetGadgetAttrs(data->songNameGadget, mapEditorWindow->intuitionWindow, NULL,
-    GTTX_Text, projectDataGetSongName(mapEditorWindow->parent->data, songNumber),
+static void mapEditorSetSongUpdateUI(FrameworkWindow *mapEditor, UWORD songNumber) {
+  MapEditorData *data = mapEditor->data;
+  GT_SetGadgetAttrs(data->songNameGadget, mapEditor->intuitionWindow, NULL,
+    GTTX_Text, projectDataGetSongName(mapEditor->parent->data, songNumber),
     TAG_END);
 }
 
-void mapEditorSetSong(FrameworkWindow *mapEditorWindow, UWORD songNumber) {
-  MapEditorData *data = mapEditorWindow->data;
+void mapEditorSetSong(FrameworkWindow *mapEditor, UWORD songNumber) {
+  MapEditorData *data = mapEditor->data;
   data->map->songNum = songNumber + 1;
-  mapEditorSetSongUpdateUI(mapEditorWindow, songNumber);
-  mapEditorSetSaveStatus(mapEditorWindow, UNSAVED);
+  mapEditorSetSongUpdateUI(mapEditor, songNumber);
+  mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
-void mapEditorRefreshSong(FrameworkWindow *mapEditorWindow) {
-  MapEditorData *data = mapEditorWindow->data;
+void mapEditorRefreshSong(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
   if(data->map->songNum) {
-     mapEditorSetSongUpdateUI(mapEditorWindow, data->map->songNum - 1);
+     mapEditorSetSongUpdateUI(mapEditor, data->map->songNum - 1);
   }
 }
 
-void mapEditorRedrawTile(FrameworkWindow *mapEditorWindow, UBYTE row, UBYTE col) {
-  MapEditorData *data = mapEditorWindow->data;
+void mapEditorRedrawTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col) {
+  MapEditorData *data = mapEditor->data;
   if(data->map->tilesetNum) {
-    redrawMapTile(mapEditorWindow, row, col);
+    redrawMapTile(mapEditor, row, col);
   }
 }
 
@@ -1065,8 +1065,8 @@ UWORD mapEditorGetMapNum(MapEditorData *data) {
   return (UWORD)(data->mapNum - 1);
 }
 
-void mapEditorSetMapNum(FrameworkWindow *mapEditorWindow, UWORD mapNum) {
-  MapEditorData *data = mapEditorWindow->data;  
+void mapEditorSetMapNum(FrameworkWindow *mapEditor, UWORD mapNum) {
+  MapEditorData *data = mapEditor->data;  
 
   BOOL upDisabled = mapNum < 16 ? TRUE : FALSE;
   BOOL downDisabled = mapNum >= 112 ? TRUE : FALSE;
@@ -1075,27 +1075,27 @@ void mapEditorSetMapNum(FrameworkWindow *mapEditorWindow, UWORD mapNum) {
 
   data->mapNum = mapNum + 1;
 
-  GT_SetGadgetAttrs(data->upGadget, mapEditorWindow->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->upGadget, mapEditor->intuitionWindow, NULL,
     GA_Disabled, upDisabled,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->downGadget, mapEditorWindow->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->downGadget, mapEditor->intuitionWindow, NULL,
     GA_Disabled, downDisabled,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->leftGadget, mapEditorWindow->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->leftGadget, mapEditor->intuitionWindow, NULL,
     GA_Disabled, leftDisabled,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->rightGadget, mapEditorWindow->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->rightGadget, mapEditor->intuitionWindow, NULL,
     GA_Disabled, rightDisabled,
     TAG_END);
 
-  updateMapEditorTitle(mapEditorWindow);
+  updateMapEditorTitle(mapEditor);
 }
 
 static FrameworkWindow *newMapEditor(FrameworkWindow *parent) {
-  FrameworkWindow *mapEditorWindow;
+  FrameworkWindow *mapEditor;
   struct Gadget *gadgets;
 
   MapEditorData *data = malloc(sizeof(MapEditorData));
@@ -1132,22 +1132,22 @@ static FrameworkWindow *newMapEditor(FrameworkWindow *parent) {
     goto error_freeImageData;
   }
 
-  mapEditorWindow = openChildWindow(parent, &mapEditorWindowKind, gadgets);
-  if(!mapEditorWindow) {
+  mapEditor = openChildWindow(parent, &mapEditorKind, gadgets);
+  if(!mapEditor) {
     fprintf(stderr, "newMapEditor: failed to open window\n");
     goto error_freeImageData;
   }
 
-  refreshMapEditor(mapEditorWindow);
+  refreshMapEditor(mapEditor);
 
   data->tilesetRequester = NULL;
   data->songRequester    = NULL;
   data->entityBrowser    = NULL;
   data->selected         = -1;
 
-  mapEditorWindow->data = data;
+  mapEditor->data = data;
 
-  return mapEditorWindow;
+  return mapEditor;
 
 error_freeImageData:
   FreeMem(data->imageData, IMAGE_DATA_SIZE);
@@ -1160,25 +1160,28 @@ error:
 FrameworkWindow *newMapEditorNewMap(FrameworkWindow *parent) {
   Map *map;
   MapEditorData *data;
-  FrameworkWindow *mapEditorWindow;
+  FrameworkWindow *mapEditor;
 
   map = allocMap();
   if(!map) {
+    fprintf(stderr, "newMapEditorNewMap: failed to allocate map\n");
     goto error;
   }
 
-  mapEditorWindow = newMapEditor(parent);
-  if(!mapEditorWindow) {
+  mapEditor = newMapEditor(parent);
+  if(!mapEditor) {
+    fprintf(stderr, "newMapEditorNewMap: failed to create map editor\n");
     goto error_freeMap;
   }
   
-  data = mapEditorWindow->data;
+  data = mapEditor->data;
   data->map = map;
   data->mapNum = 0;
 
-  mapEditorSetSaveStatus(mapEditorWindow, SAVED);
+  /* TODO: new map editors should default to being saved */
+  mapEditorSetSaveStatus(mapEditor, SAVED);
 
-  return mapEditorWindow;
+  return mapEditor;
 
 error_freeMap:
   free(map);
@@ -1188,47 +1191,50 @@ error:
 
 FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, int mapNum) {
   Map *mapCopy;
-  FrameworkWindow *mapEditorWindow;
+  FrameworkWindow *mapEditor;
   MapEditorData *data;
 
-  mapCopy = map ? copyMap(map) : allocMap();
-
+  mapCopy = copyMap(map);
   if(!mapCopy) {
+    fprintf(stderr, "newMapEditorWithMap: failed to copy map\n");
     goto error;
   }
 
-  mapEditorWindow = newMapEditor(parent);
-  if(!mapEditorWindow) {
+  mapEditor = newMapEditor(parent);
+  if(!mapEditor) {
+    fprintf(stderr, "newMapEditorWithMap: failed to create map editor\n");
     goto error_freeMap;
   }
 
-  data = mapEditorWindow->data;
+  data = mapEditor->data;
 
-  GT_SetGadgetAttrs(data->mapNameGadget, mapEditorWindow->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->mapNameGadget, mapEditor->intuitionWindow, NULL,
     GTST_String, map->name,
     TAG_END);
 
   data->map = mapCopy;
 
   if(data->map->tilesetNum) {
+    /* TODO: this is hot garbage clean it up */
     int row, col, i;
     i = 0;
     for(row = 0; row < MAP_TILES_HIGH; row++) {
       for(col = 0; col < MAP_TILES_WIDE; col++) {
-        mapEditorSetTileTo(mapEditorWindow, row, col, map->tiles[i]);
+        mapEditorSetTileTo(mapEditor, row, col, map->tiles[i]);
         i++;
       }
     }
-    mapEditorSetTilesetUpdateUI(mapEditorWindow, map->tilesetNum - 1);
+    mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1);
   }
 
   if(map->songNum) {
-    mapEditorSetSong(mapEditorWindow, map->songNum - 1);
+    mapEditorSetSong(mapEditor, map->songNum - 1);
   }
 
-  mapEditorSetMapNum(mapEditorWindow, mapNum);
-  mapEditorSetSaveStatus(mapEditorWindow, SAVED);
-  return mapEditorWindow;
+  mapEditorSetMapNum(mapEditor, mapNum);
+  /* TODO: new map editors should default to being saved */
+  mapEditorSetSaveStatus(mapEditor, SAVED);
+  return mapEditor;
 
 error_freeMap:
   free(mapCopy);
