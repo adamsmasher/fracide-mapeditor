@@ -1178,9 +1178,6 @@ FrameworkWindow *newMapEditorNewMap(FrameworkWindow *parent) {
   data->map = map;
   data->mapNum = 0;
 
-  /* TODO: new map editors should default to being saved */
-  mapEditorSetSaveStatus(mapEditor, SAVED);
-
   return mapEditor;
 
 error_freeMap:
@@ -1232,8 +1229,6 @@ FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, int mapN
   }
 
   mapEditorSetMapNum(mapEditor, mapNum);
-  /* TODO: new map editors should default to being saved */
-  mapEditorSetSaveStatus(mapEditor, SAVED);
   return mapEditor;
 
 error_freeMap:
