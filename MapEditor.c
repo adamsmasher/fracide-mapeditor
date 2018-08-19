@@ -659,11 +659,15 @@ static void mapEditorSetTilesetUpdateUI(FrameworkWindow *mapEditor, UWORD tilese
   drawEntities(mapEditor);
 }
 
+static void *mapEditorDataGetImageDataForTile(MapEditorData *data, UBYTE tile) {
+  return data->imageData + (tile << 7);
+}
+
 static void mapEditorSetTileTo(FrameworkWindow *mapEditor, UBYTE row, UBYTE col, UBYTE to) {
   MapEditorData *data = mapEditor->data;
   UBYTE tile = row * 10 + col;
   data->map->tiles[tile] = to;
-  data->mapImages[tile].ImageData = data->imageData + (to << 7);
+  data->mapImages[tile].ImageData = mapEditorDataGetImageDataForTile(data, tile);
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
@@ -1186,6 +1190,14 @@ error:
   return NULL;
 }
 
+static void mapEditorDataInitializeImages(MapEditorData *data) {
+  Map *map = data->map;
+  int i;
+  for(i = 0; i < MAP_TILES_HIGH * MAP_TILES_WIDE; i++) {
+    data->mapImages[i].ImageData = mapEditorDataGetImageDataForTile(data, map->tiles[i]);
+  }
+}
+
 FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, int mapNum) {
   Map *mapCopy;
   FrameworkWindow *mapEditor;
@@ -1212,15 +1224,7 @@ FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, int mapN
   data->map = mapCopy;
 
   if(data->map->tilesetNum) {
-    /* TODO: this is hot garbage clean it up */
-    int row, col, i;
-    i = 0;
-    for(row = 0; row < MAP_TILES_HIGH; row++) {
-      for(col = 0; col < MAP_TILES_WIDE; col++) {
-        mapEditorSetTileTo(mapEditor, row, col, map->tiles[i]);
-        i++;
-      }
-    }
+    mapEditorDataInitializeImages(data);
     mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1);
   }
 
