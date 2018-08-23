@@ -10,18 +10,22 @@
 #include "TilesetRequester.h"
 #include "Map.h"
 
-#define TILESET_PALETTE_TILES_ACROSS 4
-#define TILESET_PALETTE_TILES_HIGH   8
-
-#define MAP_TILES_ACROSS 10
-#define MAP_TILES_HIGH    9
-
 typedef struct MapEditorData_tag MapEditorData;
 
 FrameworkWindow *newMapEditorNewMap(FrameworkWindow *parent);
 FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map*, int mapNum);
 
 BOOL isMapEditor(FrameworkWindow*);
+
+void mapEditorUpdateMapName(FrameworkWindow*);
+void mapEditorChooseTilesetClicked(FrameworkWindow*);
+void mapEditorChangeSongClicked(FrameworkWindow*);
+void mapEditorClearSongClicked(FrameworkWindow*);
+void mapEditorMapLeftClicked(FrameworkWindow*);
+void mapEditorMapRightClicked(FrameworkWindow*);
+void mapEditorMapUpClicked(FrameworkWindow*);
+void mapEditorMapDownClicked(FrameworkWindow*);
+void mapEditorEntitiesClicked(FrameworkWindow*);
 
 BOOL mapEditorHasSongRequester(MapEditorData*);
 BOOL mapEditorHasEntityBrowser(MapEditorData*);

@@ -25,6 +25,8 @@
 #include "easystructs.h"
 #include "EntityBrowser.h"
 #include "map.h"
+#include "MapEditorConstants.h"
+#include "MapEditorGadgets.h"
 #include "MapRequester.h"
 #include "ProjectWindow.h"
 #include "ProjectWindowData.h"
@@ -39,13 +41,7 @@ struct MapEditorData_tag {
   Map *map;
   UWORD mapNum;
 
-  struct Gadget *tilesetNameGadget;
-  struct Gadget *mapNameGadget;
-  struct Gadget *songNameGadget;
-  struct Gadget *leftGadget;
-  struct Gadget *rightGadget;
-  struct Gadget *upGadget;
-  struct Gadget *downGadget;
+  MapEditorGadgets gadgets;
 
   SaveStatus saveStatus;
 
@@ -54,7 +50,7 @@ struct MapEditorData_tag {
   FrameworkWindow *entityBrowser;
 
   struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
-  struct Image mapImages[MAP_TILES_ACROSS * MAP_TILES_HIGH];
+  struct Image mapImages[MAP_TILES_WIDE * MAP_TILES_HIGH];
   UWORD *imageData;
 
   int selected;
@@ -255,15 +251,6 @@ BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor) {
   return (BOOL)(data->saveStatus == SAVED || unsavedMapEditorAlert(mapEditor));
 }
 
-#define TILE_WIDTH  16
-#define TILE_HEIGHT 16
-
-/* TODO: adjust based on screen */
-#define MAP_BORDER_LEFT   28
-#define MAP_BORDER_TOP    51
-#define MAP_BORDER_WIDTH  (MAP_TILES_ACROSS * TILE_WIDTH  * 2 + 2)
-#define MAP_BORDER_HEIGHT (MAP_TILES_HIGH   * TILE_HEIGHT * 2 + 2)
-
 /* TODO: generate these dynamically */
 static WORD mapBorderPoints[] = {
   0,                  0,
@@ -279,27 +266,6 @@ static struct Border mapBorder = {
   5, mapBorderPoints,
   NULL
 };
-
-/* TODO: adjust based on titlebar height */
-#define CURRENT_TILESET_LEFT   378
-#define CURRENT_TILESET_TOP    36
-#define CURRENT_TILESET_WIDTH  144
-#define CURRENT_TILESET_HEIGHT 12
-
-#define CHOOSE_TILESET_LEFT    CURRENT_TILESET_LEFT
-#define CHOOSE_TILESET_TOP     CURRENT_TILESET_TOP + CURRENT_TILESET_HEIGHT
-#define CHOOSE_TILESET_HEIGHT  12
-#define CHOOSE_TILESET_WIDTH   CURRENT_TILESET_WIDTH
-
-#define TILESET_SCROLL_HEIGHT  TILE_HEIGHT * TILESET_PALETTE_TILES_HIGH * 2 + 2
-#define TILESET_SCROLL_WIDTH   CHOOSE_TILESET_WIDTH - (TILE_WIDTH * TILESET_PALETTE_TILES_ACROSS * 2)
-#define TILESET_SCROLL_LEFT    CURRENT_TILESET_LEFT + TILE_WIDTH * TILESET_PALETTE_TILES_ACROSS * 2 + 1
-#define TILESET_SCROLL_TOP     CHOOSE_TILESET_TOP + CHOOSE_TILESET_HEIGHT + 8
-
-#define TILESET_BORDER_LEFT   CURRENT_TILESET_LEFT
-#define TILESET_BORDER_TOP    (TILESET_SCROLL_TOP + 1)
-#define TILESET_BORDER_WIDTH  (TILE_WIDTH * TILESET_PALETTE_TILES_ACROSS * 2 + 2)
-#define TILESET_BORDER_HEIGHT TILESET_SCROLL_HEIGHT
 
 static WORD tilesetBorderPoints[] = {
   0,                      0,
@@ -326,7 +292,7 @@ static void refreshMapEditor(FrameworkWindow *mapEditor) {
   drawBorders(mapEditor->intuitionWindow->RPort);
 }
 
-static void handleChooseTilesetClicked(FrameworkWindow *mapEditor) {
+void mapEditorChooseTilesetClicked(FrameworkWindow *mapEditor) {
   FrameworkWindow *tilesetRequester;
   char title[32];
   MapEditorData *data = mapEditor->data;
@@ -374,9 +340,10 @@ error:
   return;
 }
 
-static void updateMapEditorMapName(FrameworkWindow *mapEditor) {
+void mapEditorUpdateMapName(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
-  struct StringInfo *stringInfo = data->mapNameGadget->SpecialInfo;
+  MapEditorGadgets *gadgets = &data->gadgets;
+  struct StringInfo *stringInfo = gadgets->mapNameGadget->SpecialInfo;
 
   strcpy(data->map->name, stringInfo->Buffer);
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
@@ -387,7 +354,7 @@ static void attachSongRequesterToMapEditor
   data->songRequester = songRequester;
 }
 
-static void handleChangeSongClicked(FrameworkWindow *mapEditor) {
+void mapEditorChangeSongClicked(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
 
   if(!data->songRequester) {
@@ -413,12 +380,13 @@ static void handleChangeSongClicked(FrameworkWindow *mapEditor) {
 
 static void mapEditorClearSongUpdateUI(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
-  GT_SetGadgetAttrs(data->songNameGadget, mapEditor->intuitionWindow, NULL,
+  MapEditorGadgets *gadgets = &data->gadgets;
+  GT_SetGadgetAttrs(gadgets->songNameGadget, mapEditor->intuitionWindow, NULL,
     GTTX_Text, "N/A",
     TAG_END);
 }
 
-static void mapEditorClearSong(FrameworkWindow *mapEditor) {
+void mapEditorClearSongClicked(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
   data->map->songNum = 0;
   mapEditorClearSongUpdateUI(mapEditor);
@@ -435,22 +403,22 @@ static void moveToMap(FrameworkWindow *mapEditor, int mapNum) {
   }
 }
 
-static void handleMapUp(FrameworkWindow *mapEditor) {
+void mapEditorMapUpClicked(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
   moveToMap(mapEditor, data->mapNum - 16);
 }
 
-static void handleMapDown(FrameworkWindow *mapEditor) {
+void mapEditorMapDownClicked(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
   moveToMap(mapEditor, data->mapNum + 16);
 }
 
-static void handleMapLeft(FrameworkWindow *mapEditor) {
+void mapEditorMapLeftClicked(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
   moveToMap(mapEditor, data->mapNum - 1);
 }
 
-static void handleMapRight(FrameworkWindow *mapEditor) {
+void mapEditorMapRightClicked(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
   moveToMap(mapEditor, data->mapNum + 1);
 }
@@ -460,7 +428,7 @@ static void openNewEntityBrowser(FrameworkWindow *mapEditor) {
   data->entityBrowser = newEntityBrowser(mapEditor, data->map, data->mapNum);
 }
 
-static void handleEntitiesClicked(FrameworkWindow *mapEditor) {
+void mapEditorEntitiesClicked(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
 
   if(data->entityBrowser) {
@@ -638,9 +606,10 @@ static void drawEntities(FrameworkWindow *mapEditor) {
 
 static void mapEditorSetTilesetUpdateUI(FrameworkWindow *mapEditor, UWORD tilesetNumber) {
   MapEditorData *data = mapEditor->data;
+  MapEditorGadgets *gadgets = &data->gadgets;
   ProjectWindowData *projectData = mapEditor->parent->data;
 
-  GT_SetGadgetAttrs(data->tilesetNameGadget, mapEditor->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(gadgets->tilesetNameGadget, mapEditor->intuitionWindow, NULL,
     GTTX_Text, projectDataGetTilesetName(projectData, tilesetNumber),
     TAG_END);
 
@@ -749,158 +718,7 @@ BOOL mapEditorHasEntityBrowser(MapEditorData *data) {
   return (BOOL)(data->entityBrowser != NULL);
 }
 
-#define MAP_NAME_LEFT   (MAP_BORDER_LEFT  + 80)
-#define MAP_NAME_TOP    18
-#define MAP_NAME_WIDTH  (MAP_BORDER_WIDTH - 81)
-#define MAP_NAME_HEIGHT 14
-
-#define ENTITIES_LEFT   (TILESET_BORDER_LEFT - 1)
-#define ENTITIES_TOP    (TILESET_BORDER_TOP + TILESET_BORDER_HEIGHT + 10)
-#define ENTITIES_WIDTH  (TILESET_BORDER_WIDTH + TILESET_SCROLL_WIDTH)
-#define ENTITIES_HEIGHT 14
-
-#define SONG_NAME_LEFT   (MAP_BORDER_LEFT + 95)
-#define SONG_NAME_TOP    (MAP_BORDER_TOP + MAP_BORDER_HEIGHT + 20)
-#define SONG_NAME_WIDTH  (MAP_BORDER_WIDTH - 182)
-#define SONG_NAME_HEIGHT 14
-
-#define SONG_CHANGE_LEFT   (SONG_NAME_LEFT + SONG_NAME_WIDTH - 2)
-#define SONG_CHANGE_TOP    SONG_NAME_TOP
-#define SONG_CHANGE_WIDTH  76
-#define SONG_CHANGE_HEIGHT 14
-
-#define SONG_CLEAR_LEFT   (SONG_CHANGE_LEFT + SONG_CHANGE_WIDTH - 2)
-#define SONG_CLEAR_TOP    SONG_CHANGE_TOP
-#define SONG_CLEAR_WIDTH  14
-#define SONG_CLEAR_HEIGHT 14
-
-#define MAP_UP_LEFT   (MAP_BORDER_LEFT - 3)
-#define MAP_UP_TOP    (MAP_BORDER_TOP - 15)
-#define MAP_UP_WIDTH  (MAP_BORDER_WIDTH + 4)
-#define MAP_UP_HEIGHT 14
-
-#define MAP_DOWN_LEFT   MAP_UP_LEFT
-#define MAP_DOWN_TOP    (MAP_BORDER_TOP + MAP_BORDER_HEIGHT - 1)
-#define MAP_DOWN_WIDTH  MAP_UP_WIDTH
-#define MAP_DOWN_HEIGHT MAP_UP_HEIGHT
-
-#define MAP_LEFT_LEFT   (MAP_BORDER_LEFT - 15)
-#define MAP_LEFT_TOP    MAP_BORDER_TOP - 2
-#define MAP_LEFT_WIDTH  14
-#define MAP_LEFT_HEIGHT MAP_BORDER_HEIGHT + 2
-
-#define MAP_RIGHT_LEFT   (MAP_BORDER_LEFT + MAP_BORDER_WIDTH - 1)
-#define MAP_RIGHT_TOP    MAP_LEFT_TOP
-#define MAP_RIGHT_WIDTH  MAP_LEFT_WIDTH
-#define MAP_RIGHT_HEIGHT MAP_LEFT_HEIGHT
-
 #define IMAGE_DATA_SIZE (TILES_PER_SET * 256)
-
-static StringSpec mapNameSpec = {
-  MAP_NAME_LEFT,  MAP_NAME_TOP,
-  MAP_NAME_WIDTH, MAP_NAME_HEIGHT,
-  "Map Name:",
-  TEXT_ON_LEFT,
-  ENABLED,
-  updateMapEditorMapName
-};
-
-static TextSpec currentTilesetSpec = {
-  CURRENT_TILESET_LEFT,  CURRENT_TILESET_TOP,
-  CURRENT_TILESET_WIDTH, CURRENT_TILESET_HEIGHT,
-  "Current Tileset",
-  TEXT_ABOVE,
-  "N/A",
-  BORDERED
-};
-
-static ButtonSpec chooseTilesetSpec = {
-  CHOOSE_TILESET_LEFT, CHOOSE_TILESET_TOP,
-  CHOOSE_TILESET_WIDTH, CHOOSE_TILESET_HEIGHT,
-  "Choose Tileset...",
-  TEXT_INSIDE,
-  ENABLED,
-  handleChooseTilesetClicked
-};
-
-static ScrollerSpec tilesetScrollSpec = {
-  TILESET_SCROLL_LEFT,  TILESET_SCROLL_TOP,
-  TILESET_SCROLL_WIDTH, TILESET_SCROLL_HEIGHT,
-  DISABLED,
-  VERTICAL
-};
-
-static TextSpec songNameSpec = {
-  SONG_NAME_LEFT,  SONG_NAME_TOP,
-  SONG_NAME_WIDTH, SONG_NAME_HEIGHT,
-  "Soundtrack:",
-  TEXT_ON_LEFT,
-  "N/A",
-  BORDERED
-};
-
-static ButtonSpec songChangeSpec = {
-  SONG_CHANGE_LEFT,  SONG_CHANGE_TOP,
-  SONG_CHANGE_WIDTH, SONG_CHANGE_HEIGHT,
-  "Change...",
-  TEXT_INSIDE,
-  ENABLED,
-  handleChangeSongClicked
-};
-
-static ButtonSpec songClearSpec = {
-  SONG_CLEAR_LEFT,  SONG_CLEAR_TOP,
-  SONG_CLEAR_WIDTH, SONG_CLEAR_HEIGHT,
-  "X",
-  TEXT_INSIDE,
-  ENABLED,
-  mapEditorClearSong
-};
-
-static ButtonSpec mapLeftSpec = {
-  MAP_LEFT_LEFT,  MAP_LEFT_TOP,
-  MAP_LEFT_WIDTH, MAP_LEFT_HEIGHT,
-  "<",
-  TEXT_INSIDE,
-  DISABLED,
-  handleMapLeft
-};
-
-static ButtonSpec mapRightSpec = {
-  MAP_RIGHT_LEFT,  MAP_RIGHT_TOP,
-  MAP_RIGHT_WIDTH, MAP_RIGHT_HEIGHT,
-  ">",
-  TEXT_INSIDE,
-  DISABLED,
-  handleMapRight
-};
-
-static ButtonSpec mapUpSpec = {
-  MAP_UP_LEFT,  MAP_UP_TOP,
-  MAP_UP_WIDTH, MAP_UP_HEIGHT,
-  "^",
-  TEXT_INSIDE,
-  DISABLED,
-  handleMapUp
-};
-
-static ButtonSpec mapDownSpec = {
-  MAP_DOWN_LEFT,  MAP_DOWN_TOP,
-  MAP_DOWN_WIDTH, MAP_DOWN_HEIGHT,
-  "v",
-  TEXT_INSIDE,
-  DISABLED,
-  handleMapDown
-};
-
-static ButtonSpec entitiesSpec = {
-  ENTITIES_LEFT,  ENTITIES_TOP,
-  ENTITIES_WIDTH, ENTITIES_HEIGHT,
-  "Entities...",
-  TEXT_INSIDE,
-  ENABLED,
-  handleEntitiesClicked
-};
 
 static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
   sizeof(struct EasyStruct),
@@ -946,7 +764,7 @@ static void initMapEditorMapImages(MapEditorData *data) {
   top = 0;
   for(row = 0; row < MAP_TILES_HIGH; row++) {
     left = 0;
-    for(col = 0; col < MAP_TILES_ACROSS; col++) {
+    for(col = 0; col < MAP_TILES_WIDE; col++) {
       i->LeftEdge = left;
       i->TopEdge = top;
       i->Width = 32;
@@ -975,9 +793,10 @@ void mapEditorDrawEntity(FrameworkWindow *mapEditor, int entityNum) {
 
 static void mapEditorClearTilesetUI(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
+  MapEditorGadgets *gadgets = &data->gadgets;
   struct RastPort *rport = mapEditor->intuitionWindow->RPort;
 
-  GT_SetGadgetAttrs(data->tilesetNameGadget, mapEditor->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(gadgets->tilesetNameGadget, mapEditor->intuitionWindow, NULL,
     GTTX_Text, "N/A",
     TAG_END);
 
@@ -1038,7 +857,8 @@ void mapEditorSetTileset(FrameworkWindow *mapEditor, UWORD tilesetNumber) {
 
 static void mapEditorSetSongUpdateUI(FrameworkWindow *mapEditor, UWORD songNumber) {
   MapEditorData *data = mapEditor->data;
-  GT_SetGadgetAttrs(data->songNameGadget, mapEditor->intuitionWindow, NULL,
+  MapEditorGadgets *gadgets = &data->gadgets;
+  GT_SetGadgetAttrs(gadgets->songNameGadget, mapEditor->intuitionWindow, NULL,
     GTTX_Text, projectDataGetSongName(mapEditor->parent->data, songNumber),
     TAG_END);
 }
@@ -1071,6 +891,7 @@ UWORD mapEditorGetMapNum(MapEditorData *data) {
 
 void mapEditorSetMapNum(FrameworkWindow *mapEditor, UWORD mapNum) {
   MapEditorData *data = mapEditor->data;  
+  MapEditorGadgets *gadgets = &data->gadgets;
 
   BOOL upDisabled = mapNum < 16 ? TRUE : FALSE;
   BOOL downDisabled = mapNum >= 112 ? TRUE : FALSE;
@@ -1079,19 +900,19 @@ void mapEditorSetMapNum(FrameworkWindow *mapEditor, UWORD mapNum) {
 
   data->mapNum = mapNum + 1;
 
-  GT_SetGadgetAttrs(data->upGadget, mapEditor->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(gadgets->upGadget, mapEditor->intuitionWindow, NULL,
     GA_Disabled, upDisabled,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->downGadget, mapEditor->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(gadgets->downGadget, mapEditor->intuitionWindow, NULL,
     GA_Disabled, downDisabled,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->leftGadget, mapEditor->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(gadgets->leftGadget, mapEditor->intuitionWindow, NULL,
     GA_Disabled, leftDisabled,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->rightGadget, mapEditor->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(gadgets->rightGadget, mapEditor->intuitionWindow, NULL,
     GA_Disabled, rightDisabled,
     TAG_END);
 
@@ -1116,21 +937,7 @@ static FrameworkWindow *newMapEditor(FrameworkWindow *parent) {
   initMapEditorPaletteImages(data);
   initMapEditorMapImages(data);
 
-  gadgets = buildGadgets(
-    makeTextGadget(&currentTilesetSpec),    &data->tilesetNameGadget,
-    makeButtonGadget(&chooseTilesetSpec),   NULL,
-    makeScrollerGadget(&tilesetScrollSpec), NULL,
-    makeStringGadget(&mapNameSpec),         &data->mapNameGadget,
-    makeTextGadget(&songNameSpec),          &data->songNameGadget,
-    makeButtonGadget(&songChangeSpec),      NULL,
-    makeButtonGadget(&songClearSpec),       NULL,
-    makeButtonGadget(&mapLeftSpec),         &data->leftGadget,
-    makeButtonGadget(&mapRightSpec),        &data->rightGadget,
-    makeButtonGadget(&mapUpSpec),           &data->upGadget,
-    makeButtonGadget(&mapDownSpec),         &data->downGadget,
-    makeButtonGadget(&entitiesSpec),        NULL,
-    NULL);
-
+  gadgets = initMapEditorGadgets(&data->gadgets);
   if(!gadgets) {
     fprintf(stderr, "newMapEditor: failed to create gadgets\n");
     goto error_freeImageData;
@@ -1202,6 +1009,7 @@ FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, int mapN
   Map *mapCopy;
   FrameworkWindow *mapEditor;
   MapEditorData *data;
+  MapEditorGadgets *gadgets;
 
   mapCopy = copyMap(map);
   if(!mapCopy) {
@@ -1216,8 +1024,9 @@ FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, int mapN
   }
 
   data = mapEditor->data;
+  gadgets = &data->gadgets;
 
-  GT_SetGadgetAttrs(data->mapNameGadget, mapEditor->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(gadgets->mapNameGadget, mapEditor->intuitionWindow, NULL,
     GTST_String, map->name,
     TAG_END);
 
