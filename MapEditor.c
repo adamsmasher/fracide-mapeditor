@@ -329,11 +329,6 @@ void mapEditorUpdateMapName(FrameworkWindow *mapEditor) {
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
-static void attachSongRequesterToMapEditor
-(MapEditorData *data, SongRequester *songRequester) {
-  data->songRequester = songRequester;
-}
-
 void mapEditorChangeSongClicked(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
 
@@ -349,7 +344,7 @@ void mapEditorChangeSongClicked(FrameworkWindow *mapEditor) {
 
     songRequester = newSongRequester(title);
     if(songRequester) {
-      attachSongRequesterToMapEditor(data, songRequester);
+      mapEditorDataSetSongRequester(data, songRequester);
       /* TODO: fix me */
       /* addWindowToSet(songRequester->window); */
     }
@@ -608,10 +603,6 @@ static void mapEditorSetTilesetUpdateUI(FrameworkWindow *mapEditor, UWORD tilese
   drawEntities(mapEditor);
 }
 
-static void *mapEditorDataGetImageDataForTile(MapEditorData *data, UBYTE tile) {
-  return data->imageData + (tile << 7);
-}
-
 static void mapEditorSetTileTo(FrameworkWindow *mapEditor, UBYTE row, UBYTE col, UBYTE to) {
   MapEditorData *data = mapEditor->data;
   UBYTE tile = row * 10 + col;
@@ -690,14 +681,6 @@ BOOL isMapEditor(FrameworkWindow *window) {
   return (BOOL)(window->kind == &mapEditorKind);
 }
 
-BOOL mapEditorHasSongRequester(MapEditorData *data) {
-  return (BOOL)(data->songRequester != NULL);
-}
-
-BOOL mapEditorHasEntityBrowser(MapEditorData *data) {
-  return (BOOL)(data->entityBrowser != NULL);
-}
-
 #define IMAGE_DATA_SIZE (TILES_PER_SET * 256)
 
 static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
@@ -707,61 +690,6 @@ static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
   "This map had tileset %ld, which does not exist\nin the new package.\nThe tileset has been removed from this map.",
   "OK"
 };
-
-static void initMapEditorPaletteImages(MapEditorData *data) {
-  int top, left, row, col;
-  struct Image *i = data->paletteImages;
-  UWORD *imageData = data->imageData;
-
-  top = 0;
-  for(row = 0; row < TILESET_PALETTE_TILES_HIGH; row++) {
-    left = 0;
-    for(col = 0; col < TILESET_PALETTE_TILES_ACROSS; col++) {
-      i->LeftEdge = left;
-      i->TopEdge = top;
-      i->Width = 32;
-      i->Height = 32;
-      i->Depth = 2;
-      i->ImageData = imageData;
-      i->PlanePick = 0x03;
-      i->PlaneOnOff = 0;
-      i->NextImage = i + 1;
-
-      i++;
-      left += 32;
-      imageData += 128;
-    }
-    top += 32;
-  }
-  data->paletteImages[31].NextImage = NULL;
-}
-
-static void initMapEditorMapImages(MapEditorData *data) {
-  int top, left, row, col;
-  struct Image *i = data->mapImages;
-  UWORD *imageData = data->imageData;
-
-  top = 0;
-  for(row = 0; row < MAP_TILES_HIGH; row++) {
-    left = 0;
-    for(col = 0; col < MAP_TILES_WIDE; col++) {
-      i->LeftEdge = left;
-      i->TopEdge = top;
-      i->Width = 32;
-      i->Height = 32;
-      i->Depth = 2;
-      i->ImageData = imageData;
-      i->PlanePick = 0x03;
-      i->PlaneOnOff = 0;
-      i->NextImage = i + 1;
-
-      i++;
-      left += 32;
-    }
-    top += 32;
-  }
-  data->mapImages[89].NextImage = NULL;
-}
 
 void mapEditorDrawEntity(FrameworkWindow *mapEditor, int entityNum) {
   MapEditorData *data = mapEditor->data;
@@ -864,11 +792,6 @@ void mapEditorRedrawTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col) {
   }
 }
 
-/* results are undefined if the map editor does not have a map */
-UWORD mapEditorGetMapNum(MapEditorData *data) {
-  return (UWORD)(data->mapNum - 1);
-}
-
 void mapEditorSetMapNum(FrameworkWindow *mapEditor, UWORD mapNum) {
   MapEditorData *data = mapEditor->data;  
   MapEditorGadgets *gadgets = &data->gadgets;
@@ -914,8 +837,8 @@ static FrameworkWindow *newMapEditor(FrameworkWindow *parent) {
     fprintf(stderr, "newMapEditor: failed to allocate image data\n");
     goto error_freeData;
   }
-  initMapEditorPaletteImages(data);
-  initMapEditorMapImages(data);
+  mapEditorDataInitPaletteImages(data);
+  mapEditorDataInitMapImages(data);
 
   gadgets = initMapEditorGadgets(&data->gadgets);
   if(!gadgets) {
@@ -977,14 +900,6 @@ error:
   return NULL;
 }
 
-static void mapEditorDataInitializeImages(MapEditorData *data) {
-  Map *map = data->map;
-  int i;
-  for(i = 0; i < MAP_TILES_HIGH * MAP_TILES_WIDE; i++) {
-    data->mapImages[i].ImageData = mapEditorDataGetImageDataForTile(data, map->tiles[i]);
-  }
-}
-
 FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, int mapNum) {
   Map *mapCopy;
   FrameworkWindow *mapEditor;
@@ -1013,7 +928,7 @@ FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, int mapN
   data->map = mapCopy;
 
   if(data->map->tilesetNum) {
-    mapEditorDataInitializeImages(data);
+    mapEditorDataInitImages(data);
     mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1);
   }
 
@@ -1034,7 +949,7 @@ void mapEditorAddNewEntity(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
   mapAddNewEntity(data->map);
   /* draw the new entity */
-  mapEditorDrawEntity(mapEditor, mapEditorEntityCount(mapEditor->data) - 1);
+  mapEditorDrawEntity(mapEditor, mapEditorDataGetEntityCount(mapEditor->data) - 1);
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
@@ -1042,11 +957,6 @@ void mapEditorRemoveEntity(FrameworkWindow *mapEditor, UWORD entityNum) {
   MapEditorData *data = mapEditor->data;
   mapRemoveEntity(data->map, entityNum);
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
-}
-
-UBYTE mapEditorGetEntityRow(MapEditorData *data, UWORD entityNum) {
-  Entity *entity = &data->map->entities[entityNum];
-  return entity->row;
 }
 
 void mapEditorSetEntityRow(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE row) {
@@ -1062,11 +972,6 @@ void mapEditorSetEntityRow(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE ro
   mapEditorRedrawTile(mapEditor, oldRow, oldCol);
 }
 
-UBYTE mapEditorGetEntityCol(MapEditorData *data, UWORD entityNum) {
-  Entity *entity = &data->map->entities[entityNum];
-  return entity->col;
-}
-
 void mapEditorSetEntityCol(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE col) {
   MapEditorData *data = mapEditor->data;
   Entity *entity = &data->map->entities[entityNum];
@@ -1080,20 +985,11 @@ void mapEditorSetEntityCol(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE co
   mapEditorRedrawTile(mapEditor, oldRow, oldCol);
 }
 
-UBYTE mapEditorGetEntityVRAMSlot(MapEditorData *data, UWORD entityNum) {
-  Entity *entity = &data->map->entities[entityNum];
-  return entity->vramSlot;
-}
-
 void mapEditorSetEntityVRAMSlot(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE vramSlot) {
   MapEditorData *data = mapEditor->data;
   Entity *entity = &data->map->entities[entityNum];
   entity->vramSlot = vramSlot;
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
-}
-
-UWORD mapEditorEntityCount(MapEditorData *data) {
-  return data->map->entityCnt;
 }
 
 void mapEditorEntityAddNewTag(FrameworkWindow *mapEditor, UWORD entityNum) {
@@ -1110,10 +1006,6 @@ void mapEditorEntityDeleteTag(FrameworkWindow *mapEditor, UWORD entityNum, int t
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
-int mapEditorEntityGetTagCount(MapEditorData *data, UWORD entityNum) {
-  return data->map->entities[entityNum].tagCnt;
-}
-
 void mapEditorEntitySetTagAlias(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, const char *newTagAlias) {
   MapEditorData *data = mapEditor->data;
   Entity *entity = &data->map->entities[entityNum];
@@ -1122,28 +1014,12 @@ void mapEditorEntitySetTagAlias(FrameworkWindow *mapEditor, UWORD entityNum, int
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
 }
 
-const char *mapEditorEntityGetTagAlias(MapEditorData *data, UWORD entityNum, int tagNum) {
-  return data->map->entities[entityNum].tags[tagNum].alias;
-}
-
-UBYTE mapEditorEntityGetTagId(MapEditorData *data, UWORD entityNum, int tagNum) {
-  Entity *entity = &data->map->entities[entityNum];
-  Frac_tag *tag = &entity->tags[tagNum];
-  return tag->id;
-}
-
 void mapEditorEntitySetTagId(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagId) {
   MapEditorData *data = mapEditor->data;
   Entity *entity = &data->map->entities[entityNum];
   Frac_tag *tag = &entity->tags[tagNum];
   tag->id = newTagId;
   mapEditorSetSaveStatus(mapEditor, UNSAVED);
-}
-
-UBYTE mapEditorEntityGetTagValue(MapEditorData *data, UWORD entityNum, int tagNum) {
-  Entity *entity = &data->map->entities[entityNum];
-  Frac_tag *tag = &entity->tags[tagNum];
-  return tag->value;
 }
 
 void mapEditorEntitySetTagValue(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagValue) {

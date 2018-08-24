@@ -12,7 +12,7 @@ MENU_HEADERS= projectmenu.h mapmenu.h entitiesmenu.h musicmenu.h
 DATA_OBJS=    easystructs.o
 DATA_HEADERS= easystructs.h
 
-OTHER_OBJS= MapEditorGadgets.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o
+OTHER_OBJS= MapEditorData.o MapEditorGadgets.o MapEditor.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o
 WINDOW_OBJS= ProjectWindow.o SongNamesEditor.o EntityNamesEditor.o
 WINDOW_DATA_OBJS= ProjectWindowData.o
 
@@ -24,6 +24,8 @@ $(OBJS)
 <
 
 main.o: main.c framework/runstate.h framework/screen.h palette.h ProjectWindow.h
+
+MapEditorData.o: MapEditorData.c MapEditorData.h MapEditorConstants.h
 
 MapEditorGadgets.o: MapEditorGadgets.c MapEditorGadgets.h Map.h MapEditor.h MapEditorConstants.h framework/Gadgets.h
 

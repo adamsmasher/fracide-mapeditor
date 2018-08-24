@@ -21,6 +21,7 @@
 
 #include "map.h"
 #include "MapEditor.h"
+#include "MapEditorData.h"
 #include "Result.h"
 
 #define ENTITY_BROWSER_WIDTH  350
@@ -100,7 +101,7 @@ static Result createEntityLabels(FrameworkWindow *entityBrowser) {
   /* TODO: free the old labels if necessary */
   EntityBrowserData *data = entityBrowser->data;
   MapEditorData *mapEditorData = entityBrowser->parent->data;
-  UWORD entityCount = mapEditorEntityCount(mapEditorData);
+  UWORD entityCount = mapEditorDataGetEntityCount(mapEditorData);
   int i;
 
   NewList(&data->entityLabels);
@@ -163,7 +164,7 @@ static Result createTagLabels(FrameworkWindow *entityBrowser) {
   FrameworkWindow *parent = entityBrowser->parent;
   MapEditorData *mapEditorData = parent->data;
   int tagCnt = data->selectedEntity ? 
-    mapEditorEntityGetTagCount(mapEditorData, data->selectedEntity - 1) :
+    mapEditorDataEntityGetTagCount(mapEditorData, data->selectedEntity - 1) :
     0;
   int i;
 
@@ -188,7 +189,7 @@ static Result createTagLabels(FrameworkWindow *entityBrowser) {
   }
 
   for(i = 0; i < tagCnt; i++) {
-    sprintf(data->tagStrings[i], "%d: %s", i, mapEditorEntityGetTagAlias(mapEditorData, data->selectedEntity - 1, i));
+    sprintf(data->tagStrings[i], "%d: %s", i, mapEditorDataEntityGetTagAlias(mapEditorData, data->selectedEntity - 1, i));
     data->tagNodes[i].ln_Name = data->tagStrings[i];
     AddTail(&data->tagLabels, &data->tagNodes[i]);
   }
@@ -233,17 +234,17 @@ static void entityBrowserSelectTag(FrameworkWindow *entityBrowser, UWORD entityN
     TAG_END);
 
   GT_SetGadgetAttrs(data->tagAliasGadget, entityBrowser->intuitionWindow, NULL,
-    GTST_String, mapEditorEntityGetTagAlias(mapEditorData, entityNum, tagNum),
+    GTST_String, mapEditorDataEntityGetTagAlias(mapEditorData, entityNum, tagNum),
     GA_Disabled, FALSE,
     TAG_END);
 
   GT_SetGadgetAttrs(data->tagIdGadget, entityBrowser->intuitionWindow, NULL,
-    GTIN_Number, mapEditorEntityGetTagId(mapEditorData, entityNum, tagNum),
+    GTIN_Number, mapEditorDataEntityGetTagId(mapEditorData, entityNum, tagNum),
     GA_Disabled, FALSE,
     TAG_END);
 
   GT_SetGadgetAttrs(data->tagValueGadget, entityBrowser->intuitionWindow, NULL,
-    GTIN_Number, mapEditorEntityGetTagValue(mapEditorData, entityNum, tagNum),
+    GTIN_Number, mapEditorDataEntityGetTagValue(mapEditorData, entityNum, tagNum),
     GA_Disabled, FALSE,
     TAG_END);
 }
@@ -302,21 +303,21 @@ static void entityBrowserSelectEntity(FrameworkWindow *entityBrowser, int entity
 
   GT_SetGadgetAttrs(data->rowGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, FALSE,
-    GTIN_Number, mapEditorGetEntityRow(mapEditorData, entityNum),
+    GTIN_Number, mapEditorDataGetEntityRow(mapEditorData, entityNum),
     TAG_END);
 
   GT_SetGadgetAttrs(data->colGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, FALSE,
-    GTIN_Number, mapEditorGetEntityCol(mapEditorData, entityNum),
+    GTIN_Number, mapEditorDataGetEntityCol(mapEditorData, entityNum),
     TAG_END);
 
   GT_SetGadgetAttrs(data->VRAMSlotGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, FALSE,
-    GTIN_Number, mapEditorGetEntityVRAMSlot(mapEditorData, entityNum),
+    GTIN_Number, mapEditorDataGetEntityVRAMSlot(mapEditorData, entityNum),
     TAG_END);
 
   GT_SetGadgetAttrs(data->addTagGadget, entityBrowser->intuitionWindow, NULL,
-    GA_Disabled, mapEditorEntityGetTagCount(mapEditorData, entityNum) >= MAX_TAGS_PER_ENTITY,
+    GA_Disabled, mapEditorDataEntityGetTagCount(mapEditorData, entityNum) >= MAX_TAGS_PER_ENTITY,
     TAG_END);
 
   GT_SetGadgetAttrs(data->chooseEntityGadget, entityBrowser->intuitionWindow, NULL,
@@ -363,7 +364,7 @@ static void onAddEntityClick(FrameworkWindow *entityBrowser) {
   EntityBrowserData *entityBrowserData = entityBrowser->data;
   FrameworkWindow *mapEditor = entityBrowser->parent;
   MapEditorData *mapEditorData = mapEditor->data;
-  UWORD entityCount = mapEditorEntityCount(mapEditorData);
+  UWORD entityCount = mapEditorDataGetEntityCount(mapEditorData);
   UWORD newEntityIdx;
 
   mapEditorAddNewEntity(mapEditor);
@@ -433,7 +434,7 @@ static void onAddTagClick(FrameworkWindow *entityBrowser) {
   FrameworkWindow *parent = entityBrowser->parent;
   MapEditorData *mapEditorData = parent->data;
   UWORD entityIdx = data->selectedEntity - 1;
-  UWORD entityTagCount = mapEditorEntityGetTagCount(mapEditorData, entityIdx);
+  UWORD entityTagCount = mapEditorDataEntityGetTagCount(mapEditorData, entityIdx);
   UWORD newTagIdx;
 
   mapEditorEntityAddNewTag(parent, entityIdx);

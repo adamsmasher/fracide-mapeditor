@@ -16,6 +16,7 @@
 #include "easystructs.h"
 #include "entitiesmenu.h"
 #include "MapEditor.h"
+#include "MapEditorData.h"
 #include "mapmenu.h"
 #include "MapRequester.h"
 #include "musicmenu.h"
@@ -488,7 +489,7 @@ static FrameworkWindow *findMapEditor(FrameworkWindow *projectWindow, int mapNum
   while(i) {
     if(isMapEditor(i)) {
       MapEditorData *data = i->data;
-      if(mapEditorGetMapNum(data) == mapNum) {
+      if(mapEditorDataGetMapNum(data) == mapNum) {
         return i;
       }
     }
@@ -532,7 +533,7 @@ void refreshAllSongDisplays(FrameworkWindow *projectWindow) {
     if(isMapEditor(i)) {
       /* TODO: make this a function on map requesters */
       MapEditorData *data = i->data;
-      if(mapEditorHasSongRequester(data)) {
+      if(mapEditorDataHasSongRequester(data)) {
         /* GT_RefreshWindow(data->songRequester->window->intuitionWindow, NULL); */
       }
       mapEditorRefreshSong(i);
@@ -547,7 +548,7 @@ void refreshAllEntityBrowsers(FrameworkWindow *projectWindow) {
     if(isMapEditor(i)) {
       /* TODO: make this a function on map requesters */
       MapEditorData *data = i->data;
-      if(mapEditorHasEntityBrowser(data)) {
+      if(mapEditorDataHasEntityBrowser(data)) {
         /* GT_RefreshWindow(data->entityBrowser->window->intuitionWindow, NULL); */
       }
     }

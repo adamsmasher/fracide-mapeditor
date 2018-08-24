@@ -19,6 +19,7 @@
 #include "framework/screen.h"
 #include "framework/window.h"
 
+#include "MapEditor.h"
 #include "ProjectWindowData.h"
 
 #define SONG_REQUESTER_WIDTH      200

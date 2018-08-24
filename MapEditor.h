@@ -10,8 +10,6 @@
 #include "TilesetRequester.h"
 #include "Map.h"
 
-typedef struct MapEditorData_tag MapEditorData;
-
 FrameworkWindow *newMapEditorNewMap(FrameworkWindow *parent);
 FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map*, int mapNum);
 
@@ -27,10 +25,6 @@ void mapEditorMapUpClicked(FrameworkWindow*);
 void mapEditorMapDownClicked(FrameworkWindow*);
 void mapEditorEntitiesClicked(FrameworkWindow*);
 
-BOOL mapEditorHasSongRequester(MapEditorData*);
-BOOL mapEditorHasEntityBrowser(MapEditorData*);
-
-UWORD mapEditorGetMapNum(MapEditorData*);
 void mapEditorSetMapNum(FrameworkWindow *mapEditor, UWORD mapNum);
 
 void mapEditorSetTileset(FrameworkWindow *mapEditor, UWORD tilesetNum);
@@ -40,22 +34,14 @@ void mapEditorUpdateTileDisplays(FrameworkWindow *mapEditor);
 void mapEditorSetSong(FrameworkWindow *mapEditor, UWORD songNum);
 void mapEditorRefreshSong(FrameworkWindow *mapEditor);
 
-UWORD mapEditorEntityCount(MapEditorData*);
 void mapEditorAddNewEntity(FrameworkWindow *mapEditor);
 void mapEditorRemoveEntity(FrameworkWindow *mapEditor, UWORD entityNum);
-UBYTE mapEditorGetEntityRow(MapEditorData*, UWORD entityNum);
-UBYTE mapEditorGetEntityCol(MapEditorData*, UWORD entityNum);
-UBYTE mapEditorGetEntityVRAMSlot(MapEditorData*, UWORD entityNum);
 void mapEditorSetEntityRow(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE row);
 void mapEditorSetEntityCol(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE col);
 void mapEditorSetEntityVRAMSlot(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE vramSlot);
 
 void mapEditorEntityAddNewTag(FrameworkWindow *mapEditor, UWORD entityNum);
 void mapEditorEntityDeleteTag(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum);
-int mapEditorEntityGetTagCount(MapEditorData*, UWORD entityNum);
-const char *mapEditorEntityGetTagAlias(MapEditorData*, UWORD entityNum, int tagNum);
-UBYTE mapEditorEntityGetTagId(MapEditorData*, UWORD entityNum, int tagNum);
-UBYTE mapEditorEntityGetTagValue(MapEditorData*, UWORD entityNum, int tagNum);
 void mapEditorEntitySetTagAlias(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, const char *newTagAlias);
 void mapEditorEntitySetTagId(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagId);
 void mapEditorEntitySetTagValue(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagValue);
