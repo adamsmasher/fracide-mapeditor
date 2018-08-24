@@ -27,7 +27,7 @@ main.o: main.c framework/runstate.h framework/screen.h palette.h ProjectWindow.h
 
 MapEditorGadgets.o: MapEditorGadgets.c MapEditorGadgets.h Map.h MapEditor.h MapEditorConstants.h framework/Gadgets.h
 
-MapEditor.o: MapEditor.c MapEditor.h MapRequester.h SongRequester.h tilesetRequester.h map.h EntityBrowser.h
+MapEditor.o: MapEditor.c MapEditor.h MapEditorData.h MapRequester.h SongRequester.h tilesetRequester.h map.h EntityBrowser.h
 
 TilesetPackage.o: TilesetPackage.c
 
