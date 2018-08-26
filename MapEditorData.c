@@ -63,12 +63,19 @@ void mapEditorDataInitImages(MapEditorData *data) {
   }
 }
 
-void mapEditorDataUpdateTitle(MapEditorData *data) {
+static void mapEditorDataUpdateTitle(MapEditorData *data) {
   char unsaved = data->saveStatus == SAVED ? '\0' : '*';
   if(data->mapNum) {
     sprintf(data->title, "Map %d%c", data->mapNum - 1, unsaved);
   } else {
     sprintf(data->title, "Map Editor%c", unsaved);
+  }
+}
+
+void mapEditorDataSetSaveStatus(MapEditorData *data, SaveStatus saveStatus) {
+  if(saveStatus != data->saveStatus) {
+    data->saveStatus = saveStatus;
+    mapEditorDataUpdateTitle(data);
   }
 }
 

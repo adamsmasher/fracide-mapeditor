@@ -97,22 +97,19 @@ static void disableMapRevert(FrameworkWindow *mapEditor) {
 
 static void updateMapEditorTitle(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
-  /* TODO: this should happen automatically */
-  mapEditorDataUpdateTitle(data);
   SetWindowTitles(mapEditor->intuitionWindow, data->title, (STRPTR)-1);
 }
 
 static void mapEditorSetSaveStatus(FrameworkWindow *mapEditor, SaveStatus saveStatus) {
   MapEditorData *data = mapEditor->data;
-  if(saveStatus != data->saveStatus) {
-    data->saveStatus = saveStatus;
-    if(saveStatus == SAVED) {
-      disableMapRevert(mapEditor);
-    } else {
-      enableMapRevert(mapEditor);
-    }
-    updateMapEditorTitle(mapEditor);
+  /* TODO: this should happen automatically */
+  mapEditorDataSetSaveStatus(data, saveStatus);
+  if(saveStatus == SAVED) {
+    disableMapRevert(mapEditor);
+  } else {
+    enableMapRevert(mapEditor);
   }
+  updateMapEditorTitle(mapEditor);
 }
 
 static int saveMapRequester(FrameworkWindow *mapEditor) {

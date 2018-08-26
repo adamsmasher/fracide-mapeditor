@@ -36,7 +36,7 @@ void mapEditorDataInitImages(MapEditorData*);
 void *mapEditorDataGetImageDataForTile(MapEditorData*, UBYTE tile);
 
 /* TODO: this should happen automatically on state changes */
-void mapEditorDataUpdateTitle(MapEditorData*);
+void mapEditorDataSetSaveStatus(MapEditorData*, SaveStatus);
 
 UWORD mapEditorDataGetMapNum(MapEditorData*);
 
