@@ -1,6 +1,15 @@
 #include "MapEditorData.h"
 
-void mapEditorDataInitPaletteImages(MapEditorData *data) {
+#include <exec/exec.h>
+#include <proto/exec.h>
+
+#include <stdlib.h>
+
+#include "TilesetPackage.h"
+
+#define IMAGE_DATA_SIZE (TILES_PER_SET * 256)
+
+static void mapEditorDataInitPaletteImages(MapEditorData *data) {
   int top, left, row, col;
   struct Image *i = data->paletteImages;
   UWORD *imageData = data->imageData;
@@ -28,7 +37,7 @@ void mapEditorDataInitPaletteImages(MapEditorData *data) {
   data->paletteImages[31].NextImage = NULL;
 }
 
-void mapEditorDataInitMapImages(MapEditorData *data) {
+static void mapEditorDataInitMapImages(MapEditorData *data) {
   int top, left, row, col;
   struct Image *i = data->mapImages;
   UWORD *imageData = data->imageData;
@@ -61,6 +70,38 @@ void mapEditorDataInitImages(MapEditorData *data) {
   for(i = 0; i < MAP_TILES_HIGH * MAP_TILES_WIDE; i++) {
     data->mapImages[i].ImageData = mapEditorDataGetImageDataForTile(data, map->tiles[i]);
   }
+}
+
+MapEditorData *newMapEditorData(void) {
+  MapEditorData *data = malloc(sizeof(MapEditorData));
+  if(!data) {
+    fprintf(stderr, "newMapEditorData: failed to allocate MapEditorData\n");
+    goto error;
+  }
+
+  data->imageData = AllocMem(IMAGE_DATA_SIZE, MEMF_CHIP);
+  if(!data->imageData) {
+    fprintf(stderr, "newMapEditorData: failed to allocate image data\n");
+    goto error_freeData;
+  }
+  mapEditorDataInitPaletteImages(data);
+  mapEditorDataInitMapImages(data);
+
+  data->tilesetRequester = NULL;
+  data->songRequester    = NULL;
+  data->entityBrowser    = NULL;
+  data->selected         = -1;
+
+  return data;
+error_freeData:
+  free(data);
+error:
+  return NULL;
+}
+
+void freeMapEditorData(MapEditorData* data) {
+  /* TODO: free other things as well */
+  FreeMem(data->imageData, IMAGE_DATA_SIZE);
 }
 
 static void mapEditorDataUpdateTitle(MapEditorData *data) {

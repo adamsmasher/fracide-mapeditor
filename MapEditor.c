@@ -673,8 +673,6 @@ BOOL isMapEditor(FrameworkWindow *window) {
   return (BOOL)(window->kind == &mapEditorKind);
 }
 
-#define IMAGE_DATA_SIZE (TILES_PER_SET * 256)
-
 static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
   sizeof(struct EasyStruct),
   0,
@@ -818,47 +816,32 @@ static FrameworkWindow *newMapEditor(FrameworkWindow *parent) {
   FrameworkWindow *mapEditor;
   struct Gadget *gadgets;
 
-  MapEditorData *data = malloc(sizeof(MapEditorData));
+  MapEditorData *data = newMapEditorData();
   if(!data) {
     fprintf(stderr, "newMapEditor: failed to allocate MapEditorData\n");
     goto error;
   }
 
-  data->imageData = AllocMem(IMAGE_DATA_SIZE, MEMF_CHIP);
-  if(!data->imageData) {
-    fprintf(stderr, "newMapEditor: failed to allocate image data\n");
-    goto error_freeData;
-  }
-  mapEditorDataInitPaletteImages(data);
-  mapEditorDataInitMapImages(data);
-
   gadgets = initMapEditorGadgets(&data->gadgets);
   if(!gadgets) {
     fprintf(stderr, "newMapEditor: failed to create gadgets\n");
-    goto error_freeImageData;
+    goto error_freeData;
   }
 
   mapEditor = openChildWindow(parent, &mapEditorKind, gadgets);
   if(!mapEditor) {
     fprintf(stderr, "newMapEditor: failed to open window\n");
-    goto error_freeImageData;
+    goto error_freeData;
   }
 
   refreshMapEditor(mapEditor);
-
-  data->tilesetRequester = NULL;
-  data->songRequester    = NULL;
-  data->entityBrowser    = NULL;
-  data->selected         = -1;
 
   mapEditor->data = data;
 
   return mapEditor;
 
-error_freeImageData:
-  FreeMem(data->imageData, IMAGE_DATA_SIZE);
 error_freeData:
-  free(data);
+  freeMapEditorData(data);
 error:
     return NULL;
 }
@@ -920,6 +903,7 @@ FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, int mapN
   data->map = mapCopy;
 
   if(data->map->tilesetNum) {
+    /* TODO: there should be a way for new to do this */
     mapEditorDataInitImages(data);
     mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1);
   }

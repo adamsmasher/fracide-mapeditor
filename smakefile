@@ -25,7 +25,7 @@ $(OBJS)
 
 main.o: main.c framework/runstate.h framework/screen.h palette.h ProjectWindow.h
 
-MapEditorData.o: MapEditorData.c MapEditorData.h MapEditorConstants.h
+MapEditorData.o: MapEditorData.c MapEditorData.h MapEditorConstants.h TilesetPackage.h
 
 MapEditorGadgets.o: MapEditorGadgets.c MapEditorGadgets.h Map.h MapEditor.h MapEditorConstants.h framework/Gadgets.h
 

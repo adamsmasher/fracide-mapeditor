@@ -30,8 +30,10 @@ typedef struct MapEditorData_tag {
   char title[16];
 } MapEditorData;
 
-void mapEditorDataInitPaletteImages(MapEditorData*);
-void mapEditorDataInitMapImages(MapEditorData*);
+MapEditorData *newMapEditorData(void);
+void freeMapEditorData(MapEditorData*);
+
+/* TODO: there should be a way for new to do this */
 void mapEditorDataInitImages(MapEditorData*);
 void *mapEditorDataGetImageDataForTile(MapEditorData*, UBYTE tile);
 
