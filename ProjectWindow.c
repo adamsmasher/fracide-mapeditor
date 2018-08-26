@@ -14,25 +14,12 @@
 #include "framework/screen.h"
 
 #include "easystructs.h"
-#include "entitiesmenu.h"
 #include "MapEditor.h"
 #include "MapEditorData.h"
-#include "mapmenu.h"
 #include "MapRequester.h"
-#include "musicmenu.h"
 #include "Project.h"
-#include "projectmenu.h"
 #include "ProjectWindowData.h"
-
-static MenuSpec mainMenuSpec[] = {
-  { "Project",  &projectMenuSpec  },
-  { "Maps",     &mapMenuSpec      },
-  { "Entities", &entitiesMenuSpec },
-  { "Music",    &musicMenuSpec    },
-  END_MENUS
-};
-
-#define REVERT_PROJECT_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
+#include "ProjectWindowMenu.h"
 
 /* displays a message warning that the current project isn't saved in
    response to a destructive action (like quiting, or opening a new project) */
@@ -93,6 +80,7 @@ static BOOL ensureEverythingSaved(FrameworkWindow *projectWindow) {
   return (BOOL)(ensureMapEditorsSaved(projectWindow) && ensureProjectSaved(projectWindow));
 }
 
+/* TODO: makes me sad we can't just put the window in here */
 static WindowKind projectWindowKind = {
   {
     0,0, -1, -1,
@@ -108,7 +96,7 @@ static WindowKind projectWindowKind = {
     0xFFFF,0xFFFF,
     CUSTOMSCREEN
   },
-  (MenuSpec*)        mainMenuSpec,
+  (MenuSpec*)        NULL, /* set before creation */
   (RefreshFunction)  NULL,
   (CanCloseFunction) ensureEverythingSaved,
   (CloseFunction)    onClose,
@@ -133,6 +121,8 @@ FrameworkWindow *openProjectWindow(void) {
     goto error;
   }
 
+  projectWindowKind.menuSpec = projectWindowMenuSpec;
+
   projectWindow = openWindowOnGlobalScreen(&projectWindowKind, NULL);
   if(!projectWindow) {
     fprintf(stderr, "openProjectWindow: failed to open window!\n");
@@ -153,12 +143,12 @@ error:
 
 static void setProjectFilename(FrameworkWindow *projectWindow, char *filename) {
   setProjectDataFilename(projectWindow->data, filename);
-  OnMenu(projectWindow->intuitionWindow, REVERT_PROJECT_MENU_ITEM);
+  projectWindowMenuEnableRevertProject(projectWindow);
 }
 
 static void clearProjectFilename(FrameworkWindow *projectWindow) {
   clearProjectDataFilename(projectWindow->data);
-  OffMenu(projectWindow->intuitionWindow, REVERT_PROJECT_MENU_ITEM);
+  projectWindowMenuDisableRevertProject(projectWindow);
 }
 
 static BOOL saveProjectToAsl(FrameworkWindow *projectWindow, char *dir, char *file) {
