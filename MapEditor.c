@@ -97,13 +97,8 @@ static void disableMapRevert(FrameworkWindow *mapEditor) {
 
 static void updateMapEditorTitle(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
-
-  char unsaved = data->saveStatus == SAVED ? '\0' : '*';
-  if(data->mapNum) {
-    sprintf(data->title, "Map %d%c", data->mapNum - 1, unsaved);
-  } else {
-    sprintf(data->title, "Map Editor%c", unsaved);
-  }
+  /* TODO: this should happen automatically */
+  mapEditorDataUpdateTitle(data);
   SetWindowTitles(mapEditor->intuitionWindow, data->title, (STRPTR)-1);
 }
 

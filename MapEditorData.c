@@ -63,6 +63,15 @@ void mapEditorDataInitImages(MapEditorData *data) {
   }
 }
 
+void mapEditorDataUpdateTitle(MapEditorData *data) {
+  char unsaved = data->saveStatus == SAVED ? '\0' : '*';
+  if(data->mapNum) {
+    sprintf(data->title, "Map %d%c", data->mapNum - 1, unsaved);
+  } else {
+    sprintf(data->title, "Map Editor%c", unsaved);
+  }
+}
+
 /* results are undefined if the map editor does not have a map */
 UWORD mapEditorDataGetMapNum(MapEditorData *data) {
   return (UWORD)(data->mapNum - 1);

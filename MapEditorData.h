@@ -35,6 +35,9 @@ void mapEditorDataInitMapImages(MapEditorData*);
 void mapEditorDataInitImages(MapEditorData*);
 void *mapEditorDataGetImageDataForTile(MapEditorData*, UBYTE tile);
 
+/* TODO: this should happen automatically on state changes */
+void mapEditorDataUpdateTitle(MapEditorData*);
+
 UWORD mapEditorDataGetMapNum(MapEditorData*);
 
 BOOL mapEditorDataHasSongRequester(MapEditorData*);
