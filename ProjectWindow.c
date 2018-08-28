@@ -42,7 +42,7 @@ static BOOL unsavedProjectAlert(FrameworkWindow *projectWindow) {
       return FALSE;
     case 1:
       /* save - if the save was a success returns TRUE */
-      return saveProject(projectWindow);
+      return projectWindowSaveProject(projectWindow);
     case 2:
       /* don't save - proceed anyway, so we return TRUE */
       return TRUE;
@@ -109,7 +109,7 @@ static void makeWindowFullScreen(void) {
   newWindow->MinHeight = newWindow->Height = getScreenHeight();
 }
 
-FrameworkWindow *openProjectWindow(void) {
+FrameworkWindow *newProjectWindow(void) {
   FrameworkWindow *projectWindow;
   ProjectWindowData *data;
 
@@ -117,7 +117,7 @@ FrameworkWindow *openProjectWindow(void) {
 
   data = createProjectData();
   if(!data) {
-    fprintf(stderr, "openProjectWindow: failed to allocate data\n");
+    fprintf(stderr, "newProjectWindow: failed to allocate data\n");
     goto error;
   }
 
@@ -125,7 +125,7 @@ FrameworkWindow *openProjectWindow(void) {
 
   projectWindow = openWindowOnGlobalScreen(&projectWindowKind, NULL);
   if(!projectWindow) {
-    fprintf(stderr, "openProjectWindow: failed to open window!\n");
+    fprintf(stderr, "newProjectWindow: failed to open window!\n");
     goto error_freeData;
   }
 
@@ -198,7 +198,7 @@ error:
   return FALSE;
 }
 
-BOOL saveProjectAs(FrameworkWindow *projectWindow) {
+BOOL projectWindowSaveProjectAs(FrameworkWindow *projectWindow) {
   BOOL result;
   struct FileRequester *request; 
 
@@ -208,7 +208,7 @@ BOOL saveProjectAs(FrameworkWindow *projectWindow) {
     ASL_FuncFlags, FILF_SAVE,
     TAG_END);
   if(!request) {
-    fprintf(stderr, "saveProjectAs: couldn't allocate asl request tags\n");
+    fprintf(stderr, "projectWindowSaveProjectAs: couldn't allocate asl request tags\n");
     goto error;
   }
 
@@ -224,7 +224,7 @@ error:
   return FALSE;
 }
 
-BOOL saveProject(FrameworkWindow *projectWindow) {
+BOOL projectWindowSaveProject(FrameworkWindow *projectWindow) {
   ProjectWindowData *data = projectWindow->data;
   char *filename = projectDataGetFilename(data);
 
@@ -238,7 +238,7 @@ BOOL saveProject(FrameworkWindow *projectWindow) {
       goto error;
     }
   } else {
-    return saveProjectAs(projectWindow);
+    return projectWindowSaveProjectAs(projectWindow);
   }
 
 done:
@@ -328,14 +328,14 @@ done:
     return;
 }
 
-void newProject(FrameworkWindow *projectWindow) {
+void projectWindowNewProject(FrameworkWindow *projectWindow) {
   if(ensureEverythingSaved(projectWindow)) {
     projectDataInitProject(projectWindow->data);
     clearProjectFilename(projectWindow);
   }
 }
 
-void openProject(FrameworkWindow *projectWindow) {
+void projectWindowOpenProject(FrameworkWindow *projectWindow) {
   struct FileRequester *request;
 
   if(!ensureEverythingSaved(projectWindow)) {
@@ -368,7 +368,7 @@ static int confirmRevertProject(FrameworkWindow *projectWindow) {
     NULL);
 }
 
-void revertProject(FrameworkWindow *projectWindow) {
+void projectWindowRevertProject(FrameworkWindow *projectWindow) {
   if(!confirmRevertProject(projectWindow)) {
     goto done;
   }
@@ -411,13 +411,13 @@ error:
   return FALSE;
 }
 
-void selectTilesetPackage(FrameworkWindow *projectWindow) {
+void projectWindowSelectTilesetPackage(FrameworkWindow *projectWindow) {
   struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
     ASL_Hail, "Select Tileset Package",
     ASL_Window, projectWindow->intuitionWindow,
     TAG_END);
   if(!request) {
-    fprintf(stderr, "selectTilesetPackage: failed to allocate requester\n");
+    fprintf(stderr, "projectWindowSelectTilesetPackage: failed to allocate requester\n");
     goto error;
   }
 
@@ -435,7 +435,7 @@ error:
   return;
 }
 
-void quit(FrameworkWindow *projectWindow) {
+void projectWindowQuit(FrameworkWindow *projectWindow) {
   tryToCloseWindow(projectWindow);
 }
 
@@ -447,7 +447,7 @@ static int confirmCreateMap(FrameworkWindow *projectWindow, int mapNum) {
     mapNum);
 }
 
-BOOL openMapNum(FrameworkWindow *projectWindow, int mapNum) {
+BOOL projectWindowOpenMapNum(FrameworkWindow *projectWindow, int mapNum) {
   FrameworkWindow *mapEditor;
 
   if(!projectDataHasMap(projectWindow->data, mapNum)) {
@@ -456,14 +456,14 @@ BOOL openMapNum(FrameworkWindow *projectWindow, int mapNum) {
     }
 
     if(!projectDataCreateMap(projectWindow->data, mapNum)) {
-      fprintf(stderr, "openMapNum: failed to create map\n");
+      fprintf(stderr, "projectWindowOpenMapNum: failed to create map\n");
       goto error;
     }
   }
 
   mapEditor = newMapEditorWithMap(projectWindow, projectDataGetMap(projectWindow->data, mapNum), mapNum);
   if(!mapEditor) {
-    fprintf(stderr, "openMapNum: failed to create new map editor\n");
+    fprintf(stderr, "projectWindowOpenMapNum: failed to create new map editor\n");
     goto error;
   }
 
@@ -488,10 +488,10 @@ static FrameworkWindow *findMapEditor(FrameworkWindow *projectWindow, int mapNum
   return NULL;
 }
 
-void newMap(FrameworkWindow *projectWindow) {
+void projectWindowNewMap(FrameworkWindow *projectWindow) {
   FrameworkWindow *mapEditor = newMapEditorNewMap(projectWindow);
   if(!mapEditor) {
-    fprintf(stderr, "newMap: failed to create mapEditor\n");
+    fprintf(stderr, "projectWindowNewMap: failed to create mapEditor\n");
     return;
   }
 }
@@ -500,7 +500,7 @@ static int openMapRequester(FrameworkWindow *projectWindow) {
   return spawnMapRequester(projectWindow, "Open Map");
 }
 
-void openMap(FrameworkWindow *projectWindow) {
+void projectWindowOpenMap(FrameworkWindow *projectWindow) {
   FrameworkWindow *mapEditor;
 
   int selected = openMapRequester(projectWindow);
@@ -513,7 +513,7 @@ void openMap(FrameworkWindow *projectWindow) {
   if(mapEditor) {
     WindowToFront(mapEditor->intuitionWindow);
   } else {
-    openMapNum(projectWindow, selected);
+    projectWindowOpenMapNum(projectWindow, selected);
   }
 }
 

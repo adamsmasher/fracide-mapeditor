@@ -5,21 +5,21 @@
 
 #include "framework/Window.h"
 
-FrameworkWindow *openProjectWindow(void);
+FrameworkWindow *newProjectWindow(void);
 
-void newProject(FrameworkWindow *projectWindow);
-BOOL saveProject(FrameworkWindow *projectWindow);
-BOOL saveProjectAs(FrameworkWindow *projectWindow);
-void openProject(FrameworkWindow *projectWindow);
-void revertProject(FrameworkWindow *projectWindow);
-void selectTilesetPackage(FrameworkWindow *projectWindow);
-void quit(FrameworkWindow *projectWindow);
+void projectWindowNewProject(FrameworkWindow*);
+BOOL projectWindowSaveProject(FrameworkWindow*);
+BOOL projectWindowSaveProjectAs(FrameworkWindow*);
+void projectWindowOpenProject(FrameworkWindow*);
+void projectWindowRevertProject(FrameworkWindow*);
+void projectWindowSelectTilesetPackage(FrameworkWindow*);
+void projectWindowQuit(FrameworkWindow*);
 
-void newMap(FrameworkWindow *projectWindow);
-void openMap(FrameworkWindow *projectWindow);
-BOOL openMapNum(FrameworkWindow *projectWindow, int mapNum);
+void projectWindowNewMap(FrameworkWindow*);
+void projectWindowOpenMap(FrameworkWindow*);
+BOOL projectWindowOpenMapNum(FrameworkWindow*, int mapNum);
 
-void refreshAllSongDisplays(FrameworkWindow *projectWindow);
-void refreshAllEntityBrowsers(FrameworkWindow *projectWindow);
+void projectWindowRefreshAllSongDisplays(FrameworkWindow*);
+void projectWindowRefreshAllEntityBrowsers(FrameworkWindow*);
 
 #endif

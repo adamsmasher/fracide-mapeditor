@@ -31,7 +31,7 @@ int main(void) {
 
   initPalette(getGlobalViewPort());
 
-  projectWindow = openProjectWindow();
+  projectWindow = newProjectWindow();
   if(!projectWindow) {
     errorCode = -2;
     goto error_closeScreen;

@@ -41,7 +41,7 @@
 
 void mapEditorNewMap(FrameworkWindow *mapEditor) {
   FrameworkWindow *projectWindow = mapEditor->parent;
-  newMap(projectWindow);
+  projectWindowNewMap(projectWindow);
 }
 
 void mapEditorOpenMap(FrameworkWindow *mapEditor) {
@@ -148,7 +148,7 @@ void mapEditorRevertMap(FrameworkWindow *mapEditor) {
     FrameworkWindow *projectWindow = mapEditor->parent;
     MapEditorData *data = mapEditor->data;
     mapEditor->closed = 1;
-    openMapNum(projectWindow, data->mapNum - 1);
+    projectWindowOpenMapNum(projectWindow, data->mapNum - 1);
   }
 }
 
@@ -245,7 +245,7 @@ void mapEditorChooseTilesetClicked(FrameworkWindow *mapEditor) {
       NULL);
 
     if(choice) {
-      selectTilesetPackage(projectWindow);
+      projectWindowSelectTilesetPackage(projectWindow);
     }
   }
 
@@ -326,7 +326,7 @@ static void moveToMap(FrameworkWindow *mapEditor, int mapNum) {
   FrameworkWindow *projectWindow = mapEditor->parent;
 
   if(ensureMapEditorSaved(mapEditor)) {
-    if(openMapNum(projectWindow, mapNum - 1)) {
+    if(projectWindowOpenMapNum(projectWindow, mapNum - 1)) {
       mapEditor->closed = 1;
     }
   }
