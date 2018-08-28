@@ -6,17 +6,18 @@
 
 FRAMEWORK_OBJS= framework/font.o framework/GadgetEvents.o framework/gadgets.o framework/menu.o framework/menubuild.o framework/runstate.o framework/screen.o framework/window.o
 
-MENU_OBJS=    projectmenu.o mapmenu.o entitiesmenu.o musicmenu.o MapEditorMenu.o
-MENU_HEADERS= projectmenu.h mapmenu.h entitiesmenu.h musicmenu.h MapEditorMenu.h
+PROJECT_WINDOW_MENU_OBJS= projectmenu.o mapmenu.o entitiesmenu.o musicmenu.o ProjectWindowMenu.o
+PROJECT_WINDOW_OBJS= $(PROJECT_WINDOW_MENU_OBJS) ProjectWindow.o ProjectWindowData.o
+
+MAP_EDITOR_OBJS= MapEditor.o MapEditorData.o MapEditorGadgets.o MapEditorMenu.o
 
 DATA_OBJS=    easystructs.o
 DATA_HEADERS= easystructs.h
 
-OTHER_OBJS= MapEditorGadgets.o main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o ProjectWindowMenu.o
-WINDOW_OBJS= MapEditor.o ProjectWindow.o SongNamesEditor.o EntityNamesEditor.o
-WINDOW_DATA_OBJS= MapEditorData.o ProjectWindowData.o
+OTHER_OBJS= main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o
+WINDOW_OBJS= SongNamesEditor.o EntityNamesEditor.o
 
-OBJS= $(FRAMEWORK_OBJS) $(MENU_OBJS) $(DATA_OBJS) $(OTHER_OBJS) $(WINDOW_OBJS) $(WINDOW_DATA_OBJS)
+OBJS= $(FRAMEWORK_OBJS) $(PROJECT_WINDOW_OBJS) $(MAP_EDITOR_OBJS) $(DATA_OBJS) $(OTHER_OBJS) $(WINDOW_OBJS)
 
 mapedit: $(OBJS)
    sc link to mapedit with <<
@@ -86,4 +87,8 @@ framework/screen.o: framework/screen.c framework/screen.h framework/window.h
 framework/Window.o: framework/window.c framework/window.h framework/GadgetEvents.h framework/menu.h framework/menubuild.h
 
 clean:
-    delete mapedit mapedit.lnk $(OBJS)
+    -delete mapedit mapedit.lnk
+    -delete $(FRAMEWORK_OBJS)
+    -delete $(PROJECT_WINDOW_OBJS)
+    -delete $(MAP_EDITOR_OBJS)
+    -delete $(DATA_OBJS) $(OTHER_OBJS) $(WINDOW_OBJS)
