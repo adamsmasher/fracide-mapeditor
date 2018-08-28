@@ -28,6 +28,7 @@
 #include "MapEditorConstants.h"
 #include "MapEditorData.h"
 #include "MapEditorGadgets.h"
+#include "MapEditorMenu.h"
 #include "MapRequester.h"
 #include "ProjectWindow.h"
 #include "ProjectWindowData.h"
@@ -38,61 +39,22 @@
 #define MAP_EDITOR_WIDTH  536
 #define MAP_EDITOR_HEIGHT 384
 
-static void newMapMenuItemClicked(FrameworkWindow*);
-static void openMapMenuItemClicked(FrameworkWindow*);
-static BOOL saveMap(FrameworkWindow*);
-static BOOL saveMapAs(FrameworkWindow*);
-static void revertMap(FrameworkWindow*);
-
-static MenuSectionSpec newSection =
-  { { "New", "N", MENU_ITEM_ENABLED, newMapMenuItemClicked },
-    END_SECTION };
-
-static MenuSectionSpec openSection =
-  { { "Open", "O", MENU_ITEM_ENABLED, openMapMenuItemClicked },
-    END_SECTION };
-
-static MenuSectionSpec saveSection =
-  { { "Save",       "S",         MENU_ITEM_ENABLED,  (Handler)saveMap   },
-    { "Save As...", "A",         MENU_ITEM_ENABLED,  (Handler)saveMapAs },
-    { "Revert",     NO_SHORTKEY, MENU_ITEM_DISABLED,          revertMap },
-  END_SECTION };
-
-static MenuSectionSpec closeSection =
-  { { "Close", "Q", MENU_ITEM_ENABLED, (Handler)tryToCloseWindow },
-    END_SECTION };
-
-static MenuSectionSpec *mapMenuSpec[] = {
-  &newSection,
-  &openSection,
-  &saveSection,
-  &closeSection,
-  END_MENU
-};
-
-#define REVERT_MAP_MENU_ITEM (SHIFTMENU(0) | SHIFTITEM(6))
-
-static MenuSpec mapEditorMenuSpec[] = {
-  { "Map", &mapMenuSpec },
-  END_MENUS
-};
-
-static void newMapMenuItemClicked(FrameworkWindow *mapEditor) {
+void mapEditorNewMap(FrameworkWindow *mapEditor) {
   FrameworkWindow *projectWindow = mapEditor->parent;
   newMap(projectWindow);
 }
 
-static void openMapMenuItemClicked(FrameworkWindow *mapEditor) {
+void mapEditorOpenMap(FrameworkWindow *mapEditor) {
   FrameworkWindow *projectWindow = mapEditor->parent;
-  openMap(projectWindow);
+  mapEditorOpenMap(projectWindow);
 }
 
 static void enableMapRevert(FrameworkWindow *mapEditor) {
-  OnMenu(mapEditor->intuitionWindow, REVERT_MAP_MENU_ITEM);
+  mapEditorMenuEnableRevertMap(mapEditor);
 }
 
 static void disableMapRevert(FrameworkWindow *mapEditor) {
-  OffMenu(mapEditor->intuitionWindow, REVERT_MAP_MENU_ITEM);
+  mapEditorMenuDisableRevertMap(mapEditor);
 }
 
 static void updateMapEditorTitle(FrameworkWindow *mapEditor) {
@@ -120,7 +82,7 @@ static int saveMapRequester(FrameworkWindow *mapEditor) {
   return spawnMapRequester(mapEditor, title);
 }
 
-static BOOL saveMapAs(FrameworkWindow *mapEditor) {
+BOOL mapEditorSaveMapAs(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
   ProjectWindowData *projectData = mapEditor->parent->data;
 
@@ -157,12 +119,12 @@ static BOOL saveMapAs(FrameworkWindow *mapEditor) {
   return TRUE;
 }
 
-static BOOL saveMap(FrameworkWindow *mapEditor) {
+BOOL mapEditorSaveMap(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
   ProjectWindowData *projectData = mapEditor->parent->data;
 
   if(!data->mapNum) {
-    return saveMapAs(mapEditor);
+    return mapEditorSaveMapAs(mapEditor);
   } else {
     projectDataOverwriteMap(projectData, data->map, data->mapNum - 1);
     projectDataUpdateMapName(projectData, data->mapNum - 1, data->map);
@@ -181,7 +143,7 @@ static int confirmRevertMap(FrameworkWindow *mapEditor) {
     data->map->name);
 }
 
-static void revertMap(FrameworkWindow *mapEditor) {
+void mapEditorRevertMap(FrameworkWindow *mapEditor) {
   if(confirmRevertMap(mapEditor)) {
     FrameworkWindow *projectWindow = mapEditor->parent;
     MapEditorData *data = mapEditor->data;
@@ -209,9 +171,9 @@ static BOOL unsavedMapEditorAlert(FrameworkWindow *mapEditor) {
   }
 
   switch(response) {
-    case 0: return FALSE;              /* cancel */
-    case 1: return saveMap(mapEditor); /* save */
-    case 2: return TRUE;               /* don't save */
+    case 0: return FALSE;                       /* cancel */
+    case 1: return mapEditorSaveMap(mapEditor); /* save */
+    case 2: return TRUE;                        /* don't save */
     default:
       fprintf(stderr, "unsavedMapEditorAlert: unknown response %d\n", response);
       return FALSE;
@@ -662,7 +624,7 @@ static WindowKind mapEditorKind = {
     MAP_EDITOR_WIDTH,MAP_EDITOR_HEIGHT,
     CUSTOMSCREEN
   },
-  (MenuSpec*)        mapEditorMenuSpec,
+  (MenuSpec*)        NULL, /* fill me in later */
   (RefreshFunction)  refreshMapEditor,
   (CanCloseFunction) ensureMapEditorSaved,
   (CloseFunction)    NULL,
@@ -828,6 +790,7 @@ static FrameworkWindow *newMapEditor(FrameworkWindow *parent) {
     goto error_freeData;
   }
 
+  mapEditorKind.menuSpec = mapEditorMenuSpec;
   mapEditor = openChildWindow(parent, &mapEditorKind, gadgets);
   if(!mapEditor) {
     fprintf(stderr, "newMapEditor: failed to open window\n");

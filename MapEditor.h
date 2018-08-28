@@ -15,6 +15,12 @@ FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map*, int mapNum);
 
 BOOL isMapEditor(FrameworkWindow*);
 
+void mapEditorNewMap(FrameworkWindow*);
+void mapEditorOpenMap(FrameworkWindow*);
+BOOL mapEditorSaveMap(FrameworkWindow*);
+BOOL mapEditorSaveMapAs(FrameworkWindow*);
+void mapEditorRevertMap(FrameworkWindow*);
+
 void mapEditorUpdateMapName(FrameworkWindow*);
 void mapEditorChooseTilesetClicked(FrameworkWindow*);
 void mapEditorChangeSongClicked(FrameworkWindow*);
