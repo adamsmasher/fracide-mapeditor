@@ -21,6 +21,9 @@ BOOL mapEditorSaveMap(FrameworkWindow*);
 BOOL mapEditorSaveMapAs(FrameworkWindow*);
 void mapEditorRevertMap(FrameworkWindow*);
 
+void mapEditorRefreshRevertMap(FrameworkWindow*);
+void mapEditorRefreshTitle(FrameworkWindow*);
+
 void mapEditorUpdateMapName(FrameworkWindow*);
 void mapEditorChooseTilesetClicked(FrameworkWindow*);
 void mapEditorChangeSongClicked(FrameworkWindow*);
@@ -31,26 +34,9 @@ void mapEditorMapUpClicked(FrameworkWindow*);
 void mapEditorMapDownClicked(FrameworkWindow*);
 void mapEditorEntitiesClicked(FrameworkWindow*);
 
-void mapEditorSetMapNum(FrameworkWindow *mapEditor, UWORD mapNum);
-
-void mapEditorSetTileset(FrameworkWindow *mapEditor, UWORD tilesetNum);
-void mapEditorRefreshTileset(FrameworkWindow *mapEditor);
 void mapEditorUpdateTileDisplays(FrameworkWindow *mapEditor);
 
-void mapEditorSetSong(FrameworkWindow *mapEditor, UWORD songNum);
 void mapEditorRefreshSong(FrameworkWindow *mapEditor);
-
-void mapEditorAddNewEntity(FrameworkWindow *mapEditor);
-void mapEditorRemoveEntity(FrameworkWindow *mapEditor, UWORD entityNum);
-void mapEditorSetEntityRow(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE row);
-void mapEditorSetEntityCol(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE col);
-void mapEditorSetEntityVRAMSlot(FrameworkWindow *mapEditor, UWORD entityNum, UBYTE vramSlot);
-
-void mapEditorEntityAddNewTag(FrameworkWindow *mapEditor, UWORD entityNum);
-void mapEditorEntityDeleteTag(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum);
-void mapEditorEntitySetTagAlias(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, const char *newTagAlias);
-void mapEditorEntitySetTagId(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagId);
-void mapEditorEntitySetTagValue(FrameworkWindow *mapEditor, UWORD entityNum, int tagNum, UBYTE newTagValue);
 
 BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor);
 

@@ -3,8 +3,16 @@
 #include <exec/exec.h>
 #include <proto/exec.h>
 
-#include <stdlib.h>
+#include <intuition/gadgetclass.h>
 
+#include <libraries/gadtools.h>
+#include <proto/gadtools.h>
+
+#include <stdlib.h>
+#include <string.h>
+
+#include "MapEditor.h"
+#include "ProjectWindowData.h"
 #include "TilesetPackage.h"
 
 #define IMAGE_DATA_SIZE (TILES_PER_SET * 256)
@@ -111,11 +119,13 @@ static void mapEditorDataUpdateTitle(MapEditorData *data) {
   } else {
     sprintf(data->title, "Map Editor%c", unsaved);
   }
+  mapEditorRefreshTitle(data->window);
 }
 
 void mapEditorDataSetSaveStatus(MapEditorData *data, SaveStatus saveStatus) {
   if(saveStatus != data->saveStatus) {
     data->saveStatus = saveStatus;
+    mapEditorRefreshRevertMap(data->window);
     mapEditorDataUpdateTitle(data);
   }
 }
@@ -123,6 +133,41 @@ void mapEditorDataSetSaveStatus(MapEditorData *data, SaveStatus saveStatus) {
 /* results are undefined if the map editor does not have a map */
 UWORD mapEditorDataGetMapNum(MapEditorData *data) {
   return (UWORD)(data->mapNum - 1);
+}
+
+void mapEditorDataSetMapNum(MapEditorData *data, UWORD mapNum) {
+  MapEditorGadgets *gadgets = &data->gadgets;
+  struct Window *window = data->window->intuitionWindow;
+
+  BOOL upDisabled = mapNum < 16 ? TRUE : FALSE;
+  BOOL downDisabled = mapNum >= 112 ? TRUE : FALSE;
+  BOOL leftDisabled = mapNum % 16 == 0 ? TRUE : FALSE;
+  BOOL rightDisabled = mapNum % 16 == 15 ? TRUE : FALSE;
+
+  data->mapNum = mapNum + 1;
+
+  GT_SetGadgetAttrs(gadgets->upGadget, window, NULL,
+    GA_Disabled, upDisabled,
+    TAG_END);
+
+  GT_SetGadgetAttrs(gadgets->downGadget, window, NULL,
+    GA_Disabled, downDisabled,
+    TAG_END);
+
+  GT_SetGadgetAttrs(gadgets->leftGadget, window, NULL,
+    GA_Disabled, leftDisabled,
+    TAG_END);
+
+  GT_SetGadgetAttrs(gadgets->rightGadget, window, NULL,
+    GA_Disabled, rightDisabled,
+    TAG_END);
+
+  mapEditorDataUpdateTitle(data);
+}
+
+void mapEditorDataSetMapName(MapEditorData *data, const char *mapName) {
+  strcpy(data->map->name, mapName);
+  mapEditorDataSetSaveStatus(data, UNSAVED);
 }
 
 void mapEditorDataSetSongRequester(MapEditorData *data, SongRequester *songRequester) {
@@ -141,6 +186,17 @@ BOOL mapEditorDataHasEntityBrowser(MapEditorData *data) {
   return (BOOL)(data->entityBrowser != NULL);
 }
 
+void mapEditorDataAddNewEntity(MapEditorData *data) {
+  mapAddNewEntity(data->map);
+  mapEditorDrawEntity(data->window, data->map->entityCnt - 1);
+  mapEditorDataSetSaveStatus(data, UNSAVED);
+}
+
+void mapEditorDataRemoveEntity(MapEditorData *data, UWORD entityNum) {
+  mapRemoveEntity(data->map, entityNum);
+  mapEditorDataSetSaveStatus(data, UNSAVED);
+}
+
 UWORD mapEditorDataGetEntityCount(MapEditorData *data) {
   return data->map->entityCnt;
 }
@@ -150,9 +206,33 @@ UBYTE mapEditorDataGetEntityRow(MapEditorData *data, UWORD entityNum) {
   return entity->row;
 }
 
+void mapEditorDataSetEntityRow(MapEditorData *data, UWORD entityNum, UBYTE row) {
+  Entity *entity = &data->map->entities[entityNum];
+  UBYTE oldRow = entity->row;
+  UBYTE oldCol = entity->col;
+
+  entity->row = row;
+
+  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDrawEntity(data->window, entityNum);
+  mapEditorRedrawTile(data->window, oldRow, oldCol);
+}
+
 UBYTE mapEditorDataGetEntityCol(MapEditorData *data, UWORD entityNum) {
   Entity *entity = &data->map->entities[entityNum];
   return entity->col;
+}
+
+void mapEditorDataSetEntityCol(MapEditorData *data, UWORD entityNum, UBYTE col) {
+  Entity *entity = &data->map->entities[entityNum];
+  UBYTE oldRow = entity->row;
+  UBYTE oldCol = entity->col;
+
+  entity->col = col;
+
+  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDrawEntity(data->window, entityNum);
+  mapEditorRedrawTile(data->window, oldRow, oldCol);
 }
 
 UBYTE mapEditorDataGetEntityVRAMSlot(MapEditorData *data, UWORD entityNum) {
@@ -160,12 +240,37 @@ UBYTE mapEditorDataGetEntityVRAMSlot(MapEditorData *data, UWORD entityNum) {
   return entity->vramSlot;
 }
 
+void mapEditorDataSetEntityVRAMSlot(MapEditorData *data, UWORD entityNum, UBYTE vramSlot) {
+  Entity *entity = &data->map->entities[entityNum];
+  entity->vramSlot = vramSlot;
+  mapEditorDataSetSaveStatus(data, UNSAVED);
+}
+
 int mapEditorDataEntityGetTagCount(MapEditorData *data, UWORD entityNum) {
   return data->map->entities[entityNum].tagCnt;
 }
 
+void mapEditorDataEntityAddNewTag(MapEditorData *data, UWORD entityNum) {
+  Entity *entity = &data->map->entities[entityNum];
+  entityAddNewTag(entity);
+  mapEditorDataSetSaveStatus(data, UNSAVED);
+}
+
+void mapEditorDataEntityDeleteTag(MapEditorData *data, UWORD entityNum, int tagNum) {
+  Entity *entity = &data->map->entities[entityNum];
+  entityDeleteTag(entity, tagNum);
+  mapEditorDataSetSaveStatus(data, UNSAVED);
+}
+
 const char *mapEditorDataEntityGetTagAlias(MapEditorData *data, UWORD entityNum, int tagNum) {
   return data->map->entities[entityNum].tags[tagNum].alias;
+}
+
+void mapEditorDataEntitySetTagAlias(MapEditorData *data, UWORD entityNum, int tagNum, const char *newTagAlias) {
+  Entity *entity = &data->map->entities[entityNum];
+  Frac_tag *tag = &entity->tags[tagNum];
+  strcpy(tag->alias, newTagAlias);
+  mapEditorDataSetSaveStatus(data, UNSAVED);
 }
 
 UBYTE mapEditorDataEntityGetTagId(MapEditorData *data, UWORD entityNum, int tagNum) {
@@ -174,8 +279,89 @@ UBYTE mapEditorDataEntityGetTagId(MapEditorData *data, UWORD entityNum, int tagN
   return tag->id;
 }
 
+void mapEditorDataEntitySetTagId(MapEditorData *data, UWORD entityNum, int tagNum, UBYTE newTagId) {
+  Entity *entity = &data->map->entities[entityNum];
+  Frac_tag *tag = &entity->tags[tagNum];
+  tag->id = newTagId;
+  mapEditorDataSetSaveStatus(data, UNSAVED);
+}
+
 UBYTE mapEditorDataEntityGetTagValue(MapEditorData *data, UWORD entityNum, int tagNum) {
   Entity *entity = &data->map->entities[entityNum];
   Frac_tag *tag = &entity->tags[tagNum];
   return tag->value;
+}
+
+void mapEditorDataEntitySetTagValue(MapEditorData *data, UWORD entityNum, int tagNum, UBYTE newTagValue) {
+  Entity *entity = &data->map->entities[entityNum];
+  Frac_tag *tag = &entity->tags[tagNum];
+  tag->value = newTagValue;
+  mapEditorDataSetSaveStatus(data, UNSAVED);
+}
+
+void mapEditorDataClearSong(MapEditorData *data) {
+  MapEditorGadgets *gadgets = &data->gadgets;
+
+  data->map->songNum = 0;
+
+  mapEditorDataSetSaveStatus(data, UNSAVED);
+
+  GT_SetGadgetAttrs(gadgets->songNameGadget, data->window->intuitionWindow, NULL,
+    GTTX_Text, "N/A",
+    TAG_END);
+}
+
+void mapEditorDataSetSong(MapEditorData *data, UWORD songNum) {
+  MapEditorGadgets *gadgets = &data->gadgets;
+  FrameworkWindow *mapEditor = data->window;
+  ProjectWindowData *projectData = mapEditor->parent->data;
+
+  data->map->songNum = songNum + 1;
+
+  GT_SetGadgetAttrs(gadgets->songNameGadget, mapEditor->intuitionWindow, NULL,
+    GTTX_Text, projectDataGetSongName(projectData, songNum),
+    TAG_END);
+
+  mapEditorDataSetSaveStatus(data, UNSAVED);  
+}
+
+void mapEditorDataClearTileset(MapEditorData *data) {
+  MapEditorGadgets *gadgets = &data->gadgets;
+
+  data->map->tilesetNum = 0;
+
+  GT_SetGadgetAttrs(gadgets->tilesetNameGadget, data->window->intuitionWindow, NULL,
+    GTTX_Text, "N/A",
+    TAG_END);
+
+  mapEditorDataSetSaveStatus(data, UNSAVED);
+
+  mapEditorRefreshTileDisplays(data->window);
+}
+
+void mapEditorDataSetTileset(MapEditorData *data, UWORD tilesetNum) {
+  MapEditorGadgets *gadgets = &data->gadgets;
+  FrameworkWindow *mapEditor = data->window;
+  ProjectWindowData *projectData = mapEditor->parent->data;
+
+  data->map->tilesetNum = tilesetNum + 1;
+
+  copyScaledTileset(
+    (UWORD*)projectDataGetTilesetImgs(projectData, tilesetNum),
+    data->imageData);
+
+  GT_SetGadgetAttrs(gadgets->tilesetNameGadget, mapEditor->intuitionWindow, NULL,
+    GTTX_Text, projectDataGetTilesetName(projectData, tilesetNum),
+    TAG_END);
+
+  mapEditorDataSetSaveStatus(data, UNSAVED);
+
+  mapEditorRefreshTileDisplays(data->window);
+}
+
+void mapEditorDataSetTileTo(MapEditorData *data, UBYTE row, UBYTE col, UBYTE to) {
+  UBYTE tile = row * 10 + col;
+  data->map->tiles[tile] = to;
+  data->mapImages[tile].ImageData = mapEditorDataGetImageDataForTile(data, tile);
+  mapEditorDataSetSaveStatus(data, UNSAVED);
 }

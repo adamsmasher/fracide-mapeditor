@@ -19,7 +19,7 @@
 #include "framework/screen.h"
 #include "framework/window.h"
 
-#include "MapEditor.h"
+#include "MapEditorData.h"
 #include "ProjectWindowData.h"
 
 #define SONG_REQUESTER_WIDTH      200
@@ -31,13 +31,17 @@
 #define SONG_LIST_TOP          20
 #define SONG_LIST_LEFT         10
 
+/* TODO: this is a hack; once we stop exposing MapEditorData in the .h file we should be good */
+#undef SONG_NAME_HEIGHT
+#undef SONG_NAME_LEFT
+
 #define SONG_NAME_WIDTH_DELTA   SONG_LIST_WIDTH_DELTA
 #define SONG_NAME_HEIGHT        12
 #define SONG_NAME_BOTTOM_OFFSET 26
 #define SONG_NAME_LEFT          SONG_LIST_LEFT
 
 static void handleSongRequesterGadgetUp(FrameworkWindow *mapEditorWindow, SongRequester *songRequester, struct IntuiMessage *msg) {
-  mapEditorSetSong(mapEditorWindow, msg->Code);
+  mapEditorDataSetSong(mapEditorWindow->data, msg->Code);
 }
 
 static WindowKind songRequesterWindowKind = {

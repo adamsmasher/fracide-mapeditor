@@ -367,7 +367,7 @@ static void onAddEntityClick(FrameworkWindow *entityBrowser) {
   UWORD entityCount = mapEditorDataGetEntityCount(mapEditorData);
   UWORD newEntityIdx;
 
-  mapEditorAddNewEntity(mapEditor);
+  mapEditorDataAddNewEntity(mapEditorData);
   newEntityIdx = entityCount++;
   entityBrowserRefreshEntities(entityBrowser);
 
@@ -383,7 +383,7 @@ static void onRemoveEntityClick(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   FrameworkWindow *mapEditor = entityBrowser->parent;
 
-  mapEditorRemoveEntity(mapEditor, data->selectedEntity - 1);
+  mapEditorDataRemoveEntity(mapEditor->data, data->selectedEntity - 1);
   entityBrowserRefreshEntities(entityBrowser);
 
   entityBrowserDeselectEntity(entityBrowser);
@@ -410,7 +410,7 @@ static void onEntityRowEntry(FrameworkWindow *entityBrowser) {
   FrameworkWindow *parent = entityBrowser->parent;
   UBYTE newRow = ((struct StringInfo*)data->rowGadget->SpecialInfo)->LongInt;
 
-  mapEditorSetEntityRow(parent, data->selectedEntity - 1, newRow);
+  mapEditorDataSetEntityRow(parent->data, data->selectedEntity - 1, newRow);
 }
 
 static void onEntityColEntry(FrameworkWindow *entityBrowser) {
@@ -418,7 +418,7 @@ static void onEntityColEntry(FrameworkWindow *entityBrowser) {
   FrameworkWindow *parent = entityBrowser->parent;
   UBYTE newCol = ((struct StringInfo*)data->colGadget->SpecialInfo)->LongInt;
 
-  mapEditorSetEntityCol(parent, data->selectedEntity - 1, newCol);
+  mapEditorDataSetEntityCol(parent->data, data->selectedEntity - 1, newCol);
 }
 
 static void onVRAMSlotEntry(FrameworkWindow *entityBrowser) {
@@ -426,7 +426,7 @@ static void onVRAMSlotEntry(FrameworkWindow *entityBrowser) {
   FrameworkWindow *parent = entityBrowser->parent;
   UBYTE vramSlot = ((struct StringInfo*)data->VRAMSlotGadget->SpecialInfo)->LongInt;
 
-  mapEditorSetEntityVRAMSlot(parent, data->selectedEntity - 1, vramSlot);
+  mapEditorDataSetEntityVRAMSlot(parent->data, data->selectedEntity - 1, vramSlot);
 }
 
 static void onAddTagClick(FrameworkWindow *entityBrowser) {
@@ -437,7 +437,7 @@ static void onAddTagClick(FrameworkWindow *entityBrowser) {
   UWORD entityTagCount = mapEditorDataEntityGetTagCount(mapEditorData, entityIdx);
   UWORD newTagIdx;
 
-  mapEditorEntityAddNewTag(parent, entityIdx);
+  mapEditorDataEntityAddNewTag(mapEditorData, entityIdx);
   newTagIdx = entityTagCount++;
   entityBrowserRefreshTags(entityBrowser);
 
@@ -453,7 +453,7 @@ static void onDeleteTagClick(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   FrameworkWindow *parent = entityBrowser->parent;
 
-  mapEditorEntityDeleteTag(parent, data->selectedEntity - 1, data->selectedTag - 1);
+  mapEditorDataEntityDeleteTag(parent->data, data->selectedEntity - 1, data->selectedTag - 1);
   entityBrowserRefreshTags(entityBrowser);
   entityBrowserDeselectTag(entityBrowser);
 }
@@ -462,21 +462,21 @@ static void onTagIdEntry(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   FrameworkWindow *parent = entityBrowser->parent;
   UBYTE newTagId = ((struct StringInfo*)data->tagIdGadget->SpecialInfo)->LongInt;
-  mapEditorEntitySetTagId(parent, data->selectedEntity - 1, data->selectedTag - 1, newTagId);
+  mapEditorDataEntitySetTagId(parent->data, data->selectedEntity - 1, data->selectedTag - 1, newTagId);
 }
 
 static void onTagValueEntry(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   FrameworkWindow *parent = entityBrowser->parent;
   UBYTE newTagValue = ((struct StringInfo*)data->tagValueGadget->SpecialInfo)->LongInt;
-  mapEditorEntitySetTagValue(parent, data->selectedEntity - 1, data->selectedTag - 1, newTagValue);
+  mapEditorDataEntitySetTagValue(parent->data, data->selectedEntity - 1, data->selectedTag - 1, newTagValue);
 }
 
 static void onTagAliasEntry(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   FrameworkWindow *parent = entityBrowser->parent;
   const char *newTagAlias = ((struct StringInfo*)data->tagAliasGadget->SpecialInfo)->Buffer;
-  mapEditorEntitySetTagAlias(parent, data->selectedEntity - 1, data->selectedTag - 1, newTagAlias);
+  mapEditorDataEntitySetTagAlias(parent->data, data->selectedEntity - 1, data->selectedTag - 1, newTagAlias);
   entityBrowserRefreshTags(entityBrowser);
 }
 

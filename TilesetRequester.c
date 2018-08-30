@@ -18,7 +18,7 @@
 #include "framework/screen.h"
 #include "framework/window.h"
 
-#include "MapEditor.h"
+#include "MapEditorData.h"
 #include "ProjectWindow.h"
 #include "ProjectWindowData.h"
 #include "TilesetPackage.h"
@@ -58,7 +58,7 @@ BOOL isTilesetRequesterWindow(FrameworkWindow *window) {
 }
 
 static void handleTilesetRequesterGadgetUp(FrameworkWindow *mapEditorWindow, struct IntuiMessage *msg) {
-  mapEditorSetTileset(mapEditorWindow, msg->Code);
+  mapEditorDataSetTileset(mapEditorWindow->data, msg->Code);
 }
 
 static struct NewGadget tilesetListNewGadget = {
