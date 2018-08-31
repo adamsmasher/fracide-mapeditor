@@ -1,40 +1,24 @@
 #include "MapEditor.h"
 
-#include <exec/exec.h>
-#include <proto/exec.h>
-
 #include <intuition/intuition.h>
-#include <intuition/gadgetclass.h>
 #include <proto/intuition.h>
 
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
 #include <graphics/gfx.h>
-#include <graphics/scale.h>
 #include <proto/graphics.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "framework/gadgets.h"
-#include "framework/menubuild.h"
-#include "framework/screen.h"
-
-#include "easystructs.h"
-#include "EntityBrowser.h"
-#include "map.h"
-#include "MapEditorConstants.h"
+#include "EasyStructs.h"
 #include "MapEditorData.h"
-#include "MapEditorGadgets.h"
 #include "MapEditorMenu.h"
 #include "MapRequester.h"
 #include "ProjectWindow.h"
 #include "ProjectWindowData.h"
-#include "SaveStatus.h"
-#include "TilesetPackage.h"
-#include "TilesetRequester.h"
 
 #define MAP_EDITOR_WIDTH  536
 #define MAP_EDITOR_HEIGHT 384
@@ -441,50 +425,6 @@ static void mapEditorSetSelected(FrameworkWindow *mapEditor, unsigned int select
 static void handleMapEditorPaletteClick(FrameworkWindow *mapEditor, WORD x, WORD y) {
   int tile = mapEditorGetPaletteTileClicked(x, y);
   mapEditorSetSelected(mapEditor, tile);
-}
-
-static void copyScaledTileset(UWORD *src, UWORD *dst) {
-  struct BitMap srcBitMap;
-  struct BitMap dstBitMap;
-  struct BitScaleArgs scaleArgs;
-  int tileNum;
-
-  srcBitMap.BytesPerRow = 2;
-  srcBitMap.Rows = 16;
-  srcBitMap.Flags = 0;
-  srcBitMap.Depth = 2;
-
-  dstBitMap.BytesPerRow = 4;
-  dstBitMap.Rows = 32;
-  dstBitMap.Flags = 0;
-  dstBitMap.Depth = 2;
-
-  scaleArgs.bsa_SrcX = 0;
-  scaleArgs.bsa_SrcY = 0;
-  scaleArgs.bsa_SrcWidth = 16;
-  scaleArgs.bsa_SrcHeight = 16;
-  scaleArgs.bsa_XSrcFactor = 1;
-  scaleArgs.bsa_YSrcFactor = 1;
-  scaleArgs.bsa_DestX = 0;
-  scaleArgs.bsa_DestY = 0;
-  scaleArgs.bsa_XDestFactor = 2;
-  scaleArgs.bsa_YDestFactor = 2;
-  scaleArgs.bsa_SrcBitMap = &srcBitMap;
-  scaleArgs.bsa_DestBitMap = &dstBitMap;
-  scaleArgs.bsa_Flags = 0;
-
-  for(tileNum = 0; tileNum < TILES_PER_SET; tileNum++) {
-    srcBitMap.Planes[0] = (PLANEPTR)src;
-    srcBitMap.Planes[1] = (PLANEPTR)(src + 16);
-
-    dstBitMap.Planes[0] = (PLANEPTR)dst;
-    dstBitMap.Planes[1] = (PLANEPTR)(dst + 64);
-
-    BitMapScale(&scaleArgs);
-
-    src += 32;
-    dst += 128;
-  }
 }
 
 static void drawEntity(struct RastPort *rport, Entity *entity, int entityNum) {
