@@ -36,6 +36,6 @@ int readMap(Map*, FILE*);
 void mapAddNewEntity(Map*);
 void mapRemoveEntity(Map*, int entityNum);
 
-int mapFindEntity(Map*, int row, int col);
+int mapFindEntity(const Map*, int row, int col);
 
 #endif

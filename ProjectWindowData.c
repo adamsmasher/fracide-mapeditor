@@ -166,7 +166,7 @@ struct List *projectDataGetMapNames(ProjectWindowData *data) {
   return &data->project.mapNames;
 }
 
-BOOL projectDataSaveNewMap(ProjectWindowData *data, Map *map, int mapNum) {
+static BOOL projectDataSaveNewMap(ProjectWindowData *data, Map *map, int mapNum) {
   Map *mapCopy = copyMap(map);
   if(!mapCopy) {
     fprintf(stderr, "currentProjectSaveNewMap: couldn't allocate map copy\n");
@@ -174,12 +174,25 @@ BOOL projectDataSaveNewMap(ProjectWindowData *data, Map *map, int mapNum) {
   }
   data->project.mapCnt++;
   data->project.maps[mapNum] = mapCopy;
+
+  projectUpdateMapName(&data->project, mapNum, map);
+
   return TRUE;
 }
 
-void projectDataOverwriteMap(ProjectWindowData *data, Map *map, int mapNum) {
+static void projectDataOverwriteMap(ProjectWindowData *data, Map *map, int mapNum) {
   overwriteMap(map, data->project.maps[mapNum]);
+  projectUpdateMapName(&data->project, mapNum, map);
   data->projectSaved = FALSE;
+}
+
+BOOL projectDataSaveMap(ProjectWindowData *data, Map *map, int mapNum) {
+  if(projectDataHasMap(data, mapNum)) {
+    projectDataOverwriteMap(data, map, mapNum);
+    return TRUE;
+  } else {
+    return projectDataSaveNewMap(data, map, mapNum);
+  }
 }
 
 char *projectDataGetMapName(ProjectWindowData *data, int mapNum) {
@@ -188,11 +201,6 @@ char *projectDataGetMapName(ProjectWindowData *data, int mapNum) {
     return NULL;
   }
   return map->name;
-}
-
-/* TODO: this is weird */
-void projectDataUpdateMapName(ProjectWindowData *data, int mapNum, Map *map) {
-  updateProjectMapName(&data->project, mapNum, map);
 }
 
 struct List *projectDataGetEntityNames(ProjectWindowData *data) {

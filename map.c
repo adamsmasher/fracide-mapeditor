@@ -109,9 +109,9 @@ error:
     return 0;
 }
 
-int mapFindEntity(Map *map, int row, int col) {
+int mapFindEntity(const Map *map, int row, int col) {
     int i;
-    Entity *entity = &map->entities[0];
+    const Entity *entity = &map->entities[0];
 
     for(i = 0; i < map->entityCnt; i++) {
         if(entity->row == row && entity->col == col) {

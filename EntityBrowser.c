@@ -650,7 +650,7 @@ static IntegerSpec tagValueSpec = {
   onTagValueEntry
 };
 
-FrameworkWindow *newEntityBrowser(FrameworkWindow *parent, Map *map, int mapNum) {
+FrameworkWindow *newEntityBrowser(FrameworkWindow *parent, const Map *map, int mapNum) {
   EntityBrowserData *data = malloc(sizeof(EntityBrowserData));
   struct Gadget *gadgets;
   FrameworkWindow *entityBrowser;

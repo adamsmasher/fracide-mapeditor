@@ -31,10 +31,6 @@
 #define SONG_LIST_TOP          20
 #define SONG_LIST_LEFT         10
 
-/* TODO: this is a hack; once we stop exposing MapEditorData in the .h file we should be good */
-#undef SONG_NAME_HEIGHT
-#undef SONG_NAME_LEFT
-
 #define SONG_NAME_WIDTH_DELTA   SONG_LIST_WIDTH_DELTA
 #define SONG_NAME_HEIGHT        12
 #define SONG_NAME_BOTTOM_OFFSET 26

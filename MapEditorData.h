@@ -3,34 +3,11 @@
 
 #include "framework/Window.h"
 
+#include "Entity.h"
 #include "Map.h"
-#include "MapEditorConstants.h"
-#include "MapEditorGadgets.h"
-#include "SaveStatus.h"
 #include "SongRequester.h"
 
-typedef struct MapEditorData_tag {
-  FrameworkWindow *window;
-
-  Map *map;
-  UWORD mapNum;
-
-  MapEditorGadgets gadgets;
-
-  SaveStatus saveStatus;
-
-  FrameworkWindow *tilesetRequester;
-  SongRequester   *songRequester;
-  FrameworkWindow *entityBrowser;
-
-  struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
-  struct Image mapImages[MAP_TILES_WIDE * MAP_TILES_HIGH];
-  UWORD *imageData;
-
-  int selected;
-
-  char title[16];
-} MapEditorData;
+typedef struct MapEditorData_tag MapEditorData;
 
 MapEditorData *newMapEditorData(void);
 void freeMapEditorData(MapEditorData*);
@@ -39,25 +16,46 @@ void freeMapEditorData(MapEditorData*);
 void mapEditorDataInitImages(MapEditorData*);
 void *mapEditorDataGetImageDataForTile(MapEditorData*, UBYTE tile);
 
-/* save status is set automatically in response to changes, but
-   sometimes may need to be set manually in response e.g. to saving */
-void mapEditorDataSetSaveStatus(MapEditorData*, SaveStatus);
+struct Image *mapEditorDataGetPaletteImages(MapEditorData*);
+struct Image *mapEditorDataGetMapImages(MapEditorData*);
 
+const Map *mapEditorDataGetMap(MapEditorData*);
+
+BOOL mapEditorDataIsSaved(MapEditorData*);
+BOOL mapEditorDataSaveMap(MapEditorData*);
+BOOL mapEditorDataSaveMapAs(MapEditorData*, int mapNum);
+
+const char *mapEditorDataGetTitle(MapEditorData*);
+
+BOOL mapEditorDataHasMapNum(MapEditorData*);
+/* results are undefined if map editor does not have a map num */
 UWORD mapEditorDataGetMapNum(MapEditorData*);
 void mapEditorDataSetMapNum(MapEditorData*, UWORD mapNum);
 
-void mapEditorDataSetMapName(MapEditorData*, const char*);
+const char *mapEditorDataGetMapName(MapEditorData*);
+/* updates the map name to reflect the contents of the map name gadget */
+void mapEditorDataUpdateMapName(MapEditorData*);
 
 BOOL mapEditorDataHasSongRequester(MapEditorData*);
+SongRequester *mapEditorDataGetSongRequester(MapEditorData*);
 void mapEditorDataSetSongRequester(MapEditorData*, SongRequester*);
 
 BOOL mapEditorDataHasEntityBrowser(MapEditorData*);
+FrameworkWindow *mapEditorDataGetEntityBrowser(MapEditorData*);
+void mapEditorDataSetEntityBrowser(MapEditorData*, FrameworkWindow*);
+
+BOOL mapEditorDataHasTilesetRequester(MapEditorData*);
+FrameworkWindow *mapEditorDataGetTilesetRequester(MapEditorData*);
+void mapEditorDataSetTilesetRequester(MapEditorData*, FrameworkWindow*);
 
 void mapEditorDataAddNewEntity(MapEditorData*);
 void mapEditorDataRemoveEntity(MapEditorData*, UWORD entityNum);
 
 UWORD mapEditorDataGetEntityCount(MapEditorData*);
 
+const Entity *mapEditorDataGetEntity(MapEditorData*, UWORD entityNum);
+
+/* TODO: delete the getters, just use a const pointer lol */
 UBYTE mapEditorDataGetEntityRow(MapEditorData*, UWORD entityNum);
 void mapEditorDataSetEntityRow(MapEditorData*, UWORD entityNum, UBYTE row);
 UBYTE mapEditorDataGetEntityCol(MapEditorData*, UWORD entityNum);
@@ -81,8 +79,16 @@ void mapEditorDataClearSong(MapEditorData*);
 void mapEditorDataSetSong(MapEditorData*, UWORD songNum);
 
 void mapEditorDataClearTileset(MapEditorData*);
+BOOL mapEditorDataHasTileset(MapEditorData*);
 void mapEditorDataSetTileset(MapEditorData*, UWORD tilesetNum);
 
 void mapEditorDataSetTileTo(MapEditorData*, UBYTE row, UBYTE col, UBYTE to);
+
+struct Image *mapEditorDataGetMapImage(MapEditorData*, UBYTE tile);
+struct Image *mapEditorDataGetPaletteImage(MapEditorData*, unsigned int tile);
+
+BOOL mapEditorDataHasSelected(MapEditorData*);
+unsigned int mapEditorDataGetSelected(MapEditorData*);
+void mapEditorDataSetSelected(MapEditorData*, unsigned int selected);
 
 #endif

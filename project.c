@@ -11,8 +11,8 @@
 #define VERSION 1
 #define HEADER (('F' << 24) | ('R' << 16) | ('M' << 8) | 'P')
 
-void updateProjectMapName(Project *project, int mapNum, Map *map) {
-    sprintf(project->mapNameStrs[mapNum], "%d: %s", mapNum, map->name);
+void projectUpdateMapName(Project *project, int mapNum, Map *map) {
+  sprintf(project->mapNameStrs[mapNum], "%d: %s", mapNum, map->name);
 }
 
 static void initMapNameNodes(Project *project) {
@@ -169,7 +169,7 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
         }
 
         project->maps[mapNum] = map;
-        updateProjectMapName(project, mapNum, map);
+        projectUpdateMapName(project, mapNum, map);
     }
 
     if(fread(project->songNameStrs, 80, 128, fp) != 128) {

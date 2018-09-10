@@ -25,6 +25,6 @@ void copyProject(Project *src, Project *dest);
 int loadProjectFromFile(char *file, Project*);
 int saveProjectToFile(Project*, char *file);
 
-void updateProjectMapName(Project*, int mapNum, Map*);
+void projectUpdateMapName(Project*, int mapNum, Map*);
 
 #endif

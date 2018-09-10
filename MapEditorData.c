@@ -16,10 +16,35 @@
 #include <string.h>
 
 #include "MapEditor.h"
+#include "MapEditorConstants.h"
+#include "MapEditorGadgets.h"
 #include "ProjectWindowData.h"
 #include "TilesetPackage.h"
 
 #define IMAGE_DATA_SIZE (TILES_PER_SET * 256)
+
+struct MapEditorData_tag {
+  FrameworkWindow *window;
+
+  Map *map;
+  UWORD mapNum;
+
+  MapEditorGadgets gadgets;
+
+  BOOL saved;
+
+  FrameworkWindow *tilesetRequester;
+  SongRequester   *songRequester;
+  FrameworkWindow *entityBrowser;
+
+  struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
+  struct Image mapImages[MAP_TILES_WIDE * MAP_TILES_HIGH];
+  UWORD *imageData;
+
+  int selected;
+
+  char title[16];
+};
 
 static void mapEditorDataInitPaletteImages(MapEditorData *data) {
   int top, left, row, col;
@@ -116,8 +141,24 @@ void freeMapEditorData(MapEditorData* data) {
   FreeMem(data->imageData, IMAGE_DATA_SIZE);
 }
 
+const Map *mapEditorDataGetMap(MapEditorData *data) {
+  return data->map;
+}
+
+struct Image *mapEditorDataGetMapImages(MapEditorData *data) {
+  return &data->mapImages;
+}
+
+struct Image *mapEditorDataGetPaletteImages(MapEditorData *data) {
+  return &data->paletteImages;
+}
+
+const char *mapEditorDataGetTitle(MapEditorData *data) {
+  return data->title;
+}
+
 static void mapEditorDataUpdateTitle(MapEditorData *data) {
-  char unsaved = data->saveStatus == SAVED ? '\0' : '*';
+  char unsaved = data->saved ? '\0' : '*';
   if(data->mapNum) {
     sprintf(data->title, "Map %d%c", data->mapNum - 1, unsaved);
   } else {
@@ -126,12 +167,55 @@ static void mapEditorDataUpdateTitle(MapEditorData *data) {
   mapEditorRefreshTitle(data->window);
 }
 
-void mapEditorDataSetSaveStatus(MapEditorData *data, SaveStatus saveStatus) {
-  if(saveStatus != data->saveStatus) {
-    data->saveStatus = saveStatus;
+BOOL mapEditorDataIsSaved(MapEditorData *data) {
+  return data->saved;
+}
+
+static void mapEditorDataSetSaved(MapEditorData *data, BOOL saved) {
+  if(saved != data->saved) {
+    data->saved = saved;
     mapEditorRefreshRevertMap(data->window);
     mapEditorDataUpdateTitle(data);
   }
+}
+
+BOOL mapEditorDataSaveMapAs(MapEditorData *data, int mapNum) {
+  ProjectWindowData *projectData = data->window->parent->data;
+
+  if(!projectDataSaveMap(projectData, data->map, mapNum)) {
+    fprintf(stderr, "mapEditorDataSaveMapAs: failed to save map\n");
+    goto error;
+  }
+
+  mapEditorDataSetMapNum(data, mapNum);
+  mapEditorDataSetSaved(data, TRUE);
+  return TRUE;
+
+error:
+  return FALSE;
+}
+
+BOOL mapEditorDataSaveMap(MapEditorData *data) {
+  ProjectWindowData *projectData = data->window->parent->data;
+
+  if(!mapEditorDataHasMapNum(data)) {
+    fprintf(stderr, "mapEditorDataSaveMap: assertion error: map must have map num\n");
+    goto error;
+  }
+
+  if(!projectDataSaveMap(projectData, data->map, mapEditorDataGetMapNum(data))) {
+    fprintf(stderr, "mapEditorDataSaveMap: failed to save map\n");
+    goto error;
+  }
+
+  mapEditorDataSetSaved(data, TRUE);
+  return TRUE;
+error:
+  return FALSE;
+}
+
+BOOL mapEditorDataHasMapNum(MapEditorData *data) {
+  return (BOOL)(data->mapNum != 0);
 }
 
 /* results are undefined if the map editor does not have a map */
@@ -169,9 +253,31 @@ void mapEditorDataSetMapNum(MapEditorData *data, UWORD mapNum) {
   mapEditorDataUpdateTitle(data);
 }
 
-void mapEditorDataSetMapName(MapEditorData *data, const char *mapName) {
+const char *mapEditorDataGetMapName(MapEditorData *data) {
+  return data->map->name;
+}
+
+static void mapEditorDataSetMapName(MapEditorData *data, const char *mapName) {
   strcpy(data->map->name, mapName);
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
+}
+
+void mapEditorDataUpdateMapName(MapEditorData *data) {
+  MapEditorGadgets *gadgets = &data->gadgets;
+  struct StringInfo *stringInfo = gadgets->mapNameGadget->SpecialInfo;
+  mapEditorDataSetMapName(data, stringInfo->Buffer);
+}
+
+BOOL mapEditorDataHasTilesetRequester(MapEditorData *data) {
+  return (BOOL)(data->tilesetRequester != NULL);
+}
+
+void mapEditorDataSetTilesetRequester(MapEditorData *data, FrameworkWindow *tilesetRequester) {
+  data->tilesetRequester = tilesetRequester;
+}
+
+FrameworkWindow *mapEditorDataGetTilesetRequester(MapEditorData *data) {
+  return data->tilesetRequester;
 }
 
 void mapEditorDataSetSongRequester(MapEditorData *data, SongRequester *songRequester) {
@@ -186,23 +292,39 @@ BOOL mapEditorDataHasSongRequester(MapEditorData *data) {
   return (BOOL)(data->songRequester != NULL);
 }
 
+SongRequester* mapEditorDataGetSongRequester(MapEditorData *data) {
+  return data->songRequester;
+}
+
 BOOL mapEditorDataHasEntityBrowser(MapEditorData *data) {
   return (BOOL)(data->entityBrowser != NULL);
+}
+
+FrameworkWindow* mapEditorDataGetEntityBrowser(MapEditorData *data) {
+  return data->entityBrowser;
+}
+
+void mapEditorDataSetEntityBrowser(MapEditorData *data, FrameworkWindow *entityBrowser) {
+  data->entityBrowser = entityBrowser;
 }
 
 void mapEditorDataAddNewEntity(MapEditorData *data) {
   mapAddNewEntity(data->map);
   mapEditorDrawEntity(data->window, data->map->entityCnt - 1);
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
 }
 
 void mapEditorDataRemoveEntity(MapEditorData *data, UWORD entityNum) {
   mapRemoveEntity(data->map, entityNum);
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
 }
 
 UWORD mapEditorDataGetEntityCount(MapEditorData *data) {
   return data->map->entityCnt;
+}
+
+const Entity *mapEditorDataGetEntity(MapEditorData *data, UWORD entityNum) {
+  return &data->map->entities[entityNum];
 }
 
 UBYTE mapEditorDataGetEntityRow(MapEditorData *data, UWORD entityNum) {
@@ -217,7 +339,7 @@ void mapEditorDataSetEntityRow(MapEditorData *data, UWORD entityNum, UBYTE row) 
 
   entity->row = row;
 
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
   mapEditorDrawEntity(data->window, entityNum);
   mapEditorRedrawTile(data->window, oldRow, oldCol);
 }
@@ -234,7 +356,7 @@ void mapEditorDataSetEntityCol(MapEditorData *data, UWORD entityNum, UBYTE col) 
 
   entity->col = col;
 
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
   mapEditorDrawEntity(data->window, entityNum);
   mapEditorRedrawTile(data->window, oldRow, oldCol);
 }
@@ -247,7 +369,7 @@ UBYTE mapEditorDataGetEntityVRAMSlot(MapEditorData *data, UWORD entityNum) {
 void mapEditorDataSetEntityVRAMSlot(MapEditorData *data, UWORD entityNum, UBYTE vramSlot) {
   Entity *entity = &data->map->entities[entityNum];
   entity->vramSlot = vramSlot;
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
 }
 
 int mapEditorDataEntityGetTagCount(MapEditorData *data, UWORD entityNum) {
@@ -257,13 +379,13 @@ int mapEditorDataEntityGetTagCount(MapEditorData *data, UWORD entityNum) {
 void mapEditorDataEntityAddNewTag(MapEditorData *data, UWORD entityNum) {
   Entity *entity = &data->map->entities[entityNum];
   entityAddNewTag(entity);
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
 }
 
 void mapEditorDataEntityDeleteTag(MapEditorData *data, UWORD entityNum, int tagNum) {
   Entity *entity = &data->map->entities[entityNum];
   entityDeleteTag(entity, tagNum);
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
 }
 
 const char *mapEditorDataEntityGetTagAlias(MapEditorData *data, UWORD entityNum, int tagNum) {
@@ -274,7 +396,7 @@ void mapEditorDataEntitySetTagAlias(MapEditorData *data, UWORD entityNum, int ta
   Entity *entity = &data->map->entities[entityNum];
   Frac_tag *tag = &entity->tags[tagNum];
   strcpy(tag->alias, newTagAlias);
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
 }
 
 UBYTE mapEditorDataEntityGetTagId(MapEditorData *data, UWORD entityNum, int tagNum) {
@@ -287,7 +409,7 @@ void mapEditorDataEntitySetTagId(MapEditorData *data, UWORD entityNum, int tagNu
   Entity *entity = &data->map->entities[entityNum];
   Frac_tag *tag = &entity->tags[tagNum];
   tag->id = newTagId;
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
 }
 
 UBYTE mapEditorDataEntityGetTagValue(MapEditorData *data, UWORD entityNum, int tagNum) {
@@ -300,7 +422,7 @@ void mapEditorDataEntitySetTagValue(MapEditorData *data, UWORD entityNum, int ta
   Entity *entity = &data->map->entities[entityNum];
   Frac_tag *tag = &entity->tags[tagNum];
   tag->value = newTagValue;
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
 }
 
 void mapEditorDataClearSong(MapEditorData *data) {
@@ -308,7 +430,7 @@ void mapEditorDataClearSong(MapEditorData *data) {
 
   data->map->songNum = 0;
 
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
 
   GT_SetGadgetAttrs(gadgets->songNameGadget, data->window->intuitionWindow, NULL,
     GTTX_Text, "N/A",
@@ -326,7 +448,7 @@ void mapEditorDataSetSong(MapEditorData *data, UWORD songNum) {
     GTTX_Text, projectDataGetSongName(projectData, songNum),
     TAG_END);
 
-  mapEditorDataSetSaveStatus(data, UNSAVED);  
+  mapEditorDataSetSaved(data, FALSE);
 }
 
 void mapEditorDataClearTileset(MapEditorData *data) {
@@ -338,7 +460,7 @@ void mapEditorDataClearTileset(MapEditorData *data) {
     GTTX_Text, "N/A",
     TAG_END);
 
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
 
   mapEditorRefreshTileDisplays(data->window);
 }
@@ -387,6 +509,10 @@ static void copyScaledTileset(UWORD *src, UWORD *dst) {
   }
 }
 
+BOOL mapEditorDataHasTileset(MapEditorData *data) {
+  return (BOOL)(data->map->tilesetNum > 0);
+}
+
 void mapEditorDataSetTileset(MapEditorData *data, UWORD tilesetNum) {
   MapEditorGadgets *gadgets = &data->gadgets;
   FrameworkWindow *mapEditor = data->window;
@@ -402,7 +528,7 @@ void mapEditorDataSetTileset(MapEditorData *data, UWORD tilesetNum) {
     GTTX_Text, projectDataGetTilesetName(projectData, tilesetNum),
     TAG_END);
 
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
 
   mapEditorRefreshTileDisplays(data->window);
 }
@@ -411,5 +537,31 @@ void mapEditorDataSetTileTo(MapEditorData *data, UBYTE row, UBYTE col, UBYTE to)
   UBYTE tile = row * 10 + col;
   data->map->tiles[tile] = to;
   data->mapImages[tile].ImageData = mapEditorDataGetImageDataForTile(data, tile);
-  mapEditorDataSetSaveStatus(data, UNSAVED);
+  mapEditorDataSetSaved(data, FALSE);
+}
+
+struct Image *mapEditorDataGetMapImage(MapEditorData *data, UBYTE tile) {
+  return &data->mapImages[tile];
+}
+
+struct Image *mapEditorDataGetPaletteImage(MapEditorData *data, unsigned int tile) {
+  return &data->paletteImages[tile];
+}
+
+BOOL mapEditorDataHasSelected(MapEditorData *data) {
+  return (BOOL)(data->selected >= 0);
+}
+
+unsigned int mapEditorDataGetSelected(MapEditorData *data) {
+  return (unsigned int)data->selected;
+}
+
+void mapEditorDataSetSelected(MapEditorData *data, unsigned int selected) {
+  if(mapEditorDataHasSelected(data)) {
+    mapEditorUpdateSelectedFrom(data->window, data->selected, selected);
+  } else {
+    mapEditorUpdateSelected(data->window, selected);
+  }
+
+  data->selected = selected;
 }
