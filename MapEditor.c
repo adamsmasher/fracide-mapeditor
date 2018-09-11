@@ -160,7 +160,7 @@ static BOOL unsavedMapEditorAlert(FrameworkWindow *mapEditor) {
     }
 }
 
-BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor) {
+BOOL mapEditorEnsureSaved(FrameworkWindow *mapEditor) {
   return (BOOL)(mapEditorDataIsSaved(mapEditor->data) || unsavedMapEditorAlert(mapEditor));
 }
 
@@ -293,7 +293,7 @@ void mapEditorClearSongClicked(FrameworkWindow *mapEditor) {
 static void moveToMap(FrameworkWindow *mapEditor, int mapNum) {
   FrameworkWindow *projectWindow = mapEditor->parent;
 
-  if(ensureMapEditorSaved(mapEditor)) {
+  if(mapEditorEnsureSaved(mapEditor)) {
     if(projectWindowOpenMapNum(projectWindow, mapNum - 1)) {
       mapEditor->closed = TRUE;
     }
@@ -545,7 +545,7 @@ static WindowKind mapEditorKind = {
   },
   (MenuSpec*)        NULL, /* fill me in later */
   (RefreshFunction)  refreshMapEditor,
-  (CanCloseFunction) ensureMapEditorSaved,
+  (CanCloseFunction) mapEditorEnsureSaved,
   (CloseFunction)    NULL,
   (ClickFunction)    handleMapEditorClick
 };

@@ -42,8 +42,10 @@ void mapEditorUpdateMapName(FrameworkWindow*);
 void mapEditorUpdateTileDisplays(FrameworkWindow*);
 void mapEditorRefreshSong(FrameworkWindow*);
 
+/* misc */
+BOOL mapEditorEnsureSaved(FrameworkWindow *mapEditor);
+
 /* garbage */
-BOOL ensureMapEditorSaved(FrameworkWindow *mapEditor);
 
 void mapEditorDrawEntity(FrameworkWindow *mapEditor, int entityNum);
 void mapEditorRedrawTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col);
