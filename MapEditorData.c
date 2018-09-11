@@ -101,7 +101,11 @@ static void mapEditorDataInitMapImages(MapEditorData *data) {
   data->mapImages[89].NextImage = NULL;
 }
 
-void mapEditorDataInitImages(MapEditorData *data) {
+static void *mapEditorDataGetImageDataForTile(MapEditorData *data, UBYTE tile) {
+  return data->imageData + (tile << 7);
+}
+
+static void mapEditorDataInitImages(MapEditorData *data) {
   Map *map = data->map;
   int i;
   for(i = 0; i < MAP_TILES_HIGH * MAP_TILES_WIDE; i++) {
@@ -124,16 +128,55 @@ MapEditorData *newMapEditorData(void) {
   mapEditorDataInitPaletteImages(data);
   mapEditorDataInitMapImages(data);
 
+  if(!initMapEditorGadgets(&data->gadgets)) {
+    fprintf(stderr, "newMapEditorData: failed to create gadgets\n");
+    goto error_freeData;
+  }
+
+  data->window           = NULL;
+  data->map              = NULL;
+  data->mapNum           = 0;
+  data->saved            = TRUE;
   data->tilesetRequester = NULL;
   data->songRequester    = NULL;
   data->entityBrowser    = NULL;
   data->selected         = -1;
+  data->title[0]         = '\0';
 
   return data;
 error_freeData:
   free(data);
 error:
   return NULL;
+}
+
+static void mapEditorDataUpdateTitle(MapEditorData *data) {
+  char unsaved = data->saved ? '\0' : '*';
+  if(data->mapNum) {
+    sprintf(data->title, "Map %d%c", data->mapNum - 1, unsaved);
+  } else {
+    sprintf(data->title, "Map Editor%c", unsaved);
+  }
+  mapEditorRefreshTitle(data->window);
+}
+
+void initMapEditorData(MapEditorData *data, FrameworkWindow *window, Map *map) {
+  data->window = window;
+  data->map = map;
+
+  mapEditorDataUpdateTitle(data);
+
+  if(mapEditorDataHasTileset(data)) {
+    mapEditorDataInitImages(data);
+  }
+
+  GT_SetGadgetAttrs(data->gadgets.mapNameGadget, window->intuitionWindow, NULL,
+    GTST_String, map->name,
+    TAG_END);
+
+  if(map->songNum) {
+    mapEditorDataSetSong(data, map->songNum - 1);
+  }
 }
 
 void freeMapEditorData(MapEditorData* data) {
@@ -143,6 +186,10 @@ void freeMapEditorData(MapEditorData* data) {
 
 const Map *mapEditorDataGetMap(MapEditorData *data) {
   return data->map;
+}
+
+const MapEditorGadgets *mapEditorDataGetGadgets(MapEditorData *data) {
+  return &data->gadgets;
 }
 
 struct Image *mapEditorDataGetMapImages(MapEditorData *data) {
@@ -155,16 +202,6 @@ struct Image *mapEditorDataGetPaletteImages(MapEditorData *data) {
 
 const char *mapEditorDataGetTitle(MapEditorData *data) {
   return data->title;
-}
-
-static void mapEditorDataUpdateTitle(MapEditorData *data) {
-  char unsaved = data->saved ? '\0' : '*';
-  if(data->mapNum) {
-    sprintf(data->title, "Map %d%c", data->mapNum - 1, unsaved);
-  } else {
-    sprintf(data->title, "Map Editor%c", unsaved);
-  }
-  mapEditorRefreshTitle(data->window);
 }
 
 BOOL mapEditorDataIsSaved(MapEditorData *data) {
@@ -282,10 +319,6 @@ FrameworkWindow *mapEditorDataGetTilesetRequester(MapEditorData *data) {
 
 void mapEditorDataSetSongRequester(MapEditorData *data, SongRequester *songRequester) {
   data->songRequester = songRequester;
-}
-
-void *mapEditorDataGetImageDataForTile(MapEditorData *data, UBYTE tile) {
-  return data->imageData + (tile << 7);
 }
 
 BOOL mapEditorDataHasSongRequester(MapEditorData *data) {
@@ -557,11 +590,12 @@ unsigned int mapEditorDataGetSelected(MapEditorData *data) {
 }
 
 void mapEditorDataSetSelected(MapEditorData *data, unsigned int selected) {
-  if(mapEditorDataHasSelected(data)) {
-    mapEditorUpdateSelectedFrom(data->window, data->selected, selected);
-  } else {
-    mapEditorUpdateSelected(data->window, selected);
-  }
-
+  unsigned int oldSelected = data->selected;
   data->selected = selected;
+
+  if(oldSelected >= 0) {
+    mapEditorUpdateSelectedFrom(data->window, oldSelected);
+  } else {
+    mapEditorUpdateSelected(data->window);
+  }
 }

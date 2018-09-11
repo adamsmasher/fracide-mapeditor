@@ -419,9 +419,10 @@ static struct Border tileBorder = {
   NULL
 };
 
-void mapEditorUpdateSelected(FrameworkWindow *mapEditor, unsigned int selected) {
+void mapEditorUpdateSelected(FrameworkWindow *mapEditor) {
   long row;
   long col;
+  unsigned int selected = mapEditorDataGetSelected(mapEditor->data);
 
   row = selected >> 2;
   col = selected & 0x03;
@@ -431,9 +432,9 @@ void mapEditorUpdateSelected(FrameworkWindow *mapEditor, unsigned int selected) 
     TILESET_BORDER_TOP  + (row * 32));
 }
 
-void mapEditorUpdateSelectedFrom(FrameworkWindow *mapEditor, unsigned int from, unsigned int to) {
+void mapEditorUpdateSelectedFrom(FrameworkWindow *mapEditor, unsigned int from) {
   redrawPaletteTile(mapEditor, from);
-  mapEditorUpdateSelected(mapEditor, to);
+  mapEditorUpdateSelected(mapEditor);
 }
 
 static void handleMapEditorPaletteClick(FrameworkWindow *mapEditor, WORD x, WORD y) {
@@ -646,45 +647,37 @@ void mapEditorRedrawTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col) {
   }
 }
 
-static FrameworkWindow *newMapEditor(FrameworkWindow *parent) {
+static FrameworkWindow *newMapEditor(FrameworkWindow *parent, Map *map) {
+  MapEditorData *data;
+  const MapEditorGadgets *gadgets;
   FrameworkWindow *mapEditor;
-  struct Gadget *gadgets;
 
-  MapEditorData *data = newMapEditorData();
+  data = newMapEditorData();
   if(!data) {
     fprintf(stderr, "newMapEditor: failed to allocate MapEditorData\n");
     goto error;
   }
 
-  /* TODO: this goes in newMapEditorData 
-  gadgets = initMapEditorGadgets(&data->gadgets);
-  if(!gadgets) {
-    fprintf(stderr, "newMapEditor: failed to create gadgets\n");
-    goto error_freeData;
-  } */
-
+  gadgets = mapEditorDataGetGadgets(data);
   mapEditorKind.menuSpec = mapEditorMenuSpec;
-  mapEditor = openChildWindow(parent, &mapEditorKind, gadgets);
+  mapEditor = openChildWindow(parent, &mapEditorKind, (struct Gadget*)gadgets->glist);
   if(!mapEditor) {
     fprintf(stderr, "newMapEditor: failed to open window\n");
     goto error_freeData;
   }
 
-  refreshMapEditor(mapEditor);
-
-  mapEditor->data = data;
+  initMapEditorData(data, mapEditor, map);
 
   return mapEditor;
 
 error_freeData:
   freeMapEditorData(data);
 error:
-    return NULL;
+  return NULL;
 }
 
 FrameworkWindow *newMapEditorNewMap(FrameworkWindow *parent) {
   Map *map;
-  MapEditorData *data;
   FrameworkWindow *mapEditor;
 
   map = allocMap();
@@ -693,16 +686,11 @@ FrameworkWindow *newMapEditorNewMap(FrameworkWindow *parent) {
     goto error;
   }
 
-  mapEditor = newMapEditor(parent);
+  mapEditor = newMapEditor(parent, map);
   if(!mapEditor) {
     fprintf(stderr, "newMapEditorNewMap: failed to create map editor\n");
     goto error_freeMap;
   }
-  
-  data = mapEditor->data;
-  /* TODO: should this be part of the init of mapEditorData...? or...? */
-  /* data->map = map;
-  data->mapNum = 0; */
 
   return mapEditor;
 
@@ -712,11 +700,9 @@ error:
   return NULL;
 }
 
-FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, int mapNum) {
+FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, UWORD mapNum) {
   Map *mapCopy;
   FrameworkWindow *mapEditor;
-  MapEditorData *data;
-  MapEditorGadgets *gadgets;
 
   mapCopy = copyMap(map);
   if(!mapCopy) {
@@ -724,37 +710,22 @@ FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, int mapN
     goto error;
   }
 
-  mapEditor = newMapEditor(parent);
+  mapEditor = newMapEditor(parent, map);
   if(!mapEditor) {
     fprintf(stderr, "newMapEditorWithMap: failed to create map editor\n");
     goto error_freeMap;
   }
 
-  data = mapEditor->data;
-/* TODO: fixme */
-/*  gadgets = &data->gadgets;
-
-  GT_SetGadgetAttrs(gadgets->mapNameGadget, mapEditor->intuitionWindow, NULL,
-    GTST_String, map->name,
-    TAG_END);
-
-  data->map = mapCopy; */
-
-  if(mapEditorDataHasTileset(data)) {
-    /* TODO: there should be a way for new to do this */
-    mapEditorDataInitImages(data);
-    /* TODO: mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1); */
-  }
-
-  if(map->songNum) {
-    mapEditorDataSetSong(mapEditor->data, map->songNum - 1);
-  }
-
   mapEditorDataSetMapNum(mapEditor->data, mapNum);
+
   return mapEditor;
 
 error_freeMap:
-  free(mapCopy);
+  free(map);
 error:
   return NULL;
 }
+
+  /* TODO: (do this when we init the data or something)
+  mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1); 
+  */

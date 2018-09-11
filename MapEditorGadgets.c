@@ -112,8 +112,8 @@ static ButtonSpec entitiesSpec = {
   mapEditorEntitiesClicked
 };
 
-struct Gadget *initMapEditorGadgets(MapEditorGadgets *gadgets) {
-  return buildGadgets(
+BOOL initMapEditorGadgets(MapEditorGadgets *gadgets) {
+  struct Gadget *glist = buildGadgets(
     makeTextGadget(&currentTilesetSpec),    &gadgets->tilesetNameGadget,
     makeButtonGadget(&chooseTilesetSpec),   NULL,
     makeScrollerGadget(&tilesetScrollSpec), NULL,
@@ -127,4 +127,6 @@ struct Gadget *initMapEditorGadgets(MapEditorGadgets *gadgets) {
     makeButtonGadget(&mapDownSpec),         &gadgets->downGadget,
     makeButtonGadget(&entitiesSpec),        NULL,
     NULL);
+  gadgets->glist = glist;
+  return (BOOL)(glist != NULL);
 }

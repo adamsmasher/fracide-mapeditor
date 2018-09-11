@@ -5,21 +5,21 @@
 
 #include "Entity.h"
 #include "Map.h"
+#include "MapEditorGadgets.h"
 #include "SongRequester.h"
 
 typedef struct MapEditorData_tag MapEditorData;
 
 MapEditorData *newMapEditorData(void);
+void initMapEditorData(MapEditorData*, FrameworkWindow*, Map*);
 void freeMapEditorData(MapEditorData*);
-
-/* TODO: there should be a way for new to do this */
-void mapEditorDataInitImages(MapEditorData*);
-void *mapEditorDataGetImageDataForTile(MapEditorData*, UBYTE tile);
 
 struct Image *mapEditorDataGetPaletteImages(MapEditorData*);
 struct Image *mapEditorDataGetMapImages(MapEditorData*);
 
 const Map *mapEditorDataGetMap(MapEditorData*);
+
+const MapEditorGadgets *mapEditorDataGetGadgets(MapEditorData*);
 
 BOOL mapEditorDataIsSaved(MapEditorData*);
 BOOL mapEditorDataSaveMap(MapEditorData*);

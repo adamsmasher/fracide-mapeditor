@@ -4,6 +4,7 @@
 #include <intuition/intuition.h>
 
 typedef struct MapEditorGadgets_tag {
+  struct Gadget *glist;
   struct Gadget *tilesetNameGadget;
   struct Gadget *mapNameGadget;
   struct Gadget *songNameGadget;
@@ -13,7 +14,7 @@ typedef struct MapEditorGadgets_tag {
   struct Gadget *downGadget;
 } MapEditorGadgets;
 
-/* builds and returns a gadget list and fills out the pointers in the argument */
-struct Gadget *initMapEditorGadgets(MapEditorGadgets*);
+/* fills out the pointers in the argument; returns TRUE on success */
+BOOL initMapEditorGadgets(MapEditorGadgets*);
 
 #endif

@@ -12,7 +12,7 @@
 
 /* constructors */
 FrameworkWindow *newMapEditorNewMap(FrameworkWindow *parent);
-FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map*, int mapNum);
+FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map*, UWORD mapNum);
 
 /* properties */
 BOOL isMapEditor(FrameworkWindow*);
@@ -41,6 +41,8 @@ void mapEditorRefreshTitle(FrameworkWindow*);
 void mapEditorUpdateMapName(FrameworkWindow*);
 void mapEditorUpdateTileDisplays(FrameworkWindow*);
 void mapEditorRefreshSong(FrameworkWindow*);
+void mapEditorUpdateSelected(FrameworkWindow*);
+void mapEditorUpdateSelectedFrom(FrameworkWindow*, unsigned int selected);
 
 /* misc */
 BOOL mapEditorEnsureSaved(FrameworkWindow *mapEditor);
