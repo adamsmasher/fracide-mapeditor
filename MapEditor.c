@@ -725,7 +725,3 @@ error_freeMap:
 error:
   return NULL;
 }
-
-  /* TODO: (do this when we init the data or something)
-  mapEditorSetTilesetUpdateUI(mapEditor, map->tilesetNum - 1); 
-  */
