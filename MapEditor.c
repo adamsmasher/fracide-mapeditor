@@ -558,14 +558,6 @@ BOOL isMapEditor(FrameworkWindow *window) {
   return (BOOL)(window->kind == &mapEditorKind);
 }
 
-static struct EasyStruct tilesetOutOfBoundsEasyStruct = {
-  sizeof(struct EasyStruct),
-  0,
-  "Tileset Not In New Tileset Package",
-  "This map had tileset %ld, which does not exist\nin the new package.\nThe tileset has been removed from this map.",
-  "OK"
-};
-
 void mapEditorDrawEntity(FrameworkWindow *mapEditor, int entityNum) {
   MapEditorData *data = mapEditor->data;
   if(mapEditorDataHasTileset(data)) {

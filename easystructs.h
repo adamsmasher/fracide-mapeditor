@@ -14,5 +14,7 @@ extern struct EasyStruct unsavedProjectAlertEasyStruct;
 extern struct EasyStruct confirmRevertProjectEasyStruct;
 extern struct EasyStruct confirmRevertMapEasyStruct;
 extern struct EasyStruct confirmCreateMapEasyStruct;
+extern struct EasyStruct tilesetOutOfBoundsEasyStruct;
+
 
 #endif

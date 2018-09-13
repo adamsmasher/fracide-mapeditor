@@ -2,6 +2,8 @@
 
 #include <intuition/intuition.h>
 
+/* TODO: Split this into easy structs for a particular module */
+
 struct EasyStruct noTilesetPackageLoadedEasyStruct = {
     sizeof(struct EasyStruct),
     0,
@@ -88,4 +90,12 @@ struct EasyStruct confirmCreateMapEasyStruct = {
     "Confirm Create",
     "Map %ld doesn't exist yet. Create it?",
     "Create|Don't Create"
+};
+
+struct EasyStruct tilesetOutOfBoundsEasyStruct = {
+  sizeof(struct EasyStruct),
+  0,
+  "Tileset Not In New Tileset Package",
+  "This map had tileset %ld, which does not exist\nin the new package.\nThe tileset has been removed from this map.",
+  "OK"
 };
