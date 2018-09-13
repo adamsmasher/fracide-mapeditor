@@ -75,8 +75,10 @@ void mapEditorDataEntitySetTagId(MapEditorData*, UWORD entityNum, int tagNum, UB
 UBYTE mapEditorDataEntityGetTagValue(MapEditorData*, UWORD entityNum, int tagNum);
 void mapEditorDataEntitySetTagValue(MapEditorData*, UWORD entityNum, int tagNum, UBYTE newTagValue);
 
+BOOL mapEditorDataHasSong(MapEditorData*);
 void mapEditorDataClearSong(MapEditorData*);
 void mapEditorDataSetSong(MapEditorData*, UWORD songNum);
+UWORD mapEditorDataGetSong(MapEditorData*);
 
 void mapEditorDataClearTileset(MapEditorData*);
 BOOL mapEditorDataHasTileset(MapEditorData*);

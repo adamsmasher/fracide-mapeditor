@@ -631,14 +631,21 @@ void mapEditorUpdateTileDisplays(FrameworkWindow *mapEditor) {
   mapEditorRefreshTileDisplays(mapEditor);
 }
 
-/* TODO: when is this called - when you update a song in the song name editor... */
 void mapEditorRefreshSong(FrameworkWindow *mapEditor) {
-/*
   MapEditorData *data = mapEditor->data;
-  if(data->map->songNum) {
-     mapEditorSetSongUpdateUI(mapEditor, data->map->songNum - 1);
+  const MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+  const char *songName;
+
+  if(mapEditorDataHasSong(data)) {
+    UWORD songNum = mapEditorDataGetSong(data);
+    songName = projectDataGetSongName(mapEditor->parent->data, songNum);
+  } else {
+    songName = "N/A";
   }
-*/
+
+  GT_SetGadgetAttrs((struct Gadget*)gadgets->songNameGadget, mapEditor->intuitionWindow, NULL,
+    GTTX_Text, songName,
+    TAG_END);
 }
 
 void mapEditorRedrawTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col) {

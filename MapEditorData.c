@@ -458,30 +458,24 @@ void mapEditorDataEntitySetTagValue(MapEditorData *data, UWORD entityNum, int ta
   mapEditorDataSetSaved(data, FALSE);
 }
 
+BOOL mapEditorDataHasSong(MapEditorData *data) {
+  return (BOOL)(data->map->songNum != 0);
+}
+
 void mapEditorDataClearSong(MapEditorData *data) {
-  MapEditorGadgets *gadgets = &data->gadgets;
-
   data->map->songNum = 0;
-
   mapEditorDataSetSaved(data, FALSE);
-
-  GT_SetGadgetAttrs(gadgets->songNameGadget, data->window->intuitionWindow, NULL,
-    GTTX_Text, "N/A",
-    TAG_END);
+  mapEditorRefreshSong(data->window);
 }
 
 void mapEditorDataSetSong(MapEditorData *data, UWORD songNum) {
-  MapEditorGadgets *gadgets = &data->gadgets;
-  FrameworkWindow *mapEditor = data->window;
-  ProjectWindowData *projectData = mapEditor->parent->data;
-
   data->map->songNum = songNum + 1;
-
-  GT_SetGadgetAttrs(gadgets->songNameGadget, mapEditor->intuitionWindow, NULL,
-    GTTX_Text, projectDataGetSongName(projectData, songNum),
-    TAG_END);
-
   mapEditorDataSetSaved(data, FALSE);
+  mapEditorRefreshSong(data->window);
+}
+
+UWORD mapEditorDataGetSong(MapEditorData *data) {
+  return (UWORD)(data->map->songNum - 1);
 }
 
 void mapEditorDataClearTileset(MapEditorData *data) {
