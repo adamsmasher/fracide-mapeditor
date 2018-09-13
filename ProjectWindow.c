@@ -379,11 +379,11 @@ done:
   return;
 }
 
-static void updateAllTileDisplays(FrameworkWindow *projectWindow) {
+static void refreshAllTileDisplays(FrameworkWindow *projectWindow) {
   FrameworkWindow *i = projectWindow->children;
   while(i) {
     if(isMapEditor(i)) {
-      mapEditorUpdateTileDisplays(i);
+      mapEditorRefreshTileDisplays(i);
     }
     i = i->next;
   }
@@ -423,7 +423,7 @@ void projectWindowSelectTilesetPackage(FrameworkWindow *projectWindow) {
 
   if(AslRequest(request, NULL)) {
     if(loadTilesetPackageFromAsl(projectWindow, request->rf_Dir, request->rf_File)) {
-      updateAllTileDisplays(projectWindow);
+      refreshAllTileDisplays(projectWindow);
     }
   }
 

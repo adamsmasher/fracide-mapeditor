@@ -33,8 +33,7 @@ UWORD mapEditorDataGetMapNum(MapEditorData*);
 void mapEditorDataSetMapNum(MapEditorData*, UWORD mapNum);
 
 const char *mapEditorDataGetMapName(MapEditorData*);
-/* updates the map name to reflect the contents of the map name gadget */
-void mapEditorDataUpdateMapName(MapEditorData*);
+void mapEditorDataSetMapName(MapEditorData*, const char *mapName);
 
 BOOL mapEditorDataHasSongRequester(MapEditorData*);
 SongRequester *mapEditorDataGetSongRequester(MapEditorData*);

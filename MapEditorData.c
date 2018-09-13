@@ -29,6 +29,7 @@ struct MapEditorData_tag {
   Map *map;
   UWORD mapNum;
 
+  /* TODO: move a generic version of this into the window class! */
   MapEditorGadgets gadgets;
 
   BOOL saved;
@@ -294,15 +295,9 @@ const char *mapEditorDataGetMapName(MapEditorData *data) {
   return data->map->name;
 }
 
-static void mapEditorDataSetMapName(MapEditorData *data, const char *mapName) {
+void mapEditorDataSetMapName(MapEditorData *data, const char *mapName) {
   strcpy(data->map->name, mapName);
   mapEditorDataSetSaved(data, FALSE);
-}
-
-void mapEditorDataUpdateMapName(MapEditorData *data) {
-  MapEditorGadgets *gadgets = &data->gadgets;
-  struct StringInfo *stringInfo = gadgets->mapNameGadget->SpecialInfo;
-  mapEditorDataSetMapName(data, stringInfo->Buffer);
 }
 
 BOOL mapEditorDataHasTilesetRequester(MapEditorData *data) {
@@ -588,8 +583,8 @@ void mapEditorDataSetSelected(MapEditorData *data, unsigned int selected) {
   data->selected = selected;
 
   if(oldSelected >= 0) {
-    mapEditorUpdateSelectedFrom(data->window, oldSelected);
+    mapEditorRefreshSelectedFrom(data->window, oldSelected);
   } else {
-    mapEditorUpdateSelected(data->window);
+    mapEditorRefreshSelected(data->window);
   }
 }

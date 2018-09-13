@@ -255,7 +255,10 @@ error:
 }
 
 void mapEditorUpdateMapName(FrameworkWindow *mapEditor) {
-  mapEditorDataUpdateMapName(mapEditor->data);
+  MapEditorData *data = mapEditor->data;
+  const MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+  const struct StringInfo *stringInfo = gadgets->mapNameGadget->SpecialInfo;
+  mapEditorDataSetMapName(data, stringInfo->Buffer);
 }
 
 void mapEditorChangeSongClicked(FrameworkWindow *mapEditor) {
@@ -419,7 +422,7 @@ static struct Border tileBorder = {
   NULL
 };
 
-void mapEditorUpdateSelected(FrameworkWindow *mapEditor) {
+void mapEditorRefreshSelected(FrameworkWindow *mapEditor) {
   long row;
   long col;
   unsigned int selected = mapEditorDataGetSelected(mapEditor->data);
@@ -432,9 +435,9 @@ void mapEditorUpdateSelected(FrameworkWindow *mapEditor) {
     TILESET_BORDER_TOP  + (row * 32));
 }
 
-void mapEditorUpdateSelectedFrom(FrameworkWindow *mapEditor, unsigned int from) {
+void mapEditorRefreshSelectedFrom(FrameworkWindow *mapEditor, unsigned int from) {
   redrawPaletteTile(mapEditor, from);
-  mapEditorUpdateSelected(mapEditor);
+  mapEditorRefreshSelected(mapEditor);
 }
 
 static void handleMapEditorPaletteClick(FrameworkWindow *mapEditor, WORD x, WORD y) {
@@ -596,13 +599,26 @@ static void mapEditorDrawTileDisplays(FrameworkWindow *mapEditor) {
   mapEditorDrawEntities(mapEditor);
 }
 
+static void refreshTilesetRequesterChildren(FrameworkWindow *mapEditor) {
+  FrameworkWindow *i = mapEditor->children;
+  while(i) {
+    if(isTilesetRequesterWindow(i)) {
+      refreshTilesetRequesterList(i);
+    }
+    i = i->next;
+  }
+}
+
 void mapEditorRefreshTileDisplays(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
+
   if(mapEditorDataHasTileset(data)) {
     mapEditorDrawTileDisplays(mapEditor);
   } else {
     mapEditorClearTileDisplays(mapEditor);
   }
+
+  refreshTilesetRequesterChildren(mapEditor);
 
 /* TODO: this needs to go somewhere...
   also when the tileset package is loaded set you need to load the images in the data properly...
@@ -614,21 +630,6 @@ void mapEditorRefreshTileDisplays(FrameworkWindow *mapEditor) {
       mapEditorDataClearTileset(mapEditor->data);
     }
 */
-}
-
-static void updateTilesetRequesterChildren(FrameworkWindow *mapEditor) {
-  FrameworkWindow *i = mapEditor->children;
-  while(i) {
-    if(isTilesetRequesterWindow(i)) {
-      refreshTilesetRequesterList(i);
-    }
-    i = i->next;
-  }
-}
-
-void mapEditorUpdateTileDisplays(FrameworkWindow *mapEditor) {
-  updateTilesetRequesterChildren(mapEditor);
-  mapEditorRefreshTileDisplays(mapEditor);
 }
 
 void mapEditorRefreshSong(FrameworkWindow *mapEditor) {
