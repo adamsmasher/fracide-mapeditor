@@ -3,11 +3,6 @@
 #include <exec/exec.h>
 #include <proto/exec.h>
 
-#include <intuition/gadgetclass.h>
-
-#include <libraries/gadtools.h>
-#include <proto/gadtools.h>
-
 #include <graphics/gfx.h>
 #include <graphics/scale.h>
 #include <proto/graphics.h>
@@ -171,9 +166,7 @@ void initMapEditorData(MapEditorData *data, FrameworkWindow *window, Map *map) {
     mapEditorDataInitImages(data);
   }
 
-  GT_SetGadgetAttrs(data->gadgets.mapNameGadget, window->intuitionWindow, NULL,
-    GTST_String, map->name,
-    TAG_END);
+  mapEditorRefreshMapName(data->window);
 
   if(map->songNum) {
     mapEditorDataSetSong(data, map->songNum - 1);
@@ -189,6 +182,7 @@ const Map *mapEditorDataGetMap(MapEditorData *data) {
   return data->map;
 }
 
+/* TODO: this shouldn't be const */
 const MapEditorGadgets *mapEditorDataGetGadgets(MapEditorData *data) {
   return &data->gadgets;
 }
@@ -262,33 +256,11 @@ UWORD mapEditorDataGetMapNum(MapEditorData *data) {
 }
 
 void mapEditorDataSetMapNum(MapEditorData *data, UWORD mapNum) {
-  MapEditorGadgets *gadgets = &data->gadgets;
-  struct Window *window = data->window->intuitionWindow;
-
-  BOOL upDisabled = mapNum < 16 ? TRUE : FALSE;
-  BOOL downDisabled = mapNum >= 112 ? TRUE : FALSE;
-  BOOL leftDisabled = mapNum % 16 == 0 ? TRUE : FALSE;
-  BOOL rightDisabled = mapNum % 16 == 15 ? TRUE : FALSE;
-
   data->mapNum = mapNum + 1;
 
-  GT_SetGadgetAttrs(gadgets->upGadget, window, NULL,
-    GA_Disabled, upDisabled,
-    TAG_END);
-
-  GT_SetGadgetAttrs(gadgets->downGadget, window, NULL,
-    GA_Disabled, downDisabled,
-    TAG_END);
-
-  GT_SetGadgetAttrs(gadgets->leftGadget, window, NULL,
-    GA_Disabled, leftDisabled,
-    TAG_END);
-
-  GT_SetGadgetAttrs(gadgets->rightGadget, window, NULL,
-    GA_Disabled, rightDisabled,
-    TAG_END);
-
   mapEditorDataUpdateTitle(data);
+
+  mapEditorRefreshNavigationButtons(data->window);
 }
 
 const char *mapEditorDataGetMapName(MapEditorData *data) {
@@ -474,16 +446,11 @@ UWORD mapEditorDataGetSong(MapEditorData *data) {
 }
 
 void mapEditorDataClearTileset(MapEditorData *data) {
-  MapEditorGadgets *gadgets = &data->gadgets;
-
   data->map->tilesetNum = 0;
-
-  GT_SetGadgetAttrs(gadgets->tilesetNameGadget, data->window->intuitionWindow, NULL,
-    GTTX_Text, "N/A",
-    TAG_END);
 
   mapEditorDataSetSaved(data, FALSE);
 
+  mapEditorRefreshTilesetName(data->window);
   mapEditorRefreshTileDisplays(data->window);
 }
 
@@ -535,10 +502,12 @@ BOOL mapEditorDataHasTileset(MapEditorData *data) {
   return (BOOL)(data->map->tilesetNum > 0);
 }
 
+UWORD mapEditorDataGetTileset(MapEditorData *data) {
+  return (UWORD)(data->map->tilesetNum - 1);
+}
+
 void mapEditorDataSetTileset(MapEditorData *data, UWORD tilesetNum) {
-  MapEditorGadgets *gadgets = &data->gadgets;
-  FrameworkWindow *mapEditor = data->window;
-  ProjectWindowData *projectData = mapEditor->parent->data;
+  ProjectWindowData *projectData = data->window->parent->data;
 
   data->map->tilesetNum = tilesetNum + 1;
 
@@ -546,12 +515,9 @@ void mapEditorDataSetTileset(MapEditorData *data, UWORD tilesetNum) {
     (UWORD*)projectDataGetTilesetImgs(projectData, tilesetNum),
     data->imageData);
 
-  GT_SetGadgetAttrs(gadgets->tilesetNameGadget, mapEditor->intuitionWindow, NULL,
-    GTTX_Text, projectDataGetTilesetName(projectData, tilesetNum),
-    TAG_END);
-
   mapEditorDataSetSaved(data, FALSE);
 
+  mapEditorRefreshTilesetName(data->window);
   mapEditorRefreshTileDisplays(data->window);
 }
 

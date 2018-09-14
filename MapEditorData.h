@@ -81,6 +81,7 @@ UWORD mapEditorDataGetSong(MapEditorData*);
 
 void mapEditorDataClearTileset(MapEditorData*);
 BOOL mapEditorDataHasTileset(MapEditorData*);
+UWORD mapEditorDataGetTileset(MapEditorData*);
 void mapEditorDataSetTileset(MapEditorData*, UWORD tilesetNum);
 
 void mapEditorDataSetTileTo(MapEditorData*, UBYTE row, UBYTE col, UBYTE to);

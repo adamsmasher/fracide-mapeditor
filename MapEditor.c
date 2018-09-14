@@ -3,6 +3,8 @@
 #include <intuition/intuition.h>
 #include <proto/intuition.h>
 
+#include <intuition/gadgetclass.h>
+
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
@@ -49,6 +51,42 @@ void mapEditorRefreshRevertMap(FrameworkWindow *mapEditor) {
   } else {
     mapEditorEnableRevertMap(mapEditor);
   }
+}
+
+void mapEditorRefreshNavigationButtons(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  const MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+  struct Window *window = mapEditor->intuitionWindow;
+  BOOL upDisabled;
+  BOOL downDisabled;
+  BOOL leftDisabled;
+  BOOL rightDisabled;
+
+  if(mapEditorDataHasMapNum(data)) {
+    UWORD mapNum = mapEditorDataGetMapNum(data);
+    upDisabled    = (BOOL)(mapNum < 16);
+    downDisabled  = (BOOL)(mapNum >= 112);
+    leftDisabled  = (BOOL)(mapNum % 16 == 0);
+    rightDisabled = (BOOL)(mapNum % 16 == 15);
+  } else {
+    upDisabled = downDisabled = leftDisabled = rightDisabled = TRUE;
+  }
+
+  GT_SetGadgetAttrs((struct Gadget*)gadgets->upGadget, window, NULL,
+    GA_Disabled, upDisabled,
+    TAG_END);
+
+  GT_SetGadgetAttrs((struct Gadget*)gadgets->downGadget, window, NULL,
+    GA_Disabled, downDisabled,
+    TAG_END);
+
+  GT_SetGadgetAttrs((struct Gadget*)gadgets->leftGadget, window, NULL,
+    GA_Disabled, leftDisabled,
+    TAG_END);
+
+  GT_SetGadgetAttrs((struct Gadget*)gadgets->rightGadget, window, NULL,
+    GA_Disabled, rightDisabled,
+    TAG_END);
 }
 
 void mapEditorRefreshTitle(FrameworkWindow *mapEditor) {
@@ -259,6 +297,15 @@ void mapEditorUpdateMapName(FrameworkWindow *mapEditor) {
   const MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
   const struct StringInfo *stringInfo = gadgets->mapNameGadget->SpecialInfo;
   mapEditorDataSetMapName(data, stringInfo->Buffer);
+}
+
+void mapEditorRefreshMapName(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  const MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+
+  GT_SetGadgetAttrs((struct Gadget*)gadgets->mapNameGadget, mapEditor->intuitionWindow, NULL,
+    GTST_String, mapEditorDataGetMapName(data),
+    TAG_END);
 }
 
 void mapEditorChangeSongClicked(FrameworkWindow *mapEditor) {
@@ -622,6 +669,23 @@ void mapEditorRefreshTileDisplays(FrameworkWindow *mapEditor) {
       mapEditorDataClearTileset(mapEditor->data);
     }
 */
+}
+
+void mapEditorRefreshTilesetName(FrameworkWindow *mapEditor) {
+  MapEditorData *data = mapEditor->data;
+  const MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+  const char *tilesetName;
+
+  if(mapEditorDataHasTileset(data)) {
+    UWORD tilesetNum = mapEditorDataGetTileset(data);
+    tilesetName = projectDataGetTilesetName(mapEditor->parent->data, tilesetNum);
+  } else {
+    tilesetName = "N/A";
+  }
+
+  GT_SetGadgetAttrs((struct Gadget*)gadgets->tilesetNameGadget, mapEditor->intuitionWindow, NULL,
+    GTTX_Text, tilesetName,
+    TAG_END);
 }
 
 void mapEditorRefreshSong(FrameworkWindow *mapEditor) {

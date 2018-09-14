@@ -39,12 +39,15 @@ void mapEditorEntitiesClicked(FrameworkWindow*);
 void mapEditorUpdateMapName(FrameworkWindow*);
 
 /* refreshing */
+void mapEditorRefreshMapName(FrameworkWindow*);
+void mapEditorRefreshNavigationButtons(FrameworkWindow*);
 void mapEditorRefreshRevertMap(FrameworkWindow*);
-void mapEditorRefreshTitle(FrameworkWindow*);
-void mapEditorRefreshTileDisplays(FrameworkWindow*);
 void mapEditorRefreshSong(FrameworkWindow*);
 void mapEditorRefreshSelected(FrameworkWindow*);
 void mapEditorRefreshSelectedFrom(FrameworkWindow*, unsigned int selected);
+void mapEditorRefreshTitle(FrameworkWindow*);
+void mapEditorRefreshTileDisplays(FrameworkWindow*);
+void mapEditorRefreshTilesetName(FrameworkWindow*);
 
 /* misc */
 BOOL mapEditorEnsureSaved(FrameworkWindow *mapEditor);
