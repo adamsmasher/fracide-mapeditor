@@ -19,7 +19,7 @@ struct Image *mapEditorDataGetMapImages(MapEditorData*);
 
 const Map *mapEditorDataGetMap(MapEditorData*);
 
-const MapEditorGadgets *mapEditorDataGetGadgets(MapEditorData*);
+MapEditorGadgets *mapEditorDataGetGadgets(MapEditorData*);
 
 BOOL mapEditorDataIsSaved(MapEditorData*);
 BOOL mapEditorDataSaveMap(MapEditorData*);

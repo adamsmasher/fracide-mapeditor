@@ -182,8 +182,7 @@ const Map *mapEditorDataGetMap(MapEditorData *data) {
   return data->map;
 }
 
-/* TODO: this shouldn't be const */
-const MapEditorGadgets *mapEditorDataGetGadgets(MapEditorData *data) {
+MapEditorGadgets *mapEditorDataGetGadgets(MapEditorData *data) {
   return &data->gadgets;
 }
 

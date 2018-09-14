@@ -55,7 +55,7 @@ void mapEditorRefreshRevertMap(FrameworkWindow *mapEditor) {
 
 void mapEditorRefreshNavigationButtons(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
-  const MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+  MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
   struct Window *window = mapEditor->intuitionWindow;
   BOOL upDisabled;
   BOOL downDisabled;
@@ -72,19 +72,19 @@ void mapEditorRefreshNavigationButtons(FrameworkWindow *mapEditor) {
     upDisabled = downDisabled = leftDisabled = rightDisabled = TRUE;
   }
 
-  GT_SetGadgetAttrs((struct Gadget*)gadgets->upGadget, window, NULL,
+  GT_SetGadgetAttrs(gadgets->upGadget, window, NULL,
     GA_Disabled, upDisabled,
     TAG_END);
 
-  GT_SetGadgetAttrs((struct Gadget*)gadgets->downGadget, window, NULL,
+  GT_SetGadgetAttrs(gadgets->downGadget, window, NULL,
     GA_Disabled, downDisabled,
     TAG_END);
 
-  GT_SetGadgetAttrs((struct Gadget*)gadgets->leftGadget, window, NULL,
+  GT_SetGadgetAttrs(gadgets->leftGadget, window, NULL,
     GA_Disabled, leftDisabled,
     TAG_END);
 
-  GT_SetGadgetAttrs((struct Gadget*)gadgets->rightGadget, window, NULL,
+  GT_SetGadgetAttrs(gadgets->rightGadget, window, NULL,
     GA_Disabled, rightDisabled,
     TAG_END);
 }
@@ -301,9 +301,9 @@ void mapEditorUpdateMapName(FrameworkWindow *mapEditor) {
 
 void mapEditorRefreshMapName(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
-  const MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+  MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
 
-  GT_SetGadgetAttrs((struct Gadget*)gadgets->mapNameGadget, mapEditor->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(gadgets->mapNameGadget, mapEditor->intuitionWindow, NULL,
     GTST_String, mapEditorDataGetMapName(data),
     TAG_END);
 }
@@ -673,7 +673,7 @@ void mapEditorRefreshTileDisplays(FrameworkWindow *mapEditor) {
 
 void mapEditorRefreshTilesetName(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
-  const MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+  MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
   const char *tilesetName;
 
   if(mapEditorDataHasTileset(data)) {
@@ -683,14 +683,14 @@ void mapEditorRefreshTilesetName(FrameworkWindow *mapEditor) {
     tilesetName = "N/A";
   }
 
-  GT_SetGadgetAttrs((struct Gadget*)gadgets->tilesetNameGadget, mapEditor->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(gadgets->tilesetNameGadget, mapEditor->intuitionWindow, NULL,
     GTTX_Text, tilesetName,
     TAG_END);
 }
 
 void mapEditorRefreshSong(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
-  const MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+  MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
   const char *songName;
 
   if(mapEditorDataHasSong(data)) {
@@ -700,7 +700,7 @@ void mapEditorRefreshSong(FrameworkWindow *mapEditor) {
     songName = "N/A";
   }
 
-  GT_SetGadgetAttrs((struct Gadget*)gadgets->songNameGadget, mapEditor->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(gadgets->songNameGadget, mapEditor->intuitionWindow, NULL,
     GTTX_Text, songName,
     TAG_END);
 }
@@ -713,7 +713,7 @@ void mapEditorRedrawTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col) {
 
 static FrameworkWindow *newMapEditor(FrameworkWindow *parent, Map *map) {
   MapEditorData *data;
-  const MapEditorGadgets *gadgets;
+  MapEditorGadgets *gadgets;
   FrameworkWindow *mapEditor;
 
   data = newMapEditorData();
@@ -724,7 +724,7 @@ static FrameworkWindow *newMapEditor(FrameworkWindow *parent, Map *map) {
 
   gadgets = mapEditorDataGetGadgets(data);
   mapEditorKind.menuSpec = mapEditorMenuSpec;
-  mapEditor = openChildWindow(parent, &mapEditorKind, (struct Gadget*)gadgets->glist);
+  mapEditor = openChildWindow(parent, &mapEditorKind, gadgets->glist);
   if(!mapEditor) {
     fprintf(stderr, "newMapEditor: failed to open window\n");
     goto error_freeData;
