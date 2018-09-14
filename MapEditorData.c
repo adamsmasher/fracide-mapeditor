@@ -453,6 +453,7 @@ void mapEditorDataClearTileset(MapEditorData *data) {
   mapEditorRefreshTileDisplays(data->window);
 }
 
+/* TODO: move me elsewhere */
 static void copyScaledTileset(UWORD *src, UWORD *dst) {
   struct BitMap srcBitMap;
   struct BitMap dstBitMap;
