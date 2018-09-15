@@ -157,6 +157,7 @@ static void mapEditorDataUpdateTitle(MapEditorData *data) {
 }
 
 void initMapEditorData(MapEditorData *data, FrameworkWindow *window, Map *map) {
+  window->data = data;
   data->window = window;
   data->map = map;
 
