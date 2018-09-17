@@ -3,6 +3,8 @@
 
 #include <intuition/intuition.h>
 
+#include "framework/WindowGadgets.h"
+
 typedef struct MapEditorGadgets_tag {
   struct Gadget *glist;
   struct Gadget *tilesetNameGadget;
@@ -14,7 +16,7 @@ typedef struct MapEditorGadgets_tag {
   struct Gadget *downGadget;
 } MapEditorGadgets;
 
-/* fills out the pointers in the argument; returns TRUE on success */
-BOOL initMapEditorGadgets(MapEditorGadgets*);
+WindowGadgets *newMapEditorGadgets(void);
+void freeMapEditorGadgets(WindowGadgets*);
 
 #endif

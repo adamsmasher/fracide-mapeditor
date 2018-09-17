@@ -3,6 +3,8 @@
 
 #include <intuition/intuition.h>
 
+#include "WindowGadgets.h"
+
 typedef void (*RefreshFunction) (struct FrameworkWindow_tag*);
 typedef BOOL (*CanCloseFunction)(struct FrameworkWindow_tag*);
 typedef void (*CloseFunction)   (struct FrameworkWindow_tag*);
@@ -24,7 +26,8 @@ typedef struct FrameworkWindow_tag {
 
   struct Window *intuitionWindow;
   struct Menu   *menu;
-  struct Gadget *gadgets;
+
+  WindowGadgets *gadgets;
 
   void *data;
 
@@ -39,9 +42,8 @@ typedef struct FrameworkWindow_tag {
 
 void handleWindowEvents(FrameworkWindow*, long signalSet);
 
-/* n.b.: this window takes ownership of its gadgets and frees them on close */
-FrameworkWindow *openWindowOnScreen(WindowKind*, struct Gadget*, struct Screen*);
-FrameworkWindow *openChildWindow(FrameworkWindow *parent, WindowKind*, struct Gadget*);
+FrameworkWindow *openWindowOnScreen(WindowKind*, WindowGadgets*, struct Screen*);
+FrameworkWindow *openChildWindow(FrameworkWindow *parent, WindowKind*, WindowGadgets*);
 
 BOOL tryToCloseWindow(FrameworkWindow*);
 void forceCloseWindow(FrameworkWindow*);

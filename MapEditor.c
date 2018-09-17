@@ -55,7 +55,7 @@ void mapEditorRefreshRevertMap(FrameworkWindow *mapEditor) {
 
 void mapEditorRefreshNavigationButtons(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
-  MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+  MapEditorGadgets *gadgets = mapEditor->gadgets->data;
   struct Window *window = mapEditor->intuitionWindow;
   BOOL upDisabled;
   BOOL downDisabled;
@@ -293,18 +293,16 @@ error:
 }
 
 void mapEditorUpdateMapName(FrameworkWindow *mapEditor) {
-  MapEditorData *data = mapEditor->data;
-  const MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+  const MapEditorGadgets *gadgets = mapEditor->gadgets->data;
   const struct StringInfo *stringInfo = gadgets->mapNameGadget->SpecialInfo;
-  mapEditorDataSetMapName(data, stringInfo->Buffer);
+  mapEditorDataSetMapName(mapEditor->data, stringInfo->Buffer);
 }
 
 void mapEditorRefreshMapName(FrameworkWindow *mapEditor) {
-  MapEditorData *data = mapEditor->data;
-  MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+  MapEditorGadgets *gadgets = mapEditor->gadgets->data;
 
   GT_SetGadgetAttrs(gadgets->mapNameGadget, mapEditor->intuitionWindow, NULL,
-    GTST_String, mapEditorDataGetMapName(data),
+    GTST_String, mapEditorDataGetMapName(mapEditor->data),
     TAG_END);
 }
 
@@ -579,6 +577,11 @@ static void handleMapEditorClick(FrameworkWindow *mapEditor, WORD x, WORD y) {
   }
 }
 
+static void freeMapEditor(FrameworkWindow *mapEditor) {
+  freeMapEditorData(mapEditor->data);
+  freeMapEditorGadgets(mapEditor->gadgets);
+}
+
 static WindowKind mapEditorKind = {
   {
     40, 40, MAP_EDITOR_WIDTH, MAP_EDITOR_HEIGHT,
@@ -597,7 +600,7 @@ static WindowKind mapEditorKind = {
   (MenuSpec*)        NULL, /* fill me in later */
   (RefreshFunction)  refreshMapEditor,
   (CanCloseFunction) mapEditorEnsureSaved,
-  (CloseFunction)    NULL,
+  (CloseFunction)    freeMapEditor,
   (ClickFunction)    handleMapEditorClick
 };
 
@@ -673,7 +676,7 @@ void mapEditorRefreshTileDisplays(FrameworkWindow *mapEditor) {
 
 void mapEditorRefreshTilesetName(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
-  MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+  MapEditorGadgets *gadgets = mapEditor->gadgets->data;
   const char *tilesetName;
 
   if(mapEditorDataHasTileset(data)) {
@@ -690,7 +693,7 @@ void mapEditorRefreshTilesetName(FrameworkWindow *mapEditor) {
 
 void mapEditorRefreshSong(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
-  MapEditorGadgets *gadgets = mapEditorDataGetGadgets(data);
+  MapEditorGadgets *gadgets = mapEditor->gadgets->data;
   const char *songName;
 
   if(mapEditorDataHasSong(data)) {
@@ -713,7 +716,7 @@ void mapEditorRedrawTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col) {
 
 static FrameworkWindow *newMapEditor(FrameworkWindow *parent, Map *map) {
   MapEditorData *data;
-  MapEditorGadgets *gadgets;
+  WindowGadgets *gadgets;
   FrameworkWindow *mapEditor;
 
   data = newMapEditorData();
@@ -722,18 +725,25 @@ static FrameworkWindow *newMapEditor(FrameworkWindow *parent, Map *map) {
     goto error;
   }
 
-  gadgets = mapEditorDataGetGadgets(data);
+  gadgets = newMapEditorGadgets();
+  if(!gadgets) {
+    fprintf(stderr, "newMapEditor: failed to create gadgets\n");
+    goto error_freeData;
+  }
+
   mapEditorKind.menuSpec = mapEditorMenuSpec;
-  mapEditor = openChildWindow(parent, &mapEditorKind, gadgets->glist);
+  mapEditor = openChildWindow(parent, &mapEditorKind, gadgets);
   if(!mapEditor) {
     fprintf(stderr, "newMapEditor: failed to open window\n");
-    goto error_freeData;
+    goto error_freeGadgets;
   }
 
   initMapEditorData(data, mapEditor, map);
 
   return mapEditor;
 
+error_freeGadgets:
+  freeMapEditorGadgets(gadgets);
 error_freeData:
   freeMapEditorData(data);
 error:

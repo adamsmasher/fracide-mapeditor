@@ -47,7 +47,7 @@ void closeGlobalScreen(void) {
   }
 }
 
-FrameworkWindow *openWindowOnGlobalScreen(WindowKind *windowKind, struct Gadget *gadgets) {
+FrameworkWindow *openWindowOnGlobalScreen(WindowKind *windowKind, WindowGadgets *gadgets) {
   if(!screen) {
     fprintf(stderr, "openWindowOnScreen: screen not yet initialized\n");
     goto error;

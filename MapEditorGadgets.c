@@ -1,5 +1,10 @@
 #include "MapEditorGadgets.h"
 
+#include <libraries/gadtools.h>
+#include <proto/gadtools.h>
+
+#include <stdlib.h>
+
 #include "framework/Gadgets.h"
 
 #include "Map.h"
@@ -112,21 +117,55 @@ static ButtonSpec entitiesSpec = {
   mapEditorEntitiesClicked
 };
 
-BOOL initMapEditorGadgets(MapEditorGadgets *gadgets) {
-  struct Gadget *glist = buildGadgets(
-    makeTextGadget(&currentTilesetSpec),    &gadgets->tilesetNameGadget,
+WindowGadgets *newMapEditorGadgets(void) {
+  MapEditorGadgets *data;
+  WindowGadgets *gadgets;
+
+  gadgets = malloc(sizeof(WindowGadgets));
+  if(!gadgets) {
+    fprintf(stderr, "newMapEditorGadgets: couldn't allocate window gadgets\n");
+    goto error;
+  }
+
+  data = malloc(sizeof(MapEditorGadgets));
+  if(!data) {
+    fprintf(stderr, "newMapEditorGadgets: couldn't allocate map editor gadgets\n");
+    goto error_freeWindowGadgets;
+  }
+
+  gadgets->glist = buildGadgets(
+    makeTextGadget(&currentTilesetSpec),    &data->tilesetNameGadget,
     makeButtonGadget(&chooseTilesetSpec),   NULL,
     makeScrollerGadget(&tilesetScrollSpec), NULL,
-    makeStringGadget(&mapNameSpec),         &gadgets->mapNameGadget,
-    makeTextGadget(&songNameSpec),          &gadgets->songNameGadget,
+    makeStringGadget(&mapNameSpec),         &data->mapNameGadget,
+    makeTextGadget(&songNameSpec),          &data->songNameGadget,
     makeButtonGadget(&songChangeSpec),      NULL,
     makeButtonGadget(&songClearSpec),       NULL,
-    makeButtonGadget(&mapLeftSpec),         &gadgets->leftGadget,
-    makeButtonGadget(&mapRightSpec),        &gadgets->rightGadget,
-    makeButtonGadget(&mapUpSpec),           &gadgets->upGadget,
-    makeButtonGadget(&mapDownSpec),         &gadgets->downGadget,
+    makeButtonGadget(&mapLeftSpec),         &data->leftGadget,
+    makeButtonGadget(&mapRightSpec),        &data->rightGadget,
+    makeButtonGadget(&mapUpSpec),           &data->upGadget,
+    makeButtonGadget(&mapDownSpec),         &data->downGadget,
     makeButtonGadget(&entitiesSpec),        NULL,
     NULL);
-  gadgets->glist = glist;
-  return (BOOL)(glist != NULL);
+  if(!gadgets->glist) {
+    fprintf(stderr, "newMapEditorGadgets: couldn't build gadgets\n");
+    goto error_freeMapEditorGadgets;
+  }
+
+  gadgets->data = data;
+
+  return gadgets;
+
+error_freeMapEditorGadgets:
+  free(data);
+error_freeWindowGadgets:
+  free(gadgets);
+error:
+  return NULL;
+}
+
+void freeMapEditorGadgets(WindowGadgets *gadgets) {
+  FreeGadgets(gadgets->glist);
+  free(gadgets->data);
+  free(gadgets);
 }

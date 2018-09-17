@@ -12,7 +12,6 @@
 
 #include "MapEditor.h"
 #include "MapEditorConstants.h"
-#include "MapEditorGadgets.h"
 #include "ProjectWindowData.h"
 #include "TilesetPackage.h"
 
@@ -23,9 +22,6 @@ struct MapEditorData_tag {
 
   Map *map;
   UWORD mapNum;
-
-  /* TODO: move a generic version of this into the window class! */
-  MapEditorGadgets gadgets;
 
   BOOL saved;
 
@@ -124,11 +120,6 @@ MapEditorData *newMapEditorData(void) {
   mapEditorDataInitPaletteImages(data);
   mapEditorDataInitMapImages(data);
 
-  if(!initMapEditorGadgets(&data->gadgets)) {
-    fprintf(stderr, "newMapEditorData: failed to create gadgets\n");
-    goto error_freeData;
-  }
-
   data->window           = NULL;
   data->map              = NULL;
   data->mapNum           = 0;
@@ -181,10 +172,6 @@ void freeMapEditorData(MapEditorData* data) {
 
 const Map *mapEditorDataGetMap(MapEditorData *data) {
   return data->map;
-}
-
-MapEditorGadgets *mapEditorDataGetGadgets(MapEditorData *data) {
-  return &data->gadgets;
 }
 
 struct Image *mapEditorDataGetMapImages(MapEditorData *data) {

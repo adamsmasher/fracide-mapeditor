@@ -13,7 +13,7 @@
 #include "menu.h"
 #include "menubuild.h"
 
-FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Gadget *gadgets, struct Screen *screen) {
+FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, WindowGadgets *gadgets, struct Screen *screen) {
   FrameworkWindow *window;
 
   windowKind->newWindow.Screen = screen;
@@ -25,7 +25,7 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Gadget *gadge
   }
 
   window->gadgets = gadgets;
-  windowKind->newWindow.FirstGadget = gadgets;
+  windowKind->newWindow.FirstGadget = gadgets->glist;
 
   window->kind = windowKind;
   window->parent = NULL;
@@ -37,7 +37,7 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Gadget *gadge
   window->intuitionWindow = OpenWindow(&windowKind->newWindow);
   if(!window->intuitionWindow) {
     fprintf(stderr, "openWindowOnGlobalScreen: failed to open window\n");
-    goto error_freeGadgets;
+    goto error_freeWindow;
   }
 
   window->treeSigMask = 1L << window->intuitionWindow->UserPort->mp_SigBit;
@@ -56,8 +56,6 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Gadget *gadge
   return window;
 error_closeWindow:
   CloseWindow(window->intuitionWindow);
-error_freeGadgets:
-  FreeGadgets(window->gadgets);
 error_freeWindow:
   free(window);
 error:
@@ -73,7 +71,7 @@ static void attachChildWindow(FrameworkWindow *parent, FrameworkWindow *child) {
   parent->treeSigMask |= child->treeSigMask;
 }
 
-FrameworkWindow *openChildWindow(FrameworkWindow *parent, WindowKind *windowKind, struct Gadget *gadgets) {
+FrameworkWindow *openChildWindow(FrameworkWindow *parent, WindowKind *windowKind, WindowGadgets *gadgets) {
   FrameworkWindow *child = openWindowOnScreen(windowKind, gadgets, parent->intuitionWindow->WScreen);
   attachChildWindow(parent, child);
   return child;
@@ -205,7 +203,6 @@ void forceCloseWindow(FrameworkWindow *window) {
   FreeMenus(window->menu);
 
   CloseWindow(window->intuitionWindow);
-  FreeGadgets(window->gadgets);
 
   if(window->parent) {
     removeChildWindow(window->parent, window);

@@ -5,7 +5,6 @@
 
 #include "Entity.h"
 #include "Map.h"
-#include "MapEditorGadgets.h"
 #include "SongRequester.h"
 
 typedef struct MapEditorData_tag MapEditorData;
@@ -18,8 +17,6 @@ struct Image *mapEditorDataGetPaletteImages(MapEditorData*);
 struct Image *mapEditorDataGetMapImages(MapEditorData*);
 
 const Map *mapEditorDataGetMap(MapEditorData*);
-
-MapEditorGadgets *mapEditorDataGetGadgets(MapEditorData*);
 
 BOOL mapEditorDataIsSaved(MapEditorData*);
 BOOL mapEditorDataSaveMap(MapEditorData*);
