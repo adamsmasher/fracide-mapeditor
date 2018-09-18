@@ -25,7 +25,9 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, WindowGadgets *gadge
   }
 
   window->gadgets = gadgets;
-  windowKind->newWindow.FirstGadget = gadgets->glist;
+  if(gadgets) {
+    windowKind->newWindow.FirstGadget = gadgets->glist;
+  }
 
   window->kind = windowKind;
   window->parent = NULL;
