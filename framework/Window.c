@@ -20,7 +20,7 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, WindowGadgets *gadge
 
   window = malloc(sizeof(FrameworkWindow));
   if(!window) {
-    fprintf(stderr, "openWindowOnGlobalScreen: failed to allocate window\n");
+    fprintf(stderr, "openWindowOnScreen: failed to allocate window\n");
     goto error;
   }
 
@@ -36,7 +36,7 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, WindowGadgets *gadge
 
   window->intuitionWindow = OpenWindow(&windowKind->newWindow);
   if(!window->intuitionWindow) {
-    fprintf(stderr, "openWindowOnGlobalScreen: failed to open window\n");
+    fprintf(stderr, "openWindowOnScreen: failed to open window\n");
     goto error_freeWindow;
   }
 
@@ -45,7 +45,7 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, WindowGadgets *gadge
   if(windowKind->menuSpec) {
     window->menu = createAndLayoutMenuFromSpec(windowKind->menuSpec);
     if(!window->menu) {
-      fprintf(stderr, "openWindowOnGlobalScreen: failed to create menu\n");
+      fprintf(stderr, "openWindowOnScreen: failed to create menu\n");
       goto error_closeWindow;
     }
     SetMenuStrip(window->intuitionWindow, window->menu);
