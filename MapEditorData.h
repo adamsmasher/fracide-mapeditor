@@ -10,7 +10,10 @@
 typedef struct MapEditorData_tag MapEditorData;
 
 MapEditorData *newMapEditorData(void);
+
+/* transfers ownership of the map to this map editor data */
 void initMapEditorData(MapEditorData*, FrameworkWindow*, Map*);
+
 void freeMapEditorData(MapEditorData*);
 
 struct Image *mapEditorDataGetPaletteImages(MapEditorData*);

@@ -166,8 +166,11 @@ void initMapEditorData(MapEditorData *data, FrameworkWindow *window, Map *map) {
 }
 
 void freeMapEditorData(MapEditorData* data) {
-  /* TODO: free other things as well */
+  if(data->map) {
+    free(data->map);
+  }
   FreeMem(data->imageData, IMAGE_DATA_SIZE);
+  free(data);
 }
 
 const Map *mapEditorDataGetMap(MapEditorData *data) {
