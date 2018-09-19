@@ -299,9 +299,10 @@ void mapEditorDataSetEntityBrowser(MapEditorData *data, FrameworkWindow *entityB
 }
 
 void mapEditorDataAddNewEntity(MapEditorData *data) {
-  mapAddNewEntity(data->map);
-  mapEditorDrawEntity(data->window, data->map->entityCnt - 1);
+  Entity *newEntity = mapAddNewEntity(data->map);
   mapEditorDataSetSaved(data, FALSE);
+
+  mapEditorRefreshTile(data->window, newEntity->row, newEntity->col);
 }
 
 void mapEditorDataRemoveEntity(MapEditorData *data, UWORD entityNum) {
@@ -330,8 +331,9 @@ void mapEditorDataSetEntityRow(MapEditorData *data, UWORD entityNum, UBYTE row) 
   entity->row = row;
 
   mapEditorDataSetSaved(data, FALSE);
-  mapEditorDrawEntity(data->window, entityNum);
+
   mapEditorRefreshTile(data->window, oldRow, oldCol);
+  mapEditorRefreshTile(data->window, row, oldCol);
 }
 
 UBYTE mapEditorDataGetEntityCol(MapEditorData *data, UWORD entityNum) {
@@ -347,8 +349,9 @@ void mapEditorDataSetEntityCol(MapEditorData *data, UWORD entityNum, UBYTE col) 
   entity->col = col;
 
   mapEditorDataSetSaved(data, FALSE);
-  mapEditorDrawEntity(data->window, entityNum);
+
   mapEditorRefreshTile(data->window, oldRow, oldCol);
+  mapEditorRefreshTile(data->window, oldRow, col);
 }
 
 UBYTE mapEditorDataGetEntityVRAMSlot(MapEditorData *data, UWORD entityNum) {

@@ -37,16 +37,18 @@ Map *copyMap(Map *oldMap) {
     return newMap;
 }
 
-void mapAddNewEntity(Map *map) {
-    Entity *entity = &map->entities[map->entityCnt];
+Entity *mapAddNewEntity(Map *map) {
+  Entity *entity = &map->entities[map->entityCnt];
 
-    map->entityCnt++;
+  map->entityCnt++;
 
-    entity->entityNum = 0;
-    entity->row = 0;
-    entity->col = 0;
-    entity->vramSlot = 0;
-    entity->tagCnt = 0;
+  entity->entityNum = 0;
+  entity->row = 0;
+  entity->col = 0;
+  entity->vramSlot = 0;
+  entity->tagCnt = 0;
+
+  return entity;
 }
 
 void mapRemoveEntity(Map *map, int entityNum) {

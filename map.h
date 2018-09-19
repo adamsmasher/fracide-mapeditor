@@ -33,7 +33,7 @@ void overwriteMap(Map *srcMap, Map *destMap);
 void writeMap(Map*, FILE*);
 int readMap(Map*, FILE*);
 
-void mapAddNewEntity(Map*);
+Entity *mapAddNewEntity(Map*);
 void mapRemoveEntity(Map*, int entityNum);
 
 int mapFindEntity(const Map*, int row, int col);

@@ -607,14 +607,6 @@ BOOL isMapEditor(FrameworkWindow *window) {
   return (BOOL)(window->kind == &mapEditorKind);
 }
 
-void mapEditorDrawEntity(FrameworkWindow *mapEditor, int entityNum) {
-  MapEditorData *data = mapEditor->data;
-  if(mapEditorDataHasTileset(data)) {
-    const Entity *entity = mapEditorDataGetEntity(data, entityNum);
-    drawEntity(mapEditor->intuitionWindow->RPort, entity, entityNum);
-  }
-}
-
 static void mapEditorClearTileDisplays(FrameworkWindow *mapEditor) {
   struct RastPort *rport = mapEditor->intuitionWindow->RPort;
 

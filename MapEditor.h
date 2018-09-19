@@ -53,8 +53,4 @@ void mapEditorRefreshTilesetName(FrameworkWindow*);
 /* misc */
 BOOL mapEditorEnsureSaved(FrameworkWindow *mapEditor);
 
-/* garbage */
-
-void mapEditorDrawEntity(FrameworkWindow *mapEditor, int entityNum);
-
 #endif
