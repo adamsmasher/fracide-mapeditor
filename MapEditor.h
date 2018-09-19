@@ -46,6 +46,7 @@ void mapEditorRefreshSong(FrameworkWindow*);
 void mapEditorRefreshSelected(FrameworkWindow*);
 void mapEditorRefreshSelectedFrom(FrameworkWindow*, unsigned int selected);
 void mapEditorRefreshTitle(FrameworkWindow*);
+void mapEditorRefreshTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col);
 void mapEditorRefreshTileDisplays(FrameworkWindow*);
 void mapEditorRefreshTilesetName(FrameworkWindow*);
 
@@ -55,6 +56,5 @@ BOOL mapEditorEnsureSaved(FrameworkWindow *mapEditor);
 /* garbage */
 
 void mapEditorDrawEntity(FrameworkWindow *mapEditor, int entityNum);
-void mapEditorRedrawTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col);
 
 #endif

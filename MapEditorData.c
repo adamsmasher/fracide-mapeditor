@@ -331,7 +331,7 @@ void mapEditorDataSetEntityRow(MapEditorData *data, UWORD entityNum, UBYTE row) 
 
   mapEditorDataSetSaved(data, FALSE);
   mapEditorDrawEntity(data->window, entityNum);
-  mapEditorRedrawTile(data->window, oldRow, oldCol);
+  mapEditorRefreshTile(data->window, oldRow, oldCol);
 }
 
 UBYTE mapEditorDataGetEntityCol(MapEditorData *data, UWORD entityNum) {
@@ -348,7 +348,7 @@ void mapEditorDataSetEntityCol(MapEditorData *data, UWORD entityNum, UBYTE col) 
 
   mapEditorDataSetSaved(data, FALSE);
   mapEditorDrawEntity(data->window, entityNum);
-  mapEditorRedrawTile(data->window, oldRow, oldCol);
+  mapEditorRefreshTile(data->window, oldRow, oldCol);
 }
 
 UBYTE mapEditorDataGetEntityVRAMSlot(MapEditorData *data, UWORD entityNum) {
@@ -517,6 +517,8 @@ void mapEditorDataSetTileTo(MapEditorData *data, UBYTE row, UBYTE col, UBYTE to)
   data->map->tiles[tile] = to;
   data->mapImages[tile].ImageData = mapEditorDataGetImageDataForTile(data, tile);
   mapEditorDataSetSaved(data, FALSE);
+
+  mapEditorRefreshTile(data->window, row, col);
 }
 
 struct Image *mapEditorDataGetMapImage(MapEditorData *data, UBYTE tile) {

@@ -556,7 +556,6 @@ static void mapEditorSetTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col) {
   MapEditorData *data = mapEditor->data;
   if(mapEditorDataHasSelected(data)) {
     mapEditorDataSetTileTo(data, row, col, mapEditorDataGetSelected(data));
-    /* TODO: make sure the above calls back into here and redraws the map tile */
   }
 }
 
@@ -708,7 +707,7 @@ void mapEditorRefreshSong(FrameworkWindow *mapEditor) {
     TAG_END);
 }
 
-void mapEditorRedrawTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col) {
+void mapEditorRefreshTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col) {
   if(mapEditorDataHasTileset(mapEditor->data)) {
     redrawMapTile(mapEditor, row, col);
   }
