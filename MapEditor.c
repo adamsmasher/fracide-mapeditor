@@ -391,8 +391,12 @@ void mapEditorEntitiesClicked(FrameworkWindow *mapEditor) {
     FrameworkWindow *entityBrowser = mapEditorDataGetEntityBrowser(data);
     WindowToFront(entityBrowser->intuitionWindow);
   } else {
-    /* TODO: what if map num not set */
-    FrameworkWindow *entityBrowser = newEntityBrowser(mapEditor, mapEditorDataGetMap(data), mapEditorDataGetMapNum(data));
+    FrameworkWindow *entityBrowser;
+    if(mapEditorDataHasMapNum(data)) {
+      entityBrowser = newEntityBrowser(mapEditor, mapEditorDataGetMap(data), mapEditorDataGetMapNum(data) + 1);
+    } else {
+      entityBrowser = newEntityBrowser(mapEditor, mapEditorDataGetMap(data), 0);
+    }
     if(entityBrowser) {
       mapEditorDataSetEntityBrowser(data, entityBrowser);
     } else {
