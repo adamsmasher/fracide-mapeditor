@@ -23,7 +23,7 @@ const Map *mapEditorDataGetMap(MapEditorData*);
 
 BOOL mapEditorDataIsSaved(MapEditorData*);
 BOOL mapEditorDataSaveMap(MapEditorData*);
-BOOL mapEditorDataSaveMapAs(MapEditorData*, int mapNum);
+BOOL mapEditorDataSaveMapAs(MapEditorData*, UWORD mapNum);
 
 const char *mapEditorDataGetTitle(MapEditorData*);
 

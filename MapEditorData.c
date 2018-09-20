@@ -201,7 +201,7 @@ static void mapEditorDataSetSaved(MapEditorData *data, BOOL saved) {
   }
 }
 
-BOOL mapEditorDataSaveMapAs(MapEditorData *data, int mapNum) {
+BOOL mapEditorDataSaveMapAs(MapEditorData *data, UWORD mapNum) {
   ProjectWindowData *projectData = data->window->parent->data;
 
   if(!projectDataSaveMap(projectData, data->map, mapNum)) {

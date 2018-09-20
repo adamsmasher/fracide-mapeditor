@@ -393,9 +393,9 @@ void mapEditorEntitiesClicked(FrameworkWindow *mapEditor) {
   } else {
     FrameworkWindow *entityBrowser;
     if(mapEditorDataHasMapNum(data)) {
-      entityBrowser = newEntityBrowser(mapEditor, mapEditorDataGetMap(data), mapEditorDataGetMapNum(data) + 1);
+      entityBrowser = newEntityBrowserWithMapNum(mapEditor, mapEditorDataGetMap(data), mapEditorDataGetMapNum(data) + 1);
     } else {
-      entityBrowser = newEntityBrowser(mapEditor, mapEditorDataGetMap(data), 0);
+      entityBrowser = newEntityBrowserWithMapNum(mapEditor, mapEditorDataGetMap(data), 0);
     }
     if(entityBrowser) {
       mapEditorDataSetEntityBrowser(data, entityBrowser);

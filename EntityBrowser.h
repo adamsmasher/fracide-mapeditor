@@ -37,6 +37,6 @@ typedef struct EntityBrowserData_tag {
   EntityRequester *entityRequester;
 } EntityBrowserData;
 
-FrameworkWindow *newEntityBrowser(FrameworkWindow *parent, const Map*, int mapNum);
+FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map*, UWORD mapNum);
 
 #endif
