@@ -10,7 +10,7 @@
 
 #define ENTITY_LABEL_LENGTH 16
 
-typedef struct EntityBrowserData_tag {
+typedef struct EntityBrowserGadgets_tag {
   struct Gadget *addEntityGadget;
   struct Gadget *removeEntityGadget;
   struct Gadget *entityListGadget;
@@ -25,6 +25,10 @@ typedef struct EntityBrowserData_tag {
   struct Gadget *tagIdGadget;
   struct Gadget *tagValueGadget;
   struct Gadget *thisEntityGadget;
+} EntityBrowserGadgets;
+
+typedef struct EntityBrowserData_tag {
+  EntityBrowserGadgets gadgets;
   char title[32];
   int selectedEntity;
   int selectedTag;

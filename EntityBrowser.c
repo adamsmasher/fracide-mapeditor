@@ -149,7 +149,7 @@ static Result entityBrowserRefreshEntities(FrameworkWindow *entityBrowser) {
     goto error;
   }
 
-  GT_SetGadgetAttrs(data->entityListGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.entityListGadget, entityBrowser->intuitionWindow, NULL,
     GTLV_Labels, &data->entityLabels,
     TAG_END);
 
@@ -213,7 +213,7 @@ static Result entityBrowserRefreshTags(FrameworkWindow *entityBrowser) {
     goto error;
   }
 
-  GT_SetGadgetAttrs(data->tagListGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.tagListGadget, entityBrowser->intuitionWindow, NULL,
     GTLV_Labels, &data->tagLabels,
     TAG_END);
 
@@ -229,21 +229,21 @@ static void entityBrowserSelectTag(FrameworkWindow *entityBrowser, UWORD entityN
 
   data->selectedTag = tagNum + 1;
 
-  GT_SetGadgetAttrs(data->deleteTagGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.deleteTagGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, FALSE,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->tagAliasGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.tagAliasGadget, entityBrowser->intuitionWindow, NULL,
     GTST_String, mapEditorDataEntityGetTagAlias(mapEditorData, entityNum, tagNum),
     GA_Disabled, FALSE,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->tagIdGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.tagIdGadget, entityBrowser->intuitionWindow, NULL,
     GTIN_Number, mapEditorDataEntityGetTagId(mapEditorData, entityNum, tagNum),
     GA_Disabled, FALSE,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->tagValueGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.tagValueGadget, entityBrowser->intuitionWindow, NULL,
     GTIN_Number, mapEditorDataEntityGetTagValue(mapEditorData, entityNum, tagNum),
     GA_Disabled, FALSE,
     TAG_END);
@@ -252,19 +252,19 @@ static void entityBrowserSelectTag(FrameworkWindow *entityBrowser, UWORD entityN
 static void entityBrowserDeselectTag(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
 
-  GT_SetGadgetAttrs(data->tagAliasGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.tagAliasGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, TRUE,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->tagIdGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.tagIdGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, TRUE,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->tagValueGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.tagValueGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, TRUE,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->deleteTagGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.deleteTagGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, TRUE,
     TAG_END);
 
@@ -284,7 +284,7 @@ static void freeTagLabels(EntityBrowserData *data) {
 static void entityBrowserFreeTagLabels(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
 
-  GT_SetGadgetAttrs(data->tagListGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.tagListGadget, entityBrowser->intuitionWindow, NULL,
     GTLV_Labels, NULL,
     TAG_END);
 
@@ -297,30 +297,30 @@ static void entityBrowserSelectEntity(FrameworkWindow *entityBrowser, int entity
   
   data->selectedEntity = entityNum + 1;
 
-  GT_SetGadgetAttrs(data->removeEntityGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.removeEntityGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, FALSE,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->rowGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.rowGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, FALSE,
     GTIN_Number, mapEditorDataGetEntityRow(mapEditorData, entityNum),
     TAG_END);
 
-  GT_SetGadgetAttrs(data->colGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.colGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, FALSE,
     GTIN_Number, mapEditorDataGetEntityCol(mapEditorData, entityNum),
     TAG_END);
 
-  GT_SetGadgetAttrs(data->VRAMSlotGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.VRAMSlotGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, FALSE,
     GTIN_Number, mapEditorDataGetEntityVRAMSlot(mapEditorData, entityNum),
     TAG_END);
 
-  GT_SetGadgetAttrs(data->addTagGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.addTagGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, mapEditorDataEntityGetTagCount(mapEditorData, entityNum) >= MAX_TAGS_PER_ENTITY,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->chooseEntityGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.chooseEntityGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, FALSE,
     TAG_END);
 
@@ -332,27 +332,27 @@ static void entityBrowserDeselectEntity(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   data->selectedEntity = 0;
 
-  GT_SetGadgetAttrs(data->removeEntityGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.removeEntityGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, TRUE,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->rowGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.rowGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, TRUE,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->colGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.colGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, TRUE,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->VRAMSlotGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.VRAMSlotGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, TRUE,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->addTagGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.addTagGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, TRUE,
     TAG_END);
 
-  GT_SetGadgetAttrs(data->chooseEntityGadget, entityBrowser->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(data->gadgets.chooseEntityGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, TRUE,
     TAG_END);
 
@@ -372,7 +372,7 @@ static void onAddEntityClick(FrameworkWindow *entityBrowser) {
   entityBrowserRefreshEntities(entityBrowser);
 
   if(entityCount >= MAX_ENTITIES_PER_MAP) {
-    GT_SetGadgetAttrs(entityBrowserData->addEntityGadget, entityBrowser->intuitionWindow, NULL,
+    GT_SetGadgetAttrs(entityBrowserData->gadgets.addEntityGadget, entityBrowser->intuitionWindow, NULL,
       GA_Disabled, TRUE);
   }
 
@@ -408,7 +408,7 @@ static void handleTagClicked(FrameworkWindow *entityBrowser, int tagNum) {
 static void onEntityRowEntry(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   FrameworkWindow *parent = entityBrowser->parent;
-  UBYTE newRow = ((struct StringInfo*)data->rowGadget->SpecialInfo)->LongInt;
+  UBYTE newRow = ((struct StringInfo*)data->gadgets.rowGadget->SpecialInfo)->LongInt;
 
   mapEditorDataSetEntityRow(parent->data, data->selectedEntity - 1, newRow);
 }
@@ -416,7 +416,7 @@ static void onEntityRowEntry(FrameworkWindow *entityBrowser) {
 static void onEntityColEntry(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   FrameworkWindow *parent = entityBrowser->parent;
-  UBYTE newCol = ((struct StringInfo*)data->colGadget->SpecialInfo)->LongInt;
+  UBYTE newCol = ((struct StringInfo*)data->gadgets.colGadget->SpecialInfo)->LongInt;
 
   mapEditorDataSetEntityCol(parent->data, data->selectedEntity - 1, newCol);
 }
@@ -424,7 +424,7 @@ static void onEntityColEntry(FrameworkWindow *entityBrowser) {
 static void onVRAMSlotEntry(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   FrameworkWindow *parent = entityBrowser->parent;
-  UBYTE vramSlot = ((struct StringInfo*)data->VRAMSlotGadget->SpecialInfo)->LongInt;
+  UBYTE vramSlot = ((struct StringInfo*)data->gadgets.VRAMSlotGadget->SpecialInfo)->LongInt;
 
   mapEditorDataSetEntityVRAMSlot(parent->data, data->selectedEntity - 1, vramSlot);
 }
@@ -442,7 +442,7 @@ static void onAddTagClick(FrameworkWindow *entityBrowser) {
   entityBrowserRefreshTags(entityBrowser);
 
   if(entityTagCount >= MAX_TAGS_PER_ENTITY) {
-    GT_SetGadgetAttrs(data->addTagGadget, entityBrowser->intuitionWindow, NULL,
+    GT_SetGadgetAttrs(data->gadgets.addTagGadget, entityBrowser->intuitionWindow, NULL,
       GA_Disabled, TRUE);
   }
 
@@ -461,21 +461,21 @@ static void onDeleteTagClick(FrameworkWindow *entityBrowser) {
 static void onTagIdEntry(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   FrameworkWindow *parent = entityBrowser->parent;
-  UBYTE newTagId = ((struct StringInfo*)data->tagIdGadget->SpecialInfo)->LongInt;
+  UBYTE newTagId = ((struct StringInfo*)data->gadgets.tagIdGadget->SpecialInfo)->LongInt;
   mapEditorDataEntitySetTagId(parent->data, data->selectedEntity - 1, data->selectedTag - 1, newTagId);
 }
 
 static void onTagValueEntry(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   FrameworkWindow *parent = entityBrowser->parent;
-  UBYTE newTagValue = ((struct StringInfo*)data->tagValueGadget->SpecialInfo)->LongInt;
+  UBYTE newTagValue = ((struct StringInfo*)data->gadgets.tagValueGadget->SpecialInfo)->LongInt;
   mapEditorDataEntitySetTagValue(parent->data, data->selectedEntity - 1, data->selectedTag - 1, newTagValue);
 }
 
 static void onTagAliasEntry(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   FrameworkWindow *parent = entityBrowser->parent;
-  const char *newTagAlias = ((struct StringInfo*)data->tagAliasGadget->SpecialInfo)->Buffer;
+  const char *newTagAlias = ((struct StringInfo*)data->gadgets.tagAliasGadget->SpecialInfo)->Buffer;
   mapEditorDataEntitySetTagAlias(parent->data, data->selectedEntity - 1, data->selectedTag - 1, newTagAlias);
   entityBrowserRefreshTags(entityBrowser);
 }
@@ -675,20 +675,20 @@ FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *
   /* TODO: this is probably broken huh. */
   entityListSpec.labels = &data->entityLabels;
   gadgets = buildGadgets(
-    makeButtonGadget(&addEntitySpec),    &data->addEntityGadget,
-    makeButtonGadget(&removeEntitySpec), &data->removeEntityGadget,
-    makeButtonGadget(&chooseEntitySpec), &data->chooseEntityGadget,
-    makeButtonGadget(&addTagSpec),       &data->addTagGadget,
-    makeButtonGadget(&deleteTagSpec),    &data->deleteTagGadget,
-    makeTextGadget(&thisEntitySpec),     &data->thisEntityGadget, 
-    makeStringGadget(&tagAliasSpec),     &data->tagAliasGadget,
-    makeIntegerGadget(&entityRowSpec),   &data->rowGadget,
-    makeIntegerGadget(&entityColSpec),   &data->colGadget,
-    makeIntegerGadget(&VRAMSlotSpec),    &data->VRAMSlotGadget,
-    makeIntegerGadget(&tagIdSpec),       &data->tagIdGadget,
-    makeIntegerGadget(&tagValueSpec),    &data->tagValueGadget,
-    makeListViewGadget(&entityListSpec), &data->entityListGadget,
-    makeListViewGadget(&tagListSpec),    &data->tagListGadget,
+    makeButtonGadget(&addEntitySpec),    &data->gadgets.addEntityGadget,
+    makeButtonGadget(&removeEntitySpec), &data->gadgets.removeEntityGadget,
+    makeButtonGadget(&chooseEntitySpec), &data->gadgets.chooseEntityGadget,
+    makeButtonGadget(&addTagSpec),       &data->gadgets.addTagGadget,
+    makeButtonGadget(&deleteTagSpec),    &data->gadgets.deleteTagGadget,
+    makeTextGadget(&thisEntitySpec),     &data->gadgets.thisEntityGadget, 
+    makeStringGadget(&tagAliasSpec),     &data->gadgets.tagAliasGadget,
+    makeIntegerGadget(&entityRowSpec),   &data->gadgets.rowGadget,
+    makeIntegerGadget(&entityColSpec),   &data->gadgets.colGadget,
+    makeIntegerGadget(&VRAMSlotSpec),    &data->gadgets.VRAMSlotGadget,
+    makeIntegerGadget(&tagIdSpec),       &data->gadgets.tagIdGadget,
+    makeIntegerGadget(&tagValueSpec),    &data->gadgets.tagValueGadget,
+    makeListViewGadget(&entityListSpec), &data->gadgets.entityListGadget,
+    makeListViewGadget(&tagListSpec),    &data->gadgets.tagListGadget,
     NULL);
 
   if(!gadgets) {
