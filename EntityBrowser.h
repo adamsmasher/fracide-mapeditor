@@ -25,7 +25,7 @@ typedef struct EntityBrowserData_tag {
   struct Gadget *tagIdGadget;
   struct Gadget *tagValueGadget;
   struct Gadget *thisEntityGadget;
-  char *title;
+  char title[32];
   int selectedEntity;
   int selectedTag;
   struct List entityLabels;

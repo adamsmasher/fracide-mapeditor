@@ -498,7 +498,6 @@ static void onChooseEntityClick(FrameworkWindow *entityBrowser) {
 
 static void closeEntityBrowser(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
-  free(data->title);
   freeEntityLabels(data);
   freeTagLabels(data);
   free(data);
@@ -664,11 +663,6 @@ FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *
   data->selectedEntity = 0;
   data->selectedTag = 0;
 
-  data->title = malloc(32);
-  if(!data->title) {
-    fprintf(stderr, "newEntityBrowser: couldn't allocate title\n");
-    goto error_freeData;
-  }
   if(mapNum) {
     sprintf(data->title, "Entities (Map %d)", mapNum - 1);
   } else {
@@ -698,7 +692,7 @@ FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *
 
   if(!gadgets) {
     fprintf(stderr, "newMapEditor: failed to create gadgets\n");
-    goto error_freeTitle;
+    goto error_freeData;
   }
 
   entityBrowser = openChildWindow(parent, &entityBrowserWindowKind, gadgets);
@@ -716,8 +710,6 @@ FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *
 error_freeGadgets:
   /* TODO: we free this twice on window creation failure! */
   FreeGadgets(gadgets);
-error_freeTitle:
-  free(data->title);
 error_freeData:
   free(data);
 error:
