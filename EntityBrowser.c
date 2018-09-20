@@ -650,10 +650,11 @@ static IntegerSpec tagValueSpec = {
 };
 
 FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *map, UWORD mapNum) {
-  EntityBrowserData *data = malloc(sizeof(EntityBrowserData));
+  EntityBrowserData *data;
   struct Gadget *gadgets;
   FrameworkWindow *entityBrowser;
 
+  data = malloc(sizeof(EntityBrowserData));
   if(!data) {
     fprintf(stderr, "newEntityBrowser: couldn't allocate entity browser data\n");
     goto error;
