@@ -649,9 +649,64 @@ static IntegerSpec tagValueSpec = {
   onTagValueEntry
 };
 
+static WindowGadgets *newEntityBrowserGadgets(void) {
+  EntityBrowserGadgets *data;
+  WindowGadgets *gadgets;
+
+  gadgets = malloc(sizeof(WindowGadgets));
+  if(!gadgets) {
+    fprintf(stderr, "newEntityBrowserGadgets: couldn't allocate window gadgets\n");
+    goto error;
+  }
+
+  data = malloc(sizeof(EntityBrowserGadgets));
+  if(!data) {
+    fprintf(stderr, "newEntityBrowserGadgets: couldn't allocate entity browser gadgets\n");
+    goto error_freeWindowGadgets;
+  }
+
+  gadgets->glist = buildGadgets(
+    makeButtonGadget(&addEntitySpec),    &data->addEntityGadget,
+    makeButtonGadget(&removeEntitySpec), &data->removeEntityGadget,
+    makeButtonGadget(&chooseEntitySpec), &data->chooseEntityGadget,
+    makeButtonGadget(&addTagSpec),       &data->addTagGadget,
+    makeButtonGadget(&deleteTagSpec),    &data->deleteTagGadget,
+    makeTextGadget(&thisEntitySpec),     &data->thisEntityGadget,
+    makeStringGadget(&tagAliasSpec),     &data->tagAliasGadget,
+    makeIntegerGadget(&entityRowSpec),   &data->rowGadget,
+    makeIntegerGadget(&entityColSpec),   &data->colGadget,
+    makeIntegerGadget(&VRAMSlotSpec),    &data->VRAMSlotGadget,
+    makeIntegerGadget(&tagIdSpec),       &data->tagIdGadget,
+    makeIntegerGadget(&tagValueSpec),    &data->tagValueGadget,
+    makeListViewGadget(&entityListSpec), &data->entityListGadget,
+    makeListViewGadget(&tagListSpec),    &data->tagListGadget,
+    NULL);
+  if(!gadgets->glist) {
+    fprintf(stderr, "newEntityBrowserGadgets: failed to create gadgets\n");
+    goto error_freeEntityBrowserGadgets;
+  }
+
+  gadgets->data = data;
+
+  return gadgets;
+
+error_freeEntityBrowserGadgets:
+  free(data);
+error_freeWindowGadgets:
+  free(gadgets);
+error:
+  return NULL;
+}
+
+static void freeEntityBrowserGadgets(WindowGadgets *gadgets) {
+  free(gadgets->data);
+  FreeGadgets(gadgets->glist);
+  free(gadgets);
+}
+
 FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *map, UWORD mapNum) {
   EntityBrowserData *data;
-  struct Gadget *gadgets;
+  WindowGadgets *gadgets;
   FrameworkWindow *entityBrowser;
 
   data = malloc(sizeof(EntityBrowserData));
@@ -674,25 +729,10 @@ FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *
   addEntitySpec.state = map->entityCnt < MAX_ENTITIES_PER_MAP ? ENABLED : DISABLED;
   /* TODO: this is probably broken huh. */
   entityListSpec.labels = &data->entityLabels;
-  gadgets = buildGadgets(
-    makeButtonGadget(&addEntitySpec),    &data->gadgets.addEntityGadget,
-    makeButtonGadget(&removeEntitySpec), &data->gadgets.removeEntityGadget,
-    makeButtonGadget(&chooseEntitySpec), &data->gadgets.chooseEntityGadget,
-    makeButtonGadget(&addTagSpec),       &data->gadgets.addTagGadget,
-    makeButtonGadget(&deleteTagSpec),    &data->gadgets.deleteTagGadget,
-    makeTextGadget(&thisEntitySpec),     &data->gadgets.thisEntityGadget, 
-    makeStringGadget(&tagAliasSpec),     &data->gadgets.tagAliasGadget,
-    makeIntegerGadget(&entityRowSpec),   &data->gadgets.rowGadget,
-    makeIntegerGadget(&entityColSpec),   &data->gadgets.colGadget,
-    makeIntegerGadget(&VRAMSlotSpec),    &data->gadgets.VRAMSlotGadget,
-    makeIntegerGadget(&tagIdSpec),       &data->gadgets.tagIdGadget,
-    makeIntegerGadget(&tagValueSpec),    &data->gadgets.tagValueGadget,
-    makeListViewGadget(&entityListSpec), &data->gadgets.entityListGadget,
-    makeListViewGadget(&tagListSpec),    &data->gadgets.tagListGadget,
-    NULL);
 
+  gadgets = newEntityBrowserGadgets();
   if(!gadgets) {
-    fprintf(stderr, "newMapEditor: failed to create gadgets\n");
+    fprintf(stderr, "newEntityBrowser: couldn't create entity browser gadgets\n");
     goto error_freeData;
   }
 
@@ -709,8 +749,7 @@ FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *
   return entityBrowser;
 
 error_freeGadgets:
-  /* TODO: we free this twice on window creation failure! */
-  FreeGadgets(gadgets);
+  freeEntityBrowserGadgets(gadgets);
 error_freeData:
   free(data);
 error:
