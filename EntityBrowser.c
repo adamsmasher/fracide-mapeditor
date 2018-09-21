@@ -531,7 +531,8 @@ static WindowKind entityBrowserWindowKind = {
   (MenuSpec*)        NULL,
   (RefreshFunction)  NULL,
   (CanCloseFunction) NULL,
-  (CloseFunction)    &closeEntityBrowser
+  (CloseFunction)    &closeEntityBrowser,
+  (ClickFunction)    NULL
 };
 
 static ListViewSpec entityListSpec = {
