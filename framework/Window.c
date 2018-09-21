@@ -64,13 +64,22 @@ error:
   return NULL;
 }
 
+static void propagateSigMaskUp(FrameworkWindow *child) {
+  FrameworkWindow *parent = child->parent;
+  if(parent) {
+    parent->treeSigMask |= child->treeSigMask;
+    propagateSigMaskUp(parent);
+  }
+}
+
 static void attachChildWindow(FrameworkWindow *parent, FrameworkWindow *child) {
   child->parent = parent;
   child->prev   = NULL;
   child->next   = parent->children;
 
   parent->children = child;
-  parent->treeSigMask |= child->treeSigMask;
+
+  propagateSigMaskUp(child);
 }
 
 FrameworkWindow *openChildWindow(FrameworkWindow *parent, WindowKind *windowKind, WindowGadgets *gadgets) {
