@@ -496,11 +496,21 @@ static void onChooseEntityClick(FrameworkWindow *entityBrowser) {
   }
 }
 
-static void closeEntityBrowser(FrameworkWindow *entityBrowser) {
-  EntityBrowserData *data = entityBrowser->data;
+static void freeEntityBrowserGadgets(WindowGadgets *gadgets) {
+  free(gadgets->data);
+  FreeGadgets(gadgets->glist);
+  free(gadgets);
+}
+
+static void freeEntityBrowserData(EntityBrowserData *data) {
   freeEntityLabels(data);
   freeTagLabels(data);
   free(data);
+}
+
+static void closeEntityBrowser(FrameworkWindow *entityBrowser) {
+  freeEntityBrowserData(entityBrowser->data);
+  freeEntityBrowserGadgets(entityBrowser->gadgets);
 }
 
 static WindowKind entityBrowserWindowKind = {
@@ -696,12 +706,6 @@ error_freeWindowGadgets:
   free(gadgets);
 error:
   return NULL;
-}
-
-static void freeEntityBrowserGadgets(WindowGadgets *gadgets) {
-  free(gadgets->data);
-  FreeGadgets(gadgets->glist);
-  free(gadgets);
 }
 
 FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *map, UWORD mapNum) {
