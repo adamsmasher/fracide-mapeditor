@@ -178,11 +178,11 @@ const Map *mapEditorDataGetMap(MapEditorData *data) {
 }
 
 struct Image *mapEditorDataGetMapImages(MapEditorData *data) {
-  return &data->mapImages;
+  return data->mapImages;
 }
 
 struct Image *mapEditorDataGetPaletteImages(MapEditorData *data) {
-  return &data->paletteImages;
+  return data->paletteImages;
 }
 
 const char *mapEditorDataGetTitle(MapEditorData *data) {
