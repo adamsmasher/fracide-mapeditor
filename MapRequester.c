@@ -1,6 +1,7 @@
 #include "MapRequester.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <proto/exec.h>
 
@@ -15,6 +16,7 @@
 #include <proto/graphics.h>
 
 #include "framework/font.h"
+#include "framework/gadgets.h"
 #include "framework/menubuild.h"
 #include "framework/screen.h"
 #include "framework/window.h"
@@ -41,10 +43,6 @@
 #define CANCEL_BUTTON_WIDTH         72
 #define CANCEL_BUTTON_HEIGHT        16
 
-#define MAP_LIST_ID      1
-#define OK_BUTTON_ID     (MAP_LIST_ID  + 1)
-#define CANCEL_BUTTON_ID (OK_BUTTON_ID + 1)
-
 static WindowKind mapRequesterWindowKind = {
   {
     40, 40, MAP_REQUESTER_WIDTH, MAP_REQUESTER_HEIGHT,
@@ -66,6 +64,14 @@ static WindowKind mapRequesterWindowKind = {
   (CloseFunction)    NULL
 };
 
+static void mapRequesterOkClicked(FrameworkWindow *mapRequester) {
+  mapRequester->selected = mapRequester->highlighted - 1;
+}
+
+static void mapRequesterCancelClicked(FrameworkWindow *mapRequester) {
+  mapRequester->selected = -1;
+}
+
 static struct NewGadget mapListNewGadget = {
 	MAP_LIST_LEFT,  MAP_LIST_TOP,
 	MAP_REQUESTER_WIDTH  - MAP_LIST_WIDTH_DELTA,
@@ -78,40 +84,37 @@ static struct NewGadget mapListNewGadget = {
 	NULL  /* user data */
 };
 
-static struct NewGadget okButtonNewGadget = {
-    OK_BUTTON_LEFT,  MAP_REQUESTER_HEIGHT - OK_BUTTON_BOTTOM_OFFSET,
-    OK_BUTTON_WIDTH, OK_BUTTON_HEIGHT,
-    "OK",
-    &Topaz80,
-    OK_BUTTON_ID,
-    0,
-    NULL, /* visual info filled in later */
-    NULL  /* user data */
+static ButtonSpec okButtonSpec = {
+  OK_BUTTON_LEFT, MAP_REQUESTER_HEIGHT - OK_BUTTON_BOTTOM_OFFSET,
+  OK_BUTTON_WIDTH, OK_BUTTON_HEIGHT,
+  "OK",
+  TEXT_INSIDE,
+  DISABLED,
+  mapRequesterOkClicked
 };
 
-static struct NewGadget cancelButtonNewGadget = {
-    MAP_REQUESTER_WIDTH  - CANCEL_BUTTON_RIGHT_OFFSET,
-    MAP_REQUESTER_HEIGHT - CANCEL_BUTTON_BOTTOM_OFFSET,
-    CANCEL_BUTTON_WIDTH, CANCEL_BUTTON_HEIGHT,
-    "Cancel",
-    &Topaz80,
-    CANCEL_BUTTON_ID,
-    0,
-    NULL, /* visual info filled in later */
-    NULL  /* user data */
+static ButtonSpec cancelButtonSpec = {
+  MAP_REQUESTER_WIDTH  - CANCEL_BUTTON_RIGHT_OFFSET,
+  MAP_REQUESTER_HEIGHT - CANCEL_BUTTON_BOTTOM_OFFSET,
+  CANCEL_BUTTON_WIDTH, CANCEL_BUTTON_HEIGHT,
+  "Cancel",
+  TEXT_INSIDE,
+  ENABLED,
+  mapRequesterCancelClicked
 };
 
 static struct Requester requester;
 
-typedef struct MapRequester_tag {
-    FrameworkWindow *window;
-    int selected;
-    int highlighted;
-    struct Gadget *okButton;
-    struct Gadget *gadgets;
-} MapRequester;
+typedef struct MapRequesterData_tag {
+  int selected;
+  int highlighted;
+} MapRequesterData;
 
-static void createMapRequesterGadgets(MapRequester *mapRequester) {
+typedef struct MapRequesterGadgets_tag {
+  struct Gadget *okButton;
+} MapRequesterGadgets;
+
+static WindowGadgets *createMapRequesterGadgets(void) {
     struct Gadget *gad;
     ProjectWindowData *projectData = NULL; /* TODO: fix me */
     int height = mapRequester->window ? mapRequester->window->intuitionWindow->Height : MAP_REQUESTER_HEIGHT;
@@ -147,21 +150,10 @@ error:
     mapRequester->okButton = NULL;
 }
 
-static void handleRequesterGadgetUp(MapRequester *mapRequester, struct Gadget *gadget, UWORD code) {
-    switch(gadget->GadgetID) {
-    case OK_BUTTON_ID:
-        mapRequester->selected = mapRequester->highlighted + 1;
-        break;
-    case CANCEL_BUTTON_ID:
-        mapRequester->selected = -1;
-        break;
-    case MAP_LIST_ID:
-        mapRequester->highlighted = code;
-        GT_SetGadgetAttrs(mapRequester->okButton, mapRequester->window->intuitionWindow, NULL,
-            GA_Disabled, FALSE,
-            TAG_END);
-        break;
-    }
+static void freeMapRequesterGadgets(WindowGadgets *gadgets) {
+  FreeGadgets(gadgets->glist);
+  free(gadgets->data);
+  free(gadgets);
 }
 
 static void resizeMapRequester(MapRequester *mapRequester) {
@@ -179,88 +171,40 @@ static void resizeMapRequester(MapRequester *mapRequester) {
     GT_RefreshWindow(mapRequester->window->intuitionWindow, NULL);
 }
 
-static void handleRequesterMessage(MapRequester *mapRequester, struct IntuiMessage *msg) {
-    switch(msg->Class) {
-    case IDCMP_CLOSEWINDOW:
-        mapRequester->selected = -1;
-        break;
-    case IDCMP_GADGETUP:
-        handleRequesterGadgetUp(mapRequester, (struct Gadget*)msg->IAddress, msg->Code);
-        break;
-    case IDCMP_NEWSIZE:
-        resizeMapRequester(mapRequester);
-        break;
-    }
-}
-
-static void handleRequesterMessages(MapRequester *mapRequester) {
-    struct IntuiMessage *msg = NULL;
-    while(msg = GT_GetIMsg(mapRequester->window->intuitionWindow->UserPort)) {
-        handleRequesterMessage(mapRequester, msg);
-        GT_ReplyIMsg(msg);
-    }
-}
-
-static void requesterLoop(MapRequester *mapRequester) {
-    long signal = 1L << mapRequester->window->intuitionWindow->UserPort->mp_SigBit;
-    mapRequester->selected = 0;
-    while(!mapRequester->selected) {
-        Wait(signal);
-        handleRequesterMessages(mapRequester);
-    }
-    if(mapRequester->selected == -1) {
-        mapRequester->selected = 0;
-    }
-}
-
-static void initMapRequesterVi(void) {
-  void *vi = getGlobalVi();
-  if(!vi) {
-    fprintf(stderr, "initMapRequesterVi: failed to get global VI\n");
-  }
-
-  mapListNewGadget.ng_VisualInfo      = vi;
-  okButtonNewGadget.ng_VisualInfo     = vi;
-  cancelButtonNewGadget.ng_VisualInfo = vi;
-}
-
 int spawnMapRequester(FrameworkWindow *parent, char *title) {
-  MapRequester mapRequester;
-  mapRequester.window = NULL;
+  WindowGadgets *gadgets;
+  FrameworkWindow *mapRequester;
+  int selected;
 
   if(!Request(&requester, parent->intuitionWindow)) {
     fprintf(stderr, "spawnMapRequester: couldn't start requester\n");
     goto error;
   }
 
-  initMapRequesterVi();
-  createMapRequesterGadgets(&mapRequester);
-  if(!mapRequester.gadgets) {
+  gadgets = createMapRequesterGadgets(&mapRequester);
+  if(!gadgets) {
     fprintf(stderr, "spawnMapRequester: couldn't create gadgets\n");
     goto error_EndRequest;
   }
-  mapRequesterWindowKind.newWindow.FirstGadget = mapRequester.gadgets;
 
   mapRequesterWindowKind.newWindow.Title = title;
 
-  mapRequester.window = openWindowOnGlobalScreen(&mapRequesterWindowKind);
-  if(!mapRequester.window) {
+  mapRequester = openWindowOnGlobalScreen(&mapRequesterWindowKind, gadgets);
+  if(!mapRequester) {
     fprintf(stderr, "spawnMapRequester: couldn't open window\n");
     goto error_FreeGadgets;
   }
 
   requesterLoop(&mapRequester);
 
-  CloseWindow(mapRequester.window->intuitionWindow);
-
-  FreeGadgets(mapRequester.gadgets);
+  forceCloseWindow(mapRequester);
 
   EndRequest(&requester, parent->intuitionWindow);
 
-  return mapRequester.selected;
+  return data.selected;
 
 error_FreeGadgets:
-  FreeGadgets(mapRequester.gadgets);
+  freeMapRequesterGadgets(gadgets);
 error_EndRequest:
   EndRequest(&requester, parent->intuitionWindow);
 error:
