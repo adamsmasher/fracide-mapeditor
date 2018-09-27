@@ -55,6 +55,11 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, WindowGadgets *gadge
 
   GT_RefreshWindow(window->intuitionWindow, NULL);
 
+  /* redraw the whole window */
+  if(window->kind->refreshWindow) {
+    (*window->kind->refreshWindow)(window);
+  }
+
   return window;
 error_closeWindow:
   CloseWindow(window->intuitionWindow);
