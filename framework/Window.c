@@ -206,16 +206,14 @@ static void removeChildWindow(FrameworkWindow *parent, FrameworkWindow *child) {
 void forceCloseWindow(FrameworkWindow *window) {
   forceCloseChildren(window);
 
-  /* TODO: you need to split this up into pre and post close, so that
-     gadgets can be freed after the fact */
-  if(window->kind->closeWindow) {
-    (*window->kind->closeWindow)(window);
-  }
-
   ClearMenuStrip(window->intuitionWindow);
   FreeMenus(window->menu);
 
   CloseWindow(window->intuitionWindow);
+
+  if(window->kind->closeWindow) {
+    (*window->kind->closeWindow)(window);
+  }
 
   if(window->parent) {
     removeChildWindow(window->parent, window);
