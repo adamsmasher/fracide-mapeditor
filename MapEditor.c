@@ -755,6 +755,8 @@ FrameworkWindow *newMapEditorNewMap(FrameworkWindow *parent) {
     goto error;
   }
 
+  sprintf(map->name, "Untitled");
+
   mapEditor = newMapEditor(parent, map);
   if(!mapEditor) {
     fprintf(stderr, "newMapEditorNewMap: failed to create map editor\n");
