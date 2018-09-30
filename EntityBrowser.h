@@ -28,7 +28,6 @@ typedef struct EntityBrowserGadgets_tag {
 } EntityBrowserGadgets;
 
 typedef struct EntityBrowserData_tag {
-  EntityBrowserGadgets gadgets;
   char title[32];
   int selectedEntity;
   int selectedTag;
