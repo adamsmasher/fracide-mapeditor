@@ -396,7 +396,7 @@ static void onRemoveEntityClick(FrameworkWindow *entityBrowser) {
   entityBrowserDeselectEntity(entityBrowser);
 }
 
-static void handleEntityClicked(FrameworkWindow *entityBrowser, int entityNum) {
+static void handleEntitySelected(FrameworkWindow *entityBrowser, int entityNum) {
   EntityBrowserData *data = entityBrowser->data;
 
   if(data->entityRequester) {
@@ -552,7 +552,8 @@ static WindowKind entityBrowserWindowKind = {
 static ListViewSpec entityListSpec = {
   ENTITY_LIST_LEFT, ENTITY_LIST_TOP,
   ENTITY_LIST_WIDTH, ENTITY_LIST_HEIGHT,
-  NULL
+  NULL,
+  handleEntitySelected
 };
 
 static ButtonSpec addEntitySpec = {
