@@ -190,7 +190,7 @@ static struct Gadget *buildInteger(IntegerSpec *integerSpec, struct Gadget *cont
   newGadget.ng_GadgetID   = gadgetId;
   newGadget.ng_Flags      = textPlacementToFlags(integerSpec->textPlacement);
   newGadget.ng_VisualInfo = getGlobalVi();
-  newGadget.ng_UserData   = NULL;
+  newGadget.ng_UserData   = (void*)integerSpec->onEntry;
   return CreateGadget(INTEGER_KIND, context, &newGadget,
     GTIN_MaxChars, integerSpec->maxChars,
     GA_Disabled, stateToDisabledTag(integerSpec->state),
