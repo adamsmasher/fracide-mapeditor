@@ -183,9 +183,9 @@ void handleWindowEvents(FrameworkWindow *window, long signalSet) {
   struct Window *iwindow = window->intuitionWindow;
 
   if(1L << iwindow->UserPort->mp_SigBit & signalSet) {
-    while(msg = (struct IntuiMessage*)GetMsg(iwindow->UserPort)) {
+    while(msg = GT_GetIMsg(iwindow->UserPort)) {
       dispatchMessage(window, msg);
-      ReplyMsg((struct Message*)msg);
+      GT_ReplyIMsg(msg);
     }
   }
 
