@@ -406,7 +406,7 @@ static void handleEntitySelected(FrameworkWindow *entityBrowser, int entityNum) 
   entityBrowserSelectEntity(entityBrowser, entityNum);
 }
 
-static void handleTagClicked(FrameworkWindow *entityBrowser, int tagNum) {
+static void handleTagSelected(FrameworkWindow *entityBrowser, int tagNum) {
   EntityBrowserData *data = entityBrowser->data;
   UWORD entityNum = data->selectedEntity - 1;
   entityBrowserSelectTag(entityBrowser, entityNum, tagNum);
@@ -625,7 +625,8 @@ static ButtonSpec chooseEntitySpec = {
 static ListViewSpec tagListSpec = {
   TAG_LIST_LEFT, TAG_LIST_TOP,
   TAG_LIST_WIDTH, TAG_LIST_HEIGHT,
-  NULL
+  NULL,
+  handleTagSelected
 };
 
 static ButtonSpec addTagSpec = {
