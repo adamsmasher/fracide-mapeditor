@@ -208,7 +208,7 @@ static struct Gadget *buildListView(ListViewSpec *listViewSpec, struct Gadget *c
   newGadget.ng_GadgetID   = gadgetId;
   newGadget.ng_Flags      = 0;
   newGadget.ng_VisualInfo = getGlobalVi();
-  newGadget.ng_UserData   = NULL;
+  newGadget.ng_UserData   = (void*)listViewSpec->onSelect;
   return CreateGadget(LISTVIEW_KIND, context, &newGadget,
     /* TODO: show selected */
     GTLV_Labels, listViewSpec->labels,

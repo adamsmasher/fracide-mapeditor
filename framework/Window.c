@@ -145,10 +145,10 @@ BOOL tryToCloseWindow(FrameworkWindow *window) {
   }
 }
 
-static void invokeGadgetUpHandler(FrameworkWindow *window, struct Gadget *gadget) {
+static void invokeGadgetUpHandler(FrameworkWindow *window, struct Gadget *gadget, int code) {
   GadgetUpHandler handler = findHandlerForGadgetUp(gadget);
   if(handler) {
-    (*handler)(window);
+    (*handler)(window, code);
   }
 }
 
@@ -170,7 +170,7 @@ static void dispatchMessage(FrameworkWindow *window, struct IntuiMessage *msg) {
       tryToCloseWindow(window);
       break;
     case IDCMP_GADGETUP:
-      invokeGadgetUpHandler(window, (struct Gadget*)msg->IAddress);
+      invokeGadgetUpHandler(window, (struct Gadget*)msg->IAddress, msg->Code);
       break;
     case IDCMP_MOUSEBUTTONS:
       invokeClickHandler(window, msg->MouseX, msg->MouseY);

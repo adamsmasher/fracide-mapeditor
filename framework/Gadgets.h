@@ -7,6 +7,7 @@
 
 typedef void (*OnClick)(FrameworkWindow*);
 typedef void (*OnEntry)(FrameworkWindow*);
+typedef void (*OnSelect)(FrameworkWindow*, int selected);
 
 typedef enum Border_tag {
   NO_BORDER,
@@ -80,6 +81,7 @@ typedef struct ListViewSpec_tag {
   WORD left, top;
   WORD width, height;
   struct List *labels;
+  OnSelect onSelect;
 /* TODO: show selected */
 } ListViewSpec;
 
