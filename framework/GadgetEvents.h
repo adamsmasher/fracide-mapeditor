@@ -5,7 +5,7 @@
 
 #include "window.h"
 
-typedef void (*GadgetUpHandler)(FrameworkWindow*, int code);
+typedef void (*GadgetUpHandler)(FrameworkWindow*, UWORD code);
 
 GadgetUpHandler findHandlerForGadgetUp(struct Gadget*);
 

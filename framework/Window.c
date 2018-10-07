@@ -145,7 +145,7 @@ BOOL tryToCloseWindow(FrameworkWindow *window) {
   }
 }
 
-static void invokeGadgetUpHandler(FrameworkWindow *window, struct Gadget *gadget, int code) {
+static void invokeGadgetUpHandler(FrameworkWindow *window, struct Gadget *gadget, UWORD code) {
   GadgetUpHandler handler = findHandlerForGadgetUp(gadget);
   if(handler) {
     (*handler)(window, code);

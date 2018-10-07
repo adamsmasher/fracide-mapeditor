@@ -7,7 +7,7 @@
 
 typedef void (*OnClick)(FrameworkWindow*);
 typedef void (*OnEntry)(FrameworkWindow*);
-typedef void (*OnSelect)(FrameworkWindow*, int selected);
+typedef void (*OnSelect)(FrameworkWindow*, UWORD selected);
 
 typedef enum Border_tag {
   NO_BORDER,

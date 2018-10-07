@@ -224,7 +224,7 @@ error:
   return FAILURE;
 }
 
-static void entityBrowserSelectTag(FrameworkWindow *entityBrowser, UWORD entityNum, int tagNum) {
+static void entityBrowserSelectTag(FrameworkWindow *entityBrowser, UWORD entityNum, UWORD tagNum) {
   EntityBrowserData *data = entityBrowser->data;
   EntityBrowserGadgets *gadgets = entityBrowser->gadgets->data;
   FrameworkWindow *parent = entityBrowser->parent;
@@ -396,7 +396,7 @@ static void onRemoveEntityClick(FrameworkWindow *entityBrowser) {
   entityBrowserDeselectEntity(entityBrowser);
 }
 
-static void handleEntitySelected(FrameworkWindow *entityBrowser, int entityNum) {
+static void handleEntitySelected(FrameworkWindow *entityBrowser, UWORD entityNum) {
   EntityBrowserData *data = entityBrowser->data;
 
   if(data->entityRequester) {
@@ -406,7 +406,7 @@ static void handleEntitySelected(FrameworkWindow *entityBrowser, int entityNum) 
   entityBrowserSelectEntity(entityBrowser, entityNum);
 }
 
-static void handleTagSelected(FrameworkWindow *entityBrowser, int tagNum) {
+static void handleTagSelected(FrameworkWindow *entityBrowser, UWORD tagNum) {
   EntityBrowserData *data = entityBrowser->data;
   UWORD entityNum = data->selectedEntity - 1;
   entityBrowserSelectTag(entityBrowser, entityNum, tagNum);
