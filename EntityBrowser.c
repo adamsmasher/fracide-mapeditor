@@ -739,6 +739,7 @@ FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *
   data->entityRequester = NULL;
   data->selectedEntity = 0;
   data->selectedTag = 0;
+  NewList(&data->entityLabels);
 
   if(mapNum) {
     sprintf(data->title, "Entities (Map %d)", mapNum - 1);
@@ -748,7 +749,6 @@ FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *
   entityBrowserWindowKind.newWindow.Title = data->title;
 
   addEntitySpec.state = map->entityCnt < MAX_ENTITIES_PER_MAP ? ENABLED : DISABLED;
-  /* TODO: this is probably broken huh. */
   entityListSpec.labels = &data->entityLabels;
 
   gadgets = newEntityBrowserGadgets();
