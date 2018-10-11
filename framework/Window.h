@@ -10,6 +10,7 @@ typedef BOOL (*CanCloseFunction)(struct FrameworkWindow_tag*);
 typedef void (*CloseFunction)   (struct FrameworkWindow_tag*);
 typedef void (*ClickFunction)   (struct FrameworkWindow_tag*, WORD x, WORD y);
 
+/* TODO: provide a function to build the gadgets..., then auto-rebuild on resize */
 typedef struct WindowKind_tag {
   struct NewWindow newWindow;
   struct MenuSpec_tag *menuSpec;
