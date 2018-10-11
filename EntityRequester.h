@@ -22,6 +22,6 @@ typedef struct EntityRequesterData_tag {
 FrameworkWindow *newEntityRequester(FrameworkWindow *parent);
 FrameworkWindow *newEntityNamesEditor(FrameworkWindow *parent);
 
-BOOL isEntityRequester(FrameworkWindow*);
+BOOL isEntityNamesEditor(FrameworkWindow *window);
 
 #endif

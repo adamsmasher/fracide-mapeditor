@@ -235,8 +235,16 @@ FrameworkWindow *newEntityRequester(FrameworkWindow *parent) {
   return newGenericEntityRequester(parent, "Choose Entity...", NON_EDITABLE);
 }
 
-BOOL isEntityRequester(FrameworkWindow *window) {
-  return window->kind == &entityRequesterWindowKind;
+static BOOL isEntityRequester(FrameworkWindow *window) {
+  return (BOOL)(window->kind == &entityRequesterWindowKind);
+}
+
+BOOL isEntityNamesEditor(FrameworkWindow *window) {
+  if(isEntityRequester(window)) {
+    EntityRequesterData *data = window->data;
+    return (BOOL)data->editable;
+  }
+  return FALSE;
 }
 
 static void resizeEntityRequester(FrameworkWindow *entityRequester) {

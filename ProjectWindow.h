@@ -19,6 +19,8 @@ void projectWindowNewMap(FrameworkWindow*);
 void projectWindowOpenMap(FrameworkWindow*);
 BOOL projectWindowOpenMapNum(FrameworkWindow*, int mapNum);
 
+void projectWindowShowEntityNamesEditor(FrameworkWindow*);
+
 void projectWindowRefreshAllSongDisplays(FrameworkWindow*);
 void projectWindowRefreshAllEntityBrowsers(FrameworkWindow*);
 

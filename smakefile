@@ -15,7 +15,7 @@ DATA_OBJS=    easystructs.o
 DATA_HEADERS= easystructs.h
 
 OTHER_OBJS= main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o
-WINDOW_OBJS= SongNamesEditor.o EntityNamesEditor.o
+WINDOW_OBJS= SongNamesEditor.o
 
 OBJS= $(FRAMEWORK_OBJS) $(PROJECT_WINDOW_OBJS) $(MAP_EDITOR_OBJS) $(DATA_OBJS) $(OTHER_OBJS) $(WINDOW_OBJS)
 
@@ -67,8 +67,6 @@ ProjectWindowData.o: ProjectWindowData.c ProjectWindowData.h Map.h Project.h Til
 ProjectWindowMenu.o: ProjectWindowMenu.c ProjectWindowMenu.h framework/menubuild.h EntitiesMenu.h MapMenu.h MusicMenu.h ProjectMenu.h
 
 SongNamesEditor.o: SongNamesEditor.c SongNamesEditor.h
-
-EntityNamesEditor.o: EntityNamesEditor.c EntityNamesEditor.h
 
 framework/font.o: framework/font.c framework/font.h
 
