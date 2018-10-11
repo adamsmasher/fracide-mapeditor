@@ -102,6 +102,9 @@ static WindowGadgets *createEntityRequesterGadgets(int width, int height, Editab
     goto error_freeWindowGadgets;
   }
 
+  entityListSpec.height = height - ENTITY_LIST_HEIGHT_DELTA;
+  entityListSpec.width  = width  - ENTITY_LIST_WIDTH_DELTA;
+
   if(editable) {
     entityNameSpec.top   = height - ENTITY_NAME_BOTTOM_OFFSET;
     entityNameSpec.width = width  - ENTITY_NAME_WIDTH_DELTA;
@@ -134,11 +137,7 @@ error:
 /* TODO: fix usss 
 
   ProjectWindowData *projectData = what;
-  int height = entityRequester->window ? entityRequester->window->intuitionWindow->Height : ENTITY_REQUESTER_HEIGHT;
-  int width  = entityRequester->window ? entityRequester->window->intuitionWindow->Width  : ENTITY_REQUESTER_WIDTH;
 
-  entityListNewGadget.ng_Height = height - ENTITY_LIST_HEIGHT_DELTA;
-  entityListNewGadget.ng_Width  = width  - ENTITY_LIST_WIDTH_DELTA;
   gad = CreateGadget(LISTVIEW_KIND, gad, &entityListNewGadget,
     GTLV_ShowSelected, entityRequester->entityNameGadget,
     GTLV_Labels, projectDataGetEntityNames(projectData),
