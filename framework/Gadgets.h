@@ -49,6 +49,7 @@ typedef struct ScrollSpec_tag {
   Orientation orientation;
 } ScrollerSpec;
 
+/* TODO: max chars? */
 typedef struct StringSpec_tag {
   WORD left, top;
   WORD width, height;
