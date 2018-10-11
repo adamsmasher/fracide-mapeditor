@@ -19,6 +19,7 @@
 #include "framework/screen.h"
 #include "framework/window.h"
 
+#include "EntityRequester.h"
 #include "map.h"
 #include "MapEditor.h"
 #include "MapEditorData.h"
@@ -496,17 +497,12 @@ static void onTagAliasEntry(FrameworkWindow *entityBrowser) {
 
 static void onChooseEntityClick(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
-  EntityRequester *entityRequester = data->entityRequester;
+  FrameworkWindow *entityRequester = data->entityRequester;
 
   if(entityRequester) {
-    WindowToFront(entityRequester->window->intuitionWindow);
+    WindowToFront(entityRequester->intuitionWindow);
   } else {
-    entityRequester = newEntityRequester();
-    if(entityRequester) {
-      /* attachEntityRequesterToEntityBrowser(data, entityRequester); */
-      /* TODO: fix me */
-      /* addWindowToSet(entityRequester->window); */
-    }
+    entityRequester = newEntityRequester(entityBrowser);
   }
 }
 

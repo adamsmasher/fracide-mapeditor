@@ -22,90 +22,48 @@ static int listItemStart(int selected) {
   }
 }
 
-static EntityRequester *entityNamesEditor = NULL;
+static FrameworkWindow *entityNamesEditor = NULL;
 
 static void handleEntityNamesEditorSelectEntity(struct IntuiMessage *msg) {
+  EntityRequesterData *data = entityNamesEditor->data;
+  EntityRequesterGadgets *gadgets = entityNamesEditor->gadgets->data;
   ProjectWindowData *projectData = NULL; /* TODO fix me */
   int selected = msg->Code;
 
-  GT_SetGadgetAttrs(entityNamesEditor->entityNameGadget, entityNamesEditor->window->intuitionWindow, NULL,
+  GT_SetGadgetAttrs(gadgets->entityNameGadget, entityNamesEditor->intuitionWindow, NULL,
     GTST_String, projectDataGetEntityName(projectData, selected),
     GA_Disabled, FALSE,
     TAG_END);
 
-  entityNamesEditor->selected = selected + 1;
+  data->selected = selected + 1;
 }
 
 static void handleEntityNamesEditorUpdateEntity(struct IntuiMessage *msg) {
+  EntityRequesterData *data = entityNamesEditor->data;
+  EntityRequesterGadgets *gadgets = entityNamesEditor->gadgets->data;
   ProjectWindowData *projectData = NULL; /* TODO: fix me */
-  int selected = entityNamesEditor->selected - 1;
-  char *name = ((struct StringInfo*)entityNamesEditor->entityNameGadget->SpecialInfo)->Buffer;
+  int selected = data->selected - 1;
+  char *name = ((struct StringInfo*)gadgets->entityNameGadget->SpecialInfo)->Buffer;
 
   projectDataUpdateEntityName(projectData, selected, name);
 
-  GT_RefreshWindow(entityNamesEditor->window->intuitionWindow, NULL);
+  GT_RefreshWindow(entityNamesEditor->intuitionWindow, NULL);
   refreshAllEntityBrowsers();
 }
 
-static void handleEntityNamesEditorGadgetUp(struct IntuiMessage *msg) {
-    struct Gadget *gadget = (struct Gadget*)msg->IAddress;
-    switch(gadget->GadgetID) {
-    case ENTITY_REQUESTER_LIST_ID:
-        handleEntityNamesEditorSelectEntity(msg);
-        break;
-    case ENTITY_NAME_ID:
-        handleEntityNamesEditorUpdateEntity(msg);
-        break;
-    }
-}
-
-static void handleEntityNamesEditorMessage(struct IntuiMessage* msg) {
-    switch(msg->Class) {
-    case IDCMP_CLOSEWINDOW:
-        entityNamesEditor->closed = 1;
-        break;
-    case IDCMP_GADGETUP:
-        handleEntityNamesEditorGadgetUp(msg);
-        break;
-    case IDCMP_NEWSIZE:
-        resizeEntityRequester(entityNamesEditor);
-        break;
-    }
-}
-
-void handleEntityNamesEditorMessages(long signalSet) {
-    struct IntuiMessage *msg;
-    if(entityNamesEditor) {
-        if(1L << entityNamesEditor->window->intuitionWindow->UserPort->mp_SigBit & signalSet) {
-            while(msg = GT_GetIMsg(entityNamesEditor->window->intuitionWindow->UserPort)) {
-                handleEntityNamesEditorMessage(msg);
-                GT_ReplyIMsg(msg);
-            }
-        }
-        if(entityNamesEditor->closed) {
-            closeEntityNamesEditor();
-        }
-    }
-}
-
-
 void closeEntityNamesEditor(void) {
-    if(entityNamesEditor) {
-        /* TODO: fix me */
-        /* removeWindowFromSet(entityNamesEditor->window); */
-        freeEntityRequester(entityNamesEditor);
-        entityNamesEditor = NULL;
-    }
+  if(entityNamesEditor) {
+    /* TODO: fix me */
+    /* removeWindowFromSet(entityNamesEditor->window); */
+    /* freeEntityRequester(entityNamesEditor); */
+    entityNamesEditor = NULL;
+  }
 }
 
-void showEntityNamesEditor(void) {
-    if(entityNamesEditor) {
-        WindowToFront(entityNamesEditor->window->intuitionWindow);
-    } else {
-        entityNamesEditor = newEntityNamesEditor();
-        if(entityNamesEditor) {
-            /* TODO: fix me */
-            /* addWindowToSet(entityNamesEditor->window); */
-        }
-    }
+void showEntityNamesEditor(FrameworkWindow *parent) {
+  if(entityNamesEditor) {
+    WindowToFront(entityNamesEditor->intuitionWindow);
+  } else {
+    entityNamesEditor = newEntityNamesEditor(parent);
+  }
 }

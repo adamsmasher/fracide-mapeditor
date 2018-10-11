@@ -5,23 +5,21 @@
 
 #include "framework/Window.h"
 
-#define ENTITY_REQUESTER_LIST_ID (0)
-#define ENTITY_NAME_ID (ENTITY_REQUESTER_LIST_ID + 1)
+typedef struct EntityRequesterGadgets_tag {
+  struct Gadget *entityNameGadget;
+} EntityRequesterGadgets;
 
-typedef struct EntityRequester_tag {
-    FrameworkWindow *window;
-    struct Gadget *gadgets;
-    struct Gadget *entityNameGadget;
-    int closed;
-    int selected;
-    int editable;
-} EntityRequester;
+typedef enum Editable_tag {
+  NON_EDITABLE,
+  EDITABLE
+} Editable;
 
-EntityRequester *newEntityRequester(void);
-EntityRequester *newEntityNamesEditor(void);
+typedef struct EntityRequesterData_tag {
+  int selected;
+  Editable editable;
+} EntityRequesterData;
 
-void resizeEntityRequester(EntityRequester*);
-
-void freeEntityRequester(EntityRequester*);
+FrameworkWindow *newEntityRequester(FrameworkWindow *parent);
+FrameworkWindow *newEntityNamesEditor(FrameworkWindow *parent);
 
 #endif

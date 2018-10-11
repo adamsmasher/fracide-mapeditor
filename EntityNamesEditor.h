@@ -1,9 +1,9 @@
 #ifndef ENTITY_NAMES_EDITOR_H
 #define ENTITY_NAMES_EDITOR_H
 
-void handleEntityNamesEditorMessages(long signalSet);
+#include "framework/Window.h"
 
-void showEntityNamesEditor(void);
+void showEntityNamesEditor(FrameworkWindow *parent);
 void closeEntityNamesEditor(void);
 
 #endif

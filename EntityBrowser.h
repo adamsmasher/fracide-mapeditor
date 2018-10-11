@@ -5,7 +5,6 @@
 
 #include "framework/Window.h"
 
-#include "EntityRequester.h"
 #include "Map.h"
 
 #define ENTITY_LABEL_LENGTH 16
@@ -37,7 +36,7 @@ typedef struct EntityBrowserData_tag {
   struct List tagLabels;
   struct Node *tagNodes;
   char (*tagStrings)[TAG_ALIAS_LENGTH + 4];
-  EntityRequester *entityRequester;
+  FrameworkWindow *entityRequester;
 } EntityBrowserData;
 
 FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map*, UWORD mapNum);

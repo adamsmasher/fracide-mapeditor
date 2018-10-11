@@ -4,7 +4,7 @@
 #include "EntityNamesEditor.h"
 
 static void entityEditorClicked(FrameworkWindow *window) {
-    showEntityNamesEditor();
+  showEntityNamesEditor(window);
 }
 
 static MenuSectionSpec entitySection =
