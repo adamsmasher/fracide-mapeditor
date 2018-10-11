@@ -73,17 +73,18 @@ static ListViewSpec entityListSpec = {
   ENTITY_LIST_LEFT,  ENTITY_LIST_TOP,
   ENTITY_REQUESTER_WIDTH - ENTITY_LIST_WIDTH_DELTA,
   ENTITY_REQUESTER_HEIGHT - ENTITY_LIST_HEIGHT_DELTA,
-  NULL,
-  NULL
+  (struct List*)NULL, /* TODO: labels */
+  (OnSelect)NULL /* TODO: should this be null */
 };
 
 /* TODO: max chars? */
 static StringSpec entityNameSpec = {
   ENTITY_NAME_LEFT,  ENTITY_REQUESTER_HEIGHT - ENTITY_NAME_BOTTOM_OFFSET,
   ENTITY_REQUESTER_WIDTH - ENTITY_NAME_WIDTH_DELTA, ENTITY_NAME_HEIGHT,
-  NULL,
+  (char*)NULL, /* TODO: label...why is this null? */
   TEXT_ON_LEFT, /* TODO: not actually sure about this */
-  DISABLED
+  DISABLED,
+  (OnEntry)NULL /* TODO: should this be null */
 };
 
 static WindowGadgets *createEntityRequesterGadgets(int width, int height, Editable editable) {
