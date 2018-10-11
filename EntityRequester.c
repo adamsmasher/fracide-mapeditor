@@ -47,6 +47,47 @@ static void closeEntityRequester(FrameworkWindow *entityRequester) {
   free(entityRequester->data);
 }
 
+static void entityRequesterOnSelectEntity(FrameworkWindow *entityRequester, UWORD selected) {
+  EntityRequesterData *data = entityRequester->data;
+  EntityRequesterGadgets *gadgets = entityRequester->gadgets->data;
+
+  data->selected = selected + 1;
+
+  if(data->editable) {
+    ProjectWindowData *projectData = entityRequester->parent->data;
+    GT_SetGadgetAttrs(gadgets->entityNameGadget, entityRequester->intuitionWindow, NULL,
+      GTST_String, projectDataGetEntityName(projectData, selected),
+      GA_Disabled, FALSE,
+      TAG_END);
+  }
+}
+
+/* TODO help i'm duplicated everywhere */
+static int listItemStart(int selected) {
+  if(selected < 10) {
+    return 2;
+  } else if(selected < 100) {
+    return 3;
+  } else {
+    return 4;
+  }
+}
+
+static void entityRequesterOnNameEntry(FrameworkWindow *entityRequester) {
+  EntityRequesterData *data = entityRequester->data;
+  EntityRequesterGadgets *gadgets = entityRequester->gadgets->data;
+  ProjectWindowData *projectData = entityRequester->parent->data;
+
+  UWORD selected = data->selected - 1;
+
+  char *name = ((struct StringInfo*)gadgets->entityNameGadget->SpecialInfo)->Buffer;
+
+  projectDataUpdateEntityName(projectData, selected, name);
+
+  GT_RefreshWindow(entityRequester->intuitionWindow, NULL);
+  refreshAllEntityBrowsers();
+}
+
 static WindowKind entityRequesterWindowKind = {
   {
     40, 40, ENTITY_REQUESTER_WIDTH, ENTITY_REQUESTER_HEIGHT,
@@ -74,7 +115,7 @@ static ListViewSpec entityListSpec = {
   ENTITY_REQUESTER_WIDTH - ENTITY_LIST_WIDTH_DELTA,
   ENTITY_REQUESTER_HEIGHT - ENTITY_LIST_HEIGHT_DELTA,
   (struct List*)NULL, /* TODO: labels */
-  (OnSelect)NULL /* TODO: should this be null */
+  entityRequesterOnSelectEntity
 };
 
 /* TODO: max chars? */
@@ -84,7 +125,7 @@ static StringSpec entityNameSpec = {
   (char*)NULL, /* TODO: label...why is this null? */
   TEXT_ON_LEFT, /* TODO: not actually sure about this */
   DISABLED,
-  (OnEntry)NULL /* TODO: should this be null */
+  entityRequesterOnNameEntry
 };
 
 static WindowGadgets *createEntityRequesterGadgets(int width, int height, Editable editable) {
