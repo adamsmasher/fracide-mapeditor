@@ -235,6 +235,10 @@ FrameworkWindow *newEntityRequester(FrameworkWindow *parent) {
   return newGenericEntityRequester(parent, "Choose Entity...", NON_EDITABLE);
 }
 
+BOOL isEntityRequester(FrameworkWindow *window) {
+  return window->kind == &entityRequesterWindowKind;
+}
+
 static void resizeEntityRequester(FrameworkWindow *entityRequester) {
   EntityRequesterData *data = entityRequester->data;
 
