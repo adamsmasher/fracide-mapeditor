@@ -13,7 +13,7 @@
 #include "menu.h"
 #include "menubuild.h"
 
-FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, WindowGadgets *gadgets, struct Screen *screen) {
+FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, struct Screen *screen, void *data) {
   FrameworkWindow *window;
 
   windowKind->newWindow.Screen = screen;
@@ -24,11 +24,7 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, WindowGadgets *gadge
     goto error;
   }
 
-  window->gadgets = gadgets;
-  if(gadgets) {
-    windowKind->newWindow.FirstGadget = gadgets->glist;
-  }
-
+  window->data = data;
   window->kind = windowKind;
   window->parent = NULL;
   window->children = NULL;
@@ -36,10 +32,21 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, WindowGadgets *gadge
   window->prev = NULL;
   window->closed = FALSE;
 
+  if(windowKind->buildGadgets) {
+    window->gadgets = (*windowKind->buildGadgets)(windowKind->newWindow.Width, windowKind->newWindow.Height, data);
+    if(!window->gadgets) {
+      fprintf(stderr, "openWindowOnScreen: failed to build gadgets\n");
+      goto error_freeWindow;
+    }
+    windowKind->newWindow.FirstGadget = window->gadgets->glist;
+  } else {
+    window->gadgets = NULL;
+  }
+
   window->intuitionWindow = OpenWindow(&windowKind->newWindow);
   if(!window->intuitionWindow) {
     fprintf(stderr, "openWindowOnScreen: failed to open window\n");
-    goto error_freeWindow;
+    goto error_freeGadgets;
   }
 
   window->treeSigMask = 1L << window->intuitionWindow->UserPort->mp_SigBit;
@@ -65,6 +72,10 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, WindowGadgets *gadge
   return window;
 error_closeWindow:
   CloseWindow(window->intuitionWindow);
+error_freeGadgets:
+  if(windowKind->freeGadgets) {
+    (*windowKind->freeGadgets)(window->gadgets);
+  }
 error_freeWindow:
   free(window);
 error:
@@ -89,8 +100,8 @@ static void attachChildWindow(FrameworkWindow *parent, FrameworkWindow *child) {
   propagateSigMaskUp(child);
 }
 
-FrameworkWindow *openChildWindow(FrameworkWindow *parent, WindowKind *windowKind, WindowGadgets *gadgets) {
-  FrameworkWindow *child = openWindowOnScreen(windowKind, gadgets, parent->intuitionWindow->WScreen);
+FrameworkWindow *openChildWindow(FrameworkWindow *parent, WindowKind *windowKind, void *data) {
+  FrameworkWindow *child = openWindowOnScreen(windowKind, parent->intuitionWindow->WScreen, data);
   attachChildWindow(parent, child);
   return child;
 }
@@ -219,6 +230,10 @@ void forceCloseWindow(FrameworkWindow *window) {
   }
 
   CloseWindow(window->intuitionWindow);
+
+  if(window->kind->freeGadgets) {
+    (*window->kind->freeGadgets)(window->gadgets);
+  }
 
   if(window->kind->closeWindow) {
     (*window->kind->closeWindow)(window);

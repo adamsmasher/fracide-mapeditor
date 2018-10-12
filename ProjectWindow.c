@@ -98,6 +98,8 @@ static WindowKind projectWindowKind = {
     CUSTOMSCREEN
   },
   (MenuSpec*)        NULL, /* set before creation */
+  (GadgetBuilder)    NULL,
+  (GadgetFreer)      NULL,
   (RefreshFunction)  NULL,
   (CanCloseFunction) ensureEverythingSaved,
   (CloseFunction)    onClose,
@@ -124,13 +126,11 @@ FrameworkWindow *newProjectWindow(void) {
 
   projectWindowKind.menuSpec = projectWindowMenuSpec;
 
-  projectWindow = openWindowOnGlobalScreen(&projectWindowKind, NULL);
+  projectWindow = openWindowOnGlobalScreen(&projectWindowKind, data);
   if(!projectWindow) {
     fprintf(stderr, "newProjectWindow: failed to open window!\n");
     goto error_freeData;
   }
-
-  projectWindow->data = data;
 
   ActivateWindow(projectWindow->intuitionWindow);
 

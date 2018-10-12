@@ -5,16 +5,21 @@
 
 #include "WindowGadgets.h"
 
+typedef WindowGadgets *(*GadgetBuilder)(WORD width, WORD height, void *data);
+typedef void (*GadgetFreer)(WindowGadgets*);
+
 typedef void (*RefreshFunction) (struct FrameworkWindow_tag*);
 typedef BOOL (*CanCloseFunction)(struct FrameworkWindow_tag*);
 typedef void (*CloseFunction)   (struct FrameworkWindow_tag*);
 typedef void (*ClickFunction)   (struct FrameworkWindow_tag*, WORD x, WORD y);
 
-/* TODO: provide a function to build the gadgets..., then auto-rebuild on resize */
 typedef struct WindowKind_tag {
   struct NewWindow newWindow;
   struct MenuSpec_tag *menuSpec;
   /* TODO: makes me sad that we build a menu for every window... */
+
+  GadgetBuilder buildGadgets;
+  GadgetFreer freeGadgets;
 
   RefreshFunction  refreshWindow;
   CanCloseFunction canCloseWindow;
@@ -43,8 +48,8 @@ typedef struct FrameworkWindow_tag {
 
 void handleWindowEvents(FrameworkWindow*, long signalSet);
 
-FrameworkWindow *openWindowOnScreen(WindowKind*, WindowGadgets*, struct Screen*);
-FrameworkWindow *openChildWindow(FrameworkWindow *parent, WindowKind*, WindowGadgets*);
+FrameworkWindow *openWindowOnScreen(WindowKind*, struct Screen*, void *data);
+FrameworkWindow *openChildWindow(FrameworkWindow *parent, WindowKind*, void *data);
 
 BOOL tryToCloseWindow(FrameworkWindow*);
 void forceCloseWindow(FrameworkWindow*);

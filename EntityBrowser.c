@@ -506,45 +506,6 @@ static void onChooseEntityClick(FrameworkWindow *entityBrowser) {
   }
 }
 
-static void freeEntityBrowserGadgets(WindowGadgets *gadgets) {
-  free(gadgets->data);
-  FreeGadgets(gadgets->glist);
-  free(gadgets);
-}
-
-static void freeEntityBrowserData(EntityBrowserData *data) {
-  freeEntityLabels(data);
-  freeTagLabels(data);
-  free(data);
-}
-
-static void closeEntityBrowser(FrameworkWindow *entityBrowser) {
-  freeEntityBrowserData(entityBrowser->data);
-  freeEntityBrowserGadgets(entityBrowser->gadgets);
-}
-
-static WindowKind entityBrowserWindowKind = {
-  {
-    40, 40, ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
-    0xFF, 0xFF,
-    CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP,
-    WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|ACTIVATE,
-    NULL,
-    NULL,
-    "Entities",
-    NULL,
-    NULL,
-    ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
-    ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
-    CUSTOMSCREEN
-  },
-  (MenuSpec*)        NULL,
-  (RefreshFunction)  NULL,
-  (CanCloseFunction) NULL,
-  (CloseFunction)    &closeEntityBrowser,
-  (ClickFunction)    NULL
-};
-
 static ListViewSpec entityListSpec = {
   ENTITY_LIST_LEFT, ENTITY_LIST_TOP,
   ENTITY_LIST_WIDTH, ENTITY_LIST_HEIGHT,
@@ -721,9 +682,48 @@ error:
   return NULL;
 }
 
+static void freeEntityBrowserGadgets(WindowGadgets *gadgets) {
+  free(gadgets->data);
+  FreeGadgets(gadgets->glist);
+  free(gadgets);
+}
+
+static void freeEntityBrowserData(EntityBrowserData *data) {
+  freeEntityLabels(data);
+  freeTagLabels(data);
+  free(data);
+}
+
+static void closeEntityBrowser(FrameworkWindow *entityBrowser) {
+  freeEntityBrowserData(entityBrowser->data);
+}
+
+static WindowKind entityBrowserWindowKind = {
+  {
+    40, 40, ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
+    0xFF, 0xFF,
+    CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP,
+    WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|ACTIVATE,
+    NULL,
+    NULL,
+    "Entities",
+    NULL,
+    NULL,
+    ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
+    ENTITY_BROWSER_WIDTH, ENTITY_BROWSER_HEIGHT,
+    CUSTOMSCREEN
+  },
+  (MenuSpec*)        NULL,
+  (GadgetBuilder)    newEntityBrowserGadgets,
+  (GadgetFreer)      freeEntityBrowserGadgets,
+  (RefreshFunction)  NULL,
+  (CanCloseFunction) NULL,
+  (CloseFunction)    &closeEntityBrowser,
+  (ClickFunction)    NULL
+};
+
 FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *map, UWORD mapNum) {
   EntityBrowserData *data;
-  WindowGadgets *gadgets;
   FrameworkWindow *entityBrowser;
 
   data = malloc(sizeof(EntityBrowserData));
@@ -747,26 +747,16 @@ FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *
   addEntitySpec.state = map->entityCnt < MAX_ENTITIES_PER_MAP ? ENABLED : DISABLED;
   entityListSpec.labels = &data->entityLabels;
 
-  gadgets = newEntityBrowserGadgets();
-  if(!gadgets) {
-    fprintf(stderr, "newEntityBrowser: couldn't create entity browser gadgets\n");
-    goto error_freeData;
-  }
-
-  entityBrowser = openChildWindow(parent, &entityBrowserWindowKind, gadgets);
+  entityBrowser = openChildWindow(parent, &entityBrowserWindowKind, data);
   if(!entityBrowser) {
     fprintf(stderr, "newEntityBrowser: couldn't open window\n");
-    goto error_freeGadgets;
+    goto error_freeData;
   }
-
-  entityBrowser->data = data;
 
   entityBrowserRefreshEntities(entityBrowser);
 
   return entityBrowser;
 
-error_freeGadgets:
-  freeEntityBrowserGadgets(gadgets);
 error_freeData:
   free(data);
 error:

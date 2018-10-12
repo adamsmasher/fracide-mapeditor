@@ -582,7 +582,6 @@ static void handleMapEditorClick(FrameworkWindow *mapEditor, WORD x, WORD y) {
 
 static void freeMapEditor(FrameworkWindow *mapEditor) {
   freeMapEditorData(mapEditor->data);
-  freeMapEditorGadgets(mapEditor->gadgets);
 }
 
 static WindowKind mapEditorKind = {
@@ -601,6 +600,8 @@ static WindowKind mapEditorKind = {
     CUSTOMSCREEN
   },
   (MenuSpec*)        NULL, /* fill me in later */
+  (GadgetBuilder)    newMapEditorGadgets,
+  (GadgetFreer)      freeMapEditorGadgets,
   (RefreshFunction)  refreshMapEditor,
   (CanCloseFunction) mapEditorEnsureSaved,
   (CloseFunction)    freeMapEditor,
@@ -711,7 +712,6 @@ void mapEditorRefreshTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col) {
 
 static FrameworkWindow *newMapEditor(FrameworkWindow *parent, Map *map) {
   MapEditorData *data;
-  WindowGadgets *gadgets;
   FrameworkWindow *mapEditor;
 
   data = newMapEditorData();
@@ -720,25 +720,17 @@ static FrameworkWindow *newMapEditor(FrameworkWindow *parent, Map *map) {
     goto error;
   }
 
-  gadgets = newMapEditorGadgets();
-  if(!gadgets) {
-    fprintf(stderr, "newMapEditor: failed to create gadgets\n");
-    goto error_freeData;
-  }
-
   mapEditorKind.menuSpec = mapEditorMenuSpec;
-  mapEditor = openChildWindow(parent, &mapEditorKind, gadgets);
+  mapEditor = openChildWindow(parent, &mapEditorKind, data);
   if(!mapEditor) {
     fprintf(stderr, "newMapEditor: failed to open window\n");
-    goto error_freeGadgets;
+    goto error_freeData;
   }
 
   initMapEditorData(data, mapEditor, map);
 
   return mapEditor;
 
-error_freeGadgets:
-  freeMapEditorGadgets(gadgets);
 error_freeData:
   freeMapEditorData(data);
 error:

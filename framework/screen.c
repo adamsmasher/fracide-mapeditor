@@ -47,13 +47,13 @@ void closeGlobalScreen(void) {
   }
 }
 
-FrameworkWindow *openWindowOnGlobalScreen(WindowKind *windowKind, WindowGadgets *gadgets) {
+FrameworkWindow *openWindowOnGlobalScreen(WindowKind *windowKind, void *data) {
   if(!screen) {
     fprintf(stderr, "openWindowOnScreen: screen not yet initialized\n");
     goto error;
   }
 
-  return openWindowOnScreen(windowKind, gadgets, screen);
+  return openWindowOnScreen(windowKind, screen, data);
 
 error:
   return NULL;

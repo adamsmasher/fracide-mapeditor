@@ -36,17 +36,6 @@
 #define ENTITY_NAME_BOTTOM_OFFSET 26
 #define ENTITY_NAME_LEFT          ENTITY_LIST_LEFT
 
-static void freeEntityRequesterGadgets(WindowGadgets *gadgets) {
-  FreeGadgets(gadgets->glist);
-  free(gadgets->data);
-  free(gadgets);
-}
-
-static void closeEntityRequester(FrameworkWindow *entityRequester) {
-  freeEntityRequesterGadgets(entityRequester->gadgets);
-  free(entityRequester->data);
-}
-
 static void entityRequesterOnSelectEntity(FrameworkWindow *entityRequester, UWORD selected) {
   EntityRequesterData *data = entityRequester->data;
   EntityRequesterGadgets *gadgets = entityRequester->gadgets->data;
@@ -87,28 +76,6 @@ static void entityRequesterOnNameEntry(FrameworkWindow *entityRequester) {
   GT_RefreshWindow(entityRequester->intuitionWindow, NULL);
   refreshAllEntityBrowsers();
 }
-
-static WindowKind entityRequesterWindowKind = {
-  {
-    40, 40, ENTITY_REQUESTER_WIDTH, ENTITY_REQUESTER_HEIGHT,
-    0xFF, 0xFF,
-    CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP|NEWSIZE,
-    WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|WINDOWSIZING|ACTIVATE,
-    NULL,
-    NULL,
-    "Entity Editor",
-    NULL,
-    NULL,
-    ENTITY_REQUESTER_WIDTH, ENTITY_REQUESTER_MIN_HEIGHT,
-    0xFFFF, 0xFFFF,
-    CUSTOMSCREEN
-  },
-  (MenuSpec*)        NULL,
-  (RefreshFunction)  NULL,
-  (CanCloseFunction) NULL,
-  (CloseFunction)    &closeEntityRequester,
-  (ClickFunction)    NULL
-};
 
 static ListViewSpec entityListSpec = {
   ENTITY_LIST_LEFT,  ENTITY_LIST_TOP,
@@ -187,9 +154,42 @@ error:
 */
 }
 
+static void freeEntityRequesterGadgets(WindowGadgets *gadgets) {
+  FreeGadgets(gadgets->glist);
+  free(gadgets->data);
+  free(gadgets);
+}
+
+static void closeEntityRequester(FrameworkWindow *entityRequester) {
+  free(entityRequester->data);
+}
+
+static WindowKind entityRequesterWindowKind = {
+  {
+    40, 40, ENTITY_REQUESTER_WIDTH, ENTITY_REQUESTER_HEIGHT,
+    0xFF, 0xFF,
+    CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP|NEWSIZE,
+    WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|WINDOWSIZING|ACTIVATE,
+    NULL,
+    NULL,
+    "Entity Editor",
+    NULL,
+    NULL,
+    ENTITY_REQUESTER_WIDTH, ENTITY_REQUESTER_MIN_HEIGHT,
+    0xFFFF, 0xFFFF,
+    CUSTOMSCREEN
+  },
+  (MenuSpec*)        NULL,
+  (GadgetBuilder)    createEntityRequesterGadgets,
+  (GadgetFreer)      freeEntityRequesterGadgets,
+  (RefreshFunction)  NULL,
+  (CanCloseFunction) NULL,
+  (CloseFunction)    closeEntityRequester,
+  (ClickFunction)    NULL
+};
+
 static FrameworkWindow *newGenericEntityRequester(FrameworkWindow *parent, char *title, Editable editable) {
   EntityRequesterData *data;
-  WindowGadgets *gadgets;
   FrameworkWindow *entityRequester;
 
   data = malloc(sizeof(EntityRequesterData));
@@ -203,24 +203,14 @@ static FrameworkWindow *newGenericEntityRequester(FrameworkWindow *parent, char 
 
   entityRequesterWindowKind.newWindow.Title = title;
 
-  gadgets = createEntityRequesterGadgets(ENTITY_REQUESTER_WIDTH, ENTITY_REQUESTER_HEIGHT, editable);
-  if(!gadgets) {
-    fprintf(stderr, "newGenericEntityRequester: couldn't create gadgets\n");
+  entityRequester = openChildWindow(parent, &entityRequesterWindowKind, data);
+  if(!entityRequester) {
+    fprintf(stderr, "newGenericEntityRequester: couldn't open window\n");
     goto error_freeData;
   }
 
-  entityRequester = openChildWindow(parent, &entityRequesterWindowKind, gadgets);
-  if(!entityRequester) {
-    fprintf(stderr, "newGenericEntityRequester: couldn't open window\n");
-    goto error_freeGadgets;
-  }
-
-  entityRequester->data = data;
-
   return entityRequester;
 
-error_freeGadgets:
-  freeEntityRequesterGadgets(gadgets);
 error_freeData:
   free(data);
 error:
