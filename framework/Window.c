@@ -51,6 +51,8 @@ FrameworkWindow *openWindowOnScreen(WindowKind *windowKind, WindowGadgets *gadge
       goto error_closeWindow;
     }
     SetMenuStrip(window->intuitionWindow, window->menu);
+  } else {
+    window->menu = NULL;
   }
 
   GT_RefreshWindow(window->intuitionWindow, NULL);
@@ -211,8 +213,10 @@ static void removeChildWindow(FrameworkWindow *parent, FrameworkWindow *child) {
 void forceCloseWindow(FrameworkWindow *window) {
   forceCloseChildren(window);
 
-  ClearMenuStrip(window->intuitionWindow);
-  FreeMenus(window->menu);
+  if(window->menu) {
+    ClearMenuStrip(window->intuitionWindow);
+    FreeMenus(window->menu);
+  }
 
   CloseWindow(window->intuitionWindow);
 
