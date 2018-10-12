@@ -14,6 +14,7 @@
 #include "framework/screen.h"
 
 #include "easystructs.h"
+#include "EntityRequester.h"
 #include "MapEditor.h"
 #include "MapEditorData.h"
 #include "MapRequester.h"
