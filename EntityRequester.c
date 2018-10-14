@@ -236,20 +236,3 @@ BOOL isEntityNamesEditor(FrameworkWindow *window) {
   }
   return FALSE;
 }
-
-static void resizeEntityRequester(FrameworkWindow *entityRequester) {
-  EntityRequesterData *data = entityRequester->data;
-
-  RemoveGList(entityRequester->intuitionWindow, entityRequester->gadgets->glist, -1);
-  freeEntityRequesterGadgets(entityRequester->gadgets);
-  SetRast(entityRequester->intuitionWindow->RPort, 0);
-  entityRequester->gadgets = createEntityRequesterGadgets(entityRequester->intuitionWindow->Width, entityRequester->intuitionWindow->Height, data->editable);
-  if(!entityRequester->gadgets) {
-    fprintf(stderr, "resizeEntityRequester: couldn't make gadgets");
-    return;
-  }
-  AddGList(entityRequester->intuitionWindow, entityRequester->gadgets->glist, (UWORD)~0, -1, NULL);
-  RefreshWindowFrame(entityRequester->intuitionWindow);
-  RefreshGList(entityRequester->gadgets->glist, entityRequester->intuitionWindow, NULL, -1);
-  GT_RefreshWindow(entityRequester->intuitionWindow, NULL);
-}
