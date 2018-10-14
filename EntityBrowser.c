@@ -304,7 +304,7 @@ static void entityBrowserFreeTagLabels(FrameworkWindow *entityBrowser) {
   freeTagLabels(entityBrowser->data);
 }
 
-static void entityBrowserSelectEntity(FrameworkWindow *entityBrowser, int entityNum) {
+static void entityBrowserSelectEntity(FrameworkWindow *entityBrowser, UWORD entityNum) {
   EntityBrowserData *data = entityBrowser->data;
   EntityBrowserGadgets *gadgets = entityBrowser->gadgets->data;
   MapEditorData *mapEditorData = entityBrowser->parent->data;
