@@ -6,6 +6,9 @@
 #include <libraries/gadtools.h>
 #include <proto/gadtools.h>
 
+#include <graphics/gfx.h>
+#include <proto/graphics.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -171,6 +174,28 @@ static void invokeClickHandler(FrameworkWindow *window, WORD x, WORD y) {
   }
 }
 
+static void resizeWindow(FrameworkWindow *window) {
+  if(window->gadgets) {
+    RemoveGList(window->intuitionWindow, window->gadgets->glist, -1);
+    (*window->kind->freeGadgets)(window->gadgets);
+    SetRast(window->intuitionWindow->RPort, 0);
+    window->gadgets = (*window->kind->buildGadgets)(window->intuitionWindow->Width, window->intuitionWindow->Height, window->data);
+    if(!window->gadgets) {
+      fprintf(stderr, "resizeWindow: couldn't create gadgets\n");
+      goto error;
+    }
+    AddGList(window->intuitionWindow, window->gadgets->glist, (UWORD)~0, -1, NULL);
+    RefreshWindowFrame(window->intuitionWindow);
+    RefreshGList(window->gadgets->glist, window->intuitionWindow, NULL, -1);
+    GT_RefreshWindow(window->intuitionWindow, NULL);
+  }
+
+  return;
+
+error:
+  return;
+}
+
 static void dispatchMessage(FrameworkWindow *window, struct IntuiMessage *msg) {
   switch(msg->Class) {
     case IDCMP_MENUPICK:
@@ -187,6 +212,9 @@ static void dispatchMessage(FrameworkWindow *window, struct IntuiMessage *msg) {
       break;
     case IDCMP_MOUSEBUTTONS:
       invokeClickHandler(window, msg->MouseX, msg->MouseY);
+      break;
+    case IDCMP_NEWSIZE:
+      resizeWindow(window);
       break;
   }
 }
