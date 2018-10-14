@@ -146,6 +146,10 @@ static Result entityBrowserRefreshEntities(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   EntityBrowserGadgets *gadgets = entityBrowser->gadgets->data;
 
+  GT_SetGadgetAttrs(gadgets->entityListGadget, entityBrowser->intuitionWindow, NULL,
+    GTLV_Labels, ~0,
+    TAG_END);
+
   if(!createEntityLabels(entityBrowser)) {
     fprintf(stderr, "entityBrowserRefreshEntities: couldn't create entity labels\n");
     goto error;
@@ -157,6 +161,10 @@ static Result entityBrowserRefreshEntities(FrameworkWindow *entityBrowser) {
 
   return SUCCESS;
 error:
+  GT_SetGadgetAttrs(gadgets->entityListGadget, entityBrowser->intuitionWindow, NULL,
+    GTLV_Labels, NULL,
+    TAG_END);
+
   return FAILURE;
 }
 
