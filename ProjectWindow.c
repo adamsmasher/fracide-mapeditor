@@ -558,11 +558,11 @@ static FrameworkWindow *findEntityNamesEditor(FrameworkWindow *parent) {
   return NULL;
 }
 
-void projectWindowShowEntityNamesEditor(FrameworkWindow *parent) {
-  FrameworkWindow *entityNamesEditor = findEntityNamesEditor(parent);
+void projectWindowShowEntityNamesEditor(FrameworkWindow *projectWindow) {
+  FrameworkWindow *entityNamesEditor = findEntityNamesEditor(projectWindow);
   if(entityNamesEditor) {
     WindowToFront(entityNamesEditor->intuitionWindow);
   } else {
-    entityNamesEditor = newEntityNamesEditor(parent, projectDataGetEntityNames(parent->data));
+    entityNamesEditor = newEntityNamesEditor(projectWindow, projectDataGetEntityNames(projectWindow->data));
   }
 }
