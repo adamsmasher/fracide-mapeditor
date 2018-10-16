@@ -23,6 +23,7 @@
 #include "map.h"
 #include "MapEditor.h"
 #include "MapEditorData.h"
+#include "ProjectWindowData.h"
 #include "Result.h"
 
 #define ENTITY_BROWSER_WIDTH  350
@@ -510,7 +511,8 @@ static void onChooseEntityClick(FrameworkWindow *entityBrowser) {
   if(entityRequester) {
     WindowToFront(entityRequester->intuitionWindow);
   } else {
-    entityRequester = newEntityRequester(entityBrowser);
+    ProjectWindowData *projectData = entityBrowser->parent->parent->data;
+    entityRequester = newEntityRequester(entityBrowser, projectDataGetEntityNames(projectData));
   }
 }
 

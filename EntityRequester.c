@@ -81,7 +81,7 @@ static ListViewSpec entityListSpec = {
   ENTITY_LIST_LEFT,  ENTITY_LIST_TOP,
   ENTITY_REQUESTER_WIDTH - ENTITY_LIST_WIDTH_DELTA,
   ENTITY_REQUESTER_HEIGHT - ENTITY_LIST_HEIGHT_DELTA,
-  (struct List*)NULL, /* TODO: labels */
+  (struct List*)NULL, /* fill this out before creation */
   entityRequesterOnSelectEntity
 };
 
@@ -113,6 +113,7 @@ static WindowGadgets *createEntityRequesterGadgets(int width, int height, Entity
 
   entityListSpec.height = height - ENTITY_LIST_HEIGHT_DELTA;
   entityListSpec.width  = width  - ENTITY_LIST_WIDTH_DELTA;
+  entityListSpec.labels = data->entityNames;
 
   if(data->editable) {
     entityNameSpec.top   = height - ENTITY_NAME_BOTTOM_OFFSET;
@@ -144,9 +145,6 @@ error:
   return NULL;
 
 /* TODO: fix usss 
-
-  ProjectWindowData *projectData = what;
-
   gad = CreateGadget(LISTVIEW_KIND, gad, &entityListNewGadget,
     GTLV_ShowSelected, entityRequester->entityNameGadget,
     GTLV_Labels, projectDataGetEntityNames(projectData),
@@ -188,7 +186,7 @@ static WindowKind entityRequesterWindowKind = {
   (ClickFunction)    NULL
 };
 
-static FrameworkWindow *newGenericEntityRequester(FrameworkWindow *parent, char *title, Editable editable) {
+static FrameworkWindow *newGenericEntityRequester(FrameworkWindow *parent, char *title, struct List *entityNames, Editable editable) {
   EntityRequesterData *data;
   FrameworkWindow *entityRequester;
 
@@ -200,6 +198,7 @@ static FrameworkWindow *newGenericEntityRequester(FrameworkWindow *parent, char 
 
   data->editable = editable;
   data->selected = 0;
+  data->entityNames = entityNames;
 
   entityRequesterWindowKind.newWindow.Title = title;
 
@@ -217,12 +216,12 @@ error:
   return NULL;
 }
 
-FrameworkWindow *newEntityNamesEditor(FrameworkWindow *parent) {
-  return newGenericEntityRequester(parent, "Entity Names Editor", EDITABLE);
+FrameworkWindow *newEntityNamesEditor(FrameworkWindow *parent, struct List *entityNames) {
+  return newGenericEntityRequester(parent, "Entity Names Editor", entityNames, EDITABLE);
 }
 
-FrameworkWindow *newEntityRequester(FrameworkWindow *parent) {
-  return newGenericEntityRequester(parent, "Choose Entity...", NON_EDITABLE);
+FrameworkWindow *newEntityRequester(FrameworkWindow *parent, struct List *entityNames) {
+  return newGenericEntityRequester(parent, "Choose Entity...", entityNames, NON_EDITABLE);
 }
 
 static BOOL isEntityRequester(FrameworkWindow *window) {

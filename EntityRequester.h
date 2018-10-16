@@ -17,10 +17,11 @@ typedef enum Editable_tag {
 typedef struct EntityRequesterData_tag {
   int selected;
   Editable editable;
+  struct List *entityNames;
 } EntityRequesterData;
 
-FrameworkWindow *newEntityRequester(FrameworkWindow *parent);
-FrameworkWindow *newEntityNamesEditor(FrameworkWindow *parent);
+FrameworkWindow *newEntityRequester(FrameworkWindow *parent, struct List *entityNames);
+FrameworkWindow *newEntityNamesEditor(FrameworkWindow *parent, struct List *entityNames);
 
 BOOL isEntityNamesEditor(FrameworkWindow *window);
 
