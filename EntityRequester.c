@@ -95,8 +95,8 @@ static StringSpec entityNameSpec = {
   entityRequesterOnNameEntry
 };
 
-static WindowGadgets *createEntityRequesterGadgets(int width, int height, Editable editable) {
-  EntityRequesterGadgets *data;
+static WindowGadgets *createEntityRequesterGadgets(int width, int height, EntityRequesterData *data) {
+  EntityRequesterGadgets *gadgetData;
   WindowGadgets *gadgets;
 
   gadgets = malloc(sizeof(WindowGadgets));
@@ -105,8 +105,8 @@ static WindowGadgets *createEntityRequesterGadgets(int width, int height, Editab
     goto error;
   }
 
-  data = malloc(sizeof(EntityRequesterGadgets));
-  if(!data) {
+  gadgetData = malloc(sizeof(EntityRequesterGadgets));
+  if(!gadgetData) {
     fprintf(stderr, "createEntityRequesterGadgets: couldn't allocate data\n");
     goto error_freeWindowGadgets;
   }
@@ -114,13 +114,13 @@ static WindowGadgets *createEntityRequesterGadgets(int width, int height, Editab
   entityListSpec.height = height - ENTITY_LIST_HEIGHT_DELTA;
   entityListSpec.width  = width  - ENTITY_LIST_WIDTH_DELTA;
 
-  if(editable) {
+  if(data->editable) {
     entityNameSpec.top   = height - ENTITY_NAME_BOTTOM_OFFSET;
     entityNameSpec.width = width  - ENTITY_NAME_WIDTH_DELTA;
 
     gadgets->glist = buildGadgets(
       makeListViewGadget(&entityListSpec), NULL,
-      makeStringGadget(&entityNameSpec), &data->entityNameGadget,
+      makeStringGadget(&entityNameSpec), &gadgetData->entityNameGadget,
       NULL);
   } else {
     gadgets->glist = buildGadgets(
@@ -132,14 +132,14 @@ static WindowGadgets *createEntityRequesterGadgets(int width, int height, Editab
     goto error_freeEntityRequesterGadgets;
   }
 
-  gadgets->data = data;
+  gadgets->data = gadgetData;
 
   return gadgets;
 
 error_freeWindowGadgets:
   free(gadgets);
 error_freeEntityRequesterGadgets:
-  free(data);
+  free(gadgetData);
 error:
   return NULL;
 
