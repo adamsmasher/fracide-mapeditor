@@ -85,12 +85,12 @@ static ListViewSpec entityListSpec = {
   entityRequesterOnSelectEntity
 };
 
-/* TODO: max chars? */
 static StringSpec entityNameSpec = {
   ENTITY_NAME_LEFT,  ENTITY_REQUESTER_HEIGHT - ENTITY_NAME_BOTTOM_OFFSET,
   ENTITY_REQUESTER_WIDTH - ENTITY_NAME_WIDTH_DELTA, ENTITY_NAME_HEIGHT,
-  (char*)NULL, /* TODO: label...why is this null? */
-  TEXT_ON_LEFT, /* TODO: not actually sure about this */
+  64,
+  (char*)NULL,
+  TEXT_ON_LEFT,
   DISABLED,
   entityRequesterOnNameEntry
 };

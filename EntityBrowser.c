@@ -617,6 +617,7 @@ static ButtonSpec deleteTagSpec = {
 static StringSpec tagAliasSpec = {
   TAG_ALIAS_LEFT, TAG_ALIAS_TOP,
   TAG_ALIAS_WIDTH, TAG_ALIAS_HEIGHT,
+  80,
   "Alias",
   TEXT_ON_LEFT,
   DISABLED,

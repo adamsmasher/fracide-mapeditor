@@ -14,6 +14,7 @@
 static StringSpec mapNameSpec = {
   MAP_NAME_LEFT,  MAP_NAME_TOP,
   MAP_NAME_WIDTH, MAP_NAME_HEIGHT,
+  80,
   "Map Name:",
   TEXT_ON_LEFT,
   ENABLED,
