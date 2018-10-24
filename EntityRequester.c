@@ -82,6 +82,7 @@ static ListViewSpec entityListSpec = {
   ENTITY_REQUESTER_WIDTH - ENTITY_LIST_WIDTH_DELTA,
   ENTITY_REQUESTER_HEIGHT - ENTITY_LIST_HEIGHT_DELTA,
   (struct List*)NULL, /* fill this out before creation */
+  (struct Gadget**)NULL, /* fill this out before creation */
   entityRequesterOnSelectEntity
 };
 
@@ -119,11 +120,15 @@ static WindowGadgets *createEntityRequesterGadgets(int width, int height, Entity
     entityNameSpec.top   = height - ENTITY_NAME_BOTTOM_OFFSET;
     entityNameSpec.width = width  - ENTITY_NAME_WIDTH_DELTA;
 
+    entityListSpec.showSelected = &gadgetData->entityNameGadget;
+
     gadgets->glist = buildGadgets(
-      makeListViewGadget(&entityListSpec), NULL,
       makeStringGadget(&entityNameSpec), &gadgetData->entityNameGadget,
+      makeListViewGadget(&entityListSpec), NULL,
       NULL);
   } else {
+    entityListSpec.showSelected = NULL;
+
     gadgets->glist = buildGadgets(
       makeListViewGadget(&entityListSpec), NULL,
       NULL);
@@ -143,13 +148,6 @@ error_freeEntityRequesterGadgets:
   free(gadgetData);
 error:
   return NULL;
-
-/* TODO: fix usss 
-  gad = CreateGadget(LISTVIEW_KIND, gad, &entityListNewGadget,
-    GTLV_ShowSelected, entityRequester->entityNameGadget,
-    GTLV_Labels, projectDataGetEntityNames(projectData),
-    TAG_END);
-*/
 }
 
 static void freeEntityRequesterGadgets(WindowGadgets *gadgets) {

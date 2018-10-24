@@ -78,12 +78,14 @@ typedef struct IntegerSpec_tag {
   OnEntry onEntry;
 } IntegerSpec;
 
+#define SHOW_SELECTED_READONLY ((struct Gadget**)~0)
+
 typedef struct ListViewSpec_tag {
   WORD left, top;
   WORD width, height;
   struct List *labels;
+  struct Gadget **showSelected;
   OnSelect onSelect;
-/* TODO: show selected */
 } ListViewSpec;
 
 typedef struct GadgetSpec_tag GadgetSpec;

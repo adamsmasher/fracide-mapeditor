@@ -520,6 +520,7 @@ static ListViewSpec entityListSpec = {
   ENTITY_LIST_LEFT, ENTITY_LIST_TOP,
   ENTITY_LIST_WIDTH, ENTITY_LIST_HEIGHT,
   NULL,
+  NULL,
   handleEntitySelected
 };
 
@@ -592,6 +593,7 @@ static ButtonSpec chooseEntitySpec = {
 static ListViewSpec tagListSpec = {
   TAG_LIST_LEFT, TAG_LIST_TOP,
   TAG_LIST_WIDTH, TAG_LIST_HEIGHT,
+  NULL,
   NULL,
   handleTagSelected
 };

@@ -91,6 +91,9 @@ static ListViewSpec mapListSpec = {
   MAP_LIST_LEFT,  MAP_LIST_TOP,
   MAP_REQUESTER_WIDTH  - MAP_LIST_WIDTH_DELTA,
   MAP_REQUESTER_HEIGHT - MAP_LIST_HEIGHT_DELTA,
+  NULL,
+  NULL,
+  NULL,
 };
 
 static ButtonSpec okButtonSpec = {

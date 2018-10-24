@@ -210,10 +210,22 @@ static struct Gadget *buildListView(ListViewSpec *listViewSpec, struct Gadget *c
   newGadget.ng_Flags      = 0;
   newGadget.ng_VisualInfo = getGlobalVi();
   newGadget.ng_UserData   = (void*)listViewSpec->onSelect;
-  return CreateGadget(LISTVIEW_KIND, context, &newGadget,
-    /* TODO: show selected */
-    GTLV_Labels, listViewSpec->labels,
-    TAG_END);
+
+  if(listViewSpec->showSelected == SHOW_SELECTED_READONLY) {
+    return CreateGadget(LISTVIEW_KIND, context, &newGadget,
+      GTLV_ShowSelected, NULL,
+      GTLV_Labels, listViewSpec->labels,
+      TAG_END);
+  } else if(listViewSpec->showSelected) {
+    return CreateGadget(LISTVIEW_KIND, context, &newGadget,
+      GTLV_ShowSelected, *listViewSpec->showSelected,
+      GTLV_Labels, listViewSpec->labels,
+      TAG_END);
+  } else {
+    return CreateGadget(LISTVIEW_KIND, context, &newGadget,
+      GTLV_Labels, listViewSpec->labels,
+      TAG_END);
+  }
 }
 
 static struct Gadget *buildGadget(GadgetSpec *gadgetSpec, struct Gadget *context, UWORD gadgetId) {
