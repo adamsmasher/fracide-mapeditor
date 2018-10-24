@@ -27,13 +27,13 @@
 #define ENTITY_REQUESTER_MIN_HEIGHT 48
 
 #define ENTITY_LIST_WIDTH_DELTA  35
-#define ENTITY_LIST_HEIGHT_DELTA 26
+#define ENTITY_LIST_HEIGHT_DELTA 38
 #define ENTITY_LIST_TOP          20
 #define ENTITY_LIST_LEFT         10
 
 #define ENTITY_NAME_WIDTH_DELTA   ENTITY_LIST_WIDTH_DELTA
 #define ENTITY_NAME_HEIGHT        12
-#define ENTITY_NAME_BOTTOM_OFFSET 26
+#define ENTITY_NAME_BOTTOM_OFFSET 20
 #define ENTITY_NAME_LEFT          ENTITY_LIST_LEFT
 
 static void entityRequesterOnSelectEntity(FrameworkWindow *entityRequester, UWORD selected) {
