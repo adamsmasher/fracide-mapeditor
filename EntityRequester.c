@@ -51,6 +51,7 @@ static void entityRequesterOnSelectEntity(FrameworkWindow *entityRequester, UWOR
   EntityRequesterData *data = entityRequester->data;
   EntityRequesterGadgets *gadgets = entityRequester->gadgets->data;
 
+  /* TODO: doooo we actually need to track this? */
   data->selected = selected + 1;
 
   if(data->editable) {
@@ -61,6 +62,9 @@ static void entityRequesterOnSelectEntity(FrameworkWindow *entityRequester, UWOR
       GTST_String, &entityName[listItemStart(selected)],
       GA_Disabled, FALSE,
       TAG_END);
+  } else {
+    FrameworkWindow *entityBrowser = entityRequester->parent;
+    entityBrowserSetEntityNum(entityBrowser, selected);
   }
 }
 

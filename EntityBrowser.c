@@ -312,6 +312,8 @@ static void entityBrowserSelectEntity(FrameworkWindow *entityBrowser, UWORD enti
   
   data->selectedEntity = entityNum + 1;
 
+  /* TODO: set thisEntityGadget text */
+
   GT_SetGadgetAttrs(gadgets->removeEntityGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, FALSE,
     TAG_END);
@@ -774,4 +776,19 @@ error_freeData:
   free(data);
 error:
   return NULL;
+}
+
+void entityBrowserSetEntityNum(FrameworkWindow *entityBrowser, UBYTE entityNum) {
+  EntityBrowserData *data = entityBrowser->data;
+  EntityBrowserGadgets *gadgets = entityBrowser->gadgets->data;
+  FrameworkWindow *parent = entityBrowser->parent;
+  ProjectWindowData *projectData = parent->parent->data;
+
+  mapEditorDataSetEntityNum(parent->data, data->selectedEntity - 1, entityNum);
+
+  /* TODO: do this in a refresh function, shared with set entity */
+  GT_SetGadgetAttrs(gadgets->thisEntityGadget, entityBrowser->intuitionWindow, NULL,
+    GTTX_Text, projectDataGetEntityName(projectData, entityNum),
+    TAG_END
+  );
 }

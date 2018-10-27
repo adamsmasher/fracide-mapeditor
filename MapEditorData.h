@@ -54,7 +54,7 @@ UWORD mapEditorDataGetEntityCount(MapEditorData*);
 
 const Entity *mapEditorDataGetEntity(MapEditorData*, UWORD entityNum);
 
-/* TODO: delete the getters, just use a const pointer lol */
+void mapEditorDataSetEntityNum(MapEditorData*, UWORD entity, UBYTE entityNum);
 UBYTE mapEditorDataGetEntityRow(MapEditorData*, UWORD entityNum);
 void mapEditorDataSetEntityRow(MapEditorData*, UWORD entityNum, UBYTE row);
 UBYTE mapEditorDataGetEntityCol(MapEditorData*, UWORD entityNum);
