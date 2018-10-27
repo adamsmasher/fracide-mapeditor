@@ -13,13 +13,13 @@ typedef struct Frac_tag_tag {
 } Frac_tag;
 
 typedef struct Entity_tag {
-    UBYTE entityNum;
-    UBYTE row;
-    UBYTE col;
-    UBYTE vramSlot;
+  UBYTE entityNum;
+  UBYTE row;
+  UBYTE col;
+  UBYTE vramSlot;
     
-    int tagCnt;
-    Frac_tag tags[MAX_TAGS_PER_ENTITY];
+  int tagCnt;
+  Frac_tag tags[MAX_TAGS_PER_ENTITY];
 } Entity;
 
 void entityAddNewTag(Entity*);
