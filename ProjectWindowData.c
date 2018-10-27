@@ -214,7 +214,7 @@ char *projectDataGetEntityName(ProjectWindowData *data, int entityNum) {
 
 void projectDataUpdateEntityName(ProjectWindowData *data, int entityNum, char *name) {
   strcpy(&data->project.entityNameStrs[entityNum][listItemStart(entityNum)], name);
-  data->projectSaved = TRUE;
+  data->projectSaved = FALSE;
 }
 
 struct List *projectDataGetSongNames(ProjectWindowData *data) {
@@ -228,7 +228,7 @@ char *projectDataGetSongName(ProjectWindowData *data, int songNum) {
 
 void projectDataUpdateSongName(ProjectWindowData *data, int songNum, char *name) {
   strcpy(&data->project.songNameStrs[songNum][listItemStart(songNum)], name);
-  data->projectSaved = TRUE;
+  data->projectSaved = FALSE;
 }
 
 BOOL projectDataIsSaved(ProjectWindowData *data) {
