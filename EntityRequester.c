@@ -36,21 +36,6 @@
 #define ENTITY_NAME_BOTTOM_OFFSET 20
 #define ENTITY_NAME_LEFT          ENTITY_LIST_LEFT
 
-static void entityRequesterOnSelectEntity(FrameworkWindow *entityRequester, UWORD selected) {
-  EntityRequesterData *data = entityRequester->data;
-  EntityRequesterGadgets *gadgets = entityRequester->gadgets->data;
-
-  data->selected = selected + 1;
-
-  if(data->editable) {
-    ProjectWindowData *projectData = entityRequester->parent->data;
-    GT_SetGadgetAttrs(gadgets->entityNameGadget, entityRequester->intuitionWindow, NULL,
-      GTST_String, projectDataGetEntityName(projectData, selected),
-      GA_Disabled, FALSE,
-      TAG_END);
-  }
-}
-
 /* TODO help i'm duplicated everywhere */
 static int listItemStart(int selected) {
   if(selected < 10) {
@@ -59,6 +44,23 @@ static int listItemStart(int selected) {
     return 3;
   } else {
     return 4;
+  }
+}
+
+static void entityRequesterOnSelectEntity(FrameworkWindow *entityRequester, UWORD selected) {
+  EntityRequesterData *data = entityRequester->data;
+  EntityRequesterGadgets *gadgets = entityRequester->gadgets->data;
+
+  data->selected = selected + 1;
+
+  if(data->editable) {
+    ProjectWindowData *projectData = entityRequester->parent->data;
+    const char *entityName = projectDataGetEntityName(projectData, selected);
+
+    GT_SetGadgetAttrs(gadgets->entityNameGadget, entityRequester->intuitionWindow, NULL,
+      GTST_String, &entityName[listItemStart(selected)],
+      GA_Disabled, FALSE,
+      TAG_END);
   }
 }
 
