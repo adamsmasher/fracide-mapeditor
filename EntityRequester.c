@@ -120,15 +120,11 @@ static WindowGadgets *createEntityRequesterGadgets(int width, int height, Entity
     entityNameSpec.top   = height - ENTITY_NAME_BOTTOM_OFFSET;
     entityNameSpec.width = width  - ENTITY_NAME_WIDTH_DELTA;
 
-    entityListSpec.showSelected = &gadgetData->entityNameGadget;
-
     gadgets->glist = buildGadgets(
       makeStringGadget(&entityNameSpec), &gadgetData->entityNameGadget,
       makeListViewGadget(&entityListSpec), NULL,
       NULL);
   } else {
-    entityListSpec.showSelected = NULL;
-
     gadgets->glist = buildGadgets(
       makeListViewGadget(&entityListSpec), NULL,
       NULL);
