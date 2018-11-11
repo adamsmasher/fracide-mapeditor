@@ -20,6 +20,7 @@
 #include "framework/screen.h"
 #include "framework/window.h"
 
+#include "EntityBrowser.h"
 #include "ProjectWindowData.h"
 
 #define ENTITY_REQUESTER_WIDTH      200
