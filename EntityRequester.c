@@ -21,6 +21,7 @@
 #include "framework/window.h"
 
 #include "EntityBrowser.h"
+#include "ProjectWindow.h"
 #include "ProjectWindowData.h"
 
 #define ENTITY_REQUESTER_WIDTH      200
@@ -72,7 +73,8 @@ static void entityRequesterOnSelectEntity(FrameworkWindow *entityRequester, UWOR
 static void entityRequesterOnNameEntry(FrameworkWindow *entityRequester) {
   EntityRequesterData *data = entityRequester->data;
   EntityRequesterGadgets *gadgets = entityRequester->gadgets->data;
-  ProjectWindowData *projectData = entityRequester->parent->data;
+  FrameworkWindow *projectWindow = entityRequester->parent;
+  ProjectWindowData *projectData = projectWindow->data;
 
   UWORD selected = data->selected - 1;
 
@@ -81,7 +83,7 @@ static void entityRequesterOnNameEntry(FrameworkWindow *entityRequester) {
   projectDataUpdateEntityName(projectData, selected, name);
 
   GT_RefreshWindow(entityRequester->intuitionWindow, NULL);
-  refreshAllEntityBrowsers();
+  projectWindowRefreshAllEntityBrowsers(projectWindow);
 }
 
 static ListViewSpec entityListSpec = {

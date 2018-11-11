@@ -533,7 +533,7 @@ void refreshAllSongDisplays(FrameworkWindow *projectWindow) {
   }
 }
 
-void refreshAllEntityBrowsers(FrameworkWindow *projectWindow) {
+void projectWindowRefreshAllEntityBrowsers(FrameworkWindow *projectWindow) {
   FrameworkWindow *i = projectWindow->children;
   while(i) {
     if(isMapEditor(i)) {
