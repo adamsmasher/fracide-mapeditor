@@ -20,8 +20,8 @@ typedef struct EntityRequesterData_tag {
   struct List *entityNames;
 } EntityRequesterData;
 
-FrameworkWindow *newEntityRequester(FrameworkWindow *parent, struct List *entityNames);
-FrameworkWindow *newEntityNamesEditor(FrameworkWindow *parent, struct List *entityNames);
+FrameworkWindow *newEntityRequester(FrameworkWindow *entityBrowser);
+FrameworkWindow *newEntityNamesEditor(FrameworkWindow *projectWindow);
 
 BOOL isEntityNamesEditor(FrameworkWindow *window);
 

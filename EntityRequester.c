@@ -21,6 +21,8 @@
 #include "framework/window.h"
 
 #include "EntityBrowser.h"
+#include "NumberedList.h"
+#include "Project.h"
 #include "ProjectWindow.h"
 #include "ProjectWindowData.h"
 
@@ -38,22 +40,10 @@
 #define ENTITY_NAME_BOTTOM_OFFSET 20
 #define ENTITY_NAME_LEFT          ENTITY_LIST_LEFT
 
-/* TODO help i'm duplicated everywhere */
-static int listItemStart(int selected) {
-  if(selected < 10) {
-    return 2;
-  } else if(selected < 100) {
-    return 3;
-  } else {
-    return 4;
-  }
-}
-
 static void entityRequesterOnSelectEntity(FrameworkWindow *entityRequester, UWORD selected) {
   EntityRequesterData *data = entityRequester->data;
   EntityRequesterGadgets *gadgets = entityRequester->gadgets->data;
 
-  /* TODO: doooo we actually need to track this? */
   data->selected = selected + 1;
 
   if(data->editable) {
@@ -61,7 +51,7 @@ static void entityRequesterOnSelectEntity(FrameworkWindow *entityRequester, UWOR
     const char *entityName = projectDataGetEntityName(projectData, selected);
 
     GT_SetGadgetAttrs(gadgets->entityNameGadget, entityRequester->intuitionWindow, NULL,
-      GTST_String, &entityName[listItemStart(selected)],
+      GTST_String, entityName,
       GA_Disabled, FALSE,
       TAG_END);
   } else {
@@ -81,6 +71,7 @@ static void entityRequesterOnNameEntry(FrameworkWindow *entityRequester) {
   char *name = ((struct StringInfo*)gadgets->entityNameGadget->SpecialInfo)->Buffer;
 
   projectDataUpdateEntityName(projectData, selected, name);
+  numberedListSetItem(data->entityNames, selected, name);
 
   GT_RefreshWindow(entityRequester->intuitionWindow, NULL);
   projectWindowRefreshAllEntityBrowsers(projectWindow);
@@ -162,7 +153,9 @@ static void freeEntityRequesterGadgets(WindowGadgets *gadgets) {
 }
 
 static void closeEntityRequester(FrameworkWindow *entityRequester) {
-  free(entityRequester->data);
+  EntityRequesterData *data = entityRequester->data;
+  freeNumberedList(data->entityNames);
+  free(data);
 }
 
 static WindowKind entityRequesterWindowKind = {
@@ -189,19 +182,26 @@ static WindowKind entityRequesterWindowKind = {
   (ClickFunction)    NULL
 };
 
-static FrameworkWindow *newGenericEntityRequester(FrameworkWindow *parent, char *title, struct List *entityNames, Editable editable) {
+static FrameworkWindow *newGenericEntityRequester(FrameworkWindow *parent, char *title, ProjectWindowData *projectData, Editable editable) {
+  struct List *entityNameList;
   EntityRequesterData *data;
   FrameworkWindow *entityRequester;
+
+  entityNameList = newNumberedList(projectDataGetEntityName, projectData, MAX_ENTITIES_IN_PROJECT);
+  if(!entityNameList) {
+    fprintf(stderr, "newGenericEntityRequester: couldn't make entity name list\n");
+    goto error;
+  }
 
   data = malloc(sizeof(EntityRequesterData));
   if(!data) {
     fprintf(stderr, "newGenericEntityRequester: couldn't allocate data\n");
-    goto error;
+    goto error_freeNameList;
   }
 
   data->editable = editable;
   data->selected = 0;
-  data->entityNames = entityNames;
+  data->entityNames = entityNameList;
 
   entityRequesterWindowKind.newWindow.Title = title;
 
@@ -215,16 +215,27 @@ static FrameworkWindow *newGenericEntityRequester(FrameworkWindow *parent, char 
 
 error_freeData:
   free(data);
+error_freeNameList:
+  freeNumberedList(entityNameList);
 error:
   return NULL;
 }
 
-FrameworkWindow *newEntityNamesEditor(FrameworkWindow *parent, struct List *entityNames) {
-  return newGenericEntityRequester(parent, "Entity Names Editor", entityNames, EDITABLE);
+FrameworkWindow *newEntityNamesEditor(FrameworkWindow *projectWindow) {
+  return newGenericEntityRequester(
+    projectWindow,
+    "Entity Names Editor",
+    projectWindow->data,
+    EDITABLE);
 }
 
-FrameworkWindow *newEntityRequester(FrameworkWindow *parent, struct List *entityNames) {
-  return newGenericEntityRequester(parent, "Choose Entity...", entityNames, NON_EDITABLE);
+FrameworkWindow *newEntityRequester(FrameworkWindow *entityBrowser) {
+  FrameworkWindow *projectWindow = entityBrowser->parent->parent;
+  return newGenericEntityRequester(
+    entityBrowser,
+    "Choose Entity...",
+    projectWindow->data,
+    NON_EDITABLE);
 }
 
 static BOOL isEntityRequester(FrameworkWindow *window) {

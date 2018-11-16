@@ -29,7 +29,6 @@ char *projectDataGetMapName(ProjectWindowData*, int mapNum);
 /* returns TRUE on success, FALSE on failure */
 BOOL projectDataSaveMap(ProjectWindowData*, Map*, int mapNum);
 
-struct List *projectDataGetEntityNames(ProjectWindowData*);
 char *projectDataGetEntityName(ProjectWindowData*, int entityNum);
 void projectDataUpdateEntityName(ProjectWindowData*, int entityNum, char*);
 

@@ -513,8 +513,7 @@ static void onChooseEntityClick(FrameworkWindow *entityBrowser) {
   if(entityRequester) {
     WindowToFront(entityRequester->intuitionWindow);
   } else {
-    ProjectWindowData *projectData = entityBrowser->parent->parent->data;
-    entityRequester = newEntityRequester(entityBrowser, projectDataGetEntityNames(projectData));
+    entityRequester = newEntityRequester(entityBrowser);
   }
 }
 

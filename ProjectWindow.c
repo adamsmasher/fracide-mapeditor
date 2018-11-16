@@ -563,6 +563,6 @@ void projectWindowShowEntityNamesEditor(FrameworkWindow *projectWindow) {
   if(entityNamesEditor) {
     WindowToFront(entityNamesEditor->intuitionWindow);
   } else {
-    entityNamesEditor = newEntityNamesEditor(projectWindow, projectDataGetEntityNames(projectWindow->data));
+    entityNamesEditor = newEntityNamesEditor(projectWindow);
   }
 }

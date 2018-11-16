@@ -203,17 +203,12 @@ char *projectDataGetMapName(ProjectWindowData *data, int mapNum) {
   return map->name;
 }
 
-struct List *projectDataGetEntityNames(ProjectWindowData *data) {
-  /* TODO: i suspect i want to move the LISTS into the data and out of the project */
-  return &data->project.entityNames;
-}
-
 char *projectDataGetEntityName(ProjectWindowData *data, int entityNum) {
   return data->project.entityNameStrs[entityNum];
 }
 
 void projectDataUpdateEntityName(ProjectWindowData *data, int entityNum, char *name) {
-  strcpy(&data->project.entityNameStrs[entityNum][listItemStart(entityNum)], name);
+  strcpy(data->project.entityNameStrs[entityNum], name);
   data->projectSaved = FALSE;
 }
 
