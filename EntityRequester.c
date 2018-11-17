@@ -138,10 +138,10 @@ static WindowGadgets *createEntityRequesterGadgets(int width, int height, Entity
 
   return gadgets;
 
-error_freeWindowGadgets:
-  free(gadgets);
 error_freeEntityRequesterGadgets:
   free(gadgetData);
+error_freeWindowGadgets:
+  free(gadgets);
 error:
   return NULL;
 }
