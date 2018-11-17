@@ -95,18 +95,18 @@ void mapEditorRefreshTitle(FrameworkWindow *mapEditor) {
   SetWindowTitles(mapEditor->intuitionWindow, title, (STRPTR)-1);
 }
 
-static int saveMapRequester(FrameworkWindow *mapEditor) {
+static UWORD saveMapRequester(FrameworkWindow *mapEditor) {
   char title[96];
 
   sprintf(title, "Save Map %s", mapEditorDataGetMapName(mapEditor->data));
-  return spawnMapRequester(mapEditor, title);
+  return spawnMapRequester(mapEditor->parent, title);
 }
 
 BOOL mapEditorSaveMapAs(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
   ProjectWindowData *projectData = mapEditor->parent->data;
 
-  int selected = saveMapRequester(mapEditor);
+  UWORD selected = saveMapRequester(mapEditor);
   if(!selected) {
     return FALSE;
   }

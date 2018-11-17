@@ -15,19 +15,6 @@ void projectUpdateMapName(Project *project, int mapNum, Map *map) {
   sprintf(project->mapNameStrs[mapNum], "%d: %s", mapNum, map->name);
 }
 
-static void initMapNameNodes(Project *project) {
-    int i;
-    struct Node *node, *next;
-
-    node = project->mapNames.lh_Head;
-    i = 0;
-    while(next = node->ln_Succ) {
-        node->ln_Name = project->mapNameStrs[i];
-        node = next;
-        i++;
-    }
-}
-
 void initProject(Project *project) {
     int i;
     struct Node *node;
@@ -40,14 +27,6 @@ void initProject(Project *project) {
         project->maps[i] = NULL;
         sprintf(project->mapNameStrs[i], "%d:", i);
     }
-
-    NewList(&project->mapNames);
-    for(i = 0; i < 128; i++) {
-        node = malloc(sizeof(struct Node));
-        /* TODO: handle node creation failure */
-        AddTail(&project->mapNames, node);
-    }
-    initMapNameNodes(project);
 
     for(i = 0; i < 128; i++) {
       project->entityNameStrs[i][0] = '\0';
@@ -63,18 +42,10 @@ void freeProject(Project *project) {
             free(project->maps[i]);
         }
     }
-
-    node = project->mapNames.lh_Head;
-    while(next = node->ln_Succ) {
-        free(node);
-        node = next;
-    }
 }
 
 void copyProject(Project *src, Project *dest) {
   memcpy(dest, src, sizeof(Project));
-  /* fix up internal pointers */
-  initMapNameNodes(dest);
 }
 
 static int loadProjectFromFp(FILE *fp, Project *project) {

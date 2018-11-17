@@ -23,7 +23,6 @@ ProjectLoadResult projectDataLoadProjectFromFile(ProjectWindowData*, char*);
 BOOL projectDataCreateMap(ProjectWindowData*, int mapNum);
 BOOL projectDataHasMap(ProjectWindowData*, int mapNum);
 Map *projectDataGetMap(ProjectWindowData*, int mapNum);
-struct List *projectDataGetMapNames(ProjectWindowData*);
 char *projectDataGetMapName(ProjectWindowData*, int mapNum);
 
 /* returns TRUE on success, FALSE on failure */

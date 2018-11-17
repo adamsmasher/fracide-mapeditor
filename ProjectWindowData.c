@@ -161,11 +161,6 @@ Map *projectDataGetMap(ProjectWindowData *data, int mapNum) {
   return data->project.maps[mapNum];
 }
 
-struct List *projectDataGetMapNames(ProjectWindowData *data) {
-  /* TODO: i suspect i want to move the LISTS into the data and out of the project */
-  return &data->project.mapNames;
-}
-
 static BOOL projectDataSaveNewMap(ProjectWindowData *data, Map *map, int mapNum) {
   Map *mapCopy = copyMap(map);
   if(!mapCopy) {

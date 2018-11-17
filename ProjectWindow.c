@@ -497,14 +497,14 @@ void projectWindowNewMap(FrameworkWindow *projectWindow) {
   }
 }
 
-static int openMapRequester(FrameworkWindow *projectWindow) {
+static UWORD openMapRequester(FrameworkWindow *projectWindow) {
   return spawnMapRequester(projectWindow, "Open Map");
 }
 
 void projectWindowOpenMap(FrameworkWindow *projectWindow) {
   FrameworkWindow *mapEditor;
 
-  int selected = openMapRequester(projectWindow);
+  UWORD selected = openMapRequester(projectWindow);
   if(!selected) {
     return;
   }

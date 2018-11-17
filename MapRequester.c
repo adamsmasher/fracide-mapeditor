@@ -22,6 +22,8 @@
 #include "framework/screen.h"
 #include "framework/window.h"
 
+#include "NumberedList.h"
+#include "Project.h"
 #include "ProjectWindow.h"
 #include "ProjectWindowData.h"
 
@@ -47,44 +49,35 @@
 static struct Requester requester;
 
 typedef struct MapRequesterData_tag {
-  int selected;
-  int highlighted;
+  UWORD selected;
+  UWORD highlighted;
+  struct List *mapNames;
 } MapRequesterData;
 
 typedef struct MapRequesterGadgets_tag {
   struct Gadget *okButton;
 } MapRequesterGadgets;
 
-static WindowKind mapRequesterWindowKind = {
-  {
-    40, 40, MAP_REQUESTER_WIDTH, MAP_REQUESTER_HEIGHT,
-    0xFF, 0xFF,
-    CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP|NEWSIZE,
-    WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|WINDOWSIZING|ACTIVATE,
-    NULL,
-    NULL,
-    "Save Map",
-    NULL,
-    NULL,
-    MAP_REQUESTER_WIDTH, MAP_REQUESTER_MIN_HEIGHT,
-    0xFFFF, 0xFFFF,
-    CUSTOMSCREEN
-  },
-  (MenuSpec*)        NULL,
-  (RefreshFunction)  NULL,
-  (CanCloseFunction) NULL,
-  (CloseFunction)    NULL,
-  (ClickFunction)    NULL,
-};
-
 static void mapRequesterOkClicked(FrameworkWindow *mapRequester) {
   MapRequesterData *data = mapRequester->data;
-  data->selected = data->highlighted - 1;
+  data->selected = data->highlighted;
+  mapRequester->closed = TRUE;
 }
 
 static void mapRequesterCancelClicked(FrameworkWindow *mapRequester) {
   MapRequesterData *data = mapRequester->data;
-  data->selected = -1;
+  data->selected = 0;
+  mapRequester->closed = TRUE;
+}
+
+static void mapRequesterOnSelect(FrameworkWindow *mapRequester, UWORD selected) {
+  MapRequesterData *data = mapRequester->data;
+  MapRequesterGadgets *gadgets = mapRequester->gadgets->data;
+
+  data->highlighted = selected + 1;
+  GT_SetGadgetAttrs(gadgets->okButton, mapRequester->intuitionWindow, NULL,
+    GA_Disabled, FALSE,
+    TAG_END);
 }
 
 static ListViewSpec mapListSpec = {
@@ -93,7 +86,7 @@ static ListViewSpec mapListSpec = {
   MAP_REQUESTER_HEIGHT - MAP_LIST_HEIGHT_DELTA,
   NULL,
   NULL,
-  NULL,
+  mapRequesterOnSelect,
 };
 
 static ButtonSpec okButtonSpec = {
@@ -115,42 +108,91 @@ static ButtonSpec cancelButtonSpec = {
   mapRequesterCancelClicked
 };
 
-static BOOL initMapRequesterGadgets(WindowGadgets *gadgets) {
-  MapRequesterGadgets *data = malloc(sizeof(MapRequesterGadgets));
-  if(!data) {
-    fprintf(stderr, "initMapRequesterGadgets: couldn't allocate data\n");
-    goto error;
+static const char *safeGetMapName(ProjectWindowData *data, int mapNum) {
+  const char *mapName = projectDataGetMapName(data, mapNum);
+  if(mapName) {
+    return mapName;
+  } else {
+    return "";
   }
-
-  gadgets->glist = buildGadgets(
-    makeListViewGadget(&mapListSpec), NULL,
-    makeButtonGadget(&okButtonSpec), &data->okButton,
-    makeButtonGadget(&cancelButtonSpec), NULL,
-    NULL);
-  if(!gadgets->glist) {
-    fprintf(stderr, "initMapRequesterGadgets: couldn't build gadgets\n");
-    goto error;
-  }
-
-  gadgets->data = data;
-
-  return TRUE;
-error:
-  return FALSE;
 }
 
-static void sizeGadgets(FrameworkWindow *window) {
-  int height = window ? window->intuitionWindow->Height : MAP_REQUESTER_HEIGHT;
-  int width  = window ? window->intuitionWindow->Width  : MAP_REQUESTER_WIDTH;
+static WindowGadgets *createMapRequesterGadgets(WORD width, WORD height, void *data) {
+  MapRequesterGadgets *gadgetData;
+  WindowGadgets *gadgets;
+
+  gadgets = malloc(sizeof(WindowGadgets));
+  if(!gadgets) {
+    fprintf(stderr, "createMapRequesterGadgets: couldn't allocate window gadgets\n");
+    goto error;
+  }
+
+  gadgetData = malloc(sizeof(MapRequesterGadgets));
+  if(!gadgetData) {
+    fprintf(stderr, "createMapRequesterGadgets: couldn't allocate data\n");
+    goto error_freeWindowGadgets;
+  }
 
   mapListSpec.width  = width  - MAP_LIST_WIDTH_DELTA;
   mapListSpec.height = height - MAP_LIST_HEIGHT_DELTA;
+  mapListSpec.labels = ((MapRequesterData*)data)->mapNames;
 
   okButtonSpec.top = height - OK_BUTTON_BOTTOM_OFFSET;
 
   cancelButtonSpec.top  = height - CANCEL_BUTTON_BOTTOM_OFFSET;
   cancelButtonSpec.left = width  - CANCEL_BUTTON_RIGHT_OFFSET;
+
+  gadgets->glist = buildGadgets(
+    makeListViewGadget(&mapListSpec), NULL,
+    makeButtonGadget(&okButtonSpec), &gadgetData->okButton,
+    makeButtonGadget(&cancelButtonSpec), NULL,
+    NULL);
+  if(!gadgets->glist) {
+    fprintf(stderr, "createMapRequesterGadgets: couldn't build gadgets\n");
+    goto error_freeMapRequesterGadgets;
+  }
+
+  gadgets->data = gadgetData;
+
+  return gadgets;
+
+error_freeMapRequesterGadgets:
+  free(gadgetData);
+error_freeWindowGadgets:
+  free(gadgets);
+error:
+  return NULL;
 }
+
+static void freeMapRequesterGadgets(WindowGadgets *gadgets) {
+  FreeGadgets(gadgets->glist);
+  free(gadgets->data);
+  free(gadgets);
+}
+
+static WindowKind mapRequesterWindowKind = {
+  {
+    40, 40, MAP_REQUESTER_WIDTH, MAP_REQUESTER_HEIGHT,
+    0xFF, 0xFF,
+    CLOSEWINDOW|REFRESHWINDOW|GADGETUP|LISTVIEWIDCMP|NEWSIZE,
+    WINDOWCLOSE|WINDOWDEPTH|WINDOWDRAG|WINDOWSIZING|ACTIVATE,
+    NULL,
+    NULL,
+    "Save Map",
+    NULL,
+    NULL,
+    MAP_REQUESTER_WIDTH, MAP_REQUESTER_MIN_HEIGHT,
+    0xFFFF, 0xFFFF,
+    CUSTOMSCREEN
+  },
+  (MenuSpec*)        NULL,
+  (GadgetBuilder)    createMapRequesterGadgets,
+  (GadgetFreer)      freeMapRequesterGadgets,
+  (RefreshFunction)  NULL,
+  (CanCloseFunction) NULL,
+  (CloseFunction)    NULL,
+  (ClickFunction)    NULL,
+};
 
 /*
     gad = CreateGadget(LISTVIEW_KIND, gad, &mapListNewGadget,
@@ -160,30 +202,9 @@ static void sizeGadgets(FrameworkWindow *window) {
 
 */
 
-static void freeMapRequesterGadgets(WindowGadgets *gadgets) {
-  FreeGadgets(gadgets->glist);
-  free(gadgets->data);
-}
-
-/* TODO: a lot of this should be pushed into the framework?? */
-static void resizeMapRequester(FrameworkWindow *mapRequester) {
-  RemoveGList(mapRequester->intuitionWindow, mapRequester->gadgets->glist, -1);
-  freeMapRequesterGadgets(mapRequester->gadgets);
-  SetRast(mapRequester->intuitionWindow->RPort, 0);
-  sizeGadgets(mapRequester);
-  if(!initMapRequesterGadgets(mapRequester->gadgets)) {
-    fprintf(stderr, "resizeMapRequester: couldn't remake gadgets");
-    return;
-  }
-  AddGList(mapRequester->intuitionWindow, mapRequester->gadgets->glist, (UWORD)~0, -1, NULL);
-  RefreshWindowFrame(mapRequester->intuitionWindow);
-  RefreshGList(mapRequester->gadgets->glist, mapRequester->intuitionWindow, NULL, -1);
-  GT_RefreshWindow(mapRequester->intuitionWindow, NULL);
-}
-
-int spawnMapRequester(FrameworkWindow *parent, char *title) {
+UWORD spawnMapRequester(FrameworkWindow *parent, char *title) {
+  struct List *mapNameList;
   MapRequesterData data;
-  WindowGadgets gadgets;
   FrameworkWindow *mapRequester;
 
   if(!Request(&requester, parent->intuitionWindow)) {
@@ -191,31 +212,33 @@ int spawnMapRequester(FrameworkWindow *parent, char *title) {
     goto error;
   }
 
-  if(!initMapRequesterGadgets(&gadgets)) {
-    fprintf(stderr, "spawnMapRequester: couldn't create gadgets\n");
+  mapNameList = newNumberedList(safeGetMapName, parent->data, MAX_MAPS_IN_PROJECT);
+  if(!mapNameList) {
+    fprintf(stderr, "spawnMapRequester: couldn't make map name list\n");
     goto error_EndRequest;
   }
 
   mapRequesterWindowKind.newWindow.Title = title;
 
-  mapRequester = openWindowOnGlobalScreen(&mapRequesterWindowKind, &gadgets);
+  data.selected = 0;
+  data.mapNames = mapNameList;
+
+  mapRequester = openChildWindow(parent, &mapRequesterWindowKind, &data);
   if(!mapRequester) {
     fprintf(stderr, "spawnMapRequester: couldn't open window\n");
-    goto error_FreeGadgets;
+    goto error_freeNameList;
   }
-
-  mapRequester->data = &data;
 
   runMainLoop(mapRequester);
 
   EndRequest(&requester, parent->intuitionWindow);
 
-  freeMapRequesterGadgets(&gadgets);
+  freeNumberedList(mapNameList);
 
   return data.selected;
 
-error_FreeGadgets:
-  freeMapRequesterGadgets(&gadgets);
+error_freeNameList:
+  freeNumberedList(mapNameList);
 error_EndRequest:
   EndRequest(&requester, parent->intuitionWindow);
 error:

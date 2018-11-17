@@ -3,6 +3,6 @@
 
 #include "framework/Window.h"
 
-int spawnMapRequester(FrameworkWindow *parent, char *title);
+UWORD spawnMapRequester(FrameworkWindow *parent, char *title);
 
 #endif
