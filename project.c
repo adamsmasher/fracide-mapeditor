@@ -17,7 +17,6 @@ static void initMaps(Project *project) {
   project->mapCnt = 0;
   for(i = 0; i < MAX_MAPS_IN_PROJECT; i++) {
     project->maps[i] = NULL;
-    sprintf(project->mapNameStrs[i], "%d:", i);
   }
 }
 
@@ -115,7 +114,6 @@ static int loadProjectFromFp(FILE *fp, Project *project) {
         }
 
         project->maps[mapNum] = map;
-        projectUpdateMapName(project, mapNum, map);
     }
 
     if(fread(project->songNameStrs, 80, 128, fp) != 128) {

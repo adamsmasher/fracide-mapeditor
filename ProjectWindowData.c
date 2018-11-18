@@ -170,14 +170,11 @@ static BOOL projectDataSaveNewMap(ProjectWindowData *data, Map *map, int mapNum)
   data->project.mapCnt++;
   data->project.maps[mapNum] = mapCopy;
 
-  projectUpdateMapName(&data->project, mapNum, map);
-
   return TRUE;
 }
 
 static void projectDataOverwriteMap(ProjectWindowData *data, Map *map, int mapNum) {
   overwriteMap(map, data->project.maps[mapNum]);
-  projectUpdateMapName(&data->project, mapNum, map);
   data->projectSaved = FALSE;
 }
 
