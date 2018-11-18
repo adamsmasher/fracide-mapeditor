@@ -11,37 +11,37 @@
 #define VERSION 1
 #define HEADER (('F' << 24) | ('R' << 16) | ('M' << 8) | 'P')
 
-void projectUpdateMapName(Project *project, int mapNum, Map *map) {
-  sprintf(project->mapNameStrs[mapNum], "%d: %s", mapNum, map->name);
+static void initMaps(Project *project) {
+  int i;
+
+  project->mapCnt = 0;
+  for(i = 0; i < MAX_MAPS_IN_PROJECT; i++) {
+    project->maps[i] = NULL;
+    sprintf(project->mapNameStrs[i], "%d:", i);
+  }
+}
+
+static void initEntities(Project *project) {
+  int i;
+  for(i = 0; i < MAX_ENTITIES_IN_PROJECT; i++) {
+    project->entityNameStrs[i][0] = '\0';
+  }
 }
 
 void initProject(Project *project) {
-    int i;
-    struct Node *node;
-
-    project->tilesetPackagePath[0] = '\0';
-
-    project->mapCnt = 0;
-
-    for(i = 0; i < 128; i++) {
-        project->maps[i] = NULL;
-        sprintf(project->mapNameStrs[i], "%d:", i);
-    }
-
-    for(i = 0; i < 128; i++) {
-      project->entityNameStrs[i][0] = '\0';
-    }
+  project->tilesetPackagePath[0] = '\0';
+  initMaps(project);
+  initEntities(project);
 }
 
 void freeProject(Project *project) {
-    int i;
-    struct Node *node, *next;
+  int i;
 
-    for(i = 0; i < 128; i++) {
-        if(project->maps[i]) {
-            free(project->maps[i]);
-        }
+  for(i = 0; i < MAX_MAPS_IN_PROJECT; i++) {
+    if(project->maps[i]) {
+      free(project->maps[i]);
     }
+  }
 }
 
 void copyProject(Project *src, Project *dest) {
