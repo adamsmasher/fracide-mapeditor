@@ -5,6 +5,7 @@
 
 #include "framework/Window.h"
 
+/* TODO: can I put these in the C file */
 typedef struct EntityRequesterGadgets_tag {
   struct Gadget *entityNameGadget;
 } EntityRequesterGadgets;
