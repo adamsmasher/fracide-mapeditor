@@ -40,6 +40,21 @@
 #define ENTITY_NAME_BOTTOM_OFFSET 20
 #define ENTITY_NAME_LEFT          ENTITY_LIST_LEFT
 
+typedef struct EntityRequesterGadgets_tag {
+  struct Gadget *entityNameGadget;
+} EntityRequesterGadgets;
+
+typedef enum Editable_tag {
+  NON_EDITABLE,
+  EDITABLE
+} Editable;
+
+typedef struct EntityRequesterData_tag {
+  int selected;
+  Editable editable;
+  struct List *entityNames;
+} EntityRequesterData;
+
 static void entityRequesterOnSelectEntity(FrameworkWindow *entityRequester, UWORD selected) {
   EntityRequesterData *data = entityRequester->data;
   EntityRequesterGadgets *gadgets = entityRequester->gadgets->data;
