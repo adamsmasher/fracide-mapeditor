@@ -8,17 +8,6 @@
 #include "Project.h"
 #include "TilesetPackage.h"
 
-/* TODO: move me somewhere, remove duplicate code from SongNamesEditor, EntityNamesEditor... */
-static int listItemStart(int selected) {
-  if(selected < 10) {
-    return 2;
-  } else if(selected < 100) {
-    return 3;
-  } else {
-    return 4;
-  }
-}
-
 #define PROJECT_FILENAME_LENGTH 256
 
 struct ProjectWindowData_tag {
@@ -26,31 +15,7 @@ struct ProjectWindowData_tag {
   BOOL projectSaved;
   char projectFilename[PROJECT_FILENAME_LENGTH];
   TilesetPackage *tilesetPackage;
-  /* TODO: one day this should only exist inside the ListView gadget */
-  struct List songNames;
 };
-
-static void initSongNameNodes(ProjectWindowData *data) {
-  int i;
-  struct Node *node, *next;
-
-  NewList(&data->songNames);
-  for(i = 0; i < 128; i++) {
-    /* TODO: don't do this */
-    sprintf(data->project.songNameStrs[i], "%d:", i);
-    node = malloc(sizeof(struct Node));
-    /* TODO: handle node creation failure */
-    AddTail(&data->songNames, node);
-  }
-
-  node = data->songNames.lh_Head;
-  i = 0;
-  while(next = node->ln_Succ) {
-    node->ln_Name = data->project.songNameStrs[i];
-    node = next;
-    i++;
-  }
-}
 
 ProjectWindowData *createProjectData(void) {
   ProjectWindowData *data = malloc(sizeof(ProjectWindowData));
@@ -64,21 +29,9 @@ ProjectWindowData *createProjectData(void) {
   clearProjectDataFilename(data);
   data->tilesetPackage = NULL;
 
-  initSongNameNodes(data);
-
   return data;
 error:
   return NULL;
-}
-
-static void freeSongNames(ProjectWindowData *data) {
-  struct Node *node, *next;
-
-  node = data->songNames.lh_Head;
-  while(next = node->ln_Succ) {
-    free(node);
-    node = next;
-  }
 }
 
 static void clearProjectData(ProjectWindowData *data) {
@@ -86,8 +39,6 @@ static void clearProjectData(ProjectWindowData *data) {
   data->tilesetPackage = NULL;
   freeProject(&data->project);
   data->projectSaved = TRUE;
-
-  freeSongNames(data);
 }
 
 void freeProjectData(ProjectWindowData *data) {
@@ -204,17 +155,12 @@ void projectDataUpdateEntityName(ProjectWindowData *data, int entityNum, char *n
   data->projectSaved = FALSE;
 }
 
-struct List *projectDataGetSongNames(ProjectWindowData *data) {
-  /* TODO: i suspect i want to move the LISTS into the gadget */
-  return &data->songNames;
-}
-
 char *projectDataGetSongName(ProjectWindowData *data, int songNum) {
   return data->project.songNameStrs[songNum];
 }
 
 void projectDataUpdateSongName(ProjectWindowData *data, int songNum, char *name) {
-  strcpy(&data->project.songNameStrs[songNum][listItemStart(songNum)], name);
+  strcpy(data->project.songNameStrs[songNum], name);
   data->projectSaved = FALSE;
 }
 

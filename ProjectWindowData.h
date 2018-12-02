@@ -31,7 +31,6 @@ BOOL projectDataSaveMap(ProjectWindowData*, Map*, int mapNum);
 char *projectDataGetEntityName(ProjectWindowData*, int entityNum);
 void projectDataUpdateEntityName(ProjectWindowData*, int entityNum, char*);
 
-struct List *projectDataGetSongNames(ProjectWindowData*);
 char *projectDataGetSongName(ProjectWindowData*, int songNum);
 void projectDataUpdateSongName(ProjectWindowData*, int songNum, char*);
 

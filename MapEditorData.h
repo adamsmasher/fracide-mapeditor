@@ -5,7 +5,6 @@
 
 #include "Entity.h"
 #include "Map.h"
-#include "SongRequester.h"
 
 typedef struct MapEditorData_tag MapEditorData;
 
@@ -34,10 +33,6 @@ void mapEditorDataSetMapNum(MapEditorData*, UWORD mapNum);
 
 const char *mapEditorDataGetMapName(MapEditorData*);
 void mapEditorDataSetMapName(MapEditorData*, const char *mapName);
-
-BOOL mapEditorDataHasSongRequester(MapEditorData*);
-SongRequester *mapEditorDataGetSongRequester(MapEditorData*);
-void mapEditorDataSetSongRequester(MapEditorData*, SongRequester*);
 
 BOOL mapEditorDataHasEntityBrowser(MapEditorData*);
 FrameworkWindow *mapEditorDataGetEntityBrowser(MapEditorData*);

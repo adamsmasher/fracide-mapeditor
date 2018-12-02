@@ -1,10 +1,10 @@
 #include "musicmenu.h"
 
 #include "framework/menubuild.h"
-#include "SongNamesEditor.h"
+#include "ProjectWindow.h"
 
-static void songNamesClicked(FrameworkWindow *window) {
-    showSongNamesEditor();
+static void songNamesClicked(FrameworkWindow *projectWindow) {
+  projectWindowShowSongNamesEditor(projectWindow);
 }
 
 static MenuSectionSpec musicSection =

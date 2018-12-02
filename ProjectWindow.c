@@ -518,16 +518,11 @@ void projectWindowOpenMap(FrameworkWindow *projectWindow) {
   }
 }
 
-void refreshAllSongDisplays(FrameworkWindow *projectWindow) {
+void projectWindowRefreshAllSongDisplays(FrameworkWindow *projectWindow) {
   FrameworkWindow *i = projectWindow->children;
   while(i) {
     if(isMapEditor(i)) {
-      /* TODO: make this a function on map requesters */
-      MapEditorData *data = i->data;
-      if(mapEditorDataHasSongRequester(data)) {
-        /* GT_RefreshWindow(data->songRequester->window->intuitionWindow, NULL); */
-      }
-      mapEditorRefreshSong(i);
+      mapEditorRefreshSongDisplays(i);
     }
     i = i->next;
   }
@@ -564,5 +559,24 @@ void projectWindowShowEntityNamesEditor(FrameworkWindow *projectWindow) {
     WindowToFront(entityNamesEditor->intuitionWindow);
   } else {
     entityNamesEditor = newEntityNamesEditor(projectWindow);
+  }
+}
+
+static FrameworkWindow *projectWindowFindSongNamesEditor(FrameworkWindow *projectWindow) {
+  FrameworkWindow *i = projectWindow->children;
+  while(i) {
+    if(isSongNamesEditor(i)) {
+      return i;
+    }
+  }
+  return NULL;
+}
+
+void projectWindowShowSongNamesEditor(FrameworkWindow *projectWindow) {
+  FrameworkWindow *songNamesEditor = projectWindowFindSongNamesEditor(projectWindow);
+  if(songNamesEditor) {
+    WindowToFront(songNamesEditor->intuitionWindow);
+  } else {
+    newSongNamesEditor(projectWindow);
   }
 }

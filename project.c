@@ -27,10 +27,18 @@ static void initEntities(Project *project) {
   }
 }
 
+static void initSongs(Project *project) {
+  int i = 0;
+  for(i = 0; i < MAX_SONGS_IN_PROJECT; i++) {
+    project->songNameStrs[i][0] = '\0';
+  }
+}
+
 void initProject(Project *project) {
   project->tilesetPackagePath[0] = '\0';
   initMaps(project);
   initEntities(project);
+  initSongs(project);
 }
 
 void freeProject(Project *project) {

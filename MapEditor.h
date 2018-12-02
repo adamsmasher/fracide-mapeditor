@@ -43,6 +43,7 @@ void mapEditorRefreshMapName(FrameworkWindow*);
 void mapEditorRefreshNavigationButtons(FrameworkWindow*);
 void mapEditorRefreshRevertMap(FrameworkWindow*);
 void mapEditorRefreshSong(FrameworkWindow*);
+void mapEditorRefreshSongDisplays(FrameworkWindow*);
 void mapEditorRefreshSelected(FrameworkWindow*);
 void mapEditorRefreshSelectedFrom(FrameworkWindow*, unsigned int selected);
 void mapEditorRefreshTitle(FrameworkWindow*);

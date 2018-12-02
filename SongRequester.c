@@ -15,11 +15,15 @@
 #include <string.h>
 
 #include "framework/font.h"
+#include "framework/gadgets.h"
 #include "framework/menubuild.h"
 #include "framework/screen.h"
 #include "framework/window.h"
 
 #include "MapEditorData.h"
+#include "NumberedList.h"
+#include "Project.h"
+#include "ProjectWindow.h"
 #include "ProjectWindowData.h"
 
 #define SONG_REQUESTER_WIDTH      200
@@ -27,17 +31,149 @@
 #define SONG_REQUESTER_MIN_HEIGHT 48
 
 #define SONG_LIST_WIDTH_DELTA  35
-#define SONG_LIST_HEIGHT_DELTA 26
+#define SONG_LIST_HEIGHT_DELTA 38
 #define SONG_LIST_TOP          20
 #define SONG_LIST_LEFT         10
 
 #define SONG_NAME_WIDTH_DELTA   SONG_LIST_WIDTH_DELTA
 #define SONG_NAME_HEIGHT        12
-#define SONG_NAME_BOTTOM_OFFSET 26
+#define SONG_NAME_BOTTOM_OFFSET 20
 #define SONG_NAME_LEFT          SONG_LIST_LEFT
 
-static void handleSongRequesterGadgetUp(FrameworkWindow *mapEditorWindow, SongRequester *songRequester, struct IntuiMessage *msg) {
-  mapEditorDataSetSong(mapEditorWindow->data, msg->Code);
+typedef struct SongRequesterGadgets_tag {
+  struct Gadget *songNameGadget;
+  struct Gadget *songListGadget;
+} SongRequesterGadgets;
+
+typedef enum Editable_tag {
+  NON_EDITABLE,
+  EDITABLE
+} Editable;
+
+typedef struct SongRequesterData_tag {
+  UWORD selected;
+  Editable editable;
+  struct List *songNames;
+  char *title;
+} SongRequesterData;
+
+static void songRequesterOnSelectSong(FrameworkWindow *songRequester, UWORD selected) {
+  SongRequesterData *data = songRequester->data;
+  SongRequesterGadgets *gadgets = songRequester->gadgets->data;
+
+  data->selected = selected + 1;
+
+  if(data->editable) {
+    ProjectWindowData *projectData = songRequester->parent->data;
+    const char *songName = projectDataGetSongName(projectData, selected);
+
+    GT_SetGadgetAttrs(gadgets->songNameGadget, songRequester->intuitionWindow, NULL,
+      GTST_String, songName,
+      GA_Disabled, FALSE,
+      TAG_END);
+  } else {
+    FrameworkWindow *mapEditor = songRequester->parent;
+    mapEditorDataSetSong(mapEditor->data, selected);  
+  }
+}
+
+static void songRequesterOnNameEntry(FrameworkWindow *songRequester) {
+  SongRequesterData *data = songRequester->data;
+  SongRequesterGadgets *gadgets = songRequester->gadgets->data;
+  FrameworkWindow *projectWindow = songRequester->parent;
+  ProjectWindowData *projectData = projectWindow->data;
+
+  UWORD selected = data->selected - 1;
+
+  char *name = ((struct StringInfo*)gadgets->songNameGadget->SpecialInfo)->Buffer;
+
+  projectDataUpdateSongName(projectData, selected, name);
+  numberedListSetItem(data->songNames, selected, name);
+
+  GT_RefreshWindow(songRequester->intuitionWindow, NULL);
+  projectWindowRefreshAllSongDisplays(projectWindow);
+}
+
+static ListViewSpec songListSpec = {
+  SONG_LIST_LEFT,  SONG_LIST_TOP,
+  SONG_REQUESTER_WIDTH - SONG_LIST_WIDTH_DELTA,
+  SONG_REQUESTER_HEIGHT - SONG_LIST_HEIGHT_DELTA,
+  (struct List*) NULL, /* fill this out before creation */
+  (struct Gadget**)NULL, /* fill this out before creation */
+  songRequesterOnSelectSong
+};
+
+static StringSpec songNameSpec = {
+  SONG_NAME_LEFT,  SONG_REQUESTER_HEIGHT - SONG_NAME_BOTTOM_OFFSET,
+  SONG_REQUESTER_WIDTH - SONG_NAME_WIDTH_DELTA, SONG_NAME_HEIGHT,
+  64,
+  (char*)NULL,
+  TEXT_ON_LEFT,
+  DISABLED,
+  songRequesterOnNameEntry
+};
+
+static WindowGadgets *createSongRequesterGadgets(int width, int height, SongRequesterData *data) {
+  SongRequesterGadgets *gadgetData;
+  WindowGadgets *gadgets;
+
+  gadgets = malloc(sizeof(WindowGadgets));
+  if(!gadgets) {
+    fprintf(stderr, "createSongRequesterGadgets: couldn't allocate window gadgets\n");
+    goto error;
+  }
+
+  gadgetData = malloc(sizeof(SongRequesterGadgets));
+  if(!gadgetData) {
+    fprintf(stderr, "createSongRequesterGadgets: couldn't allocate data\n");
+    goto error_freeWindowGadgets;
+  }
+
+  songListSpec.height = height - SONG_LIST_HEIGHT_DELTA;
+  songListSpec.width  = width  - SONG_LIST_WIDTH_DELTA;
+  songListSpec.labels = data->songNames;
+
+  if(data->editable) {
+    songNameSpec.top   = height - SONG_NAME_BOTTOM_OFFSET;
+    songNameSpec.width = width  - SONG_NAME_WIDTH_DELTA;
+
+    gadgets->glist = buildGadgets(
+      makeStringGadget(&songNameSpec), &gadgetData->songNameGadget,
+      makeListViewGadget(&songListSpec), &gadgetData->songListGadget,
+      NULL);
+  } else {
+    gadgets->glist = buildGadgets(
+      makeListViewGadget(&songListSpec), &gadgetData->songListGadget,
+      NULL);
+  }
+  if(!gadgets->glist) {
+    fprintf(stderr, "createSongRequesterGadgets: failed to create gadgets\n");
+    goto error_freeSongRequesterGadgets;
+  }
+
+  gadgets->data = gadgetData;
+
+  return gadgets;
+
+error_freeSongRequesterGadgets:
+  free(gadgetData);
+error_freeWindowGadgets:
+  free(gadgets);
+error:
+  return NULL;
+}
+
+static void freeSongRequesterGadgets(WindowGadgets *gadgets) {
+  FreeGadgets(gadgets->glist);
+  free(gadgets->data);
+  free(gadgets);
+}
+
+static void closeSongRequester(FrameworkWindow *songRequester) {
+  SongRequesterData *data = songRequester->data;
+  freeNumberedList(data->songNames);
+  free(data->title);
+  free(data);
 }
 
 static WindowKind songRequesterWindowKind = {
@@ -56,154 +192,120 @@ static WindowKind songRequesterWindowKind = {
     CUSTOMSCREEN
   },
   (MenuSpec*)        NULL,
+  (GadgetBuilder)    createSongRequesterGadgets,
+  (GadgetFreer)      freeSongRequesterGadgets,
   (RefreshFunction)  NULL,
   (CanCloseFunction) NULL,
-  (CloseFunction)    NULL
+  (CloseFunction)    NULL,
+  (ClickFunction)    NULL,
 };
 
-static struct NewGadget songListNewGadget = {
-    SONG_LIST_LEFT,  SONG_LIST_TOP,
-    SONG_REQUESTER_WIDTH - SONG_LIST_WIDTH_DELTA,
-    SONG_REQUESTER_HEIGHT - SONG_LIST_HEIGHT_DELTA,
-    NULL,
-    &Topaz80,
-    SONG_LIST_ID,
-    0,
-    NULL, /* visual info filled in later */
-    NULL  /* user data */
-};
+static FrameworkWindow *newGenericSongRequester(FrameworkWindow *parent, char *title, ProjectWindowData *projectData, Editable editable) {
+  struct List *songNameList;
+  SongRequesterData *data;
+  FrameworkWindow *songRequester;
 
-static struct NewGadget songNameNewGadget = {
-    SONG_NAME_LEFT,  SONG_REQUESTER_HEIGHT - SONG_NAME_BOTTOM_OFFSET,
-    SONG_REQUESTER_WIDTH - SONG_NAME_WIDTH_DELTA, SONG_NAME_HEIGHT,
-    NULL,
-    &Topaz80,
-    SONG_NAME_ID,
-    0,
-    NULL, /* visual info filled in later */
-    NULL  /* user data */
-};
-
-static void initSongRequesterVi(void) {
-  void *vi = getGlobalVi();
-  if(!vi) {
-    fprintf(stderr, "initSongRequesterVi: failed to get global vi\n");
+  songNameList = newNumberedList(projectDataGetSongName, projectData, MAX_SONGS_IN_PROJECT);
+  if(!songNameList) {
+    fprintf(stderr, "newGenericSongRequester: couldn't make song name list\n");
+    goto error;
   }
 
-  songListNewGadget.ng_VisualInfo = vi;
-  songNameNewGadget.ng_VisualInfo = vi;
-}
+  data = malloc(sizeof(SongRequesterData));
+  if(!data) {
+    fprintf(stderr, "newGenericSongRequester: couldn't allocate data\n");
+    goto error_freeNameList;
+  }
 
-static void createSongRequesterGadgets(SongRequester *songRequester) {
-    struct Gadget *gad;
-    struct Gadget *glist = NULL;
-    ProjectWindowData *projectData = NULL; /* TODO: fix me */
-    int height = songRequester->window ? songRequester->window->intuitionWindow->Height : SONG_REQUESTER_HEIGHT;
-    int width  = songRequester->window ? songRequester->window->intuitionWindow->Width  : SONG_REQUESTER_WIDTH;
+  data->editable = editable;
+  data->selected = 0;
+  data->songNames = songNameList;
 
-    gad = CreateContext(&glist);
+  data->title = strdup(title);
+  if(!data->title) {
+    fprintf(stderr, "newGenericSongRequester: couldn't copy title\n");
+    goto error_freeData;
+  }
 
-    if(songRequester->editable) {
-        songNameNewGadget.ng_TopEdge = height - SONG_NAME_BOTTOM_OFFSET;
-        songNameNewGadget.ng_Width   = width  - SONG_NAME_WIDTH_DELTA;
-        gad = CreateGadget(STRING_KIND, gad, &songNameNewGadget,
-            GTST_MaxChars, 64,
-            GA_Disabled, TRUE);
-        songRequester->songNameGadget = gad;
-    } else {
-        songRequester->songNameGadget = NULL;
-    }
+  songRequesterWindowKind.newWindow.Title = data->title;
 
-    songListNewGadget.ng_Height = height - SONG_LIST_HEIGHT_DELTA;
-    songListNewGadget.ng_Width  = width  - SONG_LIST_WIDTH_DELTA;
-    gad = CreateGadget(LISTVIEW_KIND, gad, &songListNewGadget,
-        GTLV_ShowSelected, songRequester->songNameGadget,
-        GTLV_Labels, projectDataGetSongNames(projectData),
-        TAG_END);
+  songRequester = openChildWindow(parent, &songRequesterWindowKind, data);
+  if(!songRequester) {
+    fprintf(stderr, "newGenericSongRequester: couldn't open window\n");
+    goto error_freeTitle;
+  }
 
-    if(gad) {
-        songRequester->gadgets = glist;
-    } else {
-        songRequester->songNameGadget = NULL;
-        FreeGadgets(glist);
-    }
-}
+  return songRequester;
 
-static SongRequester *newGenericSongRequester(char *title, int editable) {
-    SongRequester *songRequester = malloc(sizeof(SongRequester));
-    if(!songRequester) {
-        fprintf(stderr, "newGenericSongRequester: couldn't allocate requester\n");
-        goto error;
-    }
-    songRequester->window = NULL;
-    songRequester->editable = editable;
-
-    songRequester->title = malloc(strlen(title) + 1);
-    if(!songRequester->title) {
-        fprintf(stderr, "newGenericSongRequester: couldn't allocate title\n");
-        goto error_freeRequester;
-    }
-    strcpy(songRequester->title, title);
-    songRequesterWindowKind.newWindow.Title = songRequester->title;
-
-    initSongRequesterVi();
-    createSongRequesterGadgets(songRequester);
-    if(!songRequester->gadgets) {
-        fprintf(stderr, "newGenericSongRequester: couldn't create gadgets\n");
-        goto error_freeTitle;
-    }
-    songRequesterWindowKind.newWindow.FirstGadget = songRequester->gadgets;
-
-    songRequester->window = openWindowOnGlobalScreen(&songRequesterWindowKind);
-    if(!songRequester->window) {
-        fprintf(stderr, "newGenericSongRequester: couldn't open window\n");
-        goto error_freeGadgets;
-    }
-
-    songRequester->closed = 0;
-    songRequester->selected = 0;
-
-    return songRequester;
-
-error_freeGadgets:
-    free(songRequester->gadgets);
 error_freeTitle:
-    free(songRequester->title);
-error_freeRequester:
-    free(songRequester);
+  free(data->title);
+error_freeData:
+  free(data);
+error_freeNameList:
+  freeNumberedList(songNameList);
 error:
-    return NULL;
+  return NULL;
 }
 
-#define EDITABLE 1
-#define NON_EDITABLE 0
+FrameworkWindow *newSongRequester(FrameworkWindow *mapEditor) {
+  FrameworkWindow *projectWindow = mapEditor->parent;
+  MapEditorData *mapEditorData = mapEditor->data;
+  char title[] = "Change Soundtrack for Map XXX";
 
-SongRequester *newSongRequester(char *title) {
-    return newGenericSongRequester(title, NON_EDITABLE);
+  if(mapEditorDataHasMapNum(mapEditorData)) {
+    sprintf(title, "Change Soundtrack for Map %d", mapEditorDataGetMapNum(mapEditorData));
+  } else {
+    sprintf(title, "Change Soundtrack");
+  }
+
+  return newGenericSongRequester(mapEditor, title, projectWindow->data, NON_EDITABLE);
 }
 
-SongRequester *newSongNamesEditor(void) {
-    return newGenericSongRequester("Edit Song Names", EDITABLE);
+FrameworkWindow *newSongNamesEditor(FrameworkWindow *projectWindow) {
+  return newGenericSongRequester(projectWindow, "Edit Song Names", projectWindow->data, EDITABLE);
 }
 
-void freeSongRequester(SongRequester *songRequester) {
-  /* TODO: the framework should close the window and free the gadgets */
-  free(songRequester->title);
-  free(songRequester);
+BOOL isSongRequester(FrameworkWindow *window) {
+  return (BOOL)(window->kind == &songRequesterWindowKind);
 }
 
-void resizeSongRequester(SongRequester *songRequester) {
-    /* TODO: this should be done by the framework! */
-    RemoveGList(songRequester->window->intuitionWindow, songRequester->gadgets, -1);
-    FreeGadgets(songRequester->gadgets);
-    SetRast(songRequester->window->intuitionWindow->RPort, 0);
-    createSongRequesterGadgets(songRequester);
-    if(!songRequester->gadgets) {
-        fprintf(stderr, "resizeSongRequester: couldn't make gadgets");
-        return;
-    }
-    AddGList(songRequester->window->intuitionWindow, songRequester->gadgets, (UWORD)~0, -1, NULL);
-    RefreshWindowFrame(songRequester->window->intuitionWindow);
-    RefreshGList(songRequester->gadgets, songRequester->window->intuitionWindow, NULL, -1);
-    GT_RefreshWindow(songRequester->window->intuitionWindow, NULL);
+BOOL isSongNamesEditor(FrameworkWindow *window) {
+  if(isSongRequester(window)) {
+    SongRequesterData *data = window->data;
+    return (BOOL)(data->editable == EDITABLE);
+  }
+  return FALSE;
+}
+
+void songRequesterRefresh(FrameworkWindow *songRequester) {
+  ProjectWindowData *projectData;
+  SongRequesterData *data = songRequester->data;
+  SongRequesterGadgets *gadgets = songRequester->gadgets->data;
+
+  if(data->editable) {
+    projectData = songRequester->parent->data;
+  } else {
+    projectData = songRequester->parent->parent->data;
+  }
+
+  GT_SetGadgetAttrs(gadgets->songListGadget, songRequester->intuitionWindow, NULL,
+    GTLV_Labels, ~0,
+    TAG_END);
+
+  freeNumberedList(data->songNames);
+  data->songNames = newNumberedList(projectDataGetSongName, projectData, MAX_SONGS_IN_PROJECT);
+  if(!data->songNames) {
+    fprintf(stderr, "newGenericSongRequester: couldn't make song name list\n");
+    goto error;
+  }
+
+  GT_SetGadgetAttrs(gadgets->songListGadget, songRequester->intuitionWindow, NULL,
+    GTLV_Labels, data->songNames,
+    TAG_END);
+
+  GT_RefreshWindow(songRequester->intuitionWindow, NULL);
+
+  return;
+error:
+  return;
 }

@@ -25,8 +25,8 @@ struct MapEditorData_tag {
 
   BOOL saved;
 
+  /* TODO: get ridda me */
   FrameworkWindow *tilesetRequester;
-  SongRequester   *songRequester;
   FrameworkWindow *entityBrowser;
 
   struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
@@ -125,7 +125,6 @@ MapEditorData *newMapEditorData(void) {
   data->mapNum           = 0;
   data->saved            = TRUE;
   data->tilesetRequester = NULL;
-  data->songRequester    = NULL;
   data->entityBrowser    = NULL;
   data->selected         = -1;
   data->title[0]         = '\0';
@@ -272,18 +271,6 @@ void mapEditorDataSetTilesetRequester(MapEditorData *data, FrameworkWindow *tile
 
 FrameworkWindow *mapEditorDataGetTilesetRequester(MapEditorData *data) {
   return data->tilesetRequester;
-}
-
-void mapEditorDataSetSongRequester(MapEditorData *data, SongRequester *songRequester) {
-  data->songRequester = songRequester;
-}
-
-BOOL mapEditorDataHasSongRequester(MapEditorData *data) {
-  return (BOOL)(data->songRequester != NULL);
-}
-
-SongRequester* mapEditorDataGetSongRequester(MapEditorData *data) {
-  return data->songRequester;
 }
 
 BOOL mapEditorDataHasEntityBrowser(MapEditorData *data) {

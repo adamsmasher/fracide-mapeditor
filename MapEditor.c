@@ -306,30 +306,23 @@ void mapEditorRefreshMapName(FrameworkWindow *mapEditor) {
     TAG_END);
 }
 
+static FrameworkWindow *mapEditorGetSongRequester(FrameworkWindow *mapEditor) {
+  FrameworkWindow *i = mapEditor->children;
+  while(i) {
+    if(isSongRequester(i)) {
+      return i;
+    }
+  }
+  return NULL;
+}
+
 void mapEditorChangeSongClicked(FrameworkWindow *mapEditor) {
-  MapEditorData *data = mapEditor->data;
+  FrameworkWindow *songRequester = mapEditorGetSongRequester(mapEditor);
 
-  if(mapEditorDataHasSongRequester(data)) {
-    SongRequester *songRequester = mapEditorDataGetSongRequester(data);
-    WindowToFront(songRequester->window->intuitionWindow);
+  if(songRequester) {
+    WindowToFront(songRequester->intuitionWindow);
   } else {
-    char title[32];
-    SongRequester *songRequester;
-
-    if(mapEditorDataHasMapNum(data)) {
-      sprintf(title, "Change Soundtrack For Map %d", mapEditorDataGetMapNum(data));
-    } else {
-      strcpy(title, "Change Soundtrack");
-    }
-
-    songRequester = newSongRequester(title);
-    if(songRequester) {
-      mapEditorDataSetSongRequester(data, songRequester);
-      /* TODO: fix me */
-      /* addWindowToSet(songRequester->window); */
-    } else {
-      fprintf(stderr, "mapEditorChangeSongClicked: couldn't make SongRequester\n");
-    }
+    newSongRequester(mapEditor);
   }
 }
 
@@ -702,6 +695,14 @@ void mapEditorRefreshSong(FrameworkWindow *mapEditor) {
   GT_SetGadgetAttrs(gadgets->songNameGadget, mapEditor->intuitionWindow, NULL,
     GTTX_Text, songName,
     TAG_END);
+}
+
+void mapEditorRefreshSongDisplays(FrameworkWindow *mapEditor) {
+  FrameworkWindow *songRequester = mapEditorGetSongRequester(mapEditor);
+  if(songRequester) {
+    songRequesterRefresh(songRequester);
+  }
+  mapEditorRefreshSong(mapEditor);
 }
 
 void mapEditorRefreshTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col) {
