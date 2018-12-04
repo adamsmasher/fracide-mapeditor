@@ -1,8 +1,6 @@
 #  #  Makefile  automatically  generated  by  MKMK  V6.50  on Sep 2 1993 at
 01:38:33 #
 
-# TODO: update dependencies
-
 FRAMEWORK_OBJS= framework/font.o framework/GadgetEvents.o framework/gadgets.o framework/menu.o framework/menubuild.o framework/runstate.o framework/screen.o framework/window.o
 
 PROJECT_WINDOW_MENU_OBJS= projectmenu.o mapmenu.o entitiesmenu.o musicmenu.o ProjectWindowMenu.o
@@ -24,43 +22,43 @@ $(OBJS)
 
 main.o: main.c framework/runstate.h framework/screen.h palette.h ProjectWindow.h
 
-MapEditorData.o: MapEditorData.c MapEditorData.h MapEditorConstants.h TilesetPackage.h
+MapEditorData.o: MapEditorData.c MapEditorData.h MapEditor.h MapEditorConstants.h ProjectWindowData.h TilesetPackage.h
 
 MapEditorGadgets.o: MapEditorGadgets.c MapEditorGadgets.h Map.h MapEditor.h MapEditorConstants.h framework/Gadgets.h
 
-MapEditorMenu.o: MapEditorMenu.c MapEditorMenu.h
+MapEditorMenu.o: MapEditorMenu.c MapEditorMenu.h MapEditor.h
 
-MapEditor.o: MapEditor.c MapEditor.h MapEditorData.h MapEditorMenu.h MapRequester.h SongRequester.h tilesetRequester.h map.h EntityBrowser.h
+MapEditor.o: MapEditor.c MapEditor.h EasyStructs.h MapEditorConstants.h MapEditorData.h MapEditorGadgets.h MapEditorMenu.h MapRequester.h ProjectWindow.h ProjectWindowData.h
 
-TilesetPackage.o: TilesetPackage.c
+TilesetPackage.o: TilesetPackage.c TilesetPackage.h
 
-TilesetRequester.o: TilesetRequester.c
+TilesetRequester.o: TilesetRequester.c MapEditorData.h ProjectWindow.h ProjectWindowData.h TilesetPackage.h framework/font.h framework/menubuild.h framework/screen.h framework/window.h
 
 Project.o: Project.c Project.h Map.h
 
-MapRequester.o: MapRequester.c MapRequester.h MapEditor.h
+MapRequester.o: MapRequester.c MapRequester.h MapEditor.h NumberedList.h Project.h ProjectWindow.h ProjectWindowData.h framework/font.h framework/gadgets.h framework/menubuild.h framework/runstate.h framework/screen.h framework/window.h
 
 map.o: Map.c Map.h Entity.h
 
-SongRequester.o: SongRequester.c SongRequester.h
+SongRequester.o: SongRequester.c SongRequester.h MapEditorData.h NumberedList.h Project.h ProjectWindow.h ProjectWindowData.h framework/font.h framework/gadgets.h framework/menubuild.h framework/screen.h framework/window.h
 
-EntityBrowser.o: EntityBrowser.c EntityBrowser.h Entity.h
+EntityBrowser.o: EntityBrowser.c EntityBrowser.h EntityRequester.h Map.h MapEditor.h MapEditorData.h ProjectWindowData.h Result.h framework/font.h framework/gadgets.h framework/menubuild.h framework/screen.h framework/window.h
 
 Entity.o: Entity.c Entity.h
 
 palette.o: palette.c palette.h
 
-projectmenu.o: projectmenu.c projectmenu.h
+projectmenu.o: projectmenu.c projectmenu.h ProjectWindow.h framework/menubuild.h
 
-entitiesmenu.o: entitiesmenu.c entitiesmenu.h
+entitiesmenu.o: entitiesmenu.c entitiesmenu.h ProjectWindow.h framework/menubuild.h
 
-musicmenu.o: musicmenu.c musicmenu.h
+musicmenu.o: musicmenu.c musicmenu.h ProjectWindow.h framework/menubuild.h
 
 easystructs.o: easystructs.c easystructs.h
 
-ProjectWindow.o: ProjectWindow.c ProjectWindow.h ProjectWindowData.h framework/Window.h framework/menubuild.h framework/screen.h easystructs.h MapEditor.h MapEditorData.h MapRequester.h Project.h
+ProjectWindow.o: ProjectWindow.c ProjectWindow.h EasyStructs.h EntityRequester.h MapEditor.h MapEditorData.h MapRequester.h Project.h ProjectWindowData.h framework/menubuild.h framework/menubuild.h framework/screen.h
 
-ProjectWindowData.o: ProjectWindowData.c ProjectWindowData.h Map.h Project.h TilesetPackage.h
+ProjectWindowData.o: ProjectWindowData.c ProjectWindowData.h Project.h TilesetPackage.h
 
 ProjectWindowMenu.o: ProjectWindowMenu.c ProjectWindowMenu.h framework/menubuild.h EntitiesMenu.h MapMenu.h MusicMenu.h ProjectMenu.h
 
