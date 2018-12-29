@@ -88,7 +88,7 @@ tileset_error:
   return PROJECT_LOAD_OK_TILESET_ERROR;
 }
 
-BOOL projectDataCreateMap(ProjectWindowData *data, int mapNum) {
+BOOL projectDataCreateMap(ProjectWindowData *data, UWORD mapNum) {
   Map *map = allocMap();
   if(!map) {
     fprintf(stderr, "projectDataCreateMap: failed to allocate new map\n");
@@ -104,15 +104,15 @@ error:
   return FALSE;
 }
 
-BOOL projectDataHasMap(ProjectWindowData *data, int mapNum) {
+BOOL projectDataHasMap(ProjectWindowData *data, UWORD mapNum) {
   return (BOOL)(data->project.maps[mapNum]);
 }
 
-Map *projectDataGetMap(ProjectWindowData *data, int mapNum) {
+Map *projectDataGetMap(ProjectWindowData *data, UWORD mapNum) {
   return data->project.maps[mapNum];
 }
 
-static BOOL projectDataSaveNewMap(ProjectWindowData *data, Map *map, int mapNum) {
+static BOOL projectDataSaveNewMap(ProjectWindowData *data, Map *map, UWORD mapNum) {
   Map *mapCopy = copyMap(map);
   if(!mapCopy) {
     fprintf(stderr, "currentProjectSaveNewMap: couldn't allocate map copy\n");
@@ -124,12 +124,12 @@ static BOOL projectDataSaveNewMap(ProjectWindowData *data, Map *map, int mapNum)
   return TRUE;
 }
 
-static void projectDataOverwriteMap(ProjectWindowData *data, Map *map, int mapNum) {
+static void projectDataOverwriteMap(ProjectWindowData *data, Map *map, UWORD mapNum) {
   overwriteMap(map, data->project.maps[mapNum]);
   data->projectSaved = FALSE;
 }
 
-BOOL projectDataSaveMap(ProjectWindowData *data, Map *map, int mapNum) {
+BOOL projectDataSaveMap(ProjectWindowData *data, Map *map, UWORD mapNum) {
   if(projectDataHasMap(data, mapNum)) {
     projectDataOverwriteMap(data, map, mapNum);
     return TRUE;
@@ -138,7 +138,7 @@ BOOL projectDataSaveMap(ProjectWindowData *data, Map *map, int mapNum) {
   }
 }
 
-char *projectDataGetMapName(ProjectWindowData *data, int mapNum) {
+char *projectDataGetMapName(ProjectWindowData *data, UWORD mapNum) {
   Map *map = data->project.maps[mapNum];
   if(!map) {
     return NULL;
@@ -146,20 +146,20 @@ char *projectDataGetMapName(ProjectWindowData *data, int mapNum) {
   return map->name;
 }
 
-char *projectDataGetEntityName(ProjectWindowData *data, int entityNum) {
+char *projectDataGetEntityName(ProjectWindowData *data, UWORD entityNum) {
   return data->project.entityNameStrs[entityNum];
 }
 
-void projectDataUpdateEntityName(ProjectWindowData *data, int entityNum, char *name) {
+void projectDataUpdateEntityName(ProjectWindowData *data, UWORD entityNum, char *name) {
   strcpy(data->project.entityNameStrs[entityNum], name);
   data->projectSaved = FALSE;
 }
 
-char *projectDataGetSongName(ProjectWindowData *data, int songNum) {
+char *projectDataGetSongName(ProjectWindowData *data, UWORD songNum) {
   return data->project.songNameStrs[songNum];
 }
 
-void projectDataUpdateSongName(ProjectWindowData *data, int songNum, char *name) {
+void projectDataUpdateSongName(ProjectWindowData *data, UWORD songNum, char *name) {
   strcpy(data->project.songNameStrs[songNum], name);
   data->projectSaved = FALSE;
 }

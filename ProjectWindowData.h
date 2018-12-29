@@ -20,19 +20,19 @@ typedef enum ProjectLoadResult_tag {
 void projectDataInitProject(ProjectWindowData*);
 ProjectLoadResult projectDataLoadProjectFromFile(ProjectWindowData*, char*);
 
-BOOL projectDataCreateMap(ProjectWindowData*, int mapNum);
-BOOL projectDataHasMap(ProjectWindowData*, int mapNum);
-Map *projectDataGetMap(ProjectWindowData*, int mapNum);
-char *projectDataGetMapName(ProjectWindowData*, int mapNum);
+BOOL projectDataCreateMap(ProjectWindowData*, UWORD mapNum);
+BOOL projectDataHasMap(ProjectWindowData*, UWORD mapNum);
+Map *projectDataGetMap(ProjectWindowData*, UWORD mapNum);
+char *projectDataGetMapName(ProjectWindowData*, UWORD mapNum);
 
 /* returns TRUE on success, FALSE on failure */
-BOOL projectDataSaveMap(ProjectWindowData*, Map*, int mapNum);
+BOOL projectDataSaveMap(ProjectWindowData*, Map*, UWORD mapNum);
 
-char *projectDataGetEntityName(ProjectWindowData*, int entityNum);
-void projectDataUpdateEntityName(ProjectWindowData*, int entityNum, char*);
+char *projectDataGetEntityName(ProjectWindowData*, UWORD entityNum);
+void projectDataUpdateEntityName(ProjectWindowData*, UWORD entityNum, char*);
 
-char *projectDataGetSongName(ProjectWindowData*, int songNum);
-void projectDataUpdateSongName(ProjectWindowData*, int songNum, char*);
+char *projectDataGetSongName(ProjectWindowData*, UWORD songNum);
+void projectDataUpdateSongName(ProjectWindowData*, UWORD songNum, char*);
 
 BOOL projectDataIsSaved(ProjectWindowData*);
 

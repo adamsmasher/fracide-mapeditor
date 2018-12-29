@@ -4,7 +4,7 @@
 #include <exec/lists.h>
 #include <exec/types.h>
 
-typedef const char* (*GetString)(void *src, int i);
+typedef const char* (*GetString)(void *src, UWORD i);
 
 struct List *newNumberedList(GetString getString, void *src, UWORD size);
 void freeNumberedList(struct List*);

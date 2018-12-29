@@ -108,7 +108,7 @@ static ButtonSpec cancelButtonSpec = {
   mapRequesterCancelClicked
 };
 
-static const char *safeGetMapName(ProjectWindowData *data, int mapNum) {
+static const char *safeGetMapName(ProjectWindowData *data, UWORD mapNum) {
   const char *mapName = projectDataGetMapName(data, mapNum);
   if(mapName) {
     return mapName;
