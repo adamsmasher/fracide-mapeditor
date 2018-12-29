@@ -295,7 +295,7 @@ void songRequesterRefresh(FrameworkWindow *songRequester) {
   freeNumberedList(data->songNames);
   data->songNames = newNumberedList(projectDataGetSongName, projectData, MAX_SONGS_IN_PROJECT);
   if(!data->songNames) {
-    fprintf(stderr, "newGenericSongRequester: couldn't make song name list\n");
+    fprintf(stderr, "songRequesterRefresh: couldn't make song name list\n");
     goto error;
   }
 
