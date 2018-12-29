@@ -194,14 +194,6 @@ static WindowKind mapRequesterWindowKind = {
   (ClickFunction)    NULL,
 };
 
-/*
-    gad = CreateGadget(LISTVIEW_KIND, gad, &mapListNewGadget,
-        GTLV_Labels, projectDataGetMapNames(projectData),
-        GTLV_ShowSelected, NULL,
-        TAG_END);
-
-*/
-
 UWORD spawnMapRequester(FrameworkWindow *parent, char *title) {
   struct List *mapNameList;
   MapRequesterData data;
