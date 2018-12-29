@@ -279,7 +279,7 @@ void mapEditorChooseTilesetClicked(FrameworkWindow *mapEditor) {
     strcpy(title, "Choose Tileset");
   }
 
-  tilesetRequester = newTilesetRequester(title, mapEditor);
+  tilesetRequester = newTilesetRequester(mapEditor, title);
   if(!tilesetRequester) {
     fprintf(stderr, "handleChooseTilesetClicked: couldn't make requester\n");
     goto error;
@@ -634,7 +634,7 @@ static void refreshTilesetRequesterChildren(FrameworkWindow *mapEditor) {
   FrameworkWindow *i = mapEditor->children;
   while(i) {
     if(isTilesetRequesterWindow(i)) {
-      refreshTilesetRequesterList(i);
+      tilesetRequesterRefresh(i);
     }
     i = i->next;
   }

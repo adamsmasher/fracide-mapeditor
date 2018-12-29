@@ -5,20 +5,10 @@
 
 #include "framework/Window.h"
 
-#define TILESET_LIST_ID 0
-
-typedef struct TilesetRequesterDataTag {
-  struct Gadget *gadgets;
-  struct Gadget *tilesetList;
-  char          *title;
-} TilesetRequesterData;
-
-FrameworkWindow *newTilesetRequester(char *title, FrameworkWindow *parent);
-void closeTilesetRequester(FrameworkWindow*);
+FrameworkWindow *newTilesetRequester(FrameworkWindow *parent, const char *title);
 
 BOOL isTilesetRequesterWindow(FrameworkWindow*);
 
-void refreshTilesetRequesterList(FrameworkWindow*);
-void resizeTilesetRequester(FrameworkWindow*);
+void tilesetRequesterRefresh(FrameworkWindow*);
 
 #endif

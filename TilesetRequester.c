@@ -14,11 +14,13 @@
 #include <string.h>
 
 #include "framework/font.h"
+#include "framework/gadgets.h"
 #include "framework/menubuild.h"
 #include "framework/screen.h"
 #include "framework/window.h"
 
 #include "MapEditorData.h"
+#include "NumberedList.h"
 #include "ProjectWindow.h"
 #include "ProjectWindowData.h"
 #include "TilesetPackage.h"
@@ -31,6 +33,82 @@
 #define TILESET_LIST_HEIGHT_DELTA 26
 #define TILESET_LIST_TOP          20
 #define TILESET_LIST_LEFT         10
+
+typedef struct TilesetRequesterData_tag {
+  char *title;
+  struct List *tilesetNames;
+} TilesetRequesterData;
+
+typedef struct TilesetRequesterGadgets_tag {
+  struct Gadget *tilesetListGadget;
+} TilesetRequesterGadgets;
+
+static void tilesetRequesterOnSelect(FrameworkWindow *tilesetRequester, UWORD selected) {
+  MapEditorData *mapEditorData = tilesetRequester->parent->data;
+  mapEditorDataSetTileset(mapEditorData, selected);
+}
+
+static ListViewSpec tilesetListSpec = {
+  TILESET_LIST_LEFT,  TILESET_LIST_TOP,
+  TILESET_REQUESTER_WIDTH  - TILESET_LIST_WIDTH_DELTA,
+  TILESET_REQUESTER_HEIGHT - TILESET_LIST_HEIGHT_DELTA,
+  NULL,
+  NULL,
+  tilesetRequesterOnSelect,
+};
+
+static WindowGadgets *createTilesetRequesterGadgets(WORD width, WORD height, void *data) {
+  WindowGadgets *gadgets;
+  TilesetRequesterGadgets *gadgetData;
+
+  gadgets = malloc(sizeof(WindowGadgets));
+  if(!gadgets) {
+    fprintf(stderr, "createTilesetRequesterGadgets: couldn't allocate window gadgets\n");
+    goto error;
+  }
+
+  gadgetData = malloc(sizeof(TilesetRequesterGadgets));
+  if(!gadgetData) {
+    fprintf(stderr, "createTilesetRequesterGadgets: couldn't allocate data\n");
+    goto error_freeWindowGadgets;
+  }
+
+  tilesetListSpec.height = height - TILESET_LIST_HEIGHT_DELTA;
+  tilesetListSpec.width  = width  - TILESET_LIST_WIDTH_DELTA;
+  tilesetListSpec.labels = ((TilesetRequesterData*)data)->tilesetNames;
+
+  gadgets->glist = buildGadgets(
+    makeListViewGadget(&tilesetListSpec), &gadgetData->tilesetListGadget,
+    NULL);
+  if(!gadgets->glist) {
+    fprintf(stderr, "createTilesetRequesterGadgets: couldn't build gadgets\n");
+    goto error_freeTilesetRequesterGadgets;
+  }
+
+  gadgets->data = gadgetData;
+
+  return gadgets;
+
+error_freeTilesetRequesterGadgets:
+  free(gadgetData);
+error_freeWindowGadgets:
+  free(gadgets);
+error:
+  return NULL;
+}
+
+static void freeTilesetRequesterGadgets(WindowGadgets *gadgets) {
+  FreeGadgets(gadgets->glist);
+  free(gadgets->data);
+  free(gadgets);
+}
+
+static void closeTilesetRequester(FrameworkWindow *tilesetRequester) {
+  TilesetRequesterData *data = tilesetRequester->data;
+  freeNumberedList(data->tilesetNames);
+  free(data->title);
+  free(data);
+}
 
 static WindowKind tilesetRequesterWindowKind = {
   {
@@ -48,97 +126,49 @@ static WindowKind tilesetRequesterWindowKind = {
     CUSTOMSCREEN
   },
   (MenuSpec*)        NULL,
+  (GadgetBuilder)    createTilesetRequesterGadgets,
+  (GadgetFreer)      freeTilesetRequesterGadgets,
   (RefreshFunction)  NULL,
   (CanCloseFunction) NULL,
-  (CloseFunction)    NULL
+  (CloseFunction)    closeTilesetRequester,
+  (ClickFunction)    NULL,
 };
 
 BOOL isTilesetRequesterWindow(FrameworkWindow *window) {
   return (BOOL)(window->kind == &tilesetRequesterWindowKind);
 }
 
-static void handleTilesetRequesterGadgetUp(FrameworkWindow *mapEditorWindow, struct IntuiMessage *msg) {
-  mapEditorDataSetTileset(mapEditorWindow->data, msg->Code);
-}
+FrameworkWindow *newTilesetRequester(FrameworkWindow *parent, const char *title) {
+  FrameworkWindow *tilesetRequester;
 
-static struct NewGadget tilesetListNewGadget = {
-    TILESET_LIST_LEFT,  TILESET_LIST_TOP,
-    TILESET_REQUESTER_WIDTH  - TILESET_LIST_WIDTH_DELTA,
-    TILESET_REQUESTER_HEIGHT - TILESET_LIST_HEIGHT_DELTA,
-    NULL,
-    &Topaz80,
-    TILESET_LIST_ID,
-    0,
-    NULL, /* visual info filled in later */
-    NULL  /* user data */
-};
-
-static void initTilesetRequesterVi(void) {
-  void *vi = getGlobalVi();
-  if(!vi) {
-    fprintf(stderr, "initTilesetRequesterVi: failed to get global VI");
-  }
-
-  tilesetListNewGadget.ng_VisualInfo = vi;
-}
-
-static void createTilesetRequesterGadgets(TilesetRequesterData *data, FrameworkWindow *window) {
-  struct Gadget *gad;
-  struct Gadget *glist = NULL;
-  int height = window ? window->intuitionWindow->Height : TILESET_REQUESTER_HEIGHT;
-  int width  = window ? window->intuitionWindow->Width  : TILESET_REQUESTER_WIDTH;
-
-  gad = CreateContext(&glist);
-
-  tilesetListNewGadget.ng_Height = height - TILESET_LIST_HEIGHT_DELTA;
-  tilesetListNewGadget.ng_Width  = width  - TILESET_LIST_WIDTH_DELTA;
-    /* TODO: FIX ME */
-/*    gad = CreateGadget(LISTVIEW_KIND, gad, &tilesetListNewGadget,
-        GTLV_Labels, &tilesetPackage->tilesetNames,
-        TAG_END); */
-  data->tilesetList = gad;
-
-  if(gad) {
-    data->gadgets = glist;
-  } else {
-    data->tilesetList = NULL;
-    FreeGadgets(glist);
-    data->gadgets = NULL;
-  }	
-}
-
-FrameworkWindow *newTilesetRequester(char *title, FrameworkWindow *parent) {
-  FrameworkWindow *window;
   TilesetRequesterData *data = malloc(sizeof(TilesetRequesterData));
   if(!data) {
     fprintf(stderr, "newTilesetRequester: failed to allocate data\n");
     goto error;
   }
 
-  data->title = malloc(strlen(title) + 1);
+  data->title = strdup(title);
   if(!data->title) {
     fprintf(stderr, "newTilesetRequester: couldn't allocate title\n");
     goto error_freeData;
   }
-  strcpy(data->title, title);
+  tilesetRequesterWindowKind.newWindow.Title = data->title;
 
-  initTilesetRequesterVi();
-  createTilesetRequesterGadgets(data, NULL);
-  if(!data->gadgets) {
+  data->tilesetNames = newNumberedList(projectDataGetTilesetName, parent->parent->data, TILESETS);
+  if(!data->tilesetNames) {
+    fprintf(stderr, "newTilesetRequester: couldn't make tileset name list\n");
     goto error_freeTitle;
   }
-  tilesetRequesterWindowKind.newWindow.FirstGadget = data->gadgets;
 
-  tilesetRequesterWindowKind.newWindow.Title = data->title;
-  window = openChildWindow(parent, &tilesetRequesterWindowKind);
-  if(!window) {
-    goto error_freeGadgets;
+  tilesetRequester = openChildWindow(parent, &tilesetRequesterWindowKind, data);
+  if(!tilesetRequester) {
+    fprintf(stderr, "newTilesetRequester: couldn't make window\n");
+    goto error_freeNameList;
   }
-  window->data = data;
 
-  return window;
-error_freeGadgets:
-  FreeGadgets(data->gadgets);
+  return tilesetRequester;
+error_freeNameList:
+  freeNumberedList(data->tilesetNames);
 error_freeTitle:
   free(data->title);
 error_freeData:
@@ -147,36 +177,31 @@ error:
   return NULL;
 }
 
-void closeTilesetRequester(FrameworkWindow *tilesetRequester) {
+void tilesetRequesterRefresh(FrameworkWindow *tilesetRequester) {
+  ProjectWindowData *projectData;
   TilesetRequesterData *data = tilesetRequester->data;
-  /* TODO: the framework should free the gadgets */
-  FreeGadgets(data->gadgets);
-  free(data->title);
-  free(data);
-}
+  TilesetRequesterGadgets *gadgets = tilesetRequester->gadgets->data;
 
-void refreshTilesetRequesterList(FrameworkWindow *tilesetRequester) {
-  TilesetRequesterData *data = tilesetRequester->data;
-  ProjectWindowData *parentData = tilesetRequester->parent->data;
-  TilesetPackage *tilesetPackage = NULL; /* TODO: fix me parentData->tilesetPackage;*/
+  projectData = tilesetRequester->parent->parent->data;
 
-  GT_SetGadgetAttrs(data->tilesetList, tilesetRequester->intuitionWindow, NULL,
-    GTLV_Labels, &tilesetPackage->tilesetNames,
+  GT_SetGadgetAttrs(gadgets->tilesetListGadget, tilesetRequester->intuitionWindow, NULL,
+    GTLV_Labels, ~0,
     TAG_END);
-}
 
-void resizeTilesetRequester(FrameworkWindow *tilesetRequester) {
-  TilesetRequesterData *data = tilesetRequester->data;
-  RemoveGList(tilesetRequester->intuitionWindow, data->gadgets, -1);
-  FreeGadgets(data->gadgets);
-  SetRast(tilesetRequester->intuitionWindow->RPort, 0);
-  createTilesetRequesterGadgets(data, tilesetRequester);
-  if(!data->gadgets) {
-    fprintf(stderr, "resizeTilesetRequester: couldn't make gadgets");
-    return;
+  freeNumberedList(data->tilesetNames);
+  data->tilesetNames = newNumberedList(projectDataGetTilesetName, projectData, TILESETS);
+  if(!data->tilesetNames) {
+    fprintf(stderr, "tilesetRequesterRefresh: couldn't make tileset name list\n");
+    goto error;
   }
-  AddGList(tilesetRequester->intuitionWindow, data->gadgets, (UWORD)~0, -1, NULL);
-  RefreshWindowFrame(tilesetRequester->intuitionWindow);
-  RefreshGList(data->gadgets, tilesetRequester->intuitionWindow, NULL, -1);
+
+  GT_SetGadgetAttrs(gadgets->tilesetListGadget, tilesetRequester->intuitionWindow, NULL,
+    GTLV_Labels, data->tilesetNames,
+    TAG_END);
+
   GT_RefreshWindow(tilesetRequester->intuitionWindow, NULL);
+
+  return;
+error:
+  return;
 }
