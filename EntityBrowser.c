@@ -345,8 +345,6 @@ static void entityBrowserSelectEntity(FrameworkWindow *entityBrowser, UWORD enti
   
   data->selectedEntity = entityNum + 1;
 
-  /* TODO: set thisEntityGadget text */
-
   GT_SetGadgetAttrs(gadgets->removeEntityGadget, entityBrowser->intuitionWindow, NULL,
     GA_Disabled, FALSE,
     TAG_END);
@@ -376,6 +374,8 @@ static void entityBrowserSelectEntity(FrameworkWindow *entityBrowser, UWORD enti
 
   entityBrowserRefreshTags(entityBrowser);
   entityBrowserDeselectTag(entityBrowser);
+
+  entityBrowserRefresh(entityBrowser);
 }
 
 static void entityBrowserDeselectEntity(FrameworkWindow *entityBrowser) {
@@ -812,19 +812,31 @@ error:
 
 void entityBrowserSetEntityNum(FrameworkWindow *entityBrowser, UBYTE entityNum) {
   EntityBrowserData *data = entityBrowser->data;
-  EntityBrowserGadgets *gadgets = entityBrowser->gadgets->data;
   FrameworkWindow *parent = entityBrowser->parent;
-  ProjectWindowData *projectData = parent->parent->data;
 
   mapEditorDataSetEntityNum(parent->data, data->selectedEntity - 1, entityNum);
 
-  /* TODO: do this in a refresh function, shared with set entity */
-  GT_SetGadgetAttrs(gadgets->thisEntityGadget, entityBrowser->intuitionWindow, NULL,
-    GTTX_Text, projectDataGetEntityName(projectData, entityNum),
-    TAG_END
-  );
+  entityBrowserRefresh(entityBrowser);
 }
 
 BOOL isEntityBrowser(FrameworkWindow *window) {
   return (BOOL)(window->kind = &entityBrowserWindowKind);
+}
+
+void entityBrowserRefresh(FrameworkWindow *entityBrowser) {
+  EntityBrowserData *data = entityBrowser->data;
+  EntityBrowserGadgets *gadgets = entityBrowser->gadgets->data;
+  FrameworkWindow *parent = entityBrowser->parent;
+  ProjectWindowData *projectData = parent->parent->data;
+
+  if(data->selectedEntity) {
+    UBYTE entityNum = mapEditorDataGetEntityNum(parent->data, data->selectedEntity - 1);
+
+    GT_SetGadgetAttrs(gadgets->thisEntityGadget, entityBrowser->intuitionWindow, NULL,
+      GTTX_Text, projectDataGetEntityName(projectData, entityNum),
+      TAG_END
+    );
+  }
+
+  entityBrowserRefreshEntities(entityBrowser);
 }

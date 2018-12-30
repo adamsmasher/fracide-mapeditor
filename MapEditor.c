@@ -806,3 +806,10 @@ FrameworkWindow *mapEditorGetTilesetRequester(FrameworkWindow *mapEditor) {
   }
   return NULL;
 }
+
+void mapEditorRefreshEntityBrowser(FrameworkWindow *mapEditor) {
+  FrameworkWindow *entityBrowser = mapEditorGetEntityBrowser(mapEditor);
+  if(entityBrowser) {
+    entityBrowserRefresh(entityBrowser);
+  }
+}

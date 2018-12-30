@@ -41,6 +41,7 @@ UWORD mapEditorDataGetEntityCount(MapEditorData*);
 
 const Entity *mapEditorDataGetEntity(MapEditorData*, UWORD entityNum);
 
+UBYTE mapEditorDataGetEntityNum(MapEditorData*, UWORD entityNum);
 void mapEditorDataSetEntityNum(MapEditorData*, UWORD entity, UBYTE entityNum);
 UBYTE mapEditorDataGetEntityRow(MapEditorData*, UWORD entityNum);
 void mapEditorDataSetEntityRow(MapEditorData*, UWORD entityNum, UBYTE row);

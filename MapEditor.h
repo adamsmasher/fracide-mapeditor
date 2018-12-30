@@ -44,6 +44,7 @@ FrameworkWindow *mapEditorGetEntityBrowser(FrameworkWindow*);
 FrameworkWindow *mapEditorGetTilesetRequester(FrameworkWindow*);
 
 /* refreshing */
+void mapEditorRefreshEntityBrowser(FrameworkWindow*);
 void mapEditorRefreshMapName(FrameworkWindow*);
 void mapEditorRefreshNavigationButtons(FrameworkWindow*);
 void mapEditorRefreshRevertMap(FrameworkWindow*);

@@ -275,6 +275,11 @@ const Entity *mapEditorDataGetEntity(MapEditorData *data, UWORD entityNum) {
   return &data->map->entities[entityNum];
 }
 
+UBYTE mapEditorDataGetEntityNum(MapEditorData *data, UWORD entityNum) {
+  Entity *entity = &data->map->entities[entityNum];
+  return entity->entityNum;
+}
+
 void mapEditorDataSetEntityNum(MapEditorData *data, UWORD entity, UBYTE entityNum) {
   Entity *entityObj = &data->map->entities[entity];
   entityObj->entityNum = entityNum;

@@ -12,4 +12,6 @@ BOOL isEntityBrowser(FrameworkWindow*);
 /* sets what kind of entity the current entity is */
 void entityBrowserSetEntityNum(FrameworkWindow *entityBrowser, UBYTE entityKind);
 
+void entityBrowserRefresh(FrameworkWindow *entityBrowser);
+
 #endif
