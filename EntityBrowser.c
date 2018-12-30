@@ -159,6 +159,7 @@ static Result createEntityLabels(FrameworkWindow *entityBrowser) {
   }
 
   for(i = 0; i < entityCount; i++) {
+    /* TODO */
     sprintf(data->entityStrings[i], "%d: N/A", i);
     data->entityNodes[i].ln_Name = data->entityStrings[i];
     AddTail(&data->entityLabels, &data->entityNodes[i]);
