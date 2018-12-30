@@ -23,6 +23,7 @@
 #include "map.h"
 #include "MapEditor.h"
 #include "MapEditorData.h"
+#include "NumberedList.h"
 #include "ProjectWindowData.h"
 #include "Result.h"
 
@@ -99,8 +100,6 @@
 #define TAG_VALUE_LEFT       285
 #define TAG_VALUE_TOP        205
 
-#define ENTITY_LABEL_LENGTH 16
-
 typedef struct EntityBrowserGadgets_tag {
   struct Gadget *addEntityGadget;
   struct Gadget *removeEntityGadget;
@@ -122,75 +121,39 @@ typedef struct EntityBrowserData_tag {
   char title[32];
   int selectedEntity;
   int selectedTag;
-  struct List entityLabels;
-  struct Node *entityNodes;
-  char (*entityStrings)[ENTITY_LABEL_LENGTH];
-  struct List tagLabels;
-  struct Node *tagNodes;
-  char (*tagStrings)[TAG_ALIAS_LENGTH + 4];
+  struct List *entityLabels;
+  struct List *tagLabels;
   FrameworkWindow *entityRequester;
 } EntityBrowserData;
 
-static Result createEntityLabels(FrameworkWindow *entityBrowser) {
-  /* TODO: free the old labels if necessary */
-  EntityBrowserData *data = entityBrowser->data;
-  MapEditorData *mapEditorData = entityBrowser->parent->data;
-  UWORD entityCount = mapEditorDataGetEntityCount(mapEditorData);
-  int i;
-
-  NewList(&data->entityLabels);
-
-  if(!entityCount) {
-    data->entityNodes   = NULL;
-    data->entityStrings = NULL;
-    goto ok;
-  }
-
-  data->entityNodes = malloc(sizeof(struct Node) * entityCount);
-  if(!data->entityNodes) {
-    fprintf(stderr, "createEntityLabels: couldn't allocate memory for %d nodes\n", entityCount);
-    goto error;
-  }
-
-  data->entityStrings = malloc(ENTITY_LABEL_LENGTH * entityCount);
-  if(!data->entityStrings) {
-    fprintf(stderr, "createEntityLabels: couldn't allocate memory for labels\n");
-    goto error_freeNodes;
-  }
-
-  for(i = 0; i < entityCount; i++) {
-    /* TODO */
-    sprintf(data->entityStrings[i], "%d: N/A", i);
-    data->entityNodes[i].ln_Name = data->entityStrings[i];
-    AddTail(&data->entityLabels, &data->entityNodes[i]);
-  }
-
-ok:
-  return SUCCESS;
-
-error_freeNodes:
-  free(data->entityNodes);
-  data->entityNodes = NULL;
-error:
-  data->entityStrings = NULL;
-  return FAILURE;
+static const char *getEntityName(FrameworkWindow *entityBrowser, UWORD entityNum) {
+  FrameworkWindow *mapEditor = entityBrowser->parent;
+  FrameworkWindow *projectWindow = mapEditor->parent;
+  UBYTE entityKind = mapEditorDataGetEntityNum(mapEditor->data, entityNum);
+  return projectDataGetEntityName(projectWindow->data, entityKind);
 }
 
 static Result entityBrowserRefreshEntities(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   EntityBrowserGadgets *gadgets = entityBrowser->gadgets->data;
+  FrameworkWindow *mapEditor = entityBrowser->parent;
+  UWORD entityCnt = mapEditorDataGetEntityCount(mapEditor->data);
 
   GT_SetGadgetAttrs(gadgets->entityListGadget, entityBrowser->intuitionWindow, NULL,
     GTLV_Labels, ~0,
     TAG_END);
 
-  if(!createEntityLabels(entityBrowser)) {
+  if(data->entityLabels) {
+    freeNumberedList(data->entityLabels);
+  }
+  data->entityLabels = newNumberedList(&getEntityName, entityBrowser, entityCnt);
+  if(!data->entityLabels) {
     fprintf(stderr, "entityBrowserRefreshEntities: couldn't create entity labels\n");
     goto error;
   }
 
   GT_SetGadgetAttrs(gadgets->entityListGadget, entityBrowser->intuitionWindow, NULL,
-    GTLV_Labels, &data->entityLabels,
+    GTLV_Labels, data->entityLabels,
     TAG_END);
 
   return SUCCESS;
@@ -202,68 +165,42 @@ error:
   return FAILURE;
 }
 
-static Result createTagLabels(FrameworkWindow *entityBrowser) {
-  /* TODO: free the old labels if necessary */
+static const char *getTagAlias(FrameworkWindow *entityBrowser, UWORD tagNum) {
+  FrameworkWindow *mapEditor = entityBrowser->parent;
   EntityBrowserData *data = entityBrowser->data;
-  FrameworkWindow *parent = entityBrowser->parent;
-  MapEditorData *mapEditorData = parent->data;
-  int tagCnt = data->selectedEntity ? 
-    mapEditorDataEntityGetTagCount(mapEditorData, data->selectedEntity - 1) :
-    0;
-  int i;
 
-  NewList(&data->tagLabels);
-
-  if(!tagCnt) {
-    data->tagNodes   = NULL;
-    data->tagStrings = NULL;
-    goto ok;
-  }
-
-  data->tagNodes = malloc(sizeof(struct Node) * tagCnt);
-  if(!data->tagNodes) {
-    fprintf(stderr, "createTagLabels: couldn't allocate memory for %d nodes\n", tagCnt);
-    goto error;
-  }
-
-  data->tagStrings = malloc((TAG_ALIAS_LENGTH + 4) * tagCnt);
-  if(!data->tagStrings) {
-    fprintf(stderr, "createTagLabels: couldn't allocate memory for labels\n");
-    goto error_freeNodes;
-  }
-
-  for(i = 0; i < tagCnt; i++) {
-    sprintf(data->tagStrings[i], "%d: %s", i, mapEditorDataEntityGetTagAlias(mapEditorData, data->selectedEntity - 1, i));
-    data->tagNodes[i].ln_Name = data->tagStrings[i];
-    AddTail(&data->tagLabels, &data->tagNodes[i]);
-  }
-
-ok:
-  return SUCCESS;
-
-error_freeNodes:
-  free(data->tagNodes);
-  data->tagNodes = NULL;
-error:
-  data->tagStrings = NULL;
-  return 0;
+  return mapEditorDataEntityGetTagAlias(mapEditor->data, data->selectedEntity - 1, tagNum);
 }
 
 static Result entityBrowserRefreshTags(FrameworkWindow *entityBrowser) {
   EntityBrowserData *data = entityBrowser->data;
   EntityBrowserGadgets *gadgets = entityBrowser->gadgets->data;
+  FrameworkWindow *mapEditor = entityBrowser->parent;
+  UWORD tagCnt = data->selectedEntity ? mapEditorDataEntityGetTagCount(mapEditor->data, data->selectedEntity - 1) : 0;
 
-  if(!createTagLabels(entityBrowser)) {
+  GT_SetGadgetAttrs(gadgets->tagListGadget, entityBrowser->intuitionWindow, NULL,
+    GTLV_Labels, ~0,
+    TAG_END);
+
+  if(data->tagLabels) {
+    freeNumberedList(data->tagLabels);
+  }
+  data->tagLabels = newNumberedList(&getTagAlias, entityBrowser, tagCnt);
+  if(!data->tagLabels) {
     fprintf(stderr, "entityBrowserRefreshTags: couldn't create tag labels\n");
     goto error;
   }
 
   GT_SetGadgetAttrs(gadgets->tagListGadget, entityBrowser->intuitionWindow, NULL,
-    GTLV_Labels, &data->tagLabels,
+    GTLV_Labels, data->tagLabels,
     TAG_END);
 
   return SUCCESS;
 error:
+  GT_SetGadgetAttrs(gadgets->tagListGadget, entityBrowser->intuitionWindow, NULL,
+    GTLV_Labels, NULL,
+    TAG_END);
+
   return FAILURE;
 }
 
@@ -318,24 +255,18 @@ static void entityBrowserDeselectTag(FrameworkWindow *entityBrowser) {
   data->selectedTag = 0;
 }
 
-static void freeEntityLabels(EntityBrowserData *data) {
-  free(data->entityNodes);
-  free(data->entityStrings);
-}
-
-static void freeTagLabels(EntityBrowserData *data) {
-  free(data->tagNodes);
-  free(data->tagStrings);
-}
-
-static void entityBrowserFreeTagLabels(FrameworkWindow *entityBrowser) {
+static void entityBrowserClearTagLabels(FrameworkWindow *entityBrowser) {
+  EntityBrowserData *data = entityBrowser->data;
   EntityBrowserGadgets *gadgets = entityBrowser->gadgets->data;
 
   GT_SetGadgetAttrs(gadgets->tagListGadget, entityBrowser->intuitionWindow, NULL,
     GTLV_Labels, NULL,
     TAG_END);
 
-  freeTagLabels(entityBrowser->data);
+  if(data->tagLabels) {
+    freeNumberedList(data->tagLabels);
+    data->tagLabels = NULL;
+  }
 }
 
 static void entityBrowserSelectEntity(FrameworkWindow *entityBrowser, UWORD entityNum) {
@@ -409,7 +340,7 @@ static void entityBrowserDeselectEntity(FrameworkWindow *entityBrowser) {
     TAG_END);
 
   entityBrowserDeselectTag(entityBrowser);
-  entityBrowserFreeTagLabels(entityBrowser);
+  entityBrowserClearTagLabels(entityBrowser);
 }
 
 static void onAddEntityClick(FrameworkWindow *entityBrowser) {
@@ -736,8 +667,12 @@ static void freeEntityBrowserGadgets(WindowGadgets *gadgets) {
 }
 
 static void freeEntityBrowserData(EntityBrowserData *data) {
-  freeEntityLabels(data);
-  freeTagLabels(data);
+  if(data->entityLabels) {
+    freeNumberedList(data->entityLabels);
+  }
+  if(data->tagLabels) {
+    freeNumberedList(data->tagLabels);
+  }
   free(data);
 }
 
@@ -782,7 +717,8 @@ FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *
   data->entityRequester = NULL;
   data->selectedEntity = 0;
   data->selectedTag = 0;
-  NewList(&data->entityLabels);
+  data->entityLabels = NULL;
+  data->tagLabels = NULL;
 
   if(mapNum) {
     sprintf(data->title, "Entities (Map %d)", mapNum - 1);
@@ -792,7 +728,6 @@ FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map *
   entityBrowserWindowKind.newWindow.Title = data->title;
 
   addEntitySpec.state = map->entityCnt < MAX_ENTITIES_PER_MAP ? ENABLED : DISABLED;
-  entityListSpec.labels = &data->entityLabels;
 
   entityBrowser = openChildWindow(parent, &entityBrowserWindowKind, data);
   if(!entityBrowser) {

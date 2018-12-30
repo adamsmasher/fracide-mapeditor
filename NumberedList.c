@@ -45,7 +45,7 @@ struct List *newNumberedList(GetString getString, void *src, UWORD size) {
 
     itemName = makeItemName(i, string);
     if(!itemName) {
-      fprintf(stderr, "newNumberedList: couldn't allocate uten name\n");
+      fprintf(stderr, "newNumberedList: couldn't allocate item name\n");
       goto error_freeNode;
     }
 

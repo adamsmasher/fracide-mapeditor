@@ -343,43 +343,43 @@ void mapEditorDataEntityAddNewTag(MapEditorData *data, UWORD entityNum) {
   mapEditorDataSetSaved(data, FALSE);
 }
 
-void mapEditorDataEntityDeleteTag(MapEditorData *data, UWORD entityNum, int tagNum) {
+void mapEditorDataEntityDeleteTag(MapEditorData *data, UWORD entityNum, UWORD tagNum) {
   Entity *entity = &data->map->entities[entityNum];
   entityDeleteTag(entity, tagNum);
   mapEditorDataSetSaved(data, FALSE);
 }
 
-const char *mapEditorDataEntityGetTagAlias(MapEditorData *data, UWORD entityNum, int tagNum) {
+const char *mapEditorDataEntityGetTagAlias(MapEditorData *data, UWORD entityNum, UWORD tagNum) {
   return data->map->entities[entityNum].tags[tagNum].alias;
 }
 
-void mapEditorDataEntitySetTagAlias(MapEditorData *data, UWORD entityNum, int tagNum, const char *newTagAlias) {
+void mapEditorDataEntitySetTagAlias(MapEditorData *data, UWORD entityNum, UWORD tagNum, const char *newTagAlias) {
   Entity *entity = &data->map->entities[entityNum];
   Frac_tag *tag = &entity->tags[tagNum];
   strcpy(tag->alias, newTagAlias);
   mapEditorDataSetSaved(data, FALSE);
 }
 
-UBYTE mapEditorDataEntityGetTagId(MapEditorData *data, UWORD entityNum, int tagNum) {
+UBYTE mapEditorDataEntityGetTagId(MapEditorData *data, UWORD entityNum, UWORD tagNum) {
   Entity *entity = &data->map->entities[entityNum];
   Frac_tag *tag = &entity->tags[tagNum];
   return tag->id;
 }
 
-void mapEditorDataEntitySetTagId(MapEditorData *data, UWORD entityNum, int tagNum, UBYTE newTagId) {
+void mapEditorDataEntitySetTagId(MapEditorData *data, UWORD entityNum, UWORD tagNum, UBYTE newTagId) {
   Entity *entity = &data->map->entities[entityNum];
   Frac_tag *tag = &entity->tags[tagNum];
   tag->id = newTagId;
   mapEditorDataSetSaved(data, FALSE);
 }
 
-UBYTE mapEditorDataEntityGetTagValue(MapEditorData *data, UWORD entityNum, int tagNum) {
+UBYTE mapEditorDataEntityGetTagValue(MapEditorData *data, UWORD entityNum, UWORD tagNum) {
   Entity *entity = &data->map->entities[entityNum];
   Frac_tag *tag = &entity->tags[tagNum];
   return tag->value;
 }
 
-void mapEditorDataEntitySetTagValue(MapEditorData *data, UWORD entityNum, int tagNum, UBYTE newTagValue) {
+void mapEditorDataEntitySetTagValue(MapEditorData *data, UWORD entityNum, UWORD tagNum, UBYTE newTagValue) {
   Entity *entity = &data->map->entities[entityNum];
   Frac_tag *tag = &entity->tags[tagNum];
   tag->value = newTagValue;

@@ -53,14 +53,14 @@ void mapEditorDataSetEntityVRAMSlot(MapEditorData*, UWORD entityNum, UBYTE vramS
 int mapEditorDataEntityGetTagCount(MapEditorData*, UWORD entityNum);
 
 void mapEditorDataEntityAddNewTag(MapEditorData*, UWORD entityNum);
-void mapEditorDataEntityDeleteTag(MapEditorData*, UWORD entityNum, int tagNum);
+void mapEditorDataEntityDeleteTag(MapEditorData*, UWORD entityNum, UWORD tagNum);
 
-const char *mapEditorDataEntityGetTagAlias(MapEditorData*, UWORD entityNum, int tagNum);
-void mapEditorDataEntitySetTagAlias(MapEditorData*, UWORD entityNum, int tagNum, const char *newTagAlias);
-UBYTE mapEditorDataEntityGetTagId(MapEditorData*, UWORD entityNum, int tagNum);
-void mapEditorDataEntitySetTagId(MapEditorData*, UWORD entityNum, int tagNum, UBYTE newTagId);
-UBYTE mapEditorDataEntityGetTagValue(MapEditorData*, UWORD entityNum, int tagNum);
-void mapEditorDataEntitySetTagValue(MapEditorData*, UWORD entityNum, int tagNum, UBYTE newTagValue);
+const char *mapEditorDataEntityGetTagAlias(MapEditorData*, UWORD entityNum, UWORD tagNum);
+void mapEditorDataEntitySetTagAlias(MapEditorData*, UWORD entityNum, UWORD tagNum, const char *newTagAlias);
+UBYTE mapEditorDataEntityGetTagId(MapEditorData*, UWORD entityNum, UWORD tagNum);
+void mapEditorDataEntitySetTagId(MapEditorData*, UWORD entityNum, UWORD tagNum, UBYTE newTagId);
+UBYTE mapEditorDataEntityGetTagValue(MapEditorData*, UWORD entityNum, UWORD tagNum);
+void mapEditorDataEntitySetTagValue(MapEditorData*, UWORD entityNum, UWORD tagNum, UBYTE newTagValue);
 
 BOOL mapEditorDataHasSong(MapEditorData*);
 void mapEditorDataClearSong(MapEditorData*);
