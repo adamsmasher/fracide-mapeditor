@@ -81,7 +81,6 @@ static BOOL ensureEverythingSaved(FrameworkWindow *projectWindow) {
   return (BOOL)(ensureMapEditorsSaved(projectWindow) && ensureProjectSaved(projectWindow));
 }
 
-/* TODO: makes me sad we can't just put the window in here */
 static WindowKind projectWindowKind = {
   {
     0,0, -1, -1,
