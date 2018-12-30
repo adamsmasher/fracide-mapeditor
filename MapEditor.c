@@ -244,14 +244,13 @@ static void refreshMapEditor(FrameworkWindow *mapEditor) {
 }
 
 void mapEditorChooseTilesetClicked(FrameworkWindow *mapEditor) {
-  FrameworkWindow *tilesetRequester;
   char title[32];
   MapEditorData *data = mapEditor->data;
   FrameworkWindow *projectWindow = mapEditor->parent;
   ProjectWindowData *projectData = projectWindow->data;
+  FrameworkWindow *tilesetRequester = mapEditorGetTilesetRequester(mapEditor);
 
-  if(mapEditorDataHasTilesetRequester(data)) {
-    FrameworkWindow *tilesetRequester = mapEditorDataGetTilesetRequester(data);
+  if(tilesetRequester) {
     WindowToFront(tilesetRequester->intuitionWindow);
     goto done;
   }
@@ -281,11 +280,10 @@ void mapEditorChooseTilesetClicked(FrameworkWindow *mapEditor) {
 
   tilesetRequester = newTilesetRequester(mapEditor, title);
   if(!tilesetRequester) {
-    fprintf(stderr, "handleChooseTilesetClicked: couldn't make requester\n");
+    fprintf(stderr, "mapEditorChooseTilesetClicked: couldn't make requester\n");
     goto error;
   }
 
-  mapEditorDataSetTilesetRequester(data, tilesetRequester);
 done:
   return;
 error:
@@ -379,20 +377,17 @@ void mapEditorMapRightClicked(FrameworkWindow *mapEditor) {
 
 void mapEditorEntitiesClicked(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
+  FrameworkWindow *entityBrowser = mapEditorGetEntityBrowser(mapEditor);
 
-  if(mapEditorDataHasEntityBrowser(data)) {
-    FrameworkWindow *entityBrowser = mapEditorDataGetEntityBrowser(data);
+  if(entityBrowser) {
     WindowToFront(entityBrowser->intuitionWindow);
   } else {
-    FrameworkWindow *entityBrowser;
     if(mapEditorDataHasMapNum(data)) {
       entityBrowser = newEntityBrowserWithMapNum(mapEditor, mapEditorDataGetMap(data), mapEditorDataGetMapNum(data) + 1);
     } else {
       entityBrowser = newEntityBrowserWithMapNum(mapEditor, mapEditorDataGetMap(data), 0);
     }
-    if(entityBrowser) {
-      mapEditorDataSetEntityBrowser(data, entityBrowser);
-    } else {
+    if(!entityBrowser) {
       fprintf(stderr, "mapEditorEntitiesClicked: failed to open new entity browser\n");
     }
   }
@@ -633,7 +628,7 @@ static void mapEditorDrawTileDisplays(FrameworkWindow *mapEditor) {
 static void refreshTilesetRequesterChildren(FrameworkWindow *mapEditor) {
   FrameworkWindow *i = mapEditor->children;
   while(i) {
-    if(isTilesetRequesterWindow(i)) {
+    if(isTilesetRequester(i)) {
       tilesetRequesterRefresh(i);
     }
     i = i->next;
@@ -787,5 +782,27 @@ FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, UWORD ma
 error_freeMap:
   free(map);
 error:
+  return NULL;
+}
+
+FrameworkWindow *mapEditorGetEntityBrowser(FrameworkWindow *mapEditor) {
+  FrameworkWindow *i = mapEditor->children;
+  while(i) {
+    if(isEntityBrowser(i)) {
+      return i;
+    }
+    i = i->next;
+  }
+  return NULL;
+}
+
+FrameworkWindow *mapEditorGetTilesetRequester(FrameworkWindow *mapEditor) {
+  FrameworkWindow *i = mapEditor->children;
+  while(i) {
+    if(isTilesetRequester(i)) {
+      return i;
+    }
+    i = i->next;
+  }
   return NULL;
 }

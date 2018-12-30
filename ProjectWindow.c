@@ -531,10 +531,9 @@ void projectWindowRefreshAllEntityBrowsers(FrameworkWindow *projectWindow) {
   FrameworkWindow *i = projectWindow->children;
   while(i) {
     if(isMapEditor(i)) {
-      /* TODO: make this a function on map requesters */
-      MapEditorData *data = i->data;
-      if(mapEditorDataHasEntityBrowser(data)) {
-        /* GT_RefreshWindow(data->entityBrowser->window->intuitionWindow, NULL); */
+      FrameworkWindow *entityBrowser = mapEditorGetEntityBrowser(i);
+      if(entityBrowser) {
+        /* TODO GT_RefreshWindow(data->entityBrowser->window->intuitionWindow, NULL); */
       }
     }
     i = i->next;

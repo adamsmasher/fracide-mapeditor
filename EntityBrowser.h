@@ -41,6 +41,8 @@ typedef struct EntityBrowserData_tag {
 
 FrameworkWindow *newEntityBrowserWithMapNum(FrameworkWindow *parent, const Map*, UWORD mapNum);
 
+BOOL isEntityBrowser(FrameworkWindow*);
+
 /* sets what kind of entity the current entity is */
 void entityBrowserSetEntityNum(FrameworkWindow *entityBrowser, UBYTE entityKind);
 

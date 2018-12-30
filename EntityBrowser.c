@@ -791,3 +791,7 @@ void entityBrowserSetEntityNum(FrameworkWindow *entityBrowser, UBYTE entityNum) 
     TAG_END
   );
 }
+
+BOOL isEntityBrowser(FrameworkWindow *window) {
+  return (BOOL)(window->kind = &entityBrowserWindowKind);
+}

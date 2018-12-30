@@ -134,7 +134,7 @@ static WindowKind tilesetRequesterWindowKind = {
   (ClickFunction)    NULL,
 };
 
-BOOL isTilesetRequesterWindow(FrameworkWindow *window) {
+BOOL isTilesetRequester(FrameworkWindow *window) {
   return (BOOL)(window->kind == &tilesetRequesterWindowKind);
 }
 

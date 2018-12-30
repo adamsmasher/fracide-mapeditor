@@ -34,14 +34,6 @@ void mapEditorDataSetMapNum(MapEditorData*, UWORD mapNum);
 const char *mapEditorDataGetMapName(MapEditorData*);
 void mapEditorDataSetMapName(MapEditorData*, const char *mapName);
 
-BOOL mapEditorDataHasEntityBrowser(MapEditorData*);
-FrameworkWindow *mapEditorDataGetEntityBrowser(MapEditorData*);
-void mapEditorDataSetEntityBrowser(MapEditorData*, FrameworkWindow*);
-
-BOOL mapEditorDataHasTilesetRequester(MapEditorData*);
-FrameworkWindow *mapEditorDataGetTilesetRequester(MapEditorData*);
-void mapEditorDataSetTilesetRequester(MapEditorData*, FrameworkWindow*);
-
 void mapEditorDataAddNewEntity(MapEditorData*);
 void mapEditorDataRemoveEntity(MapEditorData*, UWORD entityNum);
 

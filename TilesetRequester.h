@@ -7,7 +7,7 @@
 
 FrameworkWindow *newTilesetRequester(FrameworkWindow *parent, const char *title);
 
-BOOL isTilesetRequesterWindow(FrameworkWindow*);
+BOOL isTilesetRequester(FrameworkWindow*);
 
 void tilesetRequesterRefresh(FrameworkWindow*);
 

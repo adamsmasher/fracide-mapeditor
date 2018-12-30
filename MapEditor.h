@@ -37,6 +37,11 @@ void mapEditorEntitiesClicked(FrameworkWindow*);
 
 /* (misc) */
 void mapEditorUpdateMapName(FrameworkWindow*);
+BOOL mapEditorEnsureSaved(FrameworkWindow*);
+
+/* children */
+FrameworkWindow *mapEditorGetEntityBrowser(FrameworkWindow*);
+FrameworkWindow *mapEditorGetTilesetRequester(FrameworkWindow*);
 
 /* refreshing */
 void mapEditorRefreshMapName(FrameworkWindow*);
@@ -50,8 +55,5 @@ void mapEditorRefreshTitle(FrameworkWindow*);
 void mapEditorRefreshTile(FrameworkWindow *mapEditor, UBYTE row, UBYTE col);
 void mapEditorRefreshTileDisplays(FrameworkWindow*);
 void mapEditorRefreshTilesetName(FrameworkWindow*);
-
-/* misc */
-BOOL mapEditorEnsureSaved(FrameworkWindow *mapEditor);
 
 #endif

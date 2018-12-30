@@ -25,10 +25,6 @@ struct MapEditorData_tag {
 
   BOOL saved;
 
-  /* TODO: get ridda me */
-  FrameworkWindow *tilesetRequester;
-  FrameworkWindow *entityBrowser;
-
   struct Image paletteImages[TILESET_PALETTE_TILES_ACROSS * TILESET_PALETTE_TILES_HIGH];
   struct Image mapImages[MAP_TILES_WIDE * MAP_TILES_HIGH];
   UWORD *imageData;
@@ -124,8 +120,6 @@ MapEditorData *newMapEditorData(void) {
   data->map              = NULL;
   data->mapNum           = 0;
   data->saved            = TRUE;
-  data->tilesetRequester = NULL;
-  data->entityBrowser    = NULL;
   data->selected         = -1;
   data->title[0]         = '\0';
 
@@ -259,30 +253,6 @@ const char *mapEditorDataGetMapName(MapEditorData *data) {
 void mapEditorDataSetMapName(MapEditorData *data, const char *mapName) {
   strcpy(data->map->name, mapName);
   mapEditorDataSetSaved(data, FALSE);
-}
-
-BOOL mapEditorDataHasTilesetRequester(MapEditorData *data) {
-  return (BOOL)(data->tilesetRequester != NULL);
-}
-
-void mapEditorDataSetTilesetRequester(MapEditorData *data, FrameworkWindow *tilesetRequester) {
-  data->tilesetRequester = tilesetRequester;
-}
-
-FrameworkWindow *mapEditorDataGetTilesetRequester(MapEditorData *data) {
-  return data->tilesetRequester;
-}
-
-BOOL mapEditorDataHasEntityBrowser(MapEditorData *data) {
-  return (BOOL)(data->entityBrowser != NULL);
-}
-
-FrameworkWindow* mapEditorDataGetEntityBrowser(MapEditorData *data) {
-  return data->entityBrowser;
-}
-
-void mapEditorDataSetEntityBrowser(MapEditorData *data, FrameworkWindow *entityBrowser) {
-  data->entityBrowser = entityBrowser;
 }
 
 void mapEditorDataAddNewEntity(MapEditorData *data) {
