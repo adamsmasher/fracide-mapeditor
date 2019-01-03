@@ -639,23 +639,26 @@ void mapEditorRefreshTileDisplays(FrameworkWindow *mapEditor) {
   MapEditorData *data = mapEditor->data;
 
   if(mapEditorDataHasTileset(data)) {
+    UWORD tilesetNum = mapEditorDataGetTileset(data);
+    FrameworkWindow *projectWindow = mapEditor->parent;
+
     mapEditorDrawTileDisplays(mapEditor);
+
+    if(tilesetNum < projectDataGetTilesetCount(projectWindow->data)) {
+      /* TODO: when the tileset package is loaded set you need to load the images in the data properly...? */
+    } else {
+      EasyRequest(mapEditor->intuitionWindow, &tilesetOutOfBoundsEasyStruct, NULL,
+        tilesetNum);
+      mapEditorDataClearTileset(mapEditor->data);
+    }
   } else {
     mapEditorClearTileDisplays(mapEditor);
   }
 
   refreshTilesetRequesterChildren(mapEditor);
 
-/* TODO: this needs to go somewhere...
-  also when the tileset package is loaded set you need to load the images in the data properly...
 
-  if(data->map->tilesetNum - 1 < projectDataGetTilesetCount(projectData)) {
-    } else {
-      EasyRequest(mapEditor->intuitionWindow, &tilesetOutOfBoundsEasyStruct, NULL,
-        data->map->tilesetNum - 1);
-      mapEditorDataClearTileset(mapEditor->data);
-    }
-*/
+
 }
 
 void mapEditorRefreshTilesetName(FrameworkWindow *mapEditor) {
