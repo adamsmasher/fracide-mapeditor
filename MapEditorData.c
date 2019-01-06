@@ -486,7 +486,7 @@ void mapEditorDataSetTileset(MapEditorData *data, UWORD tilesetNum) {
 void mapEditorDataSetTileTo(MapEditorData *data, UBYTE row, UBYTE col, UBYTE to) {
   UBYTE tile = row * 10 + col;
   data->map->tiles[tile] = to;
-  data->mapImages[tile].ImageData = mapEditorDataGetImageDataForTile(data, tile);
+  data->mapImages[tile].ImageData = mapEditorDataGetImageDataForTile(data, to);
   mapEditorDataSetSaved(data, FALSE);
 
   mapEditorRefreshTile(data->window, row, col);
