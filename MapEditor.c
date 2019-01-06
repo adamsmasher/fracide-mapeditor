@@ -658,9 +658,6 @@ void mapEditorRefreshTileDisplays(FrameworkWindow *mapEditor) {
   }
 
   refreshTilesetRequesterChildren(mapEditor);
-
-
-
 }
 
 void mapEditorRefreshTilesetName(FrameworkWindow *mapEditor) {
