@@ -393,18 +393,20 @@ void mapEditorEntitiesClicked(FrameworkWindow *mapEditor) {
   }
 }
 
-static int mapEditorClickInPalette(WORD x, WORD y) {
-  return ((x > TILESET_BORDER_LEFT                        ) &&
-          (x < TILESET_BORDER_LEFT + TILESET_BORDER_WIDTH ) &&
-          (y > TILESET_BORDER_TOP                         ) &&
-          (y < TILESET_BORDER_TOP  + TILESET_BORDER_HEIGHT));
+static BOOL mapEditorClickInPalette(WORD x, WORD y) {
+  return (BOOL)
+    ((x > TILESET_BORDER_LEFT                        ) &&
+     (x < TILESET_BORDER_LEFT + TILESET_BORDER_WIDTH ) &&
+     (y > TILESET_BORDER_TOP                         ) &&
+     (y < TILESET_BORDER_TOP  + TILESET_BORDER_HEIGHT));
 }
 
 static int mapEditorClickInMap(WORD x, WORD y) {
-  return ((x > MAP_BORDER_LEFT                    ) &&
-          (x < MAP_BORDER_LEFT + MAP_BORDER_WIDTH ) &&
-          (y > MAP_BORDER_TOP                     ) &&
-          (y < MAP_BORDER_TOP  + MAP_BORDER_HEIGHT));
+  return (BOOL)
+    ((x > MAP_BORDER_LEFT                    ) &&
+     (x < MAP_BORDER_LEFT + MAP_BORDER_WIDTH ) &&
+     (y > MAP_BORDER_TOP                     ) &&
+     (y < MAP_BORDER_TOP  + MAP_BORDER_HEIGHT));
 }
 
 static unsigned int mapEditorGetPaletteTileClicked(WORD x, WORD y) {
