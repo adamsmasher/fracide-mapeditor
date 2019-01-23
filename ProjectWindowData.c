@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "Export.h"
 #include "Project.h"
 #include "TilesetPackage.h"
 
@@ -86,6 +87,10 @@ error:
 
 tileset_error:
   return PROJECT_LOAD_OK_TILESET_ERROR;
+}
+
+BOOL projectDataExport(ProjectWindowData *data, FILE *fp) {
+  return exportProject(&data->project, fp);
 }
 
 BOOL projectDataCreateMap(ProjectWindowData *data, UWORD mapNum) {

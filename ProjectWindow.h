@@ -15,6 +15,8 @@ void projectWindowRevertProject(FrameworkWindow*);
 void projectWindowSelectTilesetPackage(FrameworkWindow*);
 void projectWindowQuit(FrameworkWindow*);
 
+void projectWindowExport(FrameworkWindow*);
+
 void projectWindowNewMap(FrameworkWindow*);
 void projectWindowOpenMap(FrameworkWindow*);
 BOOL projectWindowOpenMapNum(FrameworkWindow*, int mapNum);

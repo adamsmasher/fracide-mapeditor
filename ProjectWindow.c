@@ -575,3 +575,94 @@ void projectWindowShowSongNamesEditor(FrameworkWindow *projectWindow) {
     newSongNamesEditor(projectWindow);
   }
 }
+
+static BOOL exportProjectToFile(FrameworkWindow *projectWindow, char *file) {
+  FILE *fp = fopen(file, "wb");
+  if(!fp) {
+    fprintf(stderr, "exportProjectToFile: failed to open file %s\n", file);
+    goto error;
+  }
+
+  if(!projectDataExport(projectWindow->data, fp)) {
+    fprintf(stderr, "exportProjectToFile: failed to export data\n");
+    goto error_closeFile;
+  }
+
+  fclose(fp);
+  return TRUE;
+
+error_closeFile:
+  fclose(fp);
+error:
+  return FALSE;
+}
+
+/* TODO: so much dupe code :( */
+static void exportProjectToAsl(FrameworkWindow *projectWindow, char *dir, char *file) {
+  size_t bufferLen = strlen(dir) + strlen(file) + 2;
+  char *buffer = malloc(bufferLen);
+
+  if(!buffer) {
+    fprintf(
+      stderr,
+      "exportProjectToAsl: failed to allocate buffer "
+      "(dir: %s) (file: %s)\n",
+      dir  ? dir  : "NULL",
+      file ? file : "NULL");
+    goto error;
+  }
+
+  strcpy(buffer, dir);
+  if(!AddPart(buffer, file, (ULONG)bufferLen)) {
+    fprintf(
+      stderr,
+      "exportProjectToAsl: failed to add part "
+      "(buffer: %s) (file: %s) (len: %d)\n",
+      buffer ? buffer : "NULL",
+      file   ? file   : "NULL",
+      bufferLen);
+    goto error_freeBuffer;
+  }
+
+  if(!exportProjectToFile(projectWindow, buffer)) {
+    EasyRequest(
+      projectWindow->intuitionWindow,
+      &projectExportFailEasyStruct,
+      NULL,
+      buffer);
+    goto error_freeBuffer;
+  }
+
+freeBuffer:
+  free(buffer);
+done:
+  return;
+
+error_freeBuffer:
+  free(buffer);
+error:
+  return;
+}
+
+void projectWindowExport(FrameworkWindow *projectWindow) {
+  struct FileRequester *request = AllocAslRequestTags(ASL_FileRequest,
+    ASL_Hail, "Export project...",
+    ASL_Window, projectWindow->intuitionWindow,
+    ASL_FuncFlags, FILF_SAVE,
+    TAG_END);
+  if(!request) {
+    fprintf(stderr, "projectWindowExport: failed to allocate requester\n");
+    goto error;
+  }
+
+  if(AslRequest(request, NULL)) {
+    exportProjectToAsl(projectWindow, request->rf_Dir, request->rf_File);
+  }
+
+  FreeAslRequest(request);
+
+done:
+  return;
+error:
+  return;
+}

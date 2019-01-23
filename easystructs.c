@@ -36,6 +36,14 @@ struct EasyStruct projectSaveFailEasyStruct = {
     "OK"
 };
 
+struct EasyStruct projectExportFailEasyStruct = {
+    sizeof(struct EasyStruct),
+    0,
+    "Error Exporting Project",
+    "Could not export project to \n%s.",
+    "OK"
+};
+
 struct EasyStruct unsavedMapAlertEasyStructWithNum = {
     sizeof(struct EasyStruct),
     0,

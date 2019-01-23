@@ -7,6 +7,7 @@ extern struct EasyStruct noTilesetPackageLoadedEasyStruct;
 extern struct EasyStruct tilesetPackageLoadFailEasyStruct;
 extern struct EasyStruct projectLoadFailEasyStruct;
 extern struct EasyStruct projectSaveFailEasyStruct;
+extern struct EasyStruct projectExportFailEasyStruct;
 extern struct EasyStruct unsavedMapAlertEasyStructWithNum;
 extern struct EasyStruct unsavedMapAlertEasyStructNoNum;
 extern struct EasyStruct saveIntoFullSlotEasyStruct;

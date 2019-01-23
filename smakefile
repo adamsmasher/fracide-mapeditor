@@ -11,7 +11,7 @@ MAP_EDITOR_OBJS= MapEditor.o MapEditorData.o MapEditorGadgets.o MapEditorMenu.o
 DATA_OBJS=    easystructs.o
 DATA_HEADERS= easystructs.h
 
-OTHER_OBJS= main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o NumberedList.o Compressor.o
+OTHER_OBJS= main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o NumberedList.o Compressor.o Export.o
 
 OBJS= $(FRAMEWORK_OBJS) $(PROJECT_WINDOW_OBJS) $(MAP_EDITOR_OBJS) $(DATA_OBJS) $(OTHER_OBJS)
 
@@ -58,13 +58,15 @@ easystructs.o: easystructs.c easystructs.h
 
 ProjectWindow.o: ProjectWindow.c ProjectWindow.h EasyStructs.h EntityRequester.h MapEditor.h MapEditorData.h MapRequester.h Project.h ProjectWindowData.h framework/menubuild.h framework/menubuild.h framework/screen.h
 
-ProjectWindowData.o: ProjectWindowData.c ProjectWindowData.h Project.h TilesetPackage.h
+ProjectWindowData.o: ProjectWindowData.c ProjectWindowData.h Export.h Project.h TilesetPackage.h
 
 ProjectWindowMenu.o: ProjectWindowMenu.c ProjectWindowMenu.h framework/menubuild.h EntitiesMenu.h MapMenu.h MusicMenu.h ProjectMenu.h
 
 NumberedList.o: NumberedList.c NumberedList.h
 
 Compressor.o: Compressor.c Compressor.h
+
+Export.o: Export.c Export.h Compressor.h
 
 framework/font.o: framework/font.c framework/font.h
 

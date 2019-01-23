@@ -15,6 +15,7 @@ static MenuSectionSpec openSection =
 static MenuSectionSpec saveSection =
   { { "Save",       "S",         MENU_ITEM_ENABLED,  (Handler)projectWindowSaveProject   },
     { "Save As...", "A",         MENU_ITEM_ENABLED,  (Handler)projectWindowSaveProjectAs },
+    { "Export...",  NO_SHORTKEY, MENU_ITEM_ENABLED,  projectWindowExport },
     { "Revert",     NO_SHORTKEY, MENU_ITEM_DISABLED, projectWindowRevertProject },
   END_SECTION };
 
