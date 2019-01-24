@@ -175,48 +175,30 @@ static void writeIndexToFp(Project *project, FILE *fp) {
     }
 }
 
-static void saveProjectToFp(Project *project, FILE *fp) {
-    ULONG header;
-    UWORD version;
-    UWORD i;
+void saveProjectToFile(Project *project, FILE *fp) {
+  ULONG header;
+  UWORD version;
+  UWORD i;
 
-    header = HEADER;
-    fwrite(&header, 4, 1, fp);
+  header = HEADER;
+  fwrite(&header, 4, 1, fp);
 
-    version = VERSION;
-    fwrite(&version, 2, 1, fp);
+  version = VERSION;
+  fwrite(&version, 2, 1, fp);
 
-    fwrite(project->tilesetPackagePath, 1, 256, fp);
+  fwrite(project->tilesetPackagePath, 1, 256, fp);
 
-    fwrite(&project->mapCnt, 2, 1, fp);
+  fwrite(&project->mapCnt, 2, 1, fp);
 
-    writeIndexToFp(project, fp);
+  writeIndexToFp(project, fp);
 
-    for(i = 0; i < project->mapCnt; i++) {
-        if(project->maps[i] != NULL) {
-            fwrite(&i, 2, 1, fp);
-            writeMap(project->maps[i], fp);
-        }
-    }
+  for(i = 0; i < project->mapCnt; i++) {
+      if(project->maps[i] != NULL) {
+        fwrite(&i, 2, 1, fp);
+        writeMap(project->maps[i], fp);
+      }
+  }
 
-    fwrite(project->songNameStrs, 80, 128, fp);
-    fwrite(project->entityNameStrs, 80, 128, fp);
-}
-
-int saveProjectToFile(Project *project, char *file) {
-    int ret;
-    FILE *fp = fopen(file, "wb");
-
-    if(!fp) {
-        fprintf(stderr, "saveProjectToFile: error opening %s\n", file);
-        ret = 0;
-        goto done;
-    }
-
-    saveProjectToFp(project, fp);
-    ret = 1;
-
-    fclose(fp);
-done:
-    return ret;
+  fwrite(project->songNameStrs, 80, 128, fp);
+  fwrite(project->entityNameStrs, 80, 128, fp);
 }

@@ -173,18 +173,9 @@ BOOL projectDataIsSaved(ProjectWindowData *data) {
   return data->projectSaved;
 }
 
-BOOL projectDataSaveProjectToFile(ProjectWindowData *data, char *filename) {
-  if(!saveProjectToFile(&data->project, filename)) {
-    fprintf(stderr, "projectDataSaveProjectToFile: failed to save project to %s\n", filename);
-    goto error;
-  }
+void projectDataSaveProjectToFile(ProjectWindowData *data, FILE *fp) {
+  saveProjectToFile(&data->project, fp);
   data->projectSaved = TRUE;
-
-done:
-  return TRUE;
-
-error:
-  return FALSE;
 }
 
 void setProjectDataFilename(ProjectWindowData *data, const char *filename) {

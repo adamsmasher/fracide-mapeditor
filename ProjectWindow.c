@@ -13,6 +13,7 @@
 #include "framework/menubuild.h"
 #include "framework/screen.h"
 
+#include "asl_util.h"
 #include "easystructs.h"
 #include "EntityRequester.h"
 #include "MapEditor.h"
@@ -151,49 +152,45 @@ static void clearProjectFilename(FrameworkWindow *projectWindow) {
   projectWindowMenuDisableRevertProject(projectWindow);
 }
 
-static BOOL saveProjectToAsl(FrameworkWindow *projectWindow, char *dir, char *file) {
-  size_t bufferLen = strlen(dir) + strlen(file) + 2;
-  char *buffer = malloc(bufferLen);
-
-  if(!buffer) {
-    fprintf(
-      stderr,
-      "saveProjectToAsl: failed to allocate buffer "
-      "(dir: %s) (file: %s)\n",
-      dir  ? dir  : "NULL",
-      file ? file : "NULL");
+static BOOL saveProjectToFilename(FrameworkWindow *projectWindow, const char *filename) {
+  FILE *fp = fopen(filename, "wb");
+  if(!fp) {
+    fprintf(stderr, "saveProjectToAsl: couldn't open file\n");
     goto error;
   }
 
-  strcpy(buffer, dir);
-  if(!AddPart(buffer, file, (ULONG)bufferLen)) {
-    fprintf(
-      stderr,
-      "saveProjectToAsl: failed to add part "
-      "(buffer: %s) (file: %s) (len: %d)\n",
-      buffer ? buffer : "NULL",
-      file   ? file   : "NULL",
-      bufferLen);
-    goto error_freeBuffer;
+  projectDataSaveProjectToFile(projectWindow->data, fp);
+  setProjectFilename(projectWindow, filename);
+
+  fclose(fp);
+  return TRUE;
+
+error:
+  return FALSE;
+}
+
+static BOOL saveProjectToAsl(FrameworkWindow *projectWindow, char *dir, char *file) {
+  char *filename = aslFilename(dir, file);
+  if(!filename) {
+    fprintf(stderr, "saveProjectToAsl: couldn't make filename\n");
+    goto error;
   }
 
-  if(!projectDataSaveProjectToFile(projectWindow->data, buffer)) {
+  if(!saveProjectToFilename(projectWindow, filename)) {
     EasyRequest(
       projectWindow->intuitionWindow,
       &projectSaveFailEasyStruct,
       NULL,
-      buffer);
-    goto error_freeBuffer;
+      filename
+    );
+    goto error_freeFilename;
   }
-  setProjectFilename(projectWindow, buffer);
 
-freeBuffer:
-  free(buffer);
-done:
+  free(filename);
   return TRUE;
 
-error_freeBuffer:
-  free(buffer);
+error_freeFilename:
+  free(filename);
 error:
   return FALSE;
 }
@@ -225,27 +222,20 @@ error:
 }
 
 BOOL projectWindowSaveProject(FrameworkWindow *projectWindow) {
-  ProjectWindowData *data = projectWindow->data;
-  char *filename = projectDataGetFilename(data);
-
+  const char *filename = projectDataGetFilename(projectWindow->data);
   if(filename) {
-    if(!projectDataSaveProjectToFile(data, filename)) {
+    if(!saveProjectToFilename(projectWindow, filename)) {
       EasyRequest(
         projectWindow->intuitionWindow,
         &projectSaveFailEasyStruct,
         NULL,
         filename);
-      goto error;
+      return FALSE;
     }
+    return TRUE;
   } else {
     return projectWindowSaveProjectAs(projectWindow);
   }
-
-done:
-  return TRUE;
-
-error:
-  return FALSE;
 }
 
 static BOOL loadTilesetPackageFromFile(FrameworkWindow *projectWindow, char *filename) {

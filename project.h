@@ -3,6 +3,8 @@
 
 #include <exec/types.h>
 #include <exec/lists.h>
+#include <stdio.h>
+
 #include "map.h"
 
 #define TILESET_PACKAGE_PATH_SIZE 256
@@ -23,6 +25,6 @@ void freeProject(Project*);
 void copyProject(Project *src, Project *dest);
 
 int loadProjectFromFile(char *file, Project*);
-int saveProjectToFile(Project*, char *file);
+void saveProjectToFile(Project*, FILE *fp);
 
 #endif

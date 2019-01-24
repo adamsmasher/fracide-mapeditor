@@ -2,6 +2,7 @@
 #define PROJECT_WINDOW_DATA_H
 
 #include <exec/types.h>
+#include <stdio.h>
 
 #include "Map.h"
 #include "TilesetPackage.h"
@@ -37,7 +38,7 @@ void projectDataUpdateSongName(ProjectWindowData*, UWORD songNum, char*);
 
 BOOL projectDataIsSaved(ProjectWindowData*);
 
-BOOL projectDataSaveProjectToFile(ProjectWindowData*, char*);
+void projectDataSaveProjectToFile(ProjectWindowData*, FILE*);
 
 void setProjectDataFilename(ProjectWindowData*, const char*);
 void clearProjectDataFilename(ProjectWindowData*);
