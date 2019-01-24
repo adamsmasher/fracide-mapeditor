@@ -55,109 +55,92 @@ void copyProject(Project *src, Project *dest) {
   memcpy(dest, src, sizeof(Project));
 }
 
-static int loadProjectFromFp(FILE *fp, Project *project) {
-    int i;
-    ULONG header;
-    UWORD version;
+BOOL loadProjectFromFile(FILE *fp, Project *project) {
+  int i;
+  ULONG header;
+  UWORD version;
 
-    initProject(project);
+  initProject(project);
 
-    if(fread(&header, 4, 1, fp) != 1) {
-        fprintf(stderr, "loadProjectFromFp: couldn't read header\n");
-        return 0;
+  if(fread(&header, 4, 1, fp) != 1) {
+    fprintf(stderr, "loadProjectFromFile: couldn't read header\n");
+    return FALSE;
+  }
+
+  if(header != HEADER) {
+    fprintf(stderr, "loadProjectFromFile: Invalid header value\n");
+    return FALSE;
+  }
+
+  if(fread(&version, 2, 1, fp) != 1) {
+    fprintf(stderr, "loadProjectFromFile: Error loading version\n");
+    return FALSE;
+  }
+
+  if(version != VERSION) {
+    fprintf(stderr, "loadProjectFromFile: Invalid version\n");
+    return FALSE;
+  }
+
+  if(fread(project->tilesetPackagePath, 1, 256, fp) != 256) {
+    fprintf(stderr, "loadProjectFromFile: Error loading package path\n");
+    return FALSE;
+  }
+
+  if(fread(&project->mapCnt, 2, 1, fp) != 1) {
+    fprintf(stderr, "loadProjectFromFile: Error loading mapcnt\n");
+    return FALSE;
+  }
+
+  /* skip the index, we don't need it */
+  fseek(fp, 256, SEEK_CUR);
+
+  for(i = 0; i < project->mapCnt; i++) {
+    UWORD mapNum;
+    Map *map;
+
+    if(fread(&mapNum, 2, 1, fp) != 1) {
+      fprintf(stderr, "loadProjectFromFile: couldn't read map number\n");
+      goto freeMaps_error;
     }
 
-    if(header != HEADER) {
-        fprintf(stderr, "loadProjectFromFp: Invalid header value\n");
-        return 0;
+    if(mapNum >= 128) {
+      fprintf(stderr, "loadProjectFromFile: invalid map number\n");
+      goto freeMaps_error;
     }
 
-    if(fread(&version, 2, 1, fp) != 1) {
-        fprintf(stderr, "loadProjectFromFp: Error loading version\n");
-        return 0;
+    map = malloc(sizeof(Map));
+    if(!map) {
+      fprintf(stderr, "loadProjectFromFile: couldn't allocate map\n");
+      goto freeMaps_error;
     }
 
-    if(version != VERSION) {
-        fprintf(stderr, "loadProjectFromFile: Invalid version\n");
-        return 0;
+    if(!readMap(map, fp)) {
+      fprintf(stderr, "loadProjectFromFile: couldn't read map\n");
+      free(map);
+      goto freeMaps_error;
     }
 
-    if(fread(project->tilesetPackagePath, 1, 256, fp) != 256) {
-        fprintf(stderr, "loadProjectFromFp: Error loading package path\n");
-        return 0;
-    }
+    project->maps[mapNum] = map;
+  }
 
-    if(fread(&project->mapCnt, 2, 1, fp) != 1) {
-        fprintf(stderr, "loadProjectFromFp: Error loading mapcnt\n");
-        return 0;
-    }
+  if(fread(project->songNameStrs, 80, 128, fp) != 128) {
+    fprintf(stderr, "loadProjectFromFile: couldn't read song names\n");
+    goto freeMaps_error;
+  }
 
-    /* skip the index, we don't need it */
-    fseek(fp, 256, SEEK_CUR);
+  if(fread(project->entityNameStrs, 80, 128, fp) != 128) {
+    fprintf(stderr, "loadProjectFromFile: couldn't read entity names\n");
+    goto freeMaps_error;
+  }
 
-    for(i = 0; i < project->mapCnt; i++) {
-        UWORD mapNum;
-        Map *map;
-
-        if(fread(&mapNum, 2, 1, fp) != 1) {
-            fprintf(stderr, "loadProjectFromFp: couldn't read map number\n");
-            goto freeMaps_error;
-        }
-
-        if(mapNum >= 128) {
-            fprintf(stderr, "loadProjectFromFp: invalid map number\n");
-            goto freeMaps_error;
-        }
-
-        map = malloc(sizeof(Map));
-        if(!map) {
-            fprintf(stderr, "loadProjectFromFp: couldn't allocate map\n");
-            goto freeMaps_error;
-        }
-
-        if(!readMap(map, fp)) {
-            fprintf(stderr, "loadProjectFromFp: couldn't read map\n");
-            free(map);
-            goto freeMaps_error;
-        }
-
-        project->maps[mapNum] = map;
-    }
-
-    if(fread(project->songNameStrs, 80, 128, fp) != 128) {
-        fprintf(stderr, "loadProjectFromFp: couldn't read song names\n");
-        goto freeMaps_error;
-    }
-
-    if(fread(project->entityNameStrs, 80, 128, fp) != 128) {
-        fprintf(stderr, "loadProjectFromFp: couldn't read entity names\n");
-        goto freeMaps_error;
-    }
-
-    return 1;
+  return TRUE;
 
 freeMaps_error:
-    for(i = 0; i < 128; i++) {
-        free(project->maps[i]);
-    }
-    return 0;
-}
-
-int loadProjectFromFile(char *file, Project *project) {
-    int ret;
-    FILE *fp = fopen(file, "rb");
-
-    if(!fp) {
-        fprintf(stderr, "loadProjectFromFile: error loading %s\n", file);
-        ret = 0;
-        goto done;
-    }
-
-    ret = loadProjectFromFp(fp, project);
-
-    fclose(fp);
-done:
-    return ret;
+  for(i = 0; i < 128; i++) {
+    free(project->maps[i]);
+  }
+  return FALSE;
 }
 
 static void writeIndexToFp(Project *project, FILE *fp) {

@@ -24,7 +24,7 @@ void initProject(Project*);
 void freeProject(Project*);
 void copyProject(Project *src, Project *dest);
 
-int loadProjectFromFile(char *file, Project*);
-void saveProjectToFile(Project*, FILE *fp);
+BOOL loadProjectFromFile(FILE*, Project*);
+void saveProjectToFile(Project*, FILE*);
 
 #endif

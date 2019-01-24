@@ -52,7 +52,7 @@ void projectDataInitProject(ProjectWindowData *data) {
   initProject(&data->project);
 }
 
-ProjectLoadResult projectDataLoadProjectFromFile(ProjectWindowData *data, char *filename) {
+ProjectLoadResult projectDataLoadProjectFromFile(ProjectWindowData *data, FILE *fp) {
   Project *newProject;
 
   newProject = malloc(sizeof(Project));
@@ -61,8 +61,8 @@ ProjectLoadResult projectDataLoadProjectFromFile(ProjectWindowData *data, char *
     goto error;
   }
 
-  if(!loadProjectFromFile(filename, newProject)) {
-    fprintf(stderr, "projectDataLoadProjectFromFile: failed to load project from file %s\n", filename);
+  if(!loadProjectFromFile(fp, newProject)) {
+    fprintf(stderr, "projectDataLoadProjectFromFile: failed to load project\n");
     goto error_freeProject;
   }
 

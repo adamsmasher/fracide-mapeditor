@@ -19,7 +19,7 @@ typedef enum ProjectLoadResult_tag {
 } ProjectLoadResult;
 
 void projectDataInitProject(ProjectWindowData*);
-ProjectLoadResult projectDataLoadProjectFromFile(ProjectWindowData*, char*);
+ProjectLoadResult projectDataLoadProjectFromFile(ProjectWindowData*, FILE*);
 BOOL projectDataExport(ProjectWindowData*, FILE*);
 
 BOOL projectDataCreateMap(ProjectWindowData*, UWORD mapNum);

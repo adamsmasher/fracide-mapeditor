@@ -255,8 +255,14 @@ error:
   return FALSE;
 }
 
-static void openProjectFromFile(FrameworkWindow *projectWindow, char *filename) {
-  switch(projectDataLoadProjectFromFile(projectWindow->data, filename)) {
+static BOOL openProjectFromFilename(FrameworkWindow *projectWindow, const char *filename) {
+  FILE *fp = fopen(filename, "rb");
+  if(!fp) {
+    fprintf(stderr, "openProjectFromAsl: couldn't open file\n");
+    goto error;
+  }
+
+  switch(projectDataLoadProjectFromFile(projectWindow->data, fp)) {
     case PROJECT_LOAD_OK:
       break;
     case PROJECT_LOAD_OK_TILESET_ERROR:
@@ -271,51 +277,40 @@ static void openProjectFromFile(FrameworkWindow *projectWindow, char *filename) 
         projectWindow->intuitionWindow,
         &projectLoadFailEasyStruct,
         NULL,
-        filename);
-      goto error;
+        filename
+      );
+      goto error_closeFile;
   }
 
   setProjectFilename(projectWindow, filename);
+  fclose(fp);
+  return TRUE;
 
-done:
-    return;
-
+error_closeFile:
+  fclose(fp);
 error:
-    return;
+  return FALSE;
 }
 
-static void openProjectFromAsl(FrameworkWindow *projectWindow, char *dir, char *file) {
-  size_t bufferLen = strlen(dir) + strlen(file) + 2;
-  char *buffer = malloc(bufferLen);
-
-  if(!buffer) {
-    fprintf(
-      stderr,
-      "openProjectFromAsl: failed to allocate buffer "
-      "(dir: %s) (file: %s)\n",
-      dir  ? dir  : "NULL",
-      file ? file : "NULL");
-    goto done;
+static BOOL openProjectFromAsl(FrameworkWindow *projectWindow, const char *dir, const char *file) {
+  char *filename = aslFilename(dir, file);
+  if(!filename) {
+    fprintf(stderr, "openProjectFromAsl: couldn't create filename\n");
+    goto error;
   }
 
-  strcpy(buffer, dir);
-  if(!AddPart(buffer, file, (ULONG)bufferLen)) {
-    fprintf(
-      stderr,
-      "openProjectFromAsl: failed to add part "
-      "(buffer: %s) (file: %s) (len: %d)\n",
-      buffer ? buffer : "NULL",
-      file   ? file   : "NULL",
-      bufferLen);
-    goto freeBuffer;
+  if(!openProjectFromFilename(projectWindow, filename)) {
+    fprintf(stderr, "openProjectFromAsl: couldn't open project\n");
+    goto error_freeFilename;
   }
 
-  openProjectFromFile(projectWindow, buffer);
+  free(filename);
+  return TRUE;
 
-freeBuffer:
-    free(buffer);
-done:
-    return;
+error_freeFilename:
+  free(filename);
+error:
+  return FALSE;
 }
 
 void projectWindowNewProject(FrameworkWindow *projectWindow) {
@@ -363,7 +358,7 @@ void projectWindowRevertProject(FrameworkWindow *projectWindow) {
     goto done;
   }
 
-  openProjectFromFile(projectWindow, projectDataGetFilename(projectWindow->data));
+  openProjectFromFilename(projectWindow, projectDataGetFilename(projectWindow->data));
 
 done:
   return;
