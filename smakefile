@@ -11,7 +11,7 @@ MAP_EDITOR_OBJS= MapEditor.o MapEditorData.o MapEditorGadgets.o MapEditorMenu.o
 DATA_OBJS=    easystructs.o
 DATA_HEADERS= easystructs.h
 
-OTHER_OBJS= main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o NumberedList.o Compressor.o Export.o
+OTHER_OBJS= main.o tilesetpackage.o tilesetrequester.o project.o map.o maprequester.o SongRequester.o EntityBrowser.o entity.o EntityRequester.o palette.o NumberedList.o Compressor.o Export.o asl_util.o
 
 OBJS= $(FRAMEWORK_OBJS) $(PROJECT_WINDOW_OBJS) $(MAP_EDITOR_OBJS) $(DATA_OBJS) $(OTHER_OBJS)
 
@@ -67,6 +67,8 @@ NumberedList.o: NumberedList.c NumberedList.h
 Compressor.o: Compressor.c Compressor.h
 
 Export.o: Export.c Export.h Compressor.h
+
+asl_util.o: asl_util.c asl_util.h
 
 framework/font.o: framework/font.c framework/font.h
 
