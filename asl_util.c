@@ -5,15 +5,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-FILE *openAsl(const char *dir, const char *file, const char *mode) {
-  FILE * fp;
+char *aslFilename(const char *dir, const char *file) {
   size_t bufferLen = strlen(dir) + strlen(file) + 2;
   char *buffer = malloc(bufferLen);
 
   if(!buffer) {
     fprintf(
       stderr,
-      "openAsl: failed to allocate buffer "
+      "aslFilename: failed to allocate buffer "
       "(dir: %s) (file: %s)\n",
       dir  ? dir  : "NULL",
       file ? file : "NULL");
@@ -24,7 +23,7 @@ FILE *openAsl(const char *dir, const char *file, const char *mode) {
   if(!AddPart(buffer, (char*)file, (ULONG)bufferLen)) {
     fprintf(
       stderr,
-      "openAsl: failed to add part "
+      "aslFilename: failed to add part "
       "(buffer: %s) (file: %s) (len: %d)\n",
       buffer ? buffer : "NULL",
       file   ? file   : "NULL",
@@ -32,17 +31,34 @@ FILE *openAsl(const char *dir, const char *file, const char *mode) {
     goto error_freeBuffer;
   }
 
-  fp = fopen(buffer, mode);
-  if(!fp) {
-    fprintf(stderr, "openAsl: failed to open file\n");
-    goto error_freeBuffer;
-  }
-
-  free(buffer);
-  return fp;
+  return buffer;
 
 error_freeBuffer:
   free(buffer);
+error:
+  return NULL;
+}
+
+FILE *openAsl(const char *dir, const char *file, const char *mode) {
+  FILE *fp;
+
+  char *filename = aslFilename(dir, file);
+  if(!filename) {
+    fprintf(stderr, "openAsl: couldn't make filename\n");
+    goto error;
+  }
+
+  fp = fopen(filename, mode);
+  if(!fp) {
+    fprintf(stderr, "openAsl: failed to open file\n");
+    goto error_freeFilename;
+  }
+
+  free(filename);
+  return fp;
+
+error_freeFilename:
+  free(filename);
 error:
   return NULL;
 }
