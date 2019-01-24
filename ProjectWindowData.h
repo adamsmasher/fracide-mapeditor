@@ -39,7 +39,7 @@ BOOL projectDataIsSaved(ProjectWindowData*);
 
 BOOL projectDataSaveProjectToFile(ProjectWindowData*, char*);
 
-void setProjectDataFilename(ProjectWindowData*, char*);
+void setProjectDataFilename(ProjectWindowData*, const char*);
 void clearProjectDataFilename(ProjectWindowData*);
 char *projectDataGetFilename(ProjectWindowData *data);
 

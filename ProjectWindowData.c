@@ -187,7 +187,7 @@ error:
   return FALSE;
 }
 
-void setProjectDataFilename(ProjectWindowData *data, char *filename) {
+void setProjectDataFilename(ProjectWindowData *data, const char *filename) {
   strcpy(data->projectFilename, filename);
 }
 

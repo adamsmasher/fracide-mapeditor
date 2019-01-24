@@ -141,7 +141,7 @@ error:
   return NULL;
 }
 
-static void setProjectFilename(FrameworkWindow *projectWindow, char *filename) {
+static void setProjectFilename(FrameworkWindow *projectWindow, const char *filename) {
   setProjectDataFilename(projectWindow->data, filename);
   projectWindowMenuEnableRevertProject(projectWindow);
 }
