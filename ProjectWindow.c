@@ -582,49 +582,27 @@ error:
   return FALSE;
 }
 
-/* TODO: so much dupe code :( */
 static void exportProjectToAsl(FrameworkWindow *projectWindow, char *dir, char *file) {
-  size_t bufferLen = strlen(dir) + strlen(file) + 2;
-  char *buffer = malloc(bufferLen);
-
-  if(!buffer) {
-    fprintf(
-      stderr,
-      "exportProjectToAsl: failed to allocate buffer "
-      "(dir: %s) (file: %s)\n",
-      dir  ? dir  : "NULL",
-      file ? file : "NULL");
+  char *filename = aslFilename(dir, file);
+  if(!filename) {
+    fprintf(stderr, "exportProjectToAsl: couldn't build filename\n");
     goto error;
   }
 
-  strcpy(buffer, dir);
-  if(!AddPart(buffer, file, (ULONG)bufferLen)) {
-    fprintf(
-      stderr,
-      "exportProjectToAsl: failed to add part "
-      "(buffer: %s) (file: %s) (len: %d)\n",
-      buffer ? buffer : "NULL",
-      file   ? file   : "NULL",
-      bufferLen);
-    goto error_freeBuffer;
-  }
-
-  if(!exportProjectToFile(projectWindow, buffer)) {
+  if(!exportProjectToFile(projectWindow, filename)) {
     EasyRequest(
       projectWindow->intuitionWindow,
       &projectExportFailEasyStruct,
       NULL,
-      buffer);
-    goto error_freeBuffer;
+      filename);
+    goto error_freeFilename;
   }
 
-freeBuffer:
-  free(buffer);
-done:
+  free(filename);
   return;
 
-error_freeBuffer:
-  free(buffer);
+error_freeFilename:
+  free(filename);
 error:
   return;
 }
