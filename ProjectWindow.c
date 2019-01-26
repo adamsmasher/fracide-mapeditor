@@ -2,7 +2,6 @@
 
 #include <libraries/asl.h>
 #include <proto/asl.h>
-#include <proto/dos.h>
 #include <proto/intuition.h>
 #include <proto/gadtools.h>
 
