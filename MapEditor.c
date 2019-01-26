@@ -333,7 +333,7 @@ static void moveToMap(FrameworkWindow *mapEditor, int mapNum) {
   FrameworkWindow *projectWindow = mapEditor->parent;
 
   if(mapEditorEnsureSaved(mapEditor)) {
-    if(projectWindowOpenMapNum(projectWindow, mapNum - 1)) {
+    if(projectWindowOpenMapNum(projectWindow, mapNum)) {
       mapEditor->closed = TRUE;
     }
   }

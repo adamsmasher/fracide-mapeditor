@@ -374,24 +374,28 @@ static void refreshAllTileDisplays(FrameworkWindow *projectWindow) {
   }
 }
 
-/* TODO: maybe push the UI logic out */
-/* TODO: best still, add Asl handling to the framework */
 static BOOL loadTilesetPackageFromAsl(FrameworkWindow *projectWindow, char *dir, char *file) {
-  char buffer[TILESET_PACKAGE_PATH_SIZE];
-
-  if(strlen(dir) >= sizeof(buffer)) {
-    fprintf(stderr, "loadTilesetPackageFromAsl: dir %s file %s doesn't fit in buffer\n", dir, file);
+  char *filename = aslFilename(dir, file);
+  if(!filename) {
+    fprintf(stderr, "loadTilesetPackageFromAsl: couldn't build filename");
     goto error;
   }
 
-  strcpy(buffer, dir);
-  if(!AddPart(buffer, file, TILESET_PACKAGE_PATH_SIZE)) {
-    fprintf(stderr, "loadTilesetPackageFromAsl: dir %s file %s doesn't fit in buffer\n", dir, file);
-    goto error;
+  if(strlen(filename) >= TILESET_PACKAGE_PATH_SIZE) {
+    fprintf(stderr, "loadTilesetPackageFromAsl: filename %s doesn't fit in buffer\n", filename);
+    goto error_freeFilename;
   }
 
-  return loadTilesetPackageFromFile(projectWindow, buffer);
+  if(!loadTilesetPackageFromFile(projectWindow, filename)) {
+    fprintf(stderr, "loadTilesetPackageFromAsl: error loading file\n");
+    goto error_freeFilename;
+  }
 
+  free(filename);
+  return TRUE;
+
+error_freeFilename:
+  free(filename);
 error:
   return FALSE;
 }
