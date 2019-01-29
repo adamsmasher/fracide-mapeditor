@@ -745,7 +745,7 @@ FrameworkWindow *newMapEditorNewMap(FrameworkWindow *parent) {
     goto error;
   }
 
-  sprintf(map->name, "Untitled");
+  strcpy(map->name, "Untitled");
 
   mapEditor = newMapEditor(parent, map);
   if(!mapEditor) {
@@ -771,7 +771,7 @@ FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, UWORD ma
     goto error;
   }
 
-  mapEditor = newMapEditor(parent, map);
+  mapEditor = newMapEditor(parent, mapCopy);
   if(!mapEditor) {
     fprintf(stderr, "newMapEditorWithMap: failed to create map editor\n");
     goto error_freeMap;
@@ -782,7 +782,7 @@ FrameworkWindow *newMapEditorWithMap(FrameworkWindow *parent, Map *map, UWORD ma
   return mapEditor;
 
 error_freeMap:
-  free(map);
+  free(mapCopy);
 error:
   return NULL;
 }
