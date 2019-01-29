@@ -98,6 +98,10 @@ static void attachChildWindow(FrameworkWindow *parent, FrameworkWindow *child) {
   child->prev   = NULL;
   child->next   = parent->children;
 
+  if(child->next) {
+    child->next->prev = child;
+  }
+
   parent->children = child;
 
   propagateSigMaskUp(child);
