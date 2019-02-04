@@ -93,6 +93,10 @@ static void *mapEditorDataGetImageDataForTile(MapEditorData *data, UBYTE tile) {
   return data->imageData + (tile << 7);
 }
 
+/* inits the images to refer to the correct tile based on the map */
+/* TODO: this feels a little sketchy to me - we only do it on inital load
+   if the map already has a tileset, otherwise initMapImages just makes
+   them all point to the start of the image data - which works, I guess... */
 static void mapEditorDataInitImages(MapEditorData *data) {
   Map *map = data->map;
   int i;
@@ -140,6 +144,61 @@ static void mapEditorDataUpdateTitle(MapEditorData *data) {
   mapEditorRefreshTitle(data->window);
 }
 
+/* TODO: move me elsewhere */
+static void copyScaledTileset(UWORD *src, UWORD *dst) {
+  struct BitMap srcBitMap;
+  struct BitMap dstBitMap;
+  struct BitScaleArgs scaleArgs;
+  int tileNum;
+
+  srcBitMap.BytesPerRow = 2;
+  srcBitMap.Rows = 16;
+  srcBitMap.Flags = 0;
+  srcBitMap.Depth = 2;
+
+  dstBitMap.BytesPerRow = 4;
+  dstBitMap.Rows = 32;
+  dstBitMap.Flags = 0;
+  dstBitMap.Depth = 2;
+
+  scaleArgs.bsa_SrcX = 0;
+  scaleArgs.bsa_SrcY = 0;
+  scaleArgs.bsa_SrcWidth = 16;
+  scaleArgs.bsa_SrcHeight = 16;
+  scaleArgs.bsa_XSrcFactor = 1;
+  scaleArgs.bsa_YSrcFactor = 1;
+  scaleArgs.bsa_DestX = 0;
+  scaleArgs.bsa_DestY = 0;
+  scaleArgs.bsa_XDestFactor = 2;
+  scaleArgs.bsa_YDestFactor = 2;
+  scaleArgs.bsa_SrcBitMap = &srcBitMap;
+  scaleArgs.bsa_DestBitMap = &dstBitMap;
+  scaleArgs.bsa_Flags = 0;
+
+  for(tileNum = 0; tileNum < TILES_PER_SET; tileNum++) {
+    srcBitMap.Planes[0] = (PLANEPTR)src;
+    srcBitMap.Planes[1] = (PLANEPTR)(src + 16);
+
+    dstBitMap.Planes[0] = (PLANEPTR)dst;
+    dstBitMap.Planes[1] = (PLANEPTR)(dst + 64);
+
+    BitMapScale(&scaleArgs);
+
+    src += 32;
+    dst += 128;
+  }
+}
+
+static void mapEditorDataInitTileset(MapEditorData *data, UWORD tilesetNum) {
+  ProjectWindowData *projectData = data->window->parent->data;
+
+  copyScaledTileset(
+    (UWORD*)projectDataGetTilesetImgs(projectData, tilesetNum),
+    data->imageData);
+
+  mapEditorRefreshTilesetName(data->window);
+}
+
 void initMapEditorData(MapEditorData *data, FrameworkWindow *window, Map *map) {
   window->data = data;
   data->window = window;
@@ -148,7 +207,10 @@ void initMapEditorData(MapEditorData *data, FrameworkWindow *window, Map *map) {
   mapEditorDataUpdateTitle(data);
 
   if(mapEditorDataHasTileset(data)) {
+    UWORD tilesetNum = mapEditorDataGetTileset(data);
+    mapEditorDataInitTileset(data, tilesetNum);
     mapEditorDataInitImages(data);
+    mapEditorRefreshTileDisplays(data->window);
   }
 
   mapEditorRefreshMapName(data->window);
@@ -415,51 +477,6 @@ void mapEditorDataClearTileset(MapEditorData *data) {
   mapEditorRefreshTileDisplays(data->window);
 }
 
-/* TODO: move me elsewhere */
-static void copyScaledTileset(UWORD *src, UWORD *dst) {
-  struct BitMap srcBitMap;
-  struct BitMap dstBitMap;
-  struct BitScaleArgs scaleArgs;
-  int tileNum;
-
-  srcBitMap.BytesPerRow = 2;
-  srcBitMap.Rows = 16;
-  srcBitMap.Flags = 0;
-  srcBitMap.Depth = 2;
-
-  dstBitMap.BytesPerRow = 4;
-  dstBitMap.Rows = 32;
-  dstBitMap.Flags = 0;
-  dstBitMap.Depth = 2;
-
-  scaleArgs.bsa_SrcX = 0;
-  scaleArgs.bsa_SrcY = 0;
-  scaleArgs.bsa_SrcWidth = 16;
-  scaleArgs.bsa_SrcHeight = 16;
-  scaleArgs.bsa_XSrcFactor = 1;
-  scaleArgs.bsa_YSrcFactor = 1;
-  scaleArgs.bsa_DestX = 0;
-  scaleArgs.bsa_DestY = 0;
-  scaleArgs.bsa_XDestFactor = 2;
-  scaleArgs.bsa_YDestFactor = 2;
-  scaleArgs.bsa_SrcBitMap = &srcBitMap;
-  scaleArgs.bsa_DestBitMap = &dstBitMap;
-  scaleArgs.bsa_Flags = 0;
-
-  for(tileNum = 0; tileNum < TILES_PER_SET; tileNum++) {
-    srcBitMap.Planes[0] = (PLANEPTR)src;
-    srcBitMap.Planes[1] = (PLANEPTR)(src + 16);
-
-    dstBitMap.Planes[0] = (PLANEPTR)dst;
-    dstBitMap.Planes[1] = (PLANEPTR)(dst + 64);
-
-    BitMapScale(&scaleArgs);
-
-    src += 32;
-    dst += 128;
-  }
-}
-
 BOOL mapEditorDataHasTileset(MapEditorData *data) {
   return (BOOL)(data->map->tilesetNum > 0);
 }
@@ -469,17 +486,9 @@ UWORD mapEditorDataGetTileset(MapEditorData *data) {
 }
 
 void mapEditorDataSetTileset(MapEditorData *data, UWORD tilesetNum) {
-  ProjectWindowData *projectData = data->window->parent->data;
-
   data->map->tilesetNum = tilesetNum + 1;
-
-  copyScaledTileset(
-    (UWORD*)projectDataGetTilesetImgs(projectData, tilesetNum),
-    data->imageData);
-
   mapEditorDataSetSaved(data, FALSE);
-
-  mapEditorRefreshTilesetName(data->window);
+  mapEditorDataInitTileset(data, tilesetNum);
   mapEditorRefreshTileDisplays(data->window);
 }
 
